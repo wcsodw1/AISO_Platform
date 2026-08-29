@@ -1,6 +1,6 @@
 {
-  "version": 5,
-  "updated_at": "2026-08-28T18:15:00+08:00",
+  "version": 6,
+  "updated_at": "2026-08-29T10:30:00+08:00",
   "categories": [
     {
       "id": "consumer",
@@ -280,7 +280,7 @@
       },
       "operations": {
         "ssh": "",
-        "notes": "由 Equipment/AMD/TUF GAMING AIMAX392 複製整合；Equipment 原始檔保留。"
+        "notes": "原 Equipment 內容已於 2026-08-29 完整合併並逐檔驗證。"
       },
       "publish": {
         "enabled": true
@@ -461,6 +461,77 @@
       "operations": {
         "ssh": "",
         "notes": "PRO6000 - HPE 2 GPU（兩卡機）；內部連線與維運資料只顯示於本機管理版。"
+      },
+      "publish": {
+        "enabled": true
+      }
+    },
+    {
+      "id": "pro6000-tpi-8gpu",
+      "category": "server",
+      "name": "PRO6000 - TPI 8 GPU（八卡機）",
+      "positioning": "TPI Eight-GPU AI Server",
+      "status": "Benchmark Available",
+      "summary": "收錄 TPI 八卡 PRO6000 Server 的 GPT-OSS-120B 與 Llama-3.3-70B 正式 Benchmark。",
+      "folder": "Server/PRO6000-TPI-8GPU",
+      "hardware": {
+        "Platform": "TPI Server",
+        "CPU": "待確認",
+        "GPU": "PRO6000 × 8",
+        "GPU Count": "8",
+        "Memory": "待確認",
+        "Storage": "待確認",
+        "OS": "待確認"
+      },
+      "models": [
+        {
+          "name": "GPT-OSS-120B",
+          "status": "Benchmarked",
+          "notes": "NP1-32 · Input 1K-16K · Output 1K/2K"
+        },
+        {
+          "name": "Llama-3.3-70B-Instruct",
+          "status": "Benchmarked",
+          "notes": "NP16/32 · Input 1K-16K · Output 1K/2K"
+        }
+      ],
+      "documents": {
+        "folder": "Server/PRO6000-TPI-8GPU/Documents",
+        "public_folder": "Server/PRO6000-TPI-8GPU/Documents/Public"
+      },
+      "benchmark": {
+        "folder": "Server/PRO6000-TPI-8GPU/Benchmark",
+        "public_folder": "Server/PRO6000-TPI-8GPU/Benchmark/Public",
+        "date": "2026-08-25",
+        "comparison": "without aiDAPTIV vs aiDAPTIV Cold / Warm",
+        "metrics": [
+          "TTFT",
+          "TPOT",
+          "Throughput (Aggregate)",
+          "Throughput (Normalized)"
+        ],
+        "results": [
+          {
+            "model": "GPT-OSS-120B",
+            "scope": "NP1-32 · Input 1K-16K · Output 1K/2K",
+            "report": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-25_v9.pdf",
+            "highlights": []
+          },
+          {
+            "model": "Llama-3.3-70B-Instruct",
+            "scope": "NP16/32 · Input 1K-16K · Output 1K/2K",
+            "report": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf",
+            "highlights": []
+          }
+        ]
+      },
+      "scripts": {
+        "folder": "Server/PRO6000-TPI-8GPU/Scripts",
+        "public_folder": "Server/PRO6000-TPI-8GPU/Scripts"
+      },
+      "operations": {
+        "ssh": "",
+        "notes": "PRO6000 - TPI 8 GPU（八卡機）；內部連線與維運資料只顯示於本機管理版。"
       },
       "publish": {
         "enabled": true

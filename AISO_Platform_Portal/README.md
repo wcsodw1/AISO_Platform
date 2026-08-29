@@ -1,4 +1,4 @@
-# AISO Platform v1.15.7
+# AISO Platform v1.15.8
 
 AISO Platform 是一套「Mac 本機管理＋GitHub Pages 公開展示」的設備文件入口。
 
@@ -180,7 +180,7 @@ http://127.0.0.1:8765
 
 - Consumer：ASUS ROG AI MAX395、ASUS TUF GAMING AI MAX392
 - Workstation：AISO1 AI MAX395
-- Server：PRO6000 - HPE 2 GPU（兩卡機）
+- Server：PRO6000 - HPE 2 GPU（兩卡機）、PRO6000 - TPI 8 GPU（八卡機）
 
 PRO6000 - HPE 2 GPU 已收錄：
 

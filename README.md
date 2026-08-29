@@ -1,6 +1,6 @@
 # AISO Platform
 
-AISO Platform 是設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.15.7**。
+AISO Platform 是設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.15.8**。
 
 - GitHub：<https://github.com/wcsodw1/AISO_Platform>（Private）
 - 預設分支：`main`
@@ -28,7 +28,7 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ launcher.py                                   ← 本機 HTTP Server／管理 API
 │  ├─ exporter.py                                   ← 公開資料清理與靜態匯出
 │  ├─ config.json                                   ← Host、Port、資料根目錄
-│  ├─ VERSION                                       ← Portal 版本（1.15.7）
+│  ├─ VERSION                                       ← Portal 版本（1.15.8）
 │  ├─ data/
 │  │  └─ products.json                              ← Portal 設備與 Benchmark metadata
 │  ├─ assets/
@@ -46,23 +46,6 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  └─ Previous data/                                ← 歷史版本；保留本機、Git 忽略
 │
 └─ AISO-Platform-UI/                                ← Portal 實際設備資料
-   ├─ Equipment/                                    ← 原始設備資料／工作來源
-   │  └─ AMD/
-   │     ├─ ROG AIMAX395/
-   │     │  ├─ benchmark_result/OneNP/
-   │     │  ├─ document/
-   │     │  └─ script/
-   │     ├─ TUF GAMING AIMAX392/
-   │     │  ├─ benchmark_result/OneNP/
-   │     │  ├─ document/
-   │     │  └─ script/
-   │     └─ AISO1 AIMAX395/
-   │        └─ scripts/
-   │           ├─ ctx_check/
-   │           ├─ np1/
-   │           ├─ np1-Advance/
-   │           └─ np_multi_stress/
-   │
    ├─ Consumer/                                     ← Portal Consumer 正式資料
    │  ├─ ASUS-ROG-AI-MAX395/
    │  │  ├─ Documents/Public/
@@ -98,13 +81,14 @@ AISO_Platform/                                      ← Git repository 根目錄
 | 路徑 | 意義 | Git 策略 |
 |---|---|---|
 | `AISO_Platform_Portal/` | Portal 程式、metadata 與產生的靜態站 | 納管 |
-| `AISO-Platform-UI/Equipment/` | 收到或整理中的設備原始資料 | 經篩選後納管 |
 | `AISO-Platform-UI/Consumer/` | Consumer Portal 正式資料 | 納管 |
 | `AISO-Platform-UI/Workstation/` | Workstation Portal 正式資料 | 納管 |
 | `AISO-Platform-UI/Server/` | Server Portal 正式資料 | 納管 |
 | 各設備的 `Public/` | 可由靜態網站發布的內容 | 納管，放入前須先檢查敏感資訊 |
 | `AISO_Platform_Portal/docs/` | `make export` 自動產生的公開站 | 納管，不手動修改 |
 | `AISO_Platform_Portal/Previous data/` | 舊版與歸檔 | 保留本機、Git 忽略 |
+
+原 `Equipment/AMD` 的 96 個檔案已逐檔驗證並完整合併至 Consumer／Workstation；來源資料夾於 2026-08-29 移至 macOS 垃圾桶，不再作為正式資料入口。
 
 其他舊版資料夾、根目錄 PDF、重複的 Portal `Server/`、原始 stdout/stderr、JSONL、ZIP 與瀏覽器另存網頁仍保留在本機，但不納入 Git。經整理的 CSV、設備腳本、正式文件及公開報告會正常納管。
 
