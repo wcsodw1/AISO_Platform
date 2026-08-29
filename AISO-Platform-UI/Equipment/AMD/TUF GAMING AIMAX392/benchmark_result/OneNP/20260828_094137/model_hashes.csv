@@ -1,0 +1,3 @@
+﻿"Machine","ModelName","Repository","FileName","FullPath","SizeBytes","SizeGiB","SHA256"
+"Ryzen AI MAX+ 392","Gemma 4 26B A4B","unsloth/gemma-4-26B-A4B-it-GGUF","gemma-4-26B-A4B-it-UD-Q4_K_M.gguf","C:\AIMAX392_Benchmark\models\gemma-4-26B-A4B-it-UD-Q4_K_M.gguf","16947541728","15.784","F2C28B3DC4776931AC6F879E11F203DEC637EA0F14267A86EC8F6165F63F293F"
+"Ryzen AI MAX+ 392","GPT-OSS 20B","unsloth/gpt-oss-20b-GGUF","gpt-oss-20b-Q4_K_M.gguf","C:\AIMAX392_Benchmark\models\gpt-oss-20b-Q4_K_M.gguf","11624759488","10.826","C27536640E410032865DC68781D80A08B98F8DB5E93575919AF8CCC0568AEB4F"

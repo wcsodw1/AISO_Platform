@@ -1,0 +1,688 @@
+{
+  "version": 5,
+  "updated_at": "2026-08-29T09:43:54+08:00",
+  "categories": [
+    {
+      "id": "consumer",
+      "order": "01",
+      "name": "Consumer",
+      "name_zh": "消費型",
+      "description": "瀏覽此類設備的 SOP 與 Benchmark。"
+    },
+    {
+      "id": "workstation",
+      "order": "02",
+      "name": "Workstation",
+      "name_zh": "工作站",
+      "description": "瀏覽此類設備的 SOP 與 Benchmark。"
+    },
+    {
+      "id": "server",
+      "order": "03",
+      "name": "Server",
+      "name_zh": "伺服器",
+      "description": "瀏覽此類設備的 SOP 與 Benchmark。"
+    }
+  ],
+  "model_matrix": [
+    {
+      "category": "consumer",
+      "summary": "適合本機單人使用、快速驗證與輕量 Multi-NP 測試；以 Q4 GGUF 為主。",
+      "models": [
+        {
+          "name": "Ornith 1.0 9B Q4",
+          "use": "輕量對話／快速驗證",
+          "status": "Quick Test Script"
+        },
+        {
+          "name": "GPT-OSS 20B Q4",
+          "use": "通用推理／本機助理",
+          "status": "Benchmark Script"
+        },
+        {
+          "name": "Gemma 4 26B A4B Q4",
+          "use": "通用生成／文件處理",
+          "status": "Benchmark Script"
+        },
+        {
+          "name": "Ornith 1.0 35B Q4",
+          "use": "進階生成／Multi-NP 測試",
+          "status": "Multi-NP Script"
+        }
+      ]
+    },
+    {
+      "category": "workstation",
+      "summary": "適合專業開發、長 Context、程式碼與較大型 Q4 GGUF 模型測試。",
+      "models": [
+        {
+          "name": "Qwen 3.6 35B A3B Q4",
+          "use": "通用生成／高 Context",
+          "status": "NP1 + Stress Script"
+        },
+        {
+          "name": "Ornith 1.0 35B Q4",
+          "use": "通用生成／壓力測試",
+          "status": "NP1 + Stress Script"
+        },
+        {
+          "name": "Gemma 4 26B A4B Q4",
+          "use": "通用生成／文件處理",
+          "status": "Prepared + Stress Script"
+        },
+        {
+          "name": "Qwen3 Coder Next 80B A3B Q4",
+          "use": "程式碼生成／Agent Coding",
+          "status": "NP1 + Stress Script"
+        },
+        {
+          "name": "Devstral Small 2505 Q4",
+          "use": "程式碼理解／軟體開發",
+          "status": "NP1 Script"
+        },
+        {
+          "name": "Magistral Small 2509 Q4",
+          "use": "推理／分析工作",
+          "status": "NP1 Script"
+        },
+        {
+          "name": "Llama 3.3 70B Instruct Q4",
+          "use": "高品質通用生成",
+          "status": "NP1 Script"
+        },
+        {
+          "name": "GPT-OSS 120B Q4",
+          "use": "大型推理／高階生成",
+          "status": "Prepared + Stress Script"
+        },
+        {
+          "name": "Laguna XS 2.1 Q4",
+          "use": "高 Context 併發測試",
+          "status": "Stress Script"
+        },
+        {
+          "name": "Nomic Embed Text V2 GGUF",
+          "use": "Embedding／RAG",
+          "status": "Prepared"
+        },
+        {
+          "name": "mMARCO MiniLMv2 L12 H384 GGUF",
+          "use": "Rerank／RAG",
+          "status": "Prepared"
+        }
+      ]
+    },
+    {
+      "category": "server",
+      "summary": "適合大型模型、長 Context 與多使用者併發服務；以下模型已有正式 Benchmark。",
+      "models": [
+        {
+          "name": "GPT-OSS 120B",
+          "use": "大型推理／多使用者服務",
+          "status": "Benchmarked · NP1–32"
+        },
+        {
+          "name": "Llama 3.3 70B Instruct",
+          "use": "企業級通用生成／長 Context",
+          "status": "Benchmarked · NP16/32"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "asus-rog-ai-max395",
+      "category": "consumer",
+      "name": "ASUS ROG AI MAX395",
+      "positioning": "Consumer AI PC",
+      "status": "Benchmark Available",
+      "summary": "收錄 Ryzen AI MAX+ 395 的 Benchmark 結果、完整測試與快速驗證腳本。",
+      "hardware": {
+        "CPU": "AMD Ryzen AI Max+ 395",
+        "GPU": "Radeon 8060S Graphics",
+        "Memory": "32GB LPDDR5x-8000",
+        "Storage": "待確認",
+        "OS": "Windows 11"
+      },
+      "models": [
+        {
+          "name": "Gemma 4 26B A4B Q4_K_M",
+          "status": "Benchmarked",
+          "notes": "NP1 · Input 1K–32K"
+        },
+        {
+          "name": "GPT-OSS 20B Q4_K_M",
+          "status": "Benchmarked",
+          "notes": "NP1 · Input 1K–32K"
+        }
+      ],
+      "benchmark": {
+        "date": "2026-08-28",
+        "comparison": "NP1 · Input 1K–32K · Output 300 · Vulkan",
+        "metrics": [
+          "TTFT",
+          "TPOT",
+          "Throughput"
+        ],
+        "results": [
+          {
+            "model": "Gemma 4 26B A4B Q4_K_M",
+            "scope": "NP1 · 1K–32K input · 3 trials",
+            "report": "benchmark_report.md",
+            "highlights": [
+              {
+                "metric": "TTFT @ 1K",
+                "condition": "Lower is better",
+                "result": "3,147.57 ms"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "condition": "Lower is better",
+                "result": "21.45 ms/token"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "condition": "NP1",
+                "result": "31.37 tokens/s"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "condition": "NP1",
+                "result": "1.61 tokens/s"
+              }
+            ]
+          },
+          {
+            "model": "GPT-OSS 20B Q4_K_M",
+            "scope": "NP1 · 1K–32K input · 3 trials",
+            "report": "benchmark_report.md",
+            "highlights": [
+              {
+                "metric": "TTFT @ 1K",
+                "condition": "Lower is better",
+                "result": "1,153.62 ms"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "condition": "Lower is better",
+                "result": "12.40 ms/token"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "condition": "NP1",
+                "result": "60.82 tokens/s"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "condition": "NP1",
+                "result": "6.73 tokens/s"
+              }
+            ]
+          }
+        ]
+      },
+      "published": {
+        "documents": [
+          {
+            "name": "AIMAX395_Benchmark_Startup_Operation_Guide_v1.0.docx",
+            "extension": "docx",
+            "url": "assets/asus-rog-ai-max395/manuals/AIMAX395_Benchmark_Startup_Operation_Guide_v1.0.docx"
+          }
+        ],
+        "benchmark": [
+          {
+            "name": "benchmark_report.md",
+            "extension": "md",
+            "url": "assets/asus-rog-ai-max395/benchmark/benchmark_report.md"
+          },
+          {
+            "name": "benchmark_summary.csv",
+            "extension": "csv",
+            "url": "assets/asus-rog-ai-max395/benchmark/benchmark_summary.csv"
+          },
+          {
+            "name": "environment.json",
+            "extension": "json",
+            "url": "assets/asus-rog-ai-max395/benchmark/environment.json"
+          }
+        ],
+        "scripts": [
+          {
+            "name": "V5_0828_AIMAX395_1np_Benchmark.ps1",
+            "extension": "ps1",
+            "url": "assets/asus-rog-ai-max395/scripts/V5_0828_AIMAX395_1np_Benchmark.ps1"
+          },
+          {
+            "name": "V5_0828_AIMAX395_1np_QuickTest_1K_2K.ps1",
+            "extension": "ps1",
+            "url": "assets/asus-rog-ai-max395/scripts/V5_0828_AIMAX395_1np_QuickTest_1K_2K.ps1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "asus-tuf-gaming-ai-max392",
+      "category": "consumer",
+      "name": "ASUS TUF GAMING AI MAX392",
+      "positioning": "Consumer AI PC",
+      "status": "Benchmark Available",
+      "summary": "收錄 Ryzen AI MAX+ 392 的 Benchmark、Multi-NP 與快速驗證腳本。",
+      "hardware": {
+        "CPU": "AMD Ryzen AI Max 392",
+        "GPU": "Radeon 8060S Graphics",
+        "Memory": "32GB LPDDR5x-8000",
+        "Storage": "待確認",
+        "OS": "Windows 11"
+      },
+      "models": [
+        {
+          "name": "Gemma 4 26B A4B Q4_K_M",
+          "status": "Benchmarked",
+          "notes": "NP1 · Input 1K–32K"
+        },
+        {
+          "name": "GPT-OSS 20B Q4_K_M",
+          "status": "Benchmarked",
+          "notes": "NP1 · Input 1K–32K"
+        }
+      ],
+      "benchmark": {
+        "date": "2026-08-28",
+        "comparison": "NP1 · Input 1K–32K · Output 300 · Vulkan",
+        "metrics": [
+          "TTFT",
+          "TPOT",
+          "Throughput"
+        ],
+        "results": [
+          {
+            "model": "Gemma 4 26B A4B Q4_K_M",
+            "scope": "NP1 · 1K–32K input · 3 trials",
+            "report": "benchmark_report.md",
+            "highlights": [
+              {
+                "metric": "TTFT @ 1K",
+                "condition": "Lower is better",
+                "result": "3,164.57 ms"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "condition": "Lower is better",
+                "result": "21.21 ms/token"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "condition": "NP1",
+                "result": "31.55 tokens/s"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "condition": "NP1",
+                "result": "1.41 tokens/s"
+              }
+            ]
+          },
+          {
+            "model": "GPT-OSS 20B Q4_K_M",
+            "scope": "NP1 · 1K–32K input · 3 trials",
+            "report": "benchmark_report.md",
+            "highlights": [
+              {
+                "metric": "TTFT @ 1K",
+                "condition": "Lower is better",
+                "result": "832.85 ms"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "condition": "Lower is better",
+                "result": "12.50 ms/token"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "condition": "NP1",
+                "result": "65.64 tokens/s"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "condition": "NP1",
+                "result": "7.42 tokens/s"
+              }
+            ]
+          }
+        ]
+      },
+      "published": {
+        "documents": [
+          {
+            "name": "AI_MAX392_vs_AIMAX395_V5_Report.pdf",
+            "extension": "pdf",
+            "url": "assets/asus-tuf-gaming-ai-max392/manuals/AI_MAX392_vs_AIMAX395_V5_Report.pdf"
+          }
+        ],
+        "benchmark": [
+          {
+            "name": "benchmark_report.md",
+            "extension": "md",
+            "url": "assets/asus-tuf-gaming-ai-max392/benchmark/benchmark_report.md"
+          },
+          {
+            "name": "benchmark_summary.csv",
+            "extension": "csv",
+            "url": "assets/asus-tuf-gaming-ai-max392/benchmark/benchmark_summary.csv"
+          }
+        ],
+        "scripts": [
+          {
+            "name": "AIMAX_QuickTest_1K_2K.ps1",
+            "extension": "ps1",
+            "url": "assets/asus-tuf-gaming-ai-max392/scripts/AIMAX_QuickTest_1K_2K.ps1"
+          },
+          {
+            "name": "V3_0828_AIMAX392_Benchmark.ps1",
+            "extension": "ps1",
+            "url": "assets/asus-tuf-gaming-ai-max392/scripts/V3_0828_AIMAX392_Benchmark.ps1"
+          },
+          {
+            "name": "V3_0828_AIMAX392_MultiNP_Benchmark.ps1",
+            "extension": "ps1",
+            "url": "assets/asus-tuf-gaming-ai-max392/scripts/V3_0828_AIMAX392_MultiNP_Benchmark.ps1"
+          }
+        ]
+      }
+    },
+    {
+      "id": "aiso1-ai-max395",
+      "category": "workstation",
+      "name": "AISO1 AI MAX395",
+      "positioning": "AI Workstation",
+      "status": "Ready",
+      "summary": "收錄 Ryzen AI MAX+ 395 的單人、進階與 Multi-NP 壓力測試腳本。",
+      "hardware": {
+        "CPU": "AMD Ryzen AI Max+ 395",
+        "GPU": "Radeon 8060S Graphics",
+        "Memory": "128GB LPDDR5x-8533",
+        "Storage": "1TB SSD",
+        "OS": "Ubuntu 24.04.4 LTS"
+      },
+      "models": [
+        {
+          "name": "GPT-OSS-120B Q4",
+          "status": "Prepared",
+          "notes": "Generation"
+        },
+        {
+          "name": "Ornith-1.0-35B Q4",
+          "status": "Prepared",
+          "notes": "Generation"
+        },
+        {
+          "name": "Gemma-4-26B-A4B Q4",
+          "status": "Prepared",
+          "notes": "Generation"
+        },
+        {
+          "name": "Nomic-Embed-Text-V2-GGUF",
+          "status": "Prepared",
+          "notes": "Embedding"
+        },
+        {
+          "name": "mmarco-mMiniLMv2-L12-H384-v1-gguf",
+          "status": "Prepared",
+          "notes": "Re-rank"
+        }
+      ],
+      "benchmark": {
+        "date": "",
+        "comparison": "",
+        "metrics": [
+          "TTFT",
+          "TPOT",
+          "Throughput"
+        ],
+        "results": []
+      },
+      "published": {
+        "documents": [],
+        "benchmark": [],
+        "scripts": [
+          {
+            "name": "check_ctx_train.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/ctx_check/check_ctx_train.sh"
+          },
+          {
+            "name": "001_qwen3.6-35b-a3b_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/001_qwen3.6-35b-a3b_np1.sh"
+          },
+          {
+            "name": "003_ornith-1.0-35b_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/003_ornith-1.0-35b_np1.sh"
+          },
+          {
+            "name": "005_qwen3-coder-next-80b-a3b_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/005_qwen3-coder-next-80b-a3b_np1.sh"
+          },
+          {
+            "name": "007_gemma-4-26b-a4b_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/007_gemma-4-26b-a4b_np1.sh"
+          },
+          {
+            "name": "009_devstral-small-2505_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/009_devstral-small-2505_np1.sh"
+          },
+          {
+            "name": "011_magistral-small-2509_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/011_magistral-small-2509_np1.sh"
+          },
+          {
+            "name": "013_gpt-oss-120b_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/013_gpt-oss-120b_np1.sh"
+          },
+          {
+            "name": "015_llama-3.3-70b_np1.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/015_llama-3.3-70b_np1.sh"
+          },
+          {
+            "name": "025_qwen3.6-35b-a3b_np1advanced.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/025_qwen3.6-35b-a3b_np1advanced.sh"
+          },
+          {
+            "name": "026_ornith-1.0-35b_np1advanced.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/026_ornith-1.0-35b_np1advanced.sh"
+          },
+          {
+            "name": "027_qwen3-coder-next-80b-a3b_np1advanced.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/027_qwen3-coder-next-80b-a3b_np1advanced.sh"
+          },
+          {
+            "name": "028_gemma-4-26b-a4b_np1advanced.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/028_gemma-4-26b-a4b_np1advanced.sh"
+          },
+          {
+            "name": "029_gpt-oss-120b_np1advanced.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/029_gpt-oss-120b_np1advanced.sh"
+          },
+          {
+            "name": "040_qwen3.6-35b-a3b_stress.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/040_qwen3.6-35b-a3b_stress.sh"
+          },
+          {
+            "name": "041_ornith-1.0-35b_stress.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/041_ornith-1.0-35b_stress.sh"
+          },
+          {
+            "name": "042_qwen3-coder-next-80b-a3b_stress.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/042_qwen3-coder-next-80b-a3b_stress.sh"
+          },
+          {
+            "name": "043_gemma-4-26b-a4b_stress.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/043_gemma-4-26b-a4b_stress.sh"
+          },
+          {
+            "name": "044_gpt-oss-120b_stress.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/044_gpt-oss-120b_stress.sh"
+          },
+          {
+            "name": "045_laguna-xs-2.1_real_highctx_concurrency.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/045_laguna-xs-2.1_real_highctx_concurrency.sh"
+          },
+          {
+            "name": "050_qwen3.6-35b-a3b_stressadv.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/050_qwen3.6-35b-a3b_stressadv.sh"
+          },
+          {
+            "name": "051_ornith-1.0-35b_stressadv.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/051_ornith-1.0-35b_stressadv.sh"
+          },
+          {
+            "name": "052_qwen3-coder-next-80b-a3b_stressadv.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/052_qwen3-coder-next-80b-a3b_stressadv.sh"
+          },
+          {
+            "name": "053_gemma-4-26b-a4b_stressadv.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/053_gemma-4-26b-a4b_stressadv.sh"
+          },
+          {
+            "name": "054_gpt-oss-120b_stressadv.sh",
+            "extension": "sh",
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/054_gpt-oss-120b_stressadv.sh"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pro6000-hpe-2gpu",
+      "category": "server",
+      "name": "PRO6000 - HPE 2 GPU（兩卡機）",
+      "positioning": "HPE Dual-GPU AI Server",
+      "status": "Benchmark Available",
+      "summary": "集中查看此設備的 SOP 與 Benchmark。",
+      "hardware": {
+        "Platform": "HPE Server",
+        "CPU": "待確認",
+        "GPU": "PRO6000 × 2",
+        "GPU Count": "2",
+        "Memory": "待確認",
+        "Storage": "待確認",
+        "OS": "待確認"
+      },
+      "models": [
+        {
+          "name": "GPT-OSS-120B",
+          "status": "Benchmarked",
+          "notes": "NP1-32 · Input 1K-16K · Output 1K/2K"
+        },
+        {
+          "name": "Llama-3.3-70B-Instruct",
+          "status": "Benchmarked",
+          "notes": "NP16/32 · Input 1K-16K · Output 1K/2K"
+        }
+      ],
+      "benchmark": {
+        "date": "2026-08-21",
+        "comparison": "without aiDAPTIV vs aiDAPTIV Cold / Warm",
+        "metrics": [
+          "TTFT",
+          "TPOT",
+          "Throughput (Aggregate)",
+          "Throughput (Normalized)"
+        ],
+        "results": [
+          {
+            "model": "GPT-OSS-120B",
+            "scope": "NP1-32 · Input 1K-16K · Output 1K/2K",
+            "report": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-21_v5.pdf",
+            "highlights": [
+              {
+                "metric": "TTFT",
+                "condition": "NP16-32 · Input 16K",
+                "result": "85.9%-93.5% lower"
+              },
+              {
+                "metric": "TPOT",
+                "condition": "NP32 · Input 16K",
+                "result": "Up to 31.0% lower"
+              },
+              {
+                "metric": "Aggregate Throughput",
+                "condition": "NP16 / NP32 · Input 16K",
+                "result": "Up to +57.6% / +85.8%"
+              },
+              {
+                "metric": "Normalized Throughput",
+                "condition": "NP16 / NP32 · Input 16K",
+                "result": "Up to +57.6% / +85.8%"
+              }
+            ]
+          },
+          {
+            "model": "Llama-3.3-70B-Instruct",
+            "scope": "NP16/32 · Input 1K-16K · Output 1K/2K",
+            "report": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-21_v2.pdf",
+            "highlights": [
+              {
+                "metric": "TTFT",
+                "condition": "All NP16/32 conditions",
+                "result": "89.6%-95.2% lower"
+              },
+              {
+                "metric": "TPOT",
+                "condition": "NP32 · Input 16K",
+                "result": "76.0%-83.1% lower"
+              },
+              {
+                "metric": "Aggregate Throughput",
+                "condition": "NP16 / NP32 · Input 16K",
+                "result": "+24.1%-51.0% / +316.8%-493.1%"
+              },
+              {
+                "metric": "Normalized Throughput",
+                "condition": "NP16 / NP32 · Input 16K",
+                "result": "+24.1%-51.0% / +316.8%-493.1%"
+              }
+            ]
+          }
+        ]
+      },
+      "published": {
+        "documents": [],
+        "benchmark": [
+          {
+            "name": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-21_v5.pdf",
+            "extension": "pdf",
+            "url": "assets/pro6000-hpe-2gpu/benchmark/GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-21_v5.pdf"
+          },
+          {
+            "name": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-21_v2.pdf",
+            "extension": "pdf",
+            "url": "assets/pro6000-hpe-2gpu/benchmark/Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-21_v2.pdf"
+          }
+        ],
+        "scripts": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AISO Platform 管理</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">AISO</span><span><strong>Platform 管理</strong><small>Local only</small></span></a>
+    <div class="top-actions"><span class="mode-badge">本機管理版</span><a class="button secondary" href="index.html">返回 Portal</a></div>
+  </header>
+  <main class="shell manage-shell">
+    <section class="manage-intro">
+      <div><p class="eyebrow">LOCAL CATALOG EDITOR</p><h1>設備與資料夾設定</h1><p>管理設備基本資料；操作手冊、Benchmark 與 Scripts 由指定資料夾自動掃描。</p></div>
+      <div class="action-row"><button id="newProduct" class="button secondary">新增設備</button><button id="exportPublic" class="button">產生 GitHub Pages</button></div>
+    </section>
+    <div class="manage-grid">
+      <aside class="manage-list"><h2>設備</h2><div id="productList"></div></aside>
+      <section class="manage-form-card">
+        <form id="productForm">
+          <div class="form-grid">
+            <label>ID<input name="id" required pattern="[a-z0-9-]+" placeholder="example-device"></label>
+            <label>服務類型<select name="category" required></select></label>
+            <label class="wide">設備名稱<input name="name" required placeholder="AISO1 AI MAX395"></label>
+            <label>定位<input name="positioning" placeholder="AI Workstation"></label>
+            <label>狀態<input name="status" placeholder="Sample／Ready"></label>
+            <label class="wide">簡介<textarea name="summary" rows="3"></textarea></label>
+            <label class="wide">資料夾（相對於 data_root）<input name="folder" required placeholder="Workstation/AISO1-AI-MAX395"></label>
+          </div>
+          <h3>硬體規格</h3>
+          <div class="form-grid">
+            <label>CPU<input name="CPU"></label><label>GPU<input name="GPU"></label><label>Memory<input name="Memory"></label><label>Storage<input name="Storage"></label><label>OS<input name="OS"></label>
+          </div>
+          <h3>本機 Operations</h3>
+          <div class="form-grid">
+            <label class="wide">SSH 指令（不會匯出到公開版）<input name="ssh" autocomplete="off"></label>
+            <label class="wide">操作備註（不會匯出到公開版）<textarea name="notes" rows="2"></textarea></label>
+          </div>
+          <div class="form-actions"><button type="submit" class="button">儲存設備</button><button id="scanProduct" type="button" class="button secondary">掃描資料夾</button><span id="saveState"></span></div>
+        </form>
+        <section id="scanResult" class="scan-result"></section>
+      </section>
+    </div>
+  </main>
+  <script src="manage.js"></script>
+</body>
+</html>

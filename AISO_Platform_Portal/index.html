@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AISO Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=1.15.7">
+</head>
+<body>
+  <div class="galaxy-bg" aria-hidden="true">
+    <div class="galaxy-stars galaxy-stars-far"></div>
+    <div class="galaxy-stars galaxy-stars-near"></div>
+    <div class="galaxy-disc"></div>
+    <div class="galaxy-dust"></div>
+    <div class="galaxy-glow"></div>
+  </div>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="AISO Platform home">
+      <span class="brand-mark">AISO</span>
+      <span><strong>Platform</strong><small>SOP / BENCHMARK / SCRIPTS</small></span>
+    </a>
+    <div class="top-actions">
+      <button id="modelListLink" class="button secondary" type="button">Model List</button>
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="globalSearch" type="search" placeholder="搜尋 SOP、Benchmark 或 Scripts">
+      </label>
+      <span id="modeBadge" class="mode-badge">載入中</span>
+      <a id="manageLink" class="button secondary hidden" href="manage.html">管理</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="homeView">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">AISO / PRODUCT SYSTEM / 2026</p>
+          <h1><span>AISO</span><em>PLATFORM</em></h1>
+          <p class="hero-kicker">SOP / BENCHMARK / SCRIPTS</p>
+          <p class="hero-copy">各個機器的 SOP、Benchmark 與 Scripts，一眼找到、直接開啟。</p>
+        </div>
+        <div class="hero-summary">
+          <strong id="productCount">0</strong>
+          <span>Devices</span><small>SOP + Benchmark + Scripts</small>
+        </div>
+      </div>
+      <section id="categoryGrid" class="category-grid" aria-label="服務類型"></section>
+    </section>
+
+    <section id="categoryView" class="hidden">
+      <button class="back-button" data-back="home">← 返回三種類型</button>
+      <div class="section-heading">
+        <div><p id="categoryEyebrow" class="eyebrow"></p><h2 id="categoryTitle"></h2><p id="categoryTitleZh" class="section-title-zh"></p></div>
+        <p id="categoryDescription"></p>
+      </div>
+      <div id="deviceGrid" class="device-grid"></div>
+    </section>
+
+    <section id="modelListView" class="hidden">
+      <button class="back-button" data-back="home">← 返回首頁</button>
+      <div class="section-heading model-list-heading">
+        <div><p class="eyebrow">MODEL COMPATIBILITY</p><h2>MODEL LIST</h2><p class="model-list-title-zh">依機器類型分類的適用模型</p></div>
+        <p>依目前已收錄的 Benchmark、Scripts 與 Prepared 紀錄整理；實際效能仍取決於量化、Context 與併發設定。</p>
+      </div>
+      <div id="modelListGrid" class="model-list-grid"></div>
+    </section>
+
+    <section id="deviceView" class="hidden">
+      <button class="back-button" data-back="category">← 返回設備清單</button>
+      <article class="device-page">
+        <header class="device-header">
+          <div><p id="deviceType" class="eyebrow"></p><p id="deviceTypeZh" class="device-type-zh"></p><h2 id="deviceName"></h2><p id="deviceSummary"></p></div>
+          <span id="deviceStatus" class="status-pill"></span>
+        </header>
+        <nav id="tabs" class="tabs" aria-label="設備內容"></nav>
+        <div id="tabPanel" class="tab-panel"></div>
+      </article>
+    </section>
+
+    <section id="searchView" class="hidden">
+      <button class="back-button" data-back="search">← 關閉搜尋</button>
+      <div class="section-heading search-heading">
+        <div>
+          <p class="eyebrow">SEARCH</p>
+          <h2>SEARCH RESULTS</h2>
+          <p class="search-title-zh">搜尋結果</p>
+        </div>
+      </div>
+      <div id="searchResults" class="search-results"></div>
+    </section>
+  </main>
+
+  <footer><span>AISO Platform</span><span id="updatedAt"></span></footer>
+  <template id="emptyTemplate"><div class="empty-state">目前沒有資料。</div></template>
+  <script src="app.js?v=1.15.7"></script>
+</body>
+</html>

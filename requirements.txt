@@ -1,0 +1,2 @@
+# AISO Platform Portal uses only the Python standard library.
+# Supported runtime: Python >= 3.10

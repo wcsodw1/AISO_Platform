@@ -1,0 +1,53 @@
+# macOS and editors
+.DS_Store
+**/.DS_Store
+.vscode/
+.idea/
+*~
+*.swp
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Runtime and generated build state
+*.log
+*.pid
+**/.docs-build/
+.coverage
+htmlcov/
+
+# Local archive retained outside version control
+/AISO_Platform_Portal/Previous data/
+
+# Legacy and raw source collections retained on this workstation
+/AISO_Product_Portal_v0.2_backup_20260825/
+/AISO1 AI MAX 395/
+/MSI Intel Arc B390/
+/NVIDEA Pro 6000/
+/Pro6000/
+/*.pdf
+
+# Raw benchmark outputs (keep reviewed CSV reports and published documents)
+**/*_stdout.txt
+**/*_stderr.txt
+**/*_trial*.jsonl
+**/*.zip
+
+# Browser-saved pages are working references, not publishable artifacts
+**/ChatGPT - *.html
+**/ChatGPT - *_files/
+**/*_files/
+
+# Temporary files
+*.tmp
+*.bak
