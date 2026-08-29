@@ -2,18 +2,121 @@
 
 AISO Platform 是設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.15.7**。
 
-## Repository 範圍
+- GitHub：<https://github.com/wcsodw1/AISO_Platform>（Private）
+- 預設分支：`main`
+- 架構更新日：2026-08-29
+
+## 完整 Repository 架構
 
 ```text
-AISO_Platform/
-├─ AISO_Platform_Portal/   # Portal 程式、產品目錄與 GitHub Pages 輸出
-├─ AISO-Platform-UI/       # 目前使用中的設備文件、結果與腳本
-├─ requirements.txt       # Python 執行需求（目前無第三方套件）
-├─ Makefile               # 常用啟動、匯出與檢查指令
-└─ README.md
+AISO_Platform/                                      ← Git repository 根目錄
+├─ .git/                                            ← 本機 Git metadata
+├─ .gitignore                                       ← 排除歷史、暫存、敏感及原始輸出
+├─ .gitattributes                                   ← LF／CRLF 與二進位檔規則
+├─ .env.example                                     ← 可選資料路徑設定範例
+├─ AGENTS.md                                        ← Repository 自動維護規則
+├─ Makefile                                         ← run／export／check／status 指令
+├─ requirements.txt                                 ← Python 需求（目前無第三方套件）
+├─ README.md                                        ← 架構、操作與版本管理說明
+│
+├─ AISO_Platform_Portal/                            ← Portal 程式
+│  ├─ index.html                                    ← 使用者入口頁
+│  ├─ app.js                                        ← 前台互動與資料呈現
+│  ├─ style.css                                     ← Portal 視覺與響應式版面
+│  ├─ manage.html                                   ← 本機管理頁
+│  ├─ manage.js                                     ← 管理功能
+│  ├─ launcher.py                                   ← 本機 HTTP Server／管理 API
+│  ├─ exporter.py                                   ← 公開資料清理與靜態匯出
+│  ├─ config.json                                   ← Host、Port、資料根目錄
+│  ├─ VERSION                                       ← Portal 版本（1.15.7）
+│  ├─ data/
+│  │  └─ products.json                              ← Portal 設備與 Benchmark metadata
+│  ├─ assets/
+│  │  └─ cosmic/                                    ← Portal 圖像資產
+│  ├─ scripts/
+│  │  └─ export_static.py                           ← CLI 靜態匯出入口
+│  ├─ sample-data/
+│  │  └─ Server/PRO6000-HPE-2GPU/                   ← 首次建置用範例公開資料
+│  ├─ docs/                                         ← 產生後的 GitHub Pages 靜態站
+│  │  ├─ data/products.json                         ← 已去除內部欄位的公開目錄
+│  │  └─ assets/<product-id>/                       ← 可公開文件、結果與腳本
+│  ├─ start.sh／AISO Platform.command               ← macOS 啟動入口
+│  ├─ AISO Platform.bat                             ← Windows 啟動入口
+│  ├─ publish.sh                                    ← 靜態匯出及選用 Git push
+│  └─ Previous data/                                ← 歷史版本；保留本機、Git 忽略
+│
+└─ AISO-Platform-UI/                                ← Portal 實際設備資料
+   ├─ Equipment/                                    ← 原始設備資料／工作來源
+   │  └─ AMD/
+   │     ├─ ROG AIMAX395/
+   │     │  ├─ benchmark_result/OneNP/
+   │     │  ├─ document/
+   │     │  └─ script/
+   │     ├─ TUF GAMING AIMAX392/
+   │     │  ├─ benchmark_result/OneNP/
+   │     │  ├─ document/
+   │     │  └─ script/
+   │     └─ AISO1 AIMAX395/
+   │        └─ scripts/
+   │           ├─ ctx_check/
+   │           ├─ np1/
+   │           ├─ np1-Advance/
+   │           └─ np_multi_stress/
+   │
+   ├─ Consumer/                                     ← Portal Consumer 正式資料
+   │  ├─ ASUS-ROG-AI-MAX395/
+   │  │  ├─ Documents/Public/
+   │  │  ├─ Benchmark_Result/Public/
+   │  │  └─ Scripts/Public/
+   │  └─ ASUS-TUF-GAMING-AI-MAX392/
+   │     ├─ Documents/Public/
+   │     ├─ Benchmark_Result/Public/
+   │     └─ Scripts/Public/
+   │
+   ├─ Workstation/                                  ← Portal Workstation 正式資料
+   │  └─ AISO1-AI-MAX395/
+   │     ├─ Documents/Public/
+   │     ├─ Benchmark/Public/
+   │     └─ Scripts/Public/
+   │        ├─ ctx_check/
+   │        ├─ np1/
+   │        ├─ np1-Advance/
+   │        └─ np_multi_stress/
+   │
+   └─ Server/                                       ← Server 文件與 Benchmark
+      ├─ PRO6000-HPE-2GPU/
+      │  ├─ Documents/Public/
+      │  ├─ Benchmark/Public/
+      │  └─ Scripts/Public/
+      └─ PRO6000-TPI-8GPU/
+         ├─ Documents/Public/
+         └─ Benchmark/Public/
 ```
 
-其他舊版資料夾、根目錄 PDF、`Previous data`、原始 stdout/stderr、JSONL 與 ZIP 仍保留在本機，但不納入 Git。經整理的 CSV、設備腳本、正式文件及公開報告會正常納管。
+### 資料夾角色
+
+| 路徑 | 意義 | Git 策略 |
+|---|---|---|
+| `AISO_Platform_Portal/` | Portal 程式、metadata 與產生的靜態站 | 納管 |
+| `AISO-Platform-UI/Equipment/` | 收到或整理中的設備原始資料 | 經篩選後納管 |
+| `AISO-Platform-UI/Consumer/` | Consumer Portal 正式資料 | 納管 |
+| `AISO-Platform-UI/Workstation/` | Workstation Portal 正式資料 | 納管 |
+| `AISO-Platform-UI/Server/` | Server Portal 正式資料 | 納管 |
+| 各設備的 `Public/` | 可由靜態網站發布的內容 | 納管，放入前須先檢查敏感資訊 |
+| `AISO_Platform_Portal/docs/` | `make export` 自動產生的公開站 | 納管，不手動修改 |
+| `AISO_Platform_Portal/Previous data/` | 舊版與歸檔 | 保留本機、Git 忽略 |
+
+其他舊版資料夾、根目錄 PDF、重複的 Portal `Server/`、原始 stdout/stderr、JSONL、ZIP 與瀏覽器另存網頁仍保留在本機，但不納入 Git。經整理的 CSV、設備腳本、正式文件及公開報告會正常納管。
+
+## README 同步規則
+
+以下任一項有變更時，必須在**同一個 commit** 更新本 README：
+
+- 新增、移除或重新命名設備／資料夾。
+- Portal 版本、啟動指令、依賴或設定方式變更。
+- `products.json` 的設備分類或公開路徑變更。
+- Git 忽略策略、靜態發布流程或 repository visibility 變更。
+- 完成後同步更新「完整 Repository 架構」與「架構更新日」。
 
 ## 系統需求
 

@@ -28,6 +28,7 @@ htmlcov/
 
 # Local archive retained outside version control
 /AISO_Platform_Portal/Previous data/
+/AISO_Platform_Portal/Server/
 
 # Legacy and raw source collections retained on this workstation
 /AISO_Product_Portal_v0.2_backup_20260825/
