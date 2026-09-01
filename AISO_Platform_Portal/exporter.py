@@ -72,6 +72,7 @@ def sanitized_benchmark(benchmark):
 def sanitized_product(product, data_root: Path, output: Path):
     if not re.fullmatch(r"[a-z0-9-]+", str(product.get("id", ""))):
         raise ValueError(f"Unsafe product ID: {product.get('id', '')}")
+    preview_3d = product.get("preview_3d", {})
     public = {
         "id": product["id"],
         "category": product["category"],
@@ -79,6 +80,19 @@ def sanitized_product(product, data_root: Path, output: Path):
         "positioning": product.get("positioning", ""),
         "status": product.get("status", ""),
         "summary": product.get("summary", ""),
+        "image": product.get("image", ""),
+        "image_alt": product.get("image_alt", ""),
+        "image_note": product.get("image_note", ""),
+        "image_count": product.get("image_count", ""),
+        "preview_3d": {
+            "image": str(preview_3d.get("image", "")),
+            "alt": str(preview_3d.get("alt", "")),
+            "label": str(preview_3d.get("label", "")),
+            "hint": str(preview_3d.get("hint", "")),
+        } if preview_3d.get("image") else {},
+        "visual_variant": product.get("visual_variant", ""),
+        "visual_alt": product.get("visual_alt", ""),
+        "visual_note": product.get("visual_note", ""),
         "hardware": product.get("hardware", {}),
         "models": [{"name": item.get("name", ""), "status": item.get("status", ""), "notes": item.get("notes", "")} for item in product.get("models", [])],
         "benchmark": sanitized_benchmark(product.get("benchmark", {})),
@@ -103,6 +117,8 @@ def export_catalog(base: Path, data_root: Path):
     temporary.mkdir(parents=True)
     for asset in ("index.html", "style.css", "app.js"):
         shutil.copy2(base / asset, temporary / asset)
+    if (base / "assets").exists():
+        shutil.copytree(base / "assets", temporary / "assets")
     (temporary / ".nojekyll").write_text("", encoding="utf-8")
     (temporary / "data").mkdir()
     products = [sanitized_product(product, data_root, temporary) for product in catalog.get("products", []) if product.get("publish", {}).get("enabled", True)]

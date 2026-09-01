@@ -4,98 +4,51 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>AISO Platform</title>
+  <meta name="description" content="AISO 本地 AI 系統、效能驗證與部署資源平台。">
+  <title>AISO — Local AI Systems</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.15.7">
+  <link rel="stylesheet" href="style.css?v=1.18.7">
 </head>
-<body>
-  <div class="galaxy-bg" aria-hidden="true">
-    <div class="galaxy-stars galaxy-stars-far"></div>
-    <div class="galaxy-stars galaxy-stars-near"></div>
-    <div class="galaxy-disc"></div>
-    <div class="galaxy-dust"></div>
-    <div class="galaxy-glow"></div>
-  </div>
+<body class="brand-site">
+  <div class="galaxy-bg" aria-hidden="true"><div class="galaxy-stars galaxy-stars-far"></div><div class="galaxy-stars galaxy-stars-near"></div><div class="galaxy-disc"></div><div class="galaxy-dust"></div><div class="galaxy-glow"></div></div>
   <header class="topbar">
-    <a class="brand" href="./" aria-label="AISO Platform home">
-      <span class="brand-mark">AISO</span>
-      <span><strong>Platform</strong><small>SOP / BENCHMARK / SCRIPTS</small></span>
-    </a>
-    <div class="top-actions">
-      <button id="modelListLink" class="button secondary" type="button">Model List</button>
-      <label class="search-box">
-        <span aria-hidden="true">⌕</span>
-        <input id="globalSearch" type="search" placeholder="搜尋 SOP、Benchmark 或 Scripts">
-      </label>
-      <span id="modeBadge" class="mode-badge">載入中</span>
-      <a id="manageLink" class="button secondary hidden" href="manage.html">管理</a>
-    </div>
+    <a id="homeBrandLink" class="brand" href="./" aria-label="AISO 首頁"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="主要導覽"><button id="homeLink" data-site-nav="home" type="button">Home</button><button id="productsLink" data-site-nav="products" type="button">Products</button><button id="modelListLink" data-site-nav="models" type="button">Model Guide</button><button id="resourcesLink" data-site-nav="resources" type="button">Resources</button><button id="aboutLink" data-site-nav="about" type="button">About</button></nav>
+    <div class="top-actions"><label class="search-box"><span aria-hidden="true">⌕</span><input id="globalSearch" type="search" placeholder="搜尋產品、模型或技術資源"></label><span id="modeBadge" class="mode-badge">載入中</span><a id="manageLink" class="button secondary hidden" href="manage.html">管理</a></div>
   </header>
 
   <main class="shell">
     <section id="homeView">
-      <div class="hero">
-        <div>
-          <p class="eyebrow">AISO / PRODUCT SYSTEM / 2026</p>
-          <h1><span>AISO</span><em>PLATFORM</em></h1>
-          <p class="hero-kicker">SOP / BENCHMARK / SCRIPTS</p>
-          <p class="hero-copy">各個機器的 SOP、Benchmark 與 Scripts，一眼找到、直接開啟。</p>
-        </div>
-        <div class="hero-summary">
-          <strong id="productCount">0</strong>
-          <span>Devices</span><small>SOP + Benchmark + Scripts</small>
-        </div>
+      <div class="hero brand-hero">
+        <div><p class="eyebrow">AISO / LOCAL AI INFRASTRUCTURE</p><h1><span>AISO</span><em>PLATFORM</em></h1><p class="hero-kicker">LOCAL AI / VERIFIED PERFORMANCE / DEPLOYMENT</p><p class="hero-copy"><strong>把模型與算力，轉化為真正可用的企業 AI 能力。</strong><span>從 Consumer AI PC、AI Workstation 到 AI Server，依模型規模、工作負載與部署需求，選擇經過實測驗證的本地 AI 系統。</span></p><div class="hero-actions"><button id="heroProductsLink" class="button primary" type="button">Explore Products</button><button id="heroModelsLink" class="button secondary" type="button">View Model Guide</button></div></div>
+        <div class="hero-summary" aria-label="已收錄產品數"><strong id="productCount">0</strong><span>Products</span><small>CONSUMER / WORKSTATION / SERVER</small></div>
       </div>
-      <section id="categoryGrid" class="category-grid" aria-label="服務類型"></section>
+      <section id="productsSection" class="home-section products-section"><header class="home-section-heading"><div><p class="eyebrow">CORE PRODUCTS</p><h2>AI SYSTEMS</h2><p class="home-title-zh">依工作需求選擇合適算力</p></div><p>將滑鼠移至 Consumer、Workstation 或 Server，即可展開該類別的現有機型；不同設備對應不同模型規模、使用人數、Context 與部署情境。</p></header><div id="categoryGrid" class="category-grid" aria-label="AISO 主要產品線與機型"></div></section>
+      <section class="home-section proof-section"><header class="home-section-heading proof-heading"><div><p class="eyebrow">AISO CONSULTING FLOW</p><h2>JUST AI IT.</h2><p class="home-title-zh">從需求諮詢到正式部署與技術交付</p></div><p><strong>AISO 不只提供硬體。</strong>我們先理解企業要完成的工作，再透過 PoC 與實機數據驗證方案，最後交付成可正式部署、持續維運的系統。</p></header><div class="consulting-flow" aria-label="AISO 顧問服務流程"><span><small>START</small><strong>YOUR AI WORKLOAD</strong><em>實際需求與工作流程</em></span><i aria-hidden="true">→</i><span><small>DECIDE</small><strong>RIGHT-SIZED SYSTEM</strong><em>適用方案與硬體</em></span><i aria-hidden="true">→</i><span><small>PROVE</small><strong>POC &amp; MEASURED PROOF</strong><em>技術可行性與實機效能</em></span><i aria-hidden="true">→</i><span><small>DELIVER</small><strong>PRODUCTION-READY AI</strong><em>正式部署與持續維運</em></span></div><div class="principle-grid consulting-grid"><article class="principle-card consulting-card"><div class="consulting-card-top"><span>01 / CONSULT</span><b aria-hidden="true">S</b></div><h3>SELECT</h3><h4>方案諮詢與系統選型</h4><p class="consulting-promise">先釐清工作負載，再決定真正適用的方案與硬體。</p><ul><li><strong>需求盤點</strong><span>模型規模、Context、使用人數與應用流程</span></li><li><strong>方案建議</strong><span>Consumer、Workstation 或 Server 的合適配置</span></li></ul><footer><small>DELIVERABLE</small><strong>選型建議與建議配置</strong></footer></article><article class="principle-card consulting-card"><div class="consulting-card-top"><span>02 / POC + EVIDENCE</span><b aria-hidden="true">V</b></div><h3>VERIFY</h3><h4>PoC 與實機效能驗證</h4><p class="consulting-promise">以 PoC 建立真實使用情境，用一致條件驗證技術可行性與效能。</p><div class="verification-stack" aria-label="PoC 驗證技術組合"><small>VALIDATION STACK</small><div><span>vLLM</span><span>Open WebUI</span><span>llama.cpp</span></div></div><ul><li><strong>PoC 驗證</strong><span>依硬體條件以 vLLM 或 llama.cpp 建置推論服務，搭配 Open WebUI 驗證操作與應用流程</span></li><li><strong>效能量測</strong><span>相容性、Context 邊界、TTFT、TPOT 與 Throughput</span></li></ul><footer><small>DELIVERABLE</small><strong>PoC 驗證報告與方案適用邊界</strong></footer></article><article class="principle-card consulting-card"><div class="consulting-card-top"><span>03 / DELIVERY</span><b aria-hidden="true">D</b></div><h3>DEPLOY</h3><h4>正式部署與技術交付</h4><p class="consulting-promise">把 PoC 驗證通過的配置導入正式環境，完成可重現、可維運的系統交付。</p><ul><li><strong>正式部署</strong><span>硬體配置、環境建置、框架與應用整合</span></li><li><strong>技術移交</strong><span>SOP、Scripts、版本紀錄與知識移轉</span></li></ul><footer><small>DELIVERABLE</small><strong>正式部署方案與技術移交文件</strong></footer></article></div><button id="homeResourcesLink" class="text-link" type="button">Explore technical resources →</button></section>
     </section>
 
-    <section id="categoryView" class="hidden">
-      <button class="back-button" data-back="home">← 返回三種類型</button>
-      <div class="section-heading">
-        <div><p id="categoryEyebrow" class="eyebrow"></p><h2 id="categoryTitle"></h2><p id="categoryTitleZh" class="section-title-zh"></p></div>
-        <p id="categoryDescription"></p>
-      </div>
-      <div id="deviceGrid" class="device-grid"></div>
+    <section id="categoryView" class="hidden"><button class="back-button" data-back="home">← 返回產品線</button><div class="section-heading"><div><p id="categoryEyebrow" class="eyebrow"></p><h2 id="categoryTitle"></h2><p id="categoryTitleZh" class="section-title-zh"></p></div><p id="categoryDescription"></p></div><div id="deviceGrid" class="device-grid"></div></section>
+    <section id="modelListView" class="hidden"><button class="back-button" data-back="home">← 返回首頁</button><div class="section-heading model-list-heading"><div><p class="eyebrow">MODEL COMPATIBILITY</p><h2>MODEL GUIDE</h2><p class="model-list-title-zh">依機器類型整理的適用模型</p></div><p>依目前已收錄的 Benchmark、Scripts 與 Prepared 紀錄整理；實際效能仍取決於量化、Context 與併發設定。</p></div><div class="model-evidence-legend" aria-label="模型證據狀態"><span><strong>BENCHMARKED</strong> 已有正式實測結果</span><span><strong>SCRIPT AVAILABLE</strong> 已備妥測試腳本，尚不等於效能驗證</span><span><strong>PREPARED</strong> 已建立模型或環境準備紀錄</span></div><div id="modelListGrid" class="model-list-grid"></div></section>
+
+    <section id="resourcesView" class="hidden editorial-view">
+      <button class="back-button" data-back="home">← 返回首頁</button><div class="section-heading editorial-heading"><div><p class="eyebrow">TECHNICAL RESOURCES</p><h2>FROM TEST TO DEPLOYMENT.</h2><p class="section-title-zh">產品與技術資源</p></div><p>資源以產品為單位整理，避免文件脫離硬體、模型與測試條件。先選擇設備，再查看對應的 SOP、Benchmark 與 Scripts。</p></div>
+      <div class="resource-grid"><article class="resource-card"><span>01 / GUIDE</span><h3>SOP</h3><h4>操作與部署指南</h4><p>安裝、啟動、環境準備與標準操作流程，讓團隊能以一致方式重現環境。</p></article><article class="resource-card"><span>02 / RESULTS</span><h3>BENCHMARK</h3><h4>效能驗證結果</h4><p>保留測試條件、模型版本與核心指標，協助比較不同設備和工作負載。</p></article><article class="resource-card"><span>03 / TOOLS</span><h3>SCRIPTS</h3><h4>測試與驗證工具</h4><p>提供可重現的 Benchmark、Quick Test 與 Multi-NP 腳本，支援實機驗證。</p></article></div>
+      <section class="resource-products"><header><p class="eyebrow">BROWSE BY PRODUCT</p><h3>SELECT A SYSTEM</h3><p>選擇產品後即可查看該設備實際可用的技術資源。</p></header><div id="resourceProductGrid" class="resource-product-grid"></div></section>
     </section>
 
-    <section id="modelListView" class="hidden">
-      <button class="back-button" data-back="home">← 返回首頁</button>
-      <div class="section-heading model-list-heading">
-        <div><p class="eyebrow">MODEL COMPATIBILITY</p><h2>MODEL LIST</h2><p class="model-list-title-zh">依機器類型分類的適用模型</p></div>
-        <p>依目前已收錄的 Benchmark、Scripts 與 Prepared 紀錄整理；實際效能仍取決於量化、Context 與併發設定。</p>
-      </div>
-      <div id="modelListGrid" class="model-list-grid"></div>
+    <section id="aboutView" class="hidden editorial-view">
+      <button class="back-button" data-back="home">← 返回首頁</button><div class="about-lead"><p class="eyebrow">ABOUT AISO</p><h2>BUILT TO REMOVE AI UNCERTAINTY.</h2><p class="about-lead-zh">讓企業在投入部署前，先看見可執行的答案。</p></div><div class="about-narrative"><p>模型清單與硬體規格很容易取得，真正困難的是判斷一套系統在特定 Context、併發與工作流程中是否值得部署。AISO 的角色，是把這些不確定性轉化成可檢查的技術依據。</p><p>我們以實機條件連結設備、模型、推論框架與應用環境；每項建議都回到測試證據、可重現流程與部署邊界，讓選型不只停在規格表，而能進入真實工作。</p></div>
+      <section class="about-capabilities"><header><p class="eyebrow">OUR PRINCIPLES</p><h3>EVIDENCE AT EVERY DECISION.</h3></header><div class="capability-grid"><article><span>01</span><h4>Evidence First</h4><p>保留設備、模型、日期、Context、併發與指標，讓結論可追溯。</p></article><article><span>02</span><h4>Reproducible Delivery</h4><p>以 SOP、Scripts 與版本紀錄，使環境與結果能被團隊重現。</p></article><article><span>03</span><h4>Right-sized Systems</h4><p>依實際工作負載選擇系統，不以最高規格取代需求判斷。</p></article></div></section>
     </section>
 
-    <section id="deviceView" class="hidden">
-      <button class="back-button" data-back="category">← 返回設備清單</button>
-      <article class="device-page">
-        <header class="device-header">
-          <div><p id="deviceType" class="eyebrow"></p><p id="deviceTypeZh" class="device-type-zh"></p><h2 id="deviceName"></h2><p id="deviceSummary"></p></div>
-          <span id="deviceStatus" class="status-pill"></span>
-        </header>
-        <nav id="tabs" class="tabs" aria-label="設備內容"></nav>
-        <div id="tabPanel" class="tab-panel"></div>
-      </article>
-    </section>
-
-    <section id="searchView" class="hidden">
-      <button class="back-button" data-back="search">← 關閉搜尋</button>
-      <div class="section-heading search-heading">
-        <div>
-          <p class="eyebrow">SEARCH</p>
-          <h2>SEARCH RESULTS</h2>
-          <p class="search-title-zh">搜尋結果</p>
-        </div>
-      </div>
-      <div id="searchResults" class="search-results"></div>
-    </section>
+    <section id="deviceView" class="hidden"><button class="back-button" data-back="category">← 返回設備清單</button><article class="device-page"><header class="device-header"><div><p id="deviceType" class="eyebrow"></p><p id="deviceTypeZh" class="device-type-zh"></p><h2 id="deviceName"></h2><p id="deviceSummary"></p></div><div id="deviceMedia" class="device-hero-media"></div><span id="deviceStatus" class="status-pill"></span></header><nav id="tabs" class="tabs" aria-label="設備內容"></nav><div id="tabPanel" class="tab-panel"></div></article></section>
+    <section id="searchView" class="hidden"><button class="back-button" data-back="search">← 關閉搜尋</button><div class="section-heading search-heading"><div><p class="eyebrow">SEARCH</p><h2>SEARCH RESULTS</h2><p class="search-title-zh">搜尋結果</p></div></div><div id="searchResults" class="search-results"></div></section>
   </main>
 
-  <footer><span>AISO Platform</span><span id="updatedAt"></span></footer>
+  <footer class="site-footer"><div class="footer-brand"><strong>AISO</strong><p>Local AI systems, verified for real work.</p></div><nav aria-label="頁尾導覽"><button data-footer-route="products" type="button">Products</button><button data-footer-route="models" type="button">Model Guide</button><button data-footer-route="resources" type="button">Resources</button><button data-footer-route="about" type="button">About AISO</button></nav><div class="footer-meta"><span id="updatedAt"></span><span>AISO Official Product &amp; Technical Resource Portal</span></div></footer>
   <template id="emptyTemplate"><div class="empty-state">目前沒有資料。</div></template>
-  <script src="app.js?v=1.15.7"></script>
+  <script src="app.js?v=1.18.7"></script>
 </body>
 </html>

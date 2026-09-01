@@ -1,27 +1,27 @@
 {
-  "version": 6,
-  "updated_at": "2026-08-29T10:12:19+08:00",
+  "version": 13,
+  "updated_at": "2026-09-02T00:21:33+08:00",
   "categories": [
     {
       "id": "consumer",
       "order": "01",
       "name": "Consumer",
       "name_zh": "消費型",
-      "description": "瀏覽此類設備的 SOP 與 Benchmark。"
+      "description": "面向個人與團隊的本地 AI 運算產品，適合日常推論、模型驗證與輕量測試。"
     },
     {
       "id": "workstation",
       "order": "02",
       "name": "Workstation",
       "name_zh": "工作站",
-      "description": "瀏覽此類設備的 SOP 與 Benchmark。"
+      "description": "為專業開發與內容工作設計的 AI 工作站，支援更大模型、長 Context 與進階測試。"
     },
     {
       "id": "server",
       "order": "03",
       "name": "Server",
       "name_zh": "伺服器",
-      "description": "瀏覽此類設備的 SOP 與 Benchmark。"
+      "description": "面向企業部署與多人服務的 AI Server，提供大型模型、長 Context 與高併發運算能力。"
     }
   ],
   "model_matrix": [
@@ -133,10 +133,23 @@
     {
       "id": "asus-rog-ai-max395",
       "category": "consumer",
-      "name": "ASUS ROG AI MAX395",
+      "name": "ASUS ROG Flow Z13 GZ302（Ryzen AI MAX+ 395）",
       "positioning": "Consumer AI PC",
       "status": "Benchmark Available",
       "summary": "收錄 Ryzen AI MAX+ 395 的 Benchmark 結果、完整測試與快速驗證腳本。",
+      "image": "assets/products/rog-flow-z13-gz302.webp",
+      "image_alt": "ASUS ROG Flow Z13 GZ302 正面產品照",
+      "image_note": "",
+      "image_count": "",
+      "preview_3d": {
+        "image": "assets/products/rog-flow-z13-gz302.webp",
+        "alt": "ASUS ROG Flow Z13 GZ302 互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
       "hardware": {
         "CPU": "AMD Ryzen AI Max+ 395",
         "GPU": "Radeon 8060S Graphics",
@@ -263,10 +276,23 @@
     {
       "id": "asus-tuf-gaming-ai-max392",
       "category": "consumer",
-      "name": "ASUS TUF GAMING AI MAX392",
+      "name": "ASUS TUF Gaming A14 FA401EA（Ryzen AI MAX+ 392）",
       "positioning": "Consumer AI PC",
       "status": "Benchmark Available",
       "summary": "收錄 Ryzen AI MAX+ 392 的 Benchmark、Multi-NP 與快速驗證腳本。",
+      "image": "assets/products/tuf-gaming-a14-fa401ea.webp",
+      "image_alt": "ASUS TUF Gaming A14 FA401EA 正面產品照",
+      "image_note": "",
+      "image_count": "",
+      "preview_3d": {
+        "image": "assets/products/tuf-gaming-a14-fa401ea.webp",
+        "alt": "ASUS TUF Gaming A14 FA401EA 互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
       "hardware": {
         "CPU": "AMD Ryzen AI Max 392",
         "GPU": "Radeon 8060S Graphics",
@@ -397,6 +423,19 @@
       "positioning": "AI Workstation",
       "status": "Ready",
       "summary": "收錄 Ryzen AI MAX+ 395 的單人、進階與 Multi-NP 壓力測試腳本。",
+      "image": "assets/products/aiso1-ai-max395.png",
+      "image_alt": "AISO1 AI MAX395 銀色 AI 工作站產品照",
+      "image_note": "AISO1 · RYZEN AI MAX+ 395",
+      "image_count": "",
+      "preview_3d": {
+        "image": "assets/products/aiso1-ai-max395-3d.png",
+        "alt": "AISO1 AI MAX395 銀色 AI 工作站互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
       "hardware": {
         "CPU": "AMD Ryzen AI Max+ 395",
         "GPU": "Radeon 8060S Graphics",
@@ -574,16 +613,71 @@
       }
     },
     {
+      "id": "gb10-ai-workstation",
+      "category": "workstation",
+      "name": "GB10 AI Workstation",
+      "positioning": "Grace Blackwell Desktop AI System",
+      "status": "Configuration Pending",
+      "summary": "以 NVIDIA GB10 Grace Blackwell 為核心的桌面 AI 工作站；正式型號、儲存與實測結果將於設備確認後補齊。",
+      "image": "assets/products/gb10-ai-workstation-cutout.png",
+      "image_alt": "去背後的黑色 GB10 桌面 AI 工作站產品圖",
+      "image_note": "GB10 WORKSTATION · TRANSPARENT PRODUCT VIEW",
+      "image_count": "",
+      "preview_3d": {
+        "image": "assets/products/gb10-ai-workstation-cutout.png",
+        "alt": "GB10 AI Workstation 互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
+      "hardware": {
+        "Platform": "GB10 Desktop AI System",
+        "Superchip": "NVIDIA GB10 Grace Blackwell",
+        "CPU": "20-core Arm",
+        "Memory": "128GB LPDDR5x coherent unified system memory",
+        "AI Performance": "Up to 1 PFLOP FP4 (theoretical)",
+        "Storage": "待確認",
+        "OS": "待確認"
+      },
+      "models": [],
+      "benchmark": {
+        "date": "",
+        "comparison": "",
+        "metrics": [],
+        "results": []
+      },
+      "published": {
+        "documents": [],
+        "benchmark": [],
+        "scripts": []
+      }
+    },
+    {
       "id": "pro6000-hpe-2gpu",
       "category": "server",
       "name": "PRO6000 - HPE 2 GPU（兩卡機）",
       "positioning": "HPE Dual-GPU AI Server",
-      "status": "Benchmark Available",
-      "summary": "集中查看此設備的 SOP 與 Benchmark。",
+      "status": "Documentation Available",
+      "summary": "集中查看 HPE 兩卡設備的 SOP 與操作文件；Benchmark 待後續實機測試補充。",
+      "image": "assets/products/pro6000-server-chassis-cutout.png",
+      "image_alt": "由使用者提供素材整理的 PRO6000 兩卡 AI Server 整機外型參考圖",
+      "image_note": "PRO6000 SERVER · 2 GPU SYSTEM VIEW",
+      "image_count": 2,
+      "preview_3d": {
+        "image": "assets/products/pro6000-server-chassis-cutout.png",
+        "alt": "PRO6000 HPE 2 GPU 伺服器互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
       "hardware": {
         "Platform": "HPE Server",
         "CPU": "待確認",
-        "GPU": "PRO6000 × 2",
+        "GPU": "NVIDIA RTX PRO 6000 Blackwell Server Edition × 2",
         "GPU Count": "2",
         "Memory": "待確認",
         "Storage": "待確認",
@@ -602,85 +696,14 @@
         }
       ],
       "benchmark": {
-        "date": "2026-08-21",
-        "comparison": "without aiDAPTIV vs aiDAPTIV Cold / Warm",
-        "metrics": [
-          "TTFT",
-          "TPOT",
-          "Throughput (Aggregate)",
-          "Throughput (Normalized)"
-        ],
-        "results": [
-          {
-            "model": "GPT-OSS-120B",
-            "scope": "NP1-32 · Input 1K-16K · Output 1K/2K",
-            "report": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-21_v5.pdf",
-            "highlights": [
-              {
-                "metric": "TTFT",
-                "condition": "NP16-32 · Input 16K",
-                "result": "85.9%-93.5% lower"
-              },
-              {
-                "metric": "TPOT",
-                "condition": "NP32 · Input 16K",
-                "result": "Up to 31.0% lower"
-              },
-              {
-                "metric": "Aggregate Throughput",
-                "condition": "NP16 / NP32 · Input 16K",
-                "result": "Up to +57.6% / +85.8%"
-              },
-              {
-                "metric": "Normalized Throughput",
-                "condition": "NP16 / NP32 · Input 16K",
-                "result": "Up to +57.6% / +85.8%"
-              }
-            ]
-          },
-          {
-            "model": "Llama-3.3-70B-Instruct",
-            "scope": "NP16/32 · Input 1K-16K · Output 1K/2K",
-            "report": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-21_v2.pdf",
-            "highlights": [
-              {
-                "metric": "TTFT",
-                "condition": "All NP16/32 conditions",
-                "result": "89.6%-95.2% lower"
-              },
-              {
-                "metric": "TPOT",
-                "condition": "NP32 · Input 16K",
-                "result": "76.0%-83.1% lower"
-              },
-              {
-                "metric": "Aggregate Throughput",
-                "condition": "NP16 / NP32 · Input 16K",
-                "result": "+24.1%-51.0% / +316.8%-493.1%"
-              },
-              {
-                "metric": "Normalized Throughput",
-                "condition": "NP16 / NP32 · Input 16K",
-                "result": "+24.1%-51.0% / +316.8%-493.1%"
-              }
-            ]
-          }
-        ]
+        "date": "",
+        "comparison": "",
+        "metrics": [],
+        "results": []
       },
       "published": {
         "documents": [],
-        "benchmark": [
-          {
-            "name": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-21_v5.pdf",
-            "extension": "pdf",
-            "url": "assets/pro6000-hpe-2gpu/benchmark/GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-21_v5.pdf"
-          },
-          {
-            "name": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-21_v2.pdf",
-            "extension": "pdf",
-            "url": "assets/pro6000-hpe-2gpu/benchmark/Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-21_v2.pdf"
-          }
-        ],
+        "benchmark": [],
         "scripts": []
       }
     },
@@ -690,11 +713,24 @@
       "name": "PRO6000 - TPI 8 GPU（八卡機）",
       "positioning": "TPI Eight-GPU AI Server",
       "status": "Benchmark Available",
-      "summary": "收錄 TPI 八卡 PRO6000 Server 的 GPT-OSS-120B 與 Llama-3.3-70B 正式 Benchmark。",
+      "summary": "VIS（世界先進）POC：於 PRO6000 8 GPU 系統中啟用 4 張 GPU，完成 GPT-OSS-120B 與 Llama-3.3-70B Benchmark。",
+      "image": "assets/products/pro6000-8gpu-server-cutout.png",
+      "image_alt": "由使用者提供素材整理的 PRO6000 八卡 AI Server 整機外型參考圖",
+      "image_note": "PRO6000 SERVER · 8 GPU SYSTEM VIEW",
+      "image_count": 8,
+      "preview_3d": {
+        "image": "assets/products/pro6000-8gpu-server-cutout.png",
+        "alt": "PRO6000 TPI 8 GPU 伺服器互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
       "hardware": {
         "Platform": "TPI Server",
         "CPU": "待確認",
-        "GPU": "PRO6000 × 8",
+        "GPU": "NVIDIA RTX PRO 6000 Blackwell Server Edition × 8",
         "GPU Count": "8",
         "Memory": "待確認",
         "Storage": "待確認",
@@ -724,13 +760,13 @@
         "results": [
           {
             "model": "GPT-OSS-120B",
-            "scope": "NP1-32 · Input 1K-16K · Output 1K/2K",
+            "scope": "4 GPU · NP1-32 · Input 1K-16K · Output 1K/2K",
             "report": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-25_v9.pdf",
             "highlights": []
           },
           {
             "model": "Llama-3.3-70B-Instruct",
-            "scope": "NP16/32 · Input 1K-16K · Output 1K/2K",
+            "scope": "4 GPU · NP16/32 · Input 1K-16K · Output 1K/2K",
             "report": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf",
             "highlights": []
           }
@@ -750,6 +786,51 @@
             "url": "assets/pro6000-tpi-8gpu/benchmark/Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf"
           }
         ],
+        "scripts": []
+      }
+    },
+    {
+      "id": "nvidia-dgx-b300",
+      "category": "server",
+      "name": "NVIDIA DGX B300（Blackwell Ultra）",
+      "positioning": "Blackwell Ultra AI Server",
+      "status": "Configuration Pending",
+      "summary": "面向大型生成式 AI 推論與訓練的 10U 八卡 Blackwell Ultra 系統；正式 AISO 方案與實測結果確認後補齊。",
+      "image": "assets/products/dgx-b300-cutout.png",
+      "image_alt": "去背後的 NVIDIA DGX B300 Blackwell Ultra AI Server 官方產品圖",
+      "image_note": "NVIDIA DGX B300 · 8 GPU BLACKWELL ULTRA",
+      "image_count": 8,
+      "preview_3d": {
+        "image": "assets/products/dgx-b300-cutout.png",
+        "alt": "NVIDIA DGX B300 Blackwell Ultra 互動式立體預覽",
+        "label": "3D PREVIEW",
+        "hint": "MOVE CURSOR"
+      },
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
+      "hardware": {
+        "Platform": "NVIDIA DGX B300",
+        "GPU": "8× NVIDIA Blackwell Ultra SXM",
+        "GPU Count": "8",
+        "GPU Memory": "2.1 TB total",
+        "CPU": "Intel Xeon 6776P Processors",
+        "Storage": "OS: 2× 1.9 TB NVMe M.2 · Internal: 8× 3.84 TB NVMe E1.S",
+        "NVLink Bandwidth": "14.4 TB/s aggregate",
+        "Rack Units": "10U",
+        "Power": "Approximately 14 kW",
+        "Software": "NVIDIA AI Enterprise · Mission Control · DGX OS"
+      },
+      "models": [],
+      "benchmark": {
+        "date": "",
+        "comparison": "",
+        "metrics": [],
+        "results": []
+      },
+      "published": {
+        "documents": [],
+        "benchmark": [],
         "scripts": []
       }
     }
