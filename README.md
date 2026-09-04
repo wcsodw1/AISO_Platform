@@ -1,6 +1,6 @@
 # AISO Platform
 
-AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.18.5**。
+AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.18.7**。
 
 Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、三大產品線與驗證方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
 
@@ -10,7 +10,7 @@ v1.18.0 將 GB10、PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300 整理成�
 
 - GitHub：<https://github.com/wcsodw1/AISO_Platform>（Private）
 - 預設分支：`main`
-- 架構更新日：2026-09-01
+- 架構更新日：2026-09-04
 
 ## 完整 Repository 架構
 

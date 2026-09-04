@@ -1,4 +1,4 @@
-# AISO Platform v1.18.5
+# AISO Platform v1.18.7
 
 AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac 本機管理＋GitHub Pages 公開展示」兩種模式。
 
