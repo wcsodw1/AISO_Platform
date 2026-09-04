@@ -12,14 +12,14 @@
     {
       "id": "workstation",
       "order": "02",
-      "name": "Workstation",
+      "name": "Workstation-Mini",
       "name_zh": "工作站",
       "description": "為專業開發與內容工作設計的 AI 工作站，支援更大模型、長 Context 與進階測試。"
     },
     {
       "id": "server",
       "order": "03",
-      "name": "Server",
+      "name": "Workstation-Server",
       "name_zh": "伺服器",
       "description": "面向企業部署與多人服務的 AI Server，提供大型模型、長 Context 與高併發運算能力。"
     }
@@ -145,7 +145,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
-      "folder": "Consumer/ASUS-ROG-AI-MAX395",
+      "folder": "Consumer/AMD/ASUS-ROG-AI-MAX395",
       "hardware": {
         "CPU": "AMD Ryzen AI Max+ 395",
         "GPU": "Radeon 8060S Graphics",
@@ -166,12 +166,12 @@
         }
       ],
       "documents": {
-        "folder": "Consumer/ASUS-ROG-AI-MAX395/Documents",
-        "public_folder": "Consumer/ASUS-ROG-AI-MAX395/Documents/Public"
+        "folder": "Consumer/AMD/ASUS-ROG-AI-MAX395/Documents",
+        "public_folder": "Consumer/AMD/ASUS-ROG-AI-MAX395/Documents/Public"
       },
       "benchmark": {
-        "folder": "Consumer/ASUS-ROG-AI-MAX395/Benchmark_Result",
-        "public_folder": "Consumer/ASUS-ROG-AI-MAX395/Benchmark_Result/Public",
+        "folder": "Consumer/AMD/ASUS-ROG-AI-MAX395/Benchmark_Result",
+        "public_folder": "Consumer/AMD/ASUS-ROG-AI-MAX395/Benchmark_Result/Public",
         "date": "2026-08-28",
         "comparison": "NP1 · Input 1K–32K · Output 300 · Vulkan",
         "metrics": [
@@ -205,8 +205,8 @@
         ]
       },
       "scripts": {
-        "folder": "Consumer/ASUS-ROG-AI-MAX395/Scripts",
-        "public_folder": "Consumer/ASUS-ROG-AI-MAX395/Scripts/Public"
+        "folder": "Consumer/AMD/ASUS-ROG-AI-MAX395/Scripts",
+        "public_folder": "Consumer/AMD/ASUS-ROG-AI-MAX395/Scripts/Public"
       },
       "operations": {
         "ssh": "",
@@ -231,7 +231,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
-      "folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392",
+      "folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392",
       "hardware": {
         "CPU": "AMD Ryzen AI Max 392",
         "GPU": "Radeon 8060S Graphics",
@@ -252,12 +252,12 @@
         }
       ],
       "documents": {
-        "folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392/Documents",
-        "public_folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392/Documents/Public"
+        "folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/Documents",
+        "public_folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/Documents/Public"
       },
       "benchmark": {
-        "folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result",
-        "public_folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result/Public",
+        "folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result",
+        "public_folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result/Public",
         "date": "2026-08-28",
         "comparison": "NP1 · Input 1K–32K · Output 300 · Vulkan",
         "metrics": [
@@ -291,8 +291,8 @@
         ]
       },
       "scripts": {
-        "folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392/Scripts",
-        "public_folder": "Consumer/ASUS-TUF-GAMING-AI-MAX392/Scripts/Public"
+        "folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/Scripts",
+        "public_folder": "Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/Scripts/Public"
       },
       "operations": {
         "ssh": "",
@@ -309,7 +309,7 @@
       "positioning": "AI Workstation",
       "status": "Ready",
       "summary": "收錄 Ryzen AI MAX+ 395 的單人、進階與 Multi-NP 壓力測試腳本。",
-      "folder": "Workstation/AISO1-AI-MAX395",
+      "folder": "Workstation-Mini/AISO1-AI-MAX395",
       "image": "assets/products/aiso1-ai-max395.png",
       "image_alt": "AISO1 AI MAX395 銀色 AI 工作站產品照",
       "image_note": "AISO1 · RYZEN AI MAX+ 395",
@@ -354,12 +354,12 @@
         }
       ],
       "documents": {
-        "folder": "Workstation/AISO1-AI-MAX395/Documents",
-        "public_folder": "Workstation/AISO1-AI-MAX395/Documents/Public"
+        "folder": "Workstation-Mini/AISO1-AI-MAX395/Documents",
+        "public_folder": "Workstation-Mini/AISO1-AI-MAX395/Documents/Public"
       },
       "benchmark": {
-        "folder": "Workstation/AISO1-AI-MAX395/Benchmark",
-        "public_folder": "Workstation/AISO1-AI-MAX395/Benchmark/Public",
+        "folder": "Workstation-Mini/AISO1-AI-MAX395/Benchmark",
+        "public_folder": "Workstation-Mini/AISO1-AI-MAX395/Benchmark/Public",
         "metrics": [
           "TTFT",
           "TPOT",
@@ -367,8 +367,8 @@
         ]
       },
       "scripts": {
-        "folder": "Workstation/AISO1-AI-MAX395/Scripts",
-        "public_folder": "Workstation/AISO1-AI-MAX395/Scripts"
+        "folder": "Workstation-Mini/AISO1-AI-MAX395/Scripts",
+        "public_folder": "Workstation-Mini/AISO1-AI-MAX395/Scripts"
       },
       "operations": {
         "ssh": "",
@@ -385,7 +385,7 @@
       "positioning": "Grace Blackwell Desktop AI System",
       "status": "Configuration Pending",
       "summary": "以 NVIDIA GB10 Grace Blackwell 為核心的桌面 AI 工作站；正式型號、儲存與實測結果將於設備確認後補齊。",
-      "folder": "Workstation/GB10-AI-WORKSTATION",
+      "folder": "Workstation-Mini/GB10-AI-WORKSTATION",
       "image": "assets/products/gb10-ai-workstation-cutout.png",
       "image_alt": "去背後的黑色 GB10 桌面 AI 工作站產品圖",
       "preview_3d": {
@@ -406,17 +406,17 @@
       },
       "models": [],
       "documents": {
-        "folder": "Workstation/GB10-AI-WORKSTATION/Documents",
-        "public_folder": "Workstation/GB10-AI-WORKSTATION/Documents/Public"
+        "folder": "Workstation-Mini/GB10-AI-WORKSTATION/Documents",
+        "public_folder": "Workstation-Mini/GB10-AI-WORKSTATION/Documents/Public"
       },
       "benchmark": {
-        "folder": "Workstation/GB10-AI-WORKSTATION/Benchmark",
-        "public_folder": "Workstation/GB10-AI-WORKSTATION/Benchmark/Public",
+        "folder": "Workstation-Mini/GB10-AI-WORKSTATION/Benchmark",
+        "public_folder": "Workstation-Mini/GB10-AI-WORKSTATION/Benchmark/Public",
         "metrics": []
       },
       "scripts": {
-        "folder": "Workstation/GB10-AI-WORKSTATION/Scripts",
-        "public_folder": "Workstation/GB10-AI-WORKSTATION/Scripts/Public"
+        "folder": "Workstation-Mini/GB10-AI-WORKSTATION/Scripts",
+        "public_folder": "Workstation-Mini/GB10-AI-WORKSTATION/Scripts/Public"
       },
       "operations": {
         "ssh": "",
@@ -433,7 +433,7 @@
       "positioning": "HPE Dual-GPU AI Server",
       "status": "Documentation Available",
       "summary": "集中查看 HPE 兩卡設備的 SOP 與操作文件；Benchmark 待後續實機測試補充。",
-      "folder": "Server/PRO6000-HPE-2GPU",
+      "folder": "Workstation-Server/PRO6000-HPE-2GPU",
       "image": "assets/products/pro6000-server-chassis-cutout.png",
       "image_alt": "由使用者提供素材整理的 PRO6000 兩卡 AI Server 整機外型參考圖",
       "preview_3d": {
@@ -466,20 +466,20 @@
         }
       ],
       "documents": {
-        "folder": "Server/PRO6000-HPE-2GPU/Documents",
-        "public_folder": "Server/PRO6000-HPE-2GPU/Documents/Public"
+        "folder": "Workstation-Server/PRO6000-HPE-2GPU/Documents",
+        "public_folder": "Workstation-Server/PRO6000-HPE-2GPU/Documents/Public"
       },
       "benchmark": {
-        "folder": "Server/PRO6000-HPE-2GPU/Benchmark",
-        "public_folder": "Server/PRO6000-HPE-2GPU/Benchmark/Public",
+        "folder": "Workstation-Server/PRO6000-HPE-2GPU/Benchmark",
+        "public_folder": "Workstation-Server/PRO6000-HPE-2GPU/Benchmark/Public",
         "status": "Pending",
         "note": "尚無 HPE 2 GPU 專屬 Benchmark。",
         "metrics": [],
         "results": []
       },
       "scripts": {
-        "folder": "Server/PRO6000-HPE-2GPU/Scripts",
-        "public_folder": "Server/PRO6000-HPE-2GPU/Scripts"
+        "folder": "Workstation-Server/PRO6000-HPE-2GPU/Scripts",
+        "public_folder": "Workstation-Server/PRO6000-HPE-2GPU/Scripts"
       },
       "operations": {
         "ssh": "",
@@ -496,7 +496,7 @@
       "positioning": "TPI Eight-GPU AI Server",
       "status": "Benchmark Available",
       "summary": "VIS（世界先進）POC：於 PRO6000 8 GPU 系統中啟用 4 張 GPU，完成 GPT-OSS-120B 與 Llama-3.3-70B Benchmark。",
-      "folder": "Server/PRO6000-TPI-8GPU",
+      "folder": "Workstation-Server/PRO6000-TPI-8GPU",
       "image": "assets/products/pro6000-8gpu-server-cutout.png",
       "image_alt": "由使用者提供素材整理的 PRO6000 八卡 AI Server 整機外型參考圖",
       "preview_3d": {
@@ -529,12 +529,12 @@
         }
       ],
       "documents": {
-        "folder": "Server/PRO6000-TPI-8GPU/Documents",
-        "public_folder": "Server/PRO6000-TPI-8GPU/Documents/Public"
+        "folder": "Workstation-Server/PRO6000-TPI-8GPU/Documents",
+        "public_folder": "Workstation-Server/PRO6000-TPI-8GPU/Documents/Public"
       },
       "benchmark": {
-        "folder": "Server/PRO6000-TPI-8GPU/Benchmark",
-        "public_folder": "Server/PRO6000-TPI-8GPU/Benchmark/Public",
+        "folder": "Workstation-Server/PRO6000-TPI-8GPU/Benchmark",
+        "public_folder": "Workstation-Server/PRO6000-TPI-8GPU/Benchmark/Public",
         "date": "2026-08-25",
         "comparison": "without aiDAPTIV vs aiDAPTIV Cold / Warm",
         "metrics": [
@@ -564,8 +564,8 @@
         "note": "測試設備為 PRO6000 8 GPU；本次 Benchmark 實際啟用其中 4 張 GPU。"
       },
       "scripts": {
-        "folder": "Server/PRO6000-TPI-8GPU/Scripts",
-        "public_folder": "Server/PRO6000-TPI-8GPU/Scripts"
+        "folder": "Workstation-Server/PRO6000-TPI-8GPU/Scripts",
+        "public_folder": "Workstation-Server/PRO6000-TPI-8GPU/Scripts"
       },
       "operations": {
         "ssh": "",
@@ -582,7 +582,7 @@
       "positioning": "Blackwell Ultra AI Server",
       "status": "Configuration Pending",
       "summary": "面向大型生成式 AI 推論與訓練的 10U 八卡 Blackwell Ultra 系統；正式 AISO 方案與實測結果確認後補齊。",
-      "folder": "Server/NVIDIA-DGX-B300",
+      "folder": "Workstation-Server/NVIDIA-DGX-B300",
       "image": "assets/products/dgx-b300-cutout.png",
       "image_alt": "去背後的 NVIDIA DGX B300 Blackwell Ultra AI Server 官方產品圖",
       "preview_3d": {
@@ -607,17 +607,17 @@
       },
       "models": [],
       "documents": {
-        "folder": "Server/NVIDIA-DGX-B300/Documents",
-        "public_folder": "Server/NVIDIA-DGX-B300/Documents/Public"
+        "folder": "Workstation-Server/NVIDIA-DGX-B300/Documents",
+        "public_folder": "Workstation-Server/NVIDIA-DGX-B300/Documents/Public"
       },
       "benchmark": {
-        "folder": "Server/NVIDIA-DGX-B300/Benchmark",
-        "public_folder": "Server/NVIDIA-DGX-B300/Benchmark/Public",
+        "folder": "Workstation-Server/NVIDIA-DGX-B300/Benchmark",
+        "public_folder": "Workstation-Server/NVIDIA-DGX-B300/Benchmark/Public",
         "metrics": []
       },
       "scripts": {
-        "folder": "Server/NVIDIA-DGX-B300/Scripts",
-        "public_folder": "Server/NVIDIA-DGX-B300/Scripts/Public"
+        "folder": "Workstation-Server/NVIDIA-DGX-B300/Scripts",
+        "public_folder": "Workstation-Server/NVIDIA-DGX-B300/Scripts/Public"
       },
       "operations": {
         "ssh": "",

@@ -43,7 +43,7 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ scripts/
 │  │  └─ export_static.py                           ← CLI 靜態匯出入口
 │  ├─ sample-data/
-│  │  └─ Server/PRO6000-HPE-2GPU/                   ← 首次建置用範例公開資料
+│  │  └─ Workstation-Server/PRO6000-HPE-2GPU/                   ← 首次建置用範例公開資料
 │  ├─ docs/                                         ← 產生後的 GitHub Pages 靜態站
 │  │  ├─ data/products.json                         ← 已去除內部欄位的公開目錄
 │  │  ├─ assets/cosmic／products/                   ← 匯出的共用 UI 與產品圖資產
@@ -64,7 +64,7 @@ AISO_Platform/                                      ← Git repository 根目錄
    │     ├─ Benchmark_Result/Public/
    │     └─ Scripts/Public/
    │
-   ├─ Workstation/                                  ← Portal Workstation 正式資料
+   ├─ Workstation-Mini/                                  ← Portal Workstation 正式資料
    │  ├─ AISO1-AI-MAX395/
    │  │  ├─ Documents/Public/
    │  │  ├─ Benchmark/Public/
@@ -76,7 +76,7 @@ AISO_Platform/                                      ← Git repository 根目錄
    │  └─ GB10-AI-WORKSTATION/                       ← GB10 產品入口；型號與測試資料待確認
    │     └─ README.md
    │
-   └─ Server/                                       ← Server 文件與 Benchmark
+   └─ Workstation-Server/                                       ← Server 文件與 Benchmark
       ├─ PRO6000-HPE-2GPU/
       │  ├─ Documents/Public/
       │  ├─ Benchmark/Public/
@@ -96,15 +96,15 @@ AISO_Platform/                                      ← Git repository 根目錄
 |---|---|---|
 | `AISO_Platform_Portal/` | Portal 程式、metadata 與產生的靜態站 | 納管 |
 | `AISO-Platform-UI/Consumer/` | Consumer Portal 正式資料 | 納管 |
-| `AISO-Platform-UI/Workstation/` | Workstation Portal 正式資料 | 納管 |
-| `AISO-Platform-UI/Server/` | Server Portal 正式資料 | 納管 |
+| `AISO-Platform-UI/Workstation-Mini/` | Workstation-Mini Portal 正式資料 | 納管 |
+| `AISO-Platform-UI/Workstation-Server/` | Workstation-Server Portal 正式資料 | 納管 |
 | 各設備的 `Public/` | 可由靜態網站發布的內容 | 納管，放入前須先檢查敏感資訊 |
 | `AISO_Platform_Portal/docs/` | `make export` 自動產生的公開站 | 納管，不手動修改 |
 | `AISO_Platform_Portal/Previous data/` | 舊版與歸檔 | 保留本機、Git 忽略 |
 
 原 `Equipment/AMD` 的 96 個檔案已逐檔驗證並完整合併至 Consumer／Workstation；來源資料夾於 2026-08-29 移至 macOS 垃圾桶，不再作為正式資料入口。
 
-其他舊版資料夾、根目錄 PDF、重複的 Portal `Server/`、原始 stdout/stderr、JSONL、ZIP 與瀏覽器另存網頁仍保留在本機，但不納入 Git。經整理的 CSV、設備腳本、正式文件及公開報告會正常納管。
+其他舊版資料夾、根目錄 PDF、重複的 Portal `Workstation-Server/`、原始 stdout/stderr、JSONL、ZIP 與瀏覽器另存網頁仍保留在本機，但不納入 Git。經整理的 CSV、設備腳本、正式文件及公開報告會正常納管。
 
 ## README 同步規則
 

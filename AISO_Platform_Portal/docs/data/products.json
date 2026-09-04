@@ -1,6 +1,6 @@
 {
   "version": 13,
-  "updated_at": "2026-09-02T00:21:33+08:00",
+  "updated_at": "2026-09-04T08:55:03+08:00",
   "categories": [
     {
       "id": "consumer",
@@ -12,14 +12,14 @@
     {
       "id": "workstation",
       "order": "02",
-      "name": "Workstation",
+      "name": "Workstation-Mini",
       "name_zh": "工作站",
       "description": "為專業開發與內容工作設計的 AI 工作站，支援更大模型、長 Context 與進階測試。"
     },
     {
       "id": "server",
       "order": "03",
-      "name": "Server",
+      "name": "Workstation-Server",
       "name_zh": "伺服器",
       "description": "面向企業部署與多人服務的 AI Server，提供大型模型、長 Context 與高併發運算能力。"
     }

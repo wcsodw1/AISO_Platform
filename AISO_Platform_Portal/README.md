@@ -8,11 +8,11 @@ AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac �
 
 `VERIFY` 的 Validation Stack 會清楚呈現 `vLLM`、`Open WebUI` 與 `llama.cpp`：依硬體條件選用 vLLM 或 llama.cpp 建置推論服務，再搭配 Open WebUI 驗證瀏覽器操作、模型切換、長文本、首字等待時間、生成流暢度及錯誤中斷等使用體驗。
 
-網站採產品優先的品牌資訊架構：主頁呈現品牌主張、Consumer／Workstation／Server 三大產品線與 Select／Verify／Deploy 方法；`Model Guide`、`Resources`、`About AISO` 各自使用獨立內容頁。
+網站採產品優先的品牌資訊架構：主頁呈現品牌主張、Consumer／Workstation-Mini／Workstation-Server 三大產品線與 Select／Verify／Deploy 方法；`Model Guide`、`Resources`、`About AISO` 各自使用獨立內容頁。
 
 未取得正式 email、電話、地址或表單前不提供 `Contact` 頁，避免無法執行的假入口；取得官方窗口後再建立 Sales／Support 分流。
 
-首頁的 `Model List` 依 Consumer／Workstation／Server 整理目前已有 Benchmark、Scripts 或 Prepared 紀錄的適用模型與用途。
+首頁的 `Model List` 依 Consumer／Workstation-Mini／Workstation-Server 整理目前已有 Benchmark、Scripts 或 Prepared 紀錄的適用模型與用途。
 
 本機搜尋會將已收錄設備的資料夾入口合併到正式產品結果；每台設備只顯示一次，其他文件與腳本搜尋結果不受影響。
 
@@ -20,12 +20,12 @@ AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac �
 
 v1.18.5 將獨立 `AISO-3D-Product-Card-v1` 原型以增量方式整合進 AISO1 AI MAX395：`preview_3d` metadata 明確指定專用透明素材，只有設定此欄位的產品會啟用游標跟隨旋轉、浮出、投射光、動態陰影與反光。卡片文字保持固定；手機可橫向拖曳、鍵盤 focus 後可用方向鍵調整角度，`Esc` 重置；`prefers-reduced-motion` 使用者不會收到連續 3D 動畫。原型的 `index.html`、`style.css`、`app.js` 不會覆蓋 Portal 核心檔案。
 
-首頁已將重複的 `PRODUCTS, AT A GLANCE.` 合併進 `AI SYSTEMS`：滑鼠移入 Consumer／Workstation／Server 卡片時，卡片會向下展開該類別全部機型；鍵盤 focus 同樣可展開，手機版則預設顯示機型。Server 主視覺會同時呈現 PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300。產品詳情保留 Overview／Hardware／Models／SOP／Benchmark／Scripts。單一模型的 Benchmark 僅在對應產品頁與 Resources 呈現，首頁不自動挑選第一筆結果作為推薦；Model Guide 另列 Benchmarked／Script Available／Prepared 證據狀態。
+首頁已將重複的 `PRODUCTS, AT A GLANCE.` 合併進 `AI SYSTEMS`：滑鼠移入 Consumer／Workstation-Mini／Workstation-Server 卡片時，卡片會向下展開該類別全部機型；鍵盤 focus 同樣可展開，手機版則預設顯示機型。Server 主視覺會同時呈現 PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300。產品詳情保留 Overview／Hardware／Models／SOP／Benchmark／Scripts。單一模型的 Benchmark 僅在對應產品頁與 Resources 呈現，首頁不自動挑選第一筆結果作為推薦；Model Guide 另列 Benchmarked／Script Available／Prepared 證據狀態。
 
 第一版資訊架構：
 
 ```text
-服務類型（Consumer / Workstation / Server）
+服務類型（Consumer / Workstation-Mini / Workstation-Server）
 └─ 設備
    ├─ Overview
    ├─ Hardware
@@ -105,7 +105,7 @@ AISO-Platform-Data/
 │     ├─ Benchmark/
 │     │  └─ Public/
 │     └─ Scripts/
-├─ Workstation/
+├─ Workstation-Mini/
 │  ├─ AISO1-AI-MAX395/
 │  │  ├─ Documents/
 │  │  │  └─ Public/
@@ -119,7 +119,7 @@ AISO-Platform-Data/
 │     │  └─ Public/
 │     └─ Scripts/
 │        └─ Public/
-└─ Server/
+└─ Workstation-Server/
    ├─ PRO6000-HPE-2GPU/
    │  ├─ Documents/
    │  │  └─ Public/
@@ -219,8 +219,8 @@ http://127.0.0.1:8765
 ## 範例設備
 
 - Consumer：ASUS ROG Flow Z13 GZ302（Ryzen AI MAX+ 395）、ASUS TUF Gaming A14 FA401EA（Ryzen AI MAX+ 392）
-- Workstation：AISO1 AI MAX395、GB10 AI Workstation
-- Server：PRO6000 - HPE 2 GPU（兩卡機）、PRO6000 - TPI 8 GPU（八卡機）、NVIDIA DGX B300（Blackwell Ultra）
+- Workstation-Mini：AISO1 AI MAX395、GB10 AI Workstation
+- Workstation-Server：PRO6000 - HPE 2 GPU（兩卡機）、PRO6000 - TPI 8 GPU（八卡機）、NVIDIA DGX B300（Blackwell Ultra）
 
 PRO6000 - HPE 2 GPU 已收錄：
 
