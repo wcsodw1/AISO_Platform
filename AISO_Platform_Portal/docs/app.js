@@ -55,6 +55,15 @@ function bindProductDepth(root=document){
     let activePointer=null,startX=0,startY=0,dragging=false,frame=null,pendingPoint=null;
     let keyboardX=0,keyboardY=0,suppressClickUntil=0;
 
+    function orbitOnce(){
+      if(reducedMotion.matches||stage.classList.contains("is-depth-orbiting"))return;
+      stage.classList.remove("is-depth-orbiting");
+      void stage.offsetWidth;
+      stage.classList.add("is-depth-orbiting");
+      const rig=stage.querySelector(".depth-product-rig");
+      rig?.addEventListener("animationend",()=>stage.classList.remove("is-depth-orbiting"),{once:true});
+    }
+
     function applyNormalized(nx,ny,px=(nx+.5)*100,py=(ny+.5)*100){
       if(reducedMotion.matches)return;
       stage.style.setProperty("--depth-ry",`${(nx*28).toFixed(2)}deg`);
@@ -90,7 +99,7 @@ function bindProductDepth(root=document){
       activePointer=null;
     }
 
-    stage.addEventListener("pointerenter",event=>{if(event.pointerType!=="touch"){activate();queuePoint(event.clientX,event.clientY)}});
+    stage.addEventListener("pointerenter",event=>{if(event.pointerType!=="touch"){activate();orbitOnce();queuePoint(event.clientX,event.clientY)}});
     stage.addEventListener("pointermove",event=>{
       if(event.pointerType==="touch"){
         if(activePointer!==event.pointerId)return;
@@ -114,7 +123,7 @@ function bindProductDepth(root=document){
     });
     stage.addEventListener("pointercancel",event=>{if(activePointer===event.pointerId)releasePointer(event);dragging=false;reset()});
     host.addEventListener("click",event=>{if(Date.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation()}},true);
-    host.addEventListener("focus",activate);
+    host.addEventListener("focus",()=>{activate();orbitOnce()});
     host.addEventListener("blur",reset);
     host.addEventListener("keydown",event=>{
       const delta=.2;
@@ -150,6 +159,18 @@ function show(view,scroll=true){["homeView","categoryView","modelListView","reso
 function setSiteNav(active){document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===active))}
 function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",device:"deviceView"}[state.previousView]||"homeView"}
 
+function orbitHomeCard(card){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||card.classList.contains("is-home-orbiting"))return;
+  card.classList.remove("is-home-orbiting");
+  void card.offsetWidth;
+  card.classList.add("is-home-orbiting");
+  const visual=card.querySelector(".category-visual");
+  const lastImage=visual?.querySelector(".category-product-image:last-of-type");
+  const finish=()=>card.classList.remove("is-home-orbiting");
+  lastImage?.addEventListener("animationend",finish,{once:true});
+  window.setTimeout(finish,1500);
+}
+
 function renderHome(scroll=true){
   state.category=null;state.product=null;state.previousView="home";
   setSiteNav("home");
@@ -160,8 +181,9 @@ function renderHome(scroll=true){
     card.innerHTML=`<button class="category-card-main" type="button" aria-expanded="false"><span class="category-order">${esc(category.order)}</span>${categoryVisual(category,products)}<h2>${esc(category.name)}</h2><h3>${esc(category.name_zh)}</h3><p>${esc(category.description)}</p><div class="category-foot"><span>${products.length} Products</span><span>Models ↓</span></div></button><div class="category-product-drawer" aria-label="${esc(category.name)} 機型">${products.map(product=>`<button class="category-product-link" type="button" data-product-id="${esc(product.id)}"><span class="category-product-thumb">${product.image?`<img src="${esc(product.image)}" alt="" loading="lazy">`:""}</span><span><strong>${esc(product.name)}</strong><small>${esc(product.positioning||product.status)}</small></span><em>View →</em></button>`).join("")}</div>`;
     const main=card.querySelector(".category-card-main");
     main.onclick=()=>renderCategory(category.id);
-    card.onmouseenter=()=>main.setAttribute("aria-expanded","true");
+    card.onmouseenter=()=>{main.setAttribute("aria-expanded","true");orbitHomeCard(card)};
     card.onmouseleave=()=>main.setAttribute("aria-expanded","false");
+    main.onfocus=()=>orbitHomeCard(card);
     card.querySelectorAll("[data-product-id]").forEach(button=>button.onclick=()=>renderDevice(button.dataset.productId));
     grid.appendChild(card);
   });
