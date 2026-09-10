@@ -1,12 +1,12 @@
 # AISO Platform
 
-AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.18.8**。
+AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.18.9**。
 
 Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、三大產品線與驗證方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
 
 本機搜尋會把設備根資料夾與相對應的 Portal 產品頁視為同一項，避免同一台設備重複出現在結果中；一般文件與腳本仍可獨立搜尋及開啟。
 
-v1.18.0 將 GB10、PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300 整理成透明產品素材；兩種 PRO6000 配置改用不同機箱外觀，不再以單張 GPU 代表整機。Server 產品線新增 NVIDIA DGX B300，首頁 `AI SYSTEMS` 會同時展示三台 Server 並在 hover／focus 展開完整機型清單。v1.18.4 將首頁顧問流程主標更新為 `JUST AI IT.`，保留 `SELECT → VERIFY → DEPLOY` 服務內容；`VERIFY` 呈現 vLLM、Open WebUI、llama.cpp 驗證技術組合與各自角色。v1.18.5 將 AISO1 AI MAX395 設為資料驅動的 2.5D 預覽產品：桌機支援游標跟隨旋轉與浮出，手機支援拖曳，鍵盤支援方向鍵與 Esc，並尊重 `prefers-reduced-motion`。v1.18.8 在首頁 AI SYSTEMS 與產品立體預覽加入單次 360° 環繞展示：滑入時產品浮出、環繞一圈並搭配掃描光環，完成後回到游標跟隨視角；鍵盤 focus 同樣可觸發，`prefers-reduced-motion` 下不播放。
+v1.18.0 將 GB10、PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300 整理成透明產品素材；兩種 PRO6000 配置改用不同機箱外觀，不再以單張 GPU 代表整機。Server 產品線新增 NVIDIA DGX B300，首頁 `AI SYSTEMS` 會同時展示三台 Server 並在 hover／focus 展開完整機型清單。v1.18.4 將首頁顧問流程主標更新為 `JUST AI IT.`，保留 `SELECT → VERIFY → DEPLOY` 服務內容；`VERIFY` 呈現 vLLM、Open WebUI、llama.cpp 驗證技術組合與各自角色。v1.18.5 將 AISO1 AI MAX395 設為資料驅動的 2.5D 預覽產品：桌機支援游標跟隨旋轉與浮出，手機支援拖曳，鍵盤支援方向鍵與 Esc，並尊重 `prefers-reduced-motion`。v1.18.9 將原地翻轉改為可明確辨識的 2.5D 軌道式環繞：產品沿橢向與景深軌跡繞行，在前景放大、後方縮小變暗，並顯示 `360° ORBIT` 與掃描光環，完成後回到游標跟隨視角。
 
 - GitHub：<https://github.com/wcsodw1/AISO_Platform>（Private）
 - 預設分支：`main`
@@ -34,7 +34,7 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ launcher.py                                   ← 本機 HTTP Server／管理 API
 │  ├─ exporter.py                                   ← 公開資料清理與靜態匯出
 │  ├─ config.json                                   ← Host、Port、資料根目錄
-│  ├─ VERSION                                       ← Portal 版本（1.18.8）
+│  ├─ VERSION                                       ← Portal 版本（1.18.9）
 │  ├─ data/
 │  │  └─ products.json                              ← Portal 設備與 Benchmark metadata
 │  ├─ assets/

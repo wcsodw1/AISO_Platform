@@ -168,7 +168,7 @@ function orbitHomeCard(card){
   const lastImage=visual?.querySelector(".category-product-image:last-of-type");
   const finish=()=>card.classList.remove("is-home-orbiting");
   lastImage?.addEventListener("animationend",finish,{once:true});
-  window.setTimeout(finish,1500);
+  window.setTimeout(finish,2200);
 }
 
 function renderHome(scroll=true){

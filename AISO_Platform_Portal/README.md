@@ -1,4 +1,4 @@
-# AISO Platform v1.18.8
+# AISO Platform v1.18.9
 
 AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac 本機管理＋GitHub Pages 公開展示」兩種模式。
 
@@ -18,7 +18,7 @@ AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac �
 
 產品卡支援產品照與 3D 投射互動：滑鼠移入後主機會抬升、傾斜並突破原媒體框，不再被圖片容器裁切。ROG Flow Z13 GZ302、TUF Gaming A14 FA401EA 使用 ASUS 官方素材；AISO1 AI MAX395、GB10 AI Workstation、PRO6000 兩卡／八卡已整理為透明產品素材。兩卡與八卡 PRO6000 使用不同機箱外觀，NVIDIA DGX B300 則使用 NVIDIA 官方整機素材與官方規格。
 
-v1.18.8 把原本只會左右傾斜的互動補成單次 360° 科技環繞展示。產品在首頁 AI SYSTEMS 或立體預覽中第一次滑入時，會先向前浮出並環繞一圈，同步顯示掃描環與投射光；動畫完成後回到可跟隨游標的微傾視角。鍵盤 focus 可觸發同樣展示，並完整尊重 `prefers-reduced-motion`。
+v1.18.9 把原本難以感受的單圖原地翻轉，改成明顯的 2.5D 軌道式環繞。產品會沿橫向與景深軌跡繞行，在前景放大、繞到後方時縮小變暗，再回到正面；過程會顯示 `360° ORBIT` 狀態與掃描光環，讓動作可被清楚辨識。完成後仍回到游標跟隨視角，並保留鍵盤 focus 與 `prefers-reduced-motion` 支援。
 
 v1.18.5 將獨立 `AISO-3D-Product-Card-v1` 原型以增量方式整合進 AISO1 AI MAX395：`preview_3d` metadata 明確指定專用透明素材，只有設定此欄位的產品會啟用游標跟隨旋轉、浮出、投射光、動態陰影與反光。卡片文字保持固定；手機可橫向拖曳、鍵盤 focus 後可用方向鍵調整角度，`Esc` 重置；`prefers-reduced-motion` 使用者不會收到連續 3D 動畫。原型的 `index.html`、`style.css`、`app.js` 不會覆蓋 Portal 核心檔案。
 
