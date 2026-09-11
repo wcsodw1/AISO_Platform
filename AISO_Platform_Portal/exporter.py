@@ -73,6 +73,9 @@ def sanitized_product(product, data_root: Path, output: Path):
     if not re.fullmatch(r"[a-z0-9-]+", str(product.get("id", ""))):
         raise ValueError(f"Unsafe product ID: {product.get('id', '')}")
     preview_3d = product.get("preview_3d", {})
+    model_3d = str(product.get("model_3d", ""))
+    if model_3d and (not model_3d.startswith("assets/models/") or not model_3d.lower().endswith(".glb")):
+        raise ValueError(f"Unsafe 3D model path: {model_3d}")
     public = {
         "id": product["id"],
         "category": product["category"],
@@ -90,6 +93,7 @@ def sanitized_product(product, data_root: Path, output: Path):
             "label": str(preview_3d.get("label", "")),
             "hint": str(preview_3d.get("hint", "")),
         } if preview_3d.get("image") else {},
+        "model_3d": model_3d,
         "visual_variant": product.get("visual_variant", ""),
         "visual_alt": product.get("visual_alt", ""),
         "visual_note": product.get("visual_note", ""),

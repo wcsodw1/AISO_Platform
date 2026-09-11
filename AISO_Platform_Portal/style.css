@@ -2450,6 +2450,39 @@ textarea{
     will-change: auto !important;
   }
 }
+
+/* v1.18.10 — real GLB viewer on product detail pages */
+.product-model-viewer{
+  isolation:isolate;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(126,220,255,.15),transparent 34%),
+    radial-gradient(circle at 50% 100%,rgba(200,184,117,.16),transparent 42%),
+    linear-gradient(145deg,#111827,#05070d 74%);
+}
+.product-model-viewer:before{
+  content:"";position:absolute;z-index:0;inset:8%;border:1px solid rgba(126,220,255,.12);border-radius:50%;
+  background:repeating-radial-gradient(circle,transparent 0 32px,rgba(126,220,255,.08) 33px 34px);
+  transform:perspective(520px) rotateX(66deg) translateY(36%);filter:drop-shadow(0 0 20px rgba(126,220,255,.14));
+}
+.product-model-viewer model-viewer{
+  position:absolute;z-index:2;inset:0;display:block;width:100%;height:100%;outline:0;
+  --poster-color:transparent;--progress-bar-color:var(--fashion-sand,#c8b875);--progress-bar-height:2px;
+  filter:drop-shadow(0 30px 32px rgba(0,0,0,.56));
+}
+.model-viewer-poster{display:block;width:100%;height:100%;padding:24px;box-sizing:border-box;object-fit:contain;filter:drop-shadow(0 28px 24px rgba(0,0,0,.54))}
+.model-viewer-status,.model-viewer-hint{position:absolute;z-index:5;top:14px;padding:8px 10px;border:1px solid rgba(243,239,229,.24);border-radius:999px;background:rgba(5,8,12,.72);color:rgba(243,239,229,.78);font-family:var(--font-en);font-size:8px;font-weight:700;letter-spacing:.12em;line-height:1;pointer-events:none;backdrop-filter:blur(10px)}
+.model-viewer-status{left:14px;color:var(--fashion-sand,#c8b875)}
+.model-viewer-status i{display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:#78e0ff;box-shadow:0 0 10px #78e0ff}
+.model-viewer-hint{right:14px}
+.model-progress{position:absolute;left:18%;right:18%;bottom:20px;height:2px;overflow:hidden;border-radius:99px;background:rgba(243,239,229,.12)}
+.model-progress i{display:block;width:40%;height:100%;background:linear-gradient(90deg,transparent,var(--fashion-sand,#c8b875),#78e0ff,transparent);animation:model-load-scan 1.15s ease-in-out infinite}
+.product-model-viewer.is-model-loaded .model-progress{display:none}
+.product-model-viewer.is-model-fallback .model-viewer-hint{display:none}
+.product-model-viewer.is-model-fallback model-viewer{pointer-events:none}
+@keyframes model-load-scan{from{transform:translateX(-120%)}to{transform:translateX(350%)}}
+@media(max-width:720px){.model-viewer-hint{display:none}.model-viewer-status{top:10px;left:10px}.model-viewer-poster{padding:18px}}
+@media(prefers-reduced-motion:reduce){.model-progress i{animation:none}.product-model-viewer model-viewer{filter:none}}
 /* AISO Platform v1.18.6 - home composition and browser image quality fix */
 
 /* Keep the home cards crisp: do not rasterize the entire card on hover. */

@@ -1,0 +1,50 @@
+[
+  {
+    "file": "aiso1-ai-max395.glb",
+    "bytes": 1325332,
+    "source": "aiso1-ai-max395-3d.png",
+    "geometry_count": 5
+  },
+  {
+    "file": "dgx-b300.glb",
+    "bytes": 1022464,
+    "source": "dgx-b300-cutout.png",
+    "geometry_count": 3
+  },
+  {
+    "file": "gb10-ai-workstation.glb",
+    "bytes": 824912,
+    "source": "gb10-ai-workstation-cutout.png",
+    "geometry_count": 5
+  },
+  {
+    "file": "rtx-pro-6000-server-edition.glb",
+    "bytes": 372480,
+    "source": "nvidia-rtx-pro-6000-server.jpeg",
+    "geometry_count": 3
+  },
+  {
+    "file": "pro6000-8gpu-server.glb",
+    "bytes": 1437164,
+    "source": "pro6000-8gpu-server-cutout.png",
+    "geometry_count": 5
+  },
+  {
+    "file": "pro6000-server-chassis.glb",
+    "bytes": 1932560,
+    "source": "pro6000-server-chassis-cutout.png",
+    "geometry_count": 5
+  },
+  {
+    "file": "rog-flow-z13-gz302.glb",
+    "bytes": 606504,
+    "source": "rog-flow-z13-gz302.webp",
+    "geometry_count": 4
+  },
+  {
+    "file": "tuf-gaming-a14-fa401ea.glb",
+    "bytes": 147264,
+    "source": "tuf-gaming-a14-fa401ea.webp",
+    "geometry_count": 4
+  }
+]

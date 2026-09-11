@@ -1,4 +1,4 @@
-# AISO Platform v1.18.9
+# AISO Platform v1.18.10
 
 AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac 本機管理＋GitHub Pages 公開展示」兩種模式。
 
@@ -19,6 +19,8 @@ AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac �
 產品卡支援產品照與 3D 投射互動：滑鼠移入後主機會抬升、傾斜並突破原媒體框，不再被圖片容器裁切。ROG Flow Z13 GZ302、TUF Gaming A14 FA401EA 使用 ASUS 官方素材；AISO1 AI MAX395、GB10 AI Workstation、PRO6000 兩卡／八卡已整理為透明產品素材。兩卡與八卡 PRO6000 使用不同機箱外觀，NVIDIA DGX B300 則使用 NVIDIA 官方整機素材與官方規格。
 
 v1.18.9 把原本難以感受的單圖原地翻轉，改成明顯的 2.5D 軌道式環繞。產品會沿橫向與景深軌跡繞行，在前景放大、繞到後方時縮小變暗，再回到正面；過程會顯示 `360° ORBIT` 狀態與掃描光環，讓動作可被清楚辨識。完成後仍回到游標跟隨視角，並保留鍵盤 focus 與 `prefers-reduced-motion` 支援。
+
+v1.18.10 新增 `assets/models/` Web 3D asset library，將 GLB 與原有 `assets/products/` 圖片分開管理。目前收錄 AISO1、DGX B300、GB10、RTX PRO 6000 Server Edition、PRO6000 兩卡／八卡機箱、ROG Flow Z13 與 TUF Gaming A14 共 8 個 GLB prototype，並附 `manifest.json` 與模型限制說明。AISO1 裝置詳情頁使用 `<model-viewer>` 顯示 GLB，首頁分類卡仍採 2.5D 圖片互動；模型或 viewer 載入失敗時會顯示原有 PNG fallback。
 
 v1.18.5 將獨立 `AISO-3D-Product-Card-v1` 原型以增量方式整合進 AISO1 AI MAX395：`preview_3d` metadata 明確指定專用透明素材，只有設定此欄位的產品會啟用游標跟隨旋轉、浮出、投射光、動態陰影與反光。卡片文字保持固定；手機可橫向拖曳、鍵盤 focus 後可用方向鍵調整角度，`Esc` 重置；`prefers-reduced-motion` 使用者不會收到連續 3D 動畫。原型的 `index.html`、`style.css`、`app.js` 不會覆蓋 Portal 核心檔案。
 
@@ -53,7 +55,7 @@ v1.18.5 將獨立 `AISO-3D-Product-Card-v1` 原型以增量方式整合進 AISO1
 - 不輸出 SSH、密碼、Operations 或 Mac 本機路徑。
 - 只發布各設備 `Documents/Public`、`Benchmark/Public` 與 `Scripts` 內的檔案。
 - 會略過檔名含 `password`、`secret`、`credential`、`private`、`internal` 的檔案，以及 `.env`、`.pem`、`.key`。
-- 靜態匯出會包含 `assets/cosmic/`、`assets/products/` 以及產品 metadata 的 `image`／`image_alt`／`image_note`／`image_count`／`preview_3d` 欄位。
+- 靜態匯出會包含 `assets/cosmic/`、`assets/products/`、`assets/models/` 以及產品 metadata 的 `image`／`image_alt`／`image_note`／`image_count`／`preview_3d`／`model_3d` 欄位。
 
 ## Mac 快速啟動
 

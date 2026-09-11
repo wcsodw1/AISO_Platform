@@ -1,6 +1,6 @@
 # AISO Platform
 
-AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.18.9**。
+AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果與執行腳本的單一 repository。目前 Portal 版本為 **v1.18.10**。
 
 Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、三大產品線與驗證方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
 
@@ -8,9 +8,11 @@ Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、三大產�
 
 v1.18.0 將 GB10、PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300 整理成透明產品素材；兩種 PRO6000 配置改用不同機箱外觀，不再以單張 GPU 代表整機。Server 產品線新增 NVIDIA DGX B300，首頁 `AI SYSTEMS` 會同時展示三台 Server 並在 hover／focus 展開完整機型清單。v1.18.4 將首頁顧問流程主標更新為 `JUST AI IT.`，保留 `SELECT → VERIFY → DEPLOY` 服務內容；`VERIFY` 呈現 vLLM、Open WebUI、llama.cpp 驗證技術組合與各自角色。v1.18.5 將 AISO1 AI MAX395 設為資料驅動的 2.5D 預覽產品：桌機支援游標跟隨旋轉與浮出，手機支援拖曳，鍵盤支援方向鍵與 Esc，並尊重 `prefers-reduced-motion`。v1.18.9 將原地翻轉改為可明確辨識的 2.5D 軌道式環繞：產品沿橢向與景深軌跡繞行，在前景放大、後方縮小變暗，並顯示 `360° ORBIT` 與掃描光環，完成後回到游標跟隨視角。
 
-- GitHub：<https://github.com/wcsodw1/AISO_Platform>（Private）
+v1.18.10 新增 `assets/models/` Web 3D asset library，收錄 8 個由現有單視角產品圖生成的 GLB prototype。模型與 `assets/products/` fallback 圖片分開管理，並以 manifest 記錄來源、檔案大小與 geometry 數量。AISO1 裝置詳情頁已啟用 `<model-viewer>` 真實 GLB 檢視器，支援拖曳旋轉、縮放、自動環繞、觸控及 reduced-motion；首頁分類卡維持原有 2.5D，載入失敗時回退至 PNG 預覽。
+
+- GitHub：<https://github.com/wcsodw1/AISO_Platform>（Public）
 - 預設分支：`main`
-- 架構更新日：2026-09-04
+- 架構更新日：2026-09-11
 
 ## 完整 Repository 架構
 
@@ -34,19 +36,20 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ launcher.py                                   ← 本機 HTTP Server／管理 API
 │  ├─ exporter.py                                   ← 公開資料清理與靜態匯出
 │  ├─ config.json                                   ← Host、Port、資料根目錄
-│  ├─ VERSION                                       ← Portal 版本（1.18.9）
+│  ├─ VERSION                                       ← Portal 版本（1.18.10）
 │  ├─ data/
 │  │  └─ products.json                              ← Portal 設備與 Benchmark metadata
 │  ├─ assets/
 │  │  ├─ cosmic/                                    ← Portal 宇宙視覺資產
-│  │  └─ products/                                  ← 已確認型號的官方產品圖與來源紀錄
+│  │  ├─ products/                                  ← 已確認型號的官方產品圖與來源紀錄
+│  │  └─ models/                                    ← GLB Web 3D prototypes 與 manifest
 │  ├─ scripts/
 │  │  └─ export_static.py                           ← CLI 靜態匯出入口
 │  ├─ sample-data/
 │  │  └─ Server/PRO6000-HPE-2GPU/               ← 首次建置用範例公開資料
 │  ├─ docs/                                         ← 產生後的 GitHub Pages 靜態站
 │  │  ├─ data/products.json                         ← 已去除內部欄位的公開目錄
-│  │  ├─ assets/cosmic／products/                   ← 匯出的共用 UI 與產品圖資產
+│  │  ├─ assets/cosmic／products／models/            ← 匯出的共用 UI、產品圖與 GLB 資產
 │  │  └─ assets/<product-id>/                       ← 可公開文件、結果與腳本
 │  ├─ start.sh／AISO Platform.command               ← macOS 啟動入口
 │  ├─ AISO Platform.bat                             ← Windows 啟動入口
@@ -158,7 +161,7 @@ make check   # Python 與 JavaScript 語法檢查
 make export  # 重建 AISO_Platform_Portal/docs/
 ```
 
-匯出會同時複製 `assets/cosmic/` 與 `assets/products/`，再加入各設備可公開的文件、Benchmark 與 Scripts。官方素材會保留來源紀錄；使用者提供的 AISO 產品照會註明取得方式。組裝系統若僅有 GPU 圖，介面會明確標示為 GPU platform reference、不是機箱照。
+匯出會同時複製 `assets/cosmic/`、`assets/products/` 與 `assets/models/`，再加入各設備可公開的文件、Benchmark 與 Scripts。官方素材會保留來源紀錄；使用者提供的 AISO 產品照會註明取得方式。組裝系統若僅有 GPU 圖，介面會明確標示為 GPU platform reference、不是機箱照。
 
 `AISO_Platform_Portal/docs/` 是 GitHub Pages 的正式靜態輸出，應與 Portal 版本一起提交。因它位於 monorepo 子目錄，連接 GitHub remote 後建議用 GitHub Actions 發布該資料夾；不直接把整個 repository 根目錄公開。
 

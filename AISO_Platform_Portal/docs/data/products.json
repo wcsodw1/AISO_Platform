@@ -1,6 +1,6 @@
 {
   "version": 13,
-  "updated_at": "2026-09-11T07:31:37+08:00",
+  "updated_at": "2026-09-11T14:14:17+08:00",
   "categories": [
     {
       "id": "consumer",
@@ -147,6 +147,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -290,6 +291,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -433,6 +435,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "assets/models/aiso1-ai-max395.glb",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -629,6 +632,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -671,6 +675,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -724,6 +729,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -806,6 +812,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",

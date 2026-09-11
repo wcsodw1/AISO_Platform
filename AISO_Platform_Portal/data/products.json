@@ -185,10 +185,26 @@
             "scope": "NP1 · 1K–32K input · 3 trials",
             "report": "benchmark_report.md",
             "highlights": [
-              {"metric": "TTFT @ 1K", "result": "3,147.57 ms", "condition": "Lower is better"},
-              {"metric": "TPOT @ 1K", "result": "21.45 ms/token", "condition": "Lower is better"},
-              {"metric": "Throughput @ 1K", "result": "31.37 tokens/s", "condition": "NP1"},
-              {"metric": "Throughput @ 32K", "result": "1.61 tokens/s", "condition": "NP1"}
+              {
+                "metric": "TTFT @ 1K",
+                "result": "3,147.57 ms",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "result": "21.45 ms/token",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "result": "31.37 tokens/s",
+                "condition": "NP1"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "result": "1.61 tokens/s",
+                "condition": "NP1"
+              }
             ]
           },
           {
@@ -196,10 +212,26 @@
             "scope": "NP1 · 1K–32K input · 3 trials",
             "report": "benchmark_report.md",
             "highlights": [
-              {"metric": "TTFT @ 1K", "result": "1,153.62 ms", "condition": "Lower is better"},
-              {"metric": "TPOT @ 1K", "result": "12.40 ms/token", "condition": "Lower is better"},
-              {"metric": "Throughput @ 1K", "result": "60.82 tokens/s", "condition": "NP1"},
-              {"metric": "Throughput @ 32K", "result": "6.73 tokens/s", "condition": "NP1"}
+              {
+                "metric": "TTFT @ 1K",
+                "result": "1,153.62 ms",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "result": "12.40 ms/token",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "result": "60.82 tokens/s",
+                "condition": "NP1"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "result": "6.73 tokens/s",
+                "condition": "NP1"
+              }
             ]
           }
         ]
@@ -271,10 +303,26 @@
             "scope": "NP1 · 1K–32K input · 3 trials",
             "report": "benchmark_report.md",
             "highlights": [
-              {"metric": "TTFT @ 1K", "result": "3,164.57 ms", "condition": "Lower is better"},
-              {"metric": "TPOT @ 1K", "result": "21.21 ms/token", "condition": "Lower is better"},
-              {"metric": "Throughput @ 1K", "result": "31.55 tokens/s", "condition": "NP1"},
-              {"metric": "Throughput @ 32K", "result": "1.41 tokens/s", "condition": "NP1"}
+              {
+                "metric": "TTFT @ 1K",
+                "result": "3,164.57 ms",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "result": "21.21 ms/token",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "result": "31.55 tokens/s",
+                "condition": "NP1"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "result": "1.41 tokens/s",
+                "condition": "NP1"
+              }
             ]
           },
           {
@@ -282,10 +330,26 @@
             "scope": "NP1 · 1K–32K input · 3 trials",
             "report": "benchmark_report.md",
             "highlights": [
-              {"metric": "TTFT @ 1K", "result": "832.85 ms", "condition": "Lower is better"},
-              {"metric": "TPOT @ 1K", "result": "12.50 ms/token", "condition": "Lower is better"},
-              {"metric": "Throughput @ 1K", "result": "65.64 tokens/s", "condition": "NP1"},
-              {"metric": "Throughput @ 32K", "result": "7.42 tokens/s", "condition": "NP1"}
+              {
+                "metric": "TTFT @ 1K",
+                "result": "832.85 ms",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "TPOT @ 1K",
+                "result": "12.50 ms/token",
+                "condition": "Lower is better"
+              },
+              {
+                "metric": "Throughput @ 1K",
+                "result": "65.64 tokens/s",
+                "condition": "NP1"
+              },
+              {
+                "metric": "Throughput @ 32K",
+                "result": "7.42 tokens/s",
+                "condition": "NP1"
+              }
             ]
           }
         ]
@@ -376,7 +440,8 @@
       },
       "publish": {
         "enabled": true
-      }
+      },
+      "model_3d": "assets/models/aiso1-ai-max395.glb"
     },
     {
       "id": "gb10-ai-workstation",

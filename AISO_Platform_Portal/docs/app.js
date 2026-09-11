@@ -1,6 +1,21 @@
 const state={catalog:null,mode:"public",category:null,product:null,tab:"SOP",previousView:"home"};
 const $=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
+const MODEL_VIEWER_SRC="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
+let modelViewerLibrary;
+
+function ensureModelViewerLibrary(){
+  if(customElements.get("model-viewer"))return Promise.resolve();
+  if(modelViewerLibrary)return modelViewerLibrary;
+  modelViewerLibrary=new Promise((resolve,reject)=>{
+    const script=document.createElement("script");
+    script.type="module";script.src=MODEL_VIEWER_SRC;script.dataset.aisoModelViewer="true";
+    script.onload=()=>customElements.whenDefined("model-viewer").then(resolve);
+    script.onerror=()=>reject(new Error("3D viewer library unavailable"));
+    document.head.appendChild(script);
+  }).catch(error=>{modelViewerLibrary=null;throw error});
+  return modelViewerLibrary;
+}
 
 async function request(path,options={}){
   const response=await fetch(path,{cache:"no-store",...options});
@@ -39,7 +54,24 @@ function depthPreviewMedia(product){
   const preview=product.preview_3d;
   return `<div class="product-media has-image product-depth-preview" data-depth-preview role="img" aria-label="${esc(preview.alt||`${product.name} interactive 3D preview`)}"><span class="depth-grid" aria-hidden="true"></span><span class="depth-orbit depth-orbit-back" aria-hidden="true"></span><span class="depth-orbit depth-orbit-front" aria-hidden="true"></span><span class="depth-glow" aria-hidden="true"></span><span class="depth-shadow" aria-hidden="true"></span><span class="depth-product-rig"><img class="depth-product-image" src="${esc(preview.image)}" alt="" loading="lazy" draggable="false"></span><span class="depth-glare" aria-hidden="true"></span><span class="depth-preview-badge"><i></i>${esc(preview.label||"3D PREVIEW")}</span><span class="depth-interaction-hint" aria-hidden="true">${esc(preview.hint||"MOVE CURSOR")}</span>${product.image_note?`<span class="product-media-note">${esc(product.image_note)}</span>`:""}</div>`;
 }
-function productMedia(product,category){
+function modelViewerMedia(product){
+  const poster=product.preview_3d?.image||product.image||"";
+  const alt=product.image_alt||`${product.name} 3D model`;
+  return `<div class="product-media product-model-viewer" data-model-stage><model-viewer data-model-viewer src="${esc(product.model_3d)}" poster="${esc(poster)}" alt="${esc(alt)}" camera-controls auto-rotate rotation-per-second="18deg" interaction-prompt="auto" touch-action="pan-y" shadow-intensity="1.15" shadow-softness=".8" exposure="1.05" environment-image="neutral" loading="lazy"><img slot="poster" class="model-viewer-poster" src="${esc(poster)}" alt="${esc(alt)}" loading="lazy"><span slot="progress-bar" class="model-progress" aria-hidden="true"><i></i></span></model-viewer><span class="model-viewer-status"><i></i>REAL-TIME 3D</span><span class="model-viewer-hint">DRAG TO ROTATE · SCROLL TO ZOOM</span>${product.image_note?`<span class="product-media-note">${esc(product.image_note)}</span>`:""}</div>`;
+}
+function bindModelViewer(root=document){
+  root.querySelectorAll("[data-model-stage]:not([data-model-ready])").forEach(stage=>{
+    stage.dataset.modelReady="true";
+    const viewer=stage.querySelector("[data-model-viewer]");
+    const fallback=()=>{stage.classList.add("is-model-fallback");stage.querySelector(".model-viewer-status")?.replaceChildren(document.createTextNode("3D PREVIEW · IMAGE FALLBACK"))};
+    viewer.addEventListener("load",()=>stage.classList.add("is-model-loaded"),{once:true});
+    viewer.addEventListener("error",fallback,{once:true});
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)viewer.removeAttribute("auto-rotate");
+    ensureModelViewerLibrary().catch(fallback);
+  });
+}
+function productMedia(product,category,{real3d=false}={}){
+  if(real3d&&product.model_3d)return modelViewerMedia(product);
   if(product.preview_3d?.image)return depthPreviewMedia(product);
   if(product.image)return `<div class="product-media has-image${product.image_count?" multi-gpu":""}"><img src="${esc(product.image)}" alt="${esc(product.image_alt||product.name)}" loading="lazy">${product.image_count?`<strong class="product-media-count">× ${esc(product.image_count)}</strong>`:""}${product.image_note?`<span class="product-media-note">${esc(product.image_note)}</span>`:""}</div>`;
   if(product.visual_variant)return hologramMedia(product);
@@ -246,7 +278,8 @@ function renderDevice(id,tab="Overview"){
   $("deviceType").textContent=state.category.name;
   $("deviceTypeZh").textContent=state.category.name_zh;
   $("deviceName").textContent=product.name;$("deviceSummary").textContent="查看本產品的規格、模型、SOP、Benchmark 與 Scripts";$("deviceStatus").textContent="";
-  $("deviceMedia").innerHTML=productMedia(product,state.category);
+  $("deviceMedia").innerHTML=productMedia(product,state.category,{real3d:true});
+  bindModelViewer($("deviceMedia"));
   bindProductDepth($("deviceMedia"));
   renderTabs();show("deviceView");
 }
