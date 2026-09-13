@@ -372,16 +372,18 @@ async function runSearch(query){
 
 document.querySelectorAll("[data-back]").forEach(button=>button.onclick=()=>{if(button.dataset.back==="home")renderHome();else if(button.dataset.back==="category")renderCategory(state.category.id);else if(button.dataset.back==="search")show(previousViewId())});
 function goProducts(){renderHome(false);setSiteNav("products");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("productsSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
+function goCapabilities(){renderHome(false);setSiteNav("capabilities");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("capabilitiesSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 $("homeBrandLink").addEventListener("click",event=>{event.preventDefault();renderHome()});
 $("homeLink").onclick=renderHome;
 $("productsLink").onclick=goProducts;
+$("capabilitiesLink").onclick=goCapabilities;
 $("modelListLink").onclick=renderModelList;
 $("resourcesLink").onclick=renderResources;
 $("aboutLink").onclick=renderAbout;
 $("heroProductsLink").onclick=goProducts;
 $("heroModelsLink").onclick=renderModelList;
 $("homeResourcesLink").onclick=renderResources;
-document.querySelectorAll("[data-footer-route]").forEach(button=>button.onclick=()=>({products:goProducts,models:renderModelList,resources:renderResources,about:renderAbout}[button.dataset.footerRoute]||renderHome)());
+document.querySelectorAll("[data-footer-route]").forEach(button=>button.onclick=()=>({products:goProducts,capabilities:goCapabilities,models:renderModelList,resources:renderResources,about:renderAbout}[button.dataset.footerRoute]||renderHome)());
 let searchTimer;$("globalSearch").addEventListener("input",event=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>runSearch(event.target.value),220)});
 init().catch(error=>{$("categoryGrid").innerHTML=`<div class="note">AISO Platform 載入失敗：${esc(error.message)}</div>`;$("modeBadge").textContent="載入失敗"});
 

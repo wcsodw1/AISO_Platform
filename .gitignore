@@ -1,6 +1,8 @@
 # macOS and editors
 .DS_Store
 **/.DS_Store
+._*
+**/._*
 .vscode/
 .idea/
 *~
@@ -43,6 +45,10 @@ htmlcov/
 **/*_stderr.txt
 **/*_trial*.jsonl
 **/*.zip
+
+# Blender Agent local configuration and generated scenes
+/AISO-Platform-UI/blender/output/
+/AISO-Platform-UI/blender/*.local.json
 
 # Browser-saved pages are working references, not publishable artifacts
 **/ChatGPT - *.html

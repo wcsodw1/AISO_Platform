@@ -1,4 +1,4 @@
-# AISO Platform v1.18.10
+# AISO Platform v1.19.0
 
 AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac 本機管理＋GitHub Pages 公開展示」兩種模式。
 
@@ -9,6 +9,8 @@ AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac �
 `VERIFY` 的 Validation Stack 會清楚呈現 `vLLM`、`Open WebUI` 與 `llama.cpp`：依硬體條件選用 vLLM 或 llama.cpp 建置推論服務，再搭配 Open WebUI 驗證瀏覽器操作、模型切換、長文本、首字等待時間、生成流暢度及錯誤中斷等使用體驗。
 
 網站採產品優先的品牌資訊架構：主頁呈現品牌主張、Consumer／Workstation-Mini／Workstation-Server 三大產品線與 Select／Verify／Deploy 方法；`Model Guide`、`Resources`、`About AISO` 各自使用獨立內容頁。
+
+v1.19.0 在產品線與顧問流程之間新增 `Blender AI Agent` capability section，呈現 AISO 已驗證的本地 3D 生成能力：Mac Blender 5.2.1 透過 PRO6000 上的 vLLM／GPT-OSS-120B 產生 Blender Python、執行語法與 runtime 驗證，失敗時以 traceback 進行 Auto-Repair。公開頁面只說明能力、可交付價值與流程，不包含 PRO6000 的實際 LAN endpoint、內部路徑或連線資訊。
 
 未取得正式 email、電話、地址或表單前不提供 `Contact` 頁，避免無法執行的假入口；取得官方窗口後再建立 Sales／Support 分流。
 
