@@ -69,6 +69,30 @@ def sanitized_benchmark(benchmark):
     }
 
 
+def sanitized_access_policy(policy):
+    return {
+        "tiers": [
+            {
+                "id": str(item.get("id", "")),
+                "label": str(item.get("label", "")),
+                "name": str(item.get("name", "")),
+                "description": str(item.get("description", "")),
+            }
+            for item in policy.get("tiers", [])
+        ],
+        "capabilities": [
+            {
+                "id": str(item.get("id", "")),
+                "name": str(item.get("name", "")),
+                "description": str(item.get("description", "")),
+                "access": str(item.get("access", "public")),
+                "availability": str(item.get("availability", "available")),
+            }
+            for item in policy.get("capabilities", [])
+        ],
+    }
+
+
 def sanitized_product(product, data_root: Path, output: Path):
     if not re.fullmatch(r"[a-z0-9-]+", str(product.get("id", ""))):
         raise ValueError(f"Unsafe product ID: {product.get('id', '')}")
@@ -129,6 +153,7 @@ def export_catalog(base: Path, data_root: Path):
     published = {
         "version": catalog.get("version", 1),
         "updated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "access_policy": sanitized_access_policy(catalog.get("access_policy", {})),
         "categories": catalog.get("categories", []),
         "model_matrix": catalog.get("model_matrix", []),
         "products": products,

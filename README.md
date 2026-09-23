@@ -2,7 +2,7 @@
 
 AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果、執行腳本與 AI 能力的單一 repository。目前 Portal 版本為 **v1.19.0**。
 
-Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、三大產品線與驗證方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
+Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、四個方案層級與顧問方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。方案層級為 Consumer、Workstation、Server 與 Data Center。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
 
 本機搜尋會把設備根資料夾與相對應的 Portal 產品頁視為同一項，避免同一台設備重複出現在結果中；一般文件與腳本仍可獨立搜尋及開啟。
 
@@ -11,6 +11,10 @@ v1.18.0 將 GB10、PRO6000 兩卡、PRO6000 八卡與 NVIDIA DGX B300 整理成�
 v1.18.10 新增 `assets/models/` Web 3D asset library，收錄 8 個由現有單視角產品圖生成的 GLB prototype。模型與 `assets/products/` fallback 圖片分開管理，並以 manifest 記錄來源、檔案大小與 geometry 數量。AISO1 裝置詳情頁已啟用 `<model-viewer>` 真實 GLB 檢視器，支援拖曳旋轉、縮放、自動環繞、觸控及 reduced-motion；首頁分類卡維持原有 2.5D，載入失敗時回退至 PNG 預覽。
 
 v1.19.0 納入已驗證的 AISO Blender Agent：由 Mac Blender 5.2.1 連接 PRO6000 上的 vLLM／GPT-OSS-120B，保留 Blender Python 生成、語法驗證、執行與 traceback Auto-Repair 核心；N Panel 增加 endpoint、model、修復次數與連線錯誤狀態，並移除機器綁定的絕對路徑。Portal 新增 `Blender AI Agent` capability section，以 `Prompt → Generate → Validate → Auto-Repair` 說明本地 3D 工作流程。實際 PRO6000 LAN endpoint 僅由本機環境或 Panel 設定，不進入 Public repository 內容或 GitHub Pages 輸出。
+
+目前本機預覽中的下一版架構，將首頁顧問流程擴充為 `Define → Select → Verify → Design → Deploy → Application`。六階段是共同決策骨架，`Verify`、`Design` 與 `Deploy` 可展開查看相容性、Benchmark、PoC、架構、Sizing、BOM、建置、整合與驗收子流程。Data Center 先以規劃入口呈現，後續再加入 Requirement Intake 與十階段專屬工作流。Blender AI Agent 同時加入公開安全的對話式 Application Demo；公開版只呈現經審核的 Prompt、處理階段與 GLB／Render 結果，不直接連接或揭露內網 Endpoint。
+
+Data Center 首頁卡片使用經去背整合的 AI 機櫃與加速運算模組透明素材 `assets/products/data-center-ai-infrastructure-cutout.png`，用於呈現從單一系統提升到機櫃級基礎設施的方案層級；原始參考照片不直接發布。
 
 - GitHub：<https://github.com/wcsodw1/AISO_Platform>（Public）
 - 預設分支：`main`
@@ -105,8 +109,8 @@ AISO_Platform/                                      ← Git repository 根目錄
 |---|---|---|
 | `AISO_Platform_Portal/` | Portal 程式、metadata 與產生的靜態站 | 納管 |
 | `AISO-Platform-UI/Consumer/` | Consumer Portal 正式資料 | 納管 |
-| `AISO-Platform-UI/Workstation-Mini/` | Workstation-Mini Portal 正式資料 | 納管 |
-| `AISO-Platform-UI/Workstation-Server/` | Workstation-Server Portal 正式資料 | 納管 |
+| `AISO-Platform-UI/Workstation-Mini/` | Workstation 產品的現行實體資料路徑 | 納管 |
+| `AISO-Platform-UI/Workstation-Server/` | Server 產品的現行實體資料路徑 | 納管 |
 | `AISO-Platform-UI/blender/` | Blender AI Agent 核心、N Panel 與公開安全操作說明 | 納管；不得提交實際 LAN endpoint、憑證或客戶 prompts |
 | `AISO-Platform-UI/blender/output/`、`*.local.json` | 本機場景、渲染、GLB 與 endpoint 設定 | 忽略；經人工審核後再移入正式資產路徑 |
 | 各設備的 `Public/` | 可由靜態網站發布的內容 | 納管，放入前須先檢查敏感資訊 |

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
 import mimetypes
 import os
@@ -48,6 +49,17 @@ def data_root() -> Path:
 
 def catalog():
     return load_json(CATALOG_PATH, {"updated_at": "", "categories": [], "products": []})
+
+
+def published_catalog():
+    return load_json(BASE / "docs" / "data" / "products.json", {"updated_at": "", "categories": [], "products": []})
+
+
+def is_loopback_client(address: str) -> bool:
+    try:
+        return ipaddress.ip_address(address).is_loopback
+    except ValueError:
+        return False
 
 
 def save_catalog(value) -> None:
@@ -173,14 +185,21 @@ class Handler(SimpleHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", "0"))
         return json.loads(self.rfile.read(length) or b"{}")
 
+    def is_admin_request(self):
+        return is_loopback_client(self.client_address[0])
+
     def do_GET(self):
         url = urllib.parse.urlparse(self.path)
         query = urllib.parse.parse_qs(url.query)
         if url.path == "/api/health":
+            if not self.is_admin_request():
+                return self.send_json({"ok": True, "mode": "internal", "access": "internal"})
             root = data_root()
-            return self.send_json({"ok": True, "mode": "local", "host": HOST, "port": PORT, "data_root": str(root), "data_root_ready": root.exists()})
+            return self.send_json({"ok": True, "mode": "admin", "access": "admin", "host": HOST, "port": PORT, "data_root": str(root), "data_root_ready": root.exists()})
         if url.path == "/api/products":
-            return self.send_json(catalog())
+            return self.send_json(catalog() if self.is_admin_request() else published_catalog())
+        if url.path.startswith("/api/") and not self.is_admin_request():
+            return self.send_json({"error": "This operation requires localhost administrator access."}, 403)
         if url.path == "/api/scan":
             try:
                 product = product_by_id(query.get("product", [""])[0])
@@ -234,10 +253,14 @@ class Handler(SimpleHTTPRequestHandler):
                 return
             except Exception as exc:
                 return self.send_json({"error": str(exc)}, 400)
+        if not self.is_admin_request():
+            self.directory = str(BASE / "docs")
         return super().do_GET()
 
     def do_POST(self):
         try:
+            if not self.is_admin_request():
+                return self.send_json({"error": "Management operations require localhost administrator access."}, 403)
             origin = self.headers.get("Origin", "")
             if origin and urllib.parse.urlparse(origin).hostname not in {"127.0.0.1", "localhost", "::1"}:
                 return self.send_json({"error": "Cross-origin management request blocked."}, 403)
