@@ -2979,3 +2979,10 @@ textarea{
   .app-deck.is-collapsible.is-expanded .app-hub:after{opacity:0;transform:translateY(8px)}
   .app-deck.no-anim .app-cards,.app-deck.no-anim .app-card{transition:none!important}
 }
+/* v1.21.3 - home cards: drop the 360° orbit (it smeared and darkened the product mid-turn); calm stage glow instead */
+.brand-site .category-card.is-home-orbiting .category-product-image{animation:none!important}
+.brand-site .category-card.is-home-orbiting .category-visual:before,.brand-site .category-card.is-home-orbiting .category-visual:after{content:none!important;display:none!important}
+.brand-site .category-card .category-visual{transition:border-color .35s ease,box-shadow .35s ease}
+.brand-site .category-card:hover .category-visual,.brand-site .category-card:focus-within .category-visual{border-color:rgba(200,184,117,.45);box-shadow:inset 0 0 60px rgba(126,220,255,.08),0 0 0 1px rgba(200,184,117,.12)}
+.brand-site .category-card:hover .category-projection-base,.brand-site .category-card:focus-within .category-projection-base{opacity:1;filter:brightness(1.35)}
+.brand-site .category-card .category-visual{transform-style:flat}
