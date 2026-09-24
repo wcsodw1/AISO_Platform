@@ -482,18 +482,28 @@ if(appDeck){
   };
   appDeck.querySelectorAll("[data-app-open]").forEach(button=>button.onclick=()=>setAppOpen(button,button.getAttribute("aria-expanded")!=="true"));
   const phoneDeck=matchMedia("(max-width: 760px)");
-  if(phoneDeck.matches&&"IntersectionObserver" in window){
+  if(phoneDeck.matches){
     appDeck.classList.add("is-collapsible");
     const setDeckExpanded=open=>{
       if(open||appDeck.classList.contains("has-open-app")){appDeck.classList.add("is-expanded");return}
       if(!appDeck.classList.contains("is-expanded"))return;
+      if(appDeck.getBoundingClientRect().bottom>=0){appDeck.classList.remove("is-expanded");return}
       const anchor=appDeck.closest("section")?.nextElementSibling,before=anchor?.getBoundingClientRect().top;
       appDeck.classList.add("no-anim");appDeck.classList.remove("is-expanded");
       if(anchor&&appDeck.getBoundingClientRect().bottom<0){const drift=anchor.getBoundingClientRect().top-before;if(drift)window.scrollBy(0,drift)}
       requestAnimationFrame(()=>requestAnimationFrame(()=>appDeck.classList.remove("no-anim")));
     };
-    new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)setDeckExpanded(true)}),{rootMargin:"-30% 0px -30% 0px"}).observe(appDeck.querySelector(".app-hub"));
-    new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)setDeckExpanded(false)})).observe(appDeck);
+    const hub=appDeck.querySelector(".app-hub");let ticking=false,manual=false;
+    const syncDeck=()=>{
+      ticking=false;
+      const vh=window.innerHeight,hubTop=hub.getBoundingClientRect().top,deckTop=appDeck.getBoundingClientRect().top,deckBottom=appDeck.getBoundingClientRect().bottom,open=appDeck.classList.contains("is-expanded");
+      if(manual){if(deckBottom<0||deckTop>vh)manual=false;else return}
+      if(!open&&hubTop<vh*.8&&deckBottom>0)setDeckExpanded(true);
+      else if(open&&(hubTop>vh*.92||deckBottom<0))setDeckExpanded(false);
+    };
+    window.addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(syncDeck)}},{passive:true});
+    hub.addEventListener("click",()=>{manual=true;if(appDeck.classList.contains("is-expanded")&&!appDeck.classList.contains("has-open-app"))appDeck.classList.remove("is-expanded");else setDeckExpanded(true)});
+    syncDeck();
   }
   document.querySelectorAll("[data-app-close]").forEach(close=>close.onclick=()=>{
     const button=appDeck.querySelector("[data-app-open][aria-expanded=true]");
