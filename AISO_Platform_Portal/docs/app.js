@@ -1,4 +1,4 @@
-const state={catalog:null,mode:"public",category:null,product:null,tab:"SOP",previousView:"home"};
+const state={catalog:null,mode:"public",access:"public",category:null,product:null,tab:"SOP",previousView:"home"};
 const $=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
 const MODEL_VIEWER_SRC="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
@@ -28,12 +28,19 @@ async function request(path,options={}){
 async function init(){
   try{
     const health=await request("/api/health");
-    state.mode="local";
+    state.access=health.access||health.mode||"internal";
+    state.mode=state.access==="admin"?"local":"public";
     state.catalog=await request("/api/products");
-    $("modeBadge").textContent=health.data_root_ready?"本機管理版":"本機版 · 尚未建立資料夾";
-    $("manageLink").classList.remove("hidden");
+    if(state.access==="admin"){
+      $("modeBadge").textContent=health.data_root_ready?"本機管理版":"本機版 · 尚未建立資料夾";
+      $("manageLink").classList.remove("hidden");
+    }else{
+      $("modeBadge").textContent="公司內網 · 唯讀";
+      $("modeBadge").classList.add("internal");
+    }
   }catch(error){
     state.mode="public";
+    state.access="public";
     state.catalog=await request("data/products.json");
     $("modeBadge").textContent="公開唯讀版";
     $("modeBadge").classList.add("public");
@@ -41,6 +48,14 @@ async function init(){
   $("productCount").textContent=state.catalog.products.length;
   $("updatedAt").textContent=`Updated ${state.catalog.updated_at||"-"}`;
   renderHome();
+  const demoViewport=document.querySelector(".demo-viewport");
+  if(demoViewport){
+    demoViewport.dataset.modelStage="true";
+    demoViewport.innerHTML='<model-viewer data-model-viewer src="assets/models/aiso1-ai-max395.glb" poster="assets/products/aiso1-ai-max395-3d.png" alt="AISO1 AI workstation interactive 3D prototype" camera-controls auto-rotate rotation-per-second="18deg" interaction-prompt="none" touch-action="pan-y" shadow-intensity="1.1" environment-image="neutral"><img slot="poster" src="assets/products/aiso1-ai-max395-3d.png" alt="AISO1 AI workstation prototype"></model-viewer>';
+    const resultCopy=demoViewport.nextElementSibling;
+    if(resultCopy)resultCopy.innerHTML="<small>APPROVED PROTOTYPE OUTPUT</small><strong>AISO1 AI WORKSTATION</strong><p>Interactive GLB · drag to rotate · replaceable with the next Blender Agent result</p>";
+  }
+  bindModelViewer(document);
 }
 
 const productsFor=category=>state.catalog.products.filter(product=>product.category===category);
@@ -173,6 +188,7 @@ function bindProductDepth(root=document){
   });
 }
 function categoryVisual(category,products){
+  if(category.image)return `<div class="category-visual category-visual-${esc(category.id)}-image" aria-hidden="true"><img class="category-product-image" src="${esc(category.image)}" alt="" loading="lazy"><span class="category-projection-base"></span></div>`;
   if(category.id==="consumer"||category.id==="workstation"){
     const images=products.filter(product=>product.image).slice(0,2);
     return `<div class="category-visual category-visual-${esc(category.id)}-products" aria-hidden="true">${images.map((product,index)=>`<img class="category-product-image image-${index+1}" src="${esc(product.image)}" alt="" loading="lazy">`).join("")}<span class="category-projection-base"></span></div>`;
@@ -210,7 +226,8 @@ function renderHome(scroll=true){
   state.catalog.categories.forEach(category=>{
     const products=productsFor(category.id);
     const card=document.createElement("article");card.className="category-card";
-    card.innerHTML=`<button class="category-card-main" type="button" aria-expanded="false"><span class="category-order">${esc(category.order)}</span>${categoryVisual(category,products)}<h2>${esc(category.name)}</h2><h3>${esc(category.name_zh)}</h3><p>${esc(category.description)}</p><div class="category-foot"><span>${products.length} Products</span><span>Models ↓</span></div></button><div class="category-product-drawer" aria-label="${esc(category.name)} 機型">${products.map(product=>`<button class="category-product-link" type="button" data-product-id="${esc(product.id)}"><span class="category-product-thumb">${product.image?`<img src="${esc(product.image)}" alt="" loading="lazy">`:""}</span><span><strong>${esc(product.name)}</strong><small>${esc(product.positioning||product.status)}</small></span><em>View →</em></button>`).join("")}</div>`;
+    const isPlanning=category.id==="data-center";
+    card.innerHTML=`<button class="category-card-main" type="button" aria-expanded="false"><span class="category-order">${esc(category.order)}</span>${categoryVisual(category,products)}<h2>${esc(category.name)}</h2><h3>${esc(category.name_zh)}</h3><p>${esc(category.description)}</p><div class="category-foot"><span>${isPlanning?"Solution Planning":`${products.length} Products`}</span><span>${isPlanning?"Plan →":"Models ↓"}</span></div></button><div class="category-product-drawer" aria-label="${esc(category.name)} ${isPlanning?"規劃流程":"機型"}">${isPlanning?'<div class="category-planning-link"><strong>REQUIREMENT → ARCHITECTURE → DEPLOYMENT</strong><small>從需求資料開始規劃 AI Data Center</small></div>':products.map(product=>`<button class="category-product-link" type="button" data-product-id="${esc(product.id)}"><span class="category-product-thumb">${product.image?`<img src="${esc(product.image)}" alt="" loading="lazy">`:""}</span><span><strong>${esc(product.name)}</strong><small>${esc(product.positioning||product.status)}</small></span><em>View →</em></button>`).join("")}</div>`;
     const main=card.querySelector(".category-card-main");
     main.onclick=()=>renderCategory(category.id);
     card.onmouseenter=()=>{main.setAttribute("aria-expanded","true");orbitHomeCard(card)};
@@ -219,7 +236,23 @@ function renderHome(scroll=true){
     card.querySelectorAll("[data-product-id]").forEach(button=>button.onclick=()=>renderDevice(button.dataset.productId));
     grid.appendChild(card);
   });
+  renderAccessPolicy();
   show("homeView",scroll);
+}
+
+function renderAccessPolicy(){
+  const policy=state.catalog.access_policy||{};
+  const tierGrid=$("accessTierGrid"),capabilityGrid=$("accessCapabilityGrid");
+  if(!tierGrid||!capabilityGrid)return;
+  const rank={public:0,internal:1,admin:2};
+  const current=rank[state.access]??0;
+  tierGrid.innerHTML=(policy.tiers||[]).map((tier,index)=>`<article class="access-tier${tier.id===state.access?" is-current":""}"><span>${String(index+1).padStart(2,"0")} / ${esc(tier.label)}</span><h3>${esc(tier.name)}</h3><p>${esc(tier.description)}</p>${tier.id===state.access?'<strong>YOUR CURRENT ACCESS</strong>':""}</article>`).join("");
+  capabilityGrid.innerHTML=(policy.capabilities||[]).map(item=>{
+    const planned=item.availability==="planned";
+    const allowed=current>=(rank[item.access]??0);
+    const status=planned?"PLANNED":allowed?"AVAILABLE":`REQUIRES ${String(item.access).toUpperCase()}`;
+    return `<article class="access-capability${allowed&&!planned?" is-available":""}"><div><span>${esc(item.access)}</span><b>${esc(status)}</b></div><h4>${esc(item.name)}</h4><p>${esc(item.description)}</p></article>`;
+  }).join("");
 }
 
 function renderCategory(id){
@@ -230,6 +263,12 @@ function renderCategory(id){
   $("categoryTitleZh").textContent=category.name_zh;
   $("categoryDescription").textContent=category.description;
   const grid=$("deviceGrid");grid.innerHTML="";
+  if(id==="data-center"){
+    grid.className="data-center-planner";
+    grid.innerHTML=`<section class="dc-hero"><div><span>AI INFRASTRUCTURE</span><h3>FROM ONE SYSTEM<br>TO A COMPLETE FACILITY.</h3><p>從模型、使用人數與服務目標出發，規劃 Compute、Network、Storage、Power、Cooling 與持續擴充能力。</p></div><figure><img src="${esc(category.image)}" alt="三座獨立排列的 AI Data Center 機櫃" loading="eager"></figure></section><section class="dc-intake"><header><span>START HERE</span><h3>BUILD YOUR AI DATA CENTER</h3><p>Tell AISO what you need. We translate the workload into compute, network, storage and an executable infrastructure plan.</p></header><div class="dc-intake-grid"><span><b>AI USE CASE</b>RAG · Agent · Training · Inference</span><span><b>USERS &amp; CONCURRENCY</b>人數、同時使用量與服務模式</span><span><b>MODEL &amp; CONTEXT</b>模型規模、Context、TPS 與 Latency</span><span><b>INFRASTRUCTURE</b>既有機房、Network、Storage 與 HA</span><span><b>CONSTRAINTS</b>安全隔離、預算與時程</span><span><b>FUTURE SCALE</b>成長預估與擴充策略</span></div></section><section class="dc-pipeline"><header><span>DATA CENTER WORKFLOW</span><h3>FROM REQUIREMENT TO SCALE.</h3></header><ol>${["Requirement Intake","Workload & Capacity Analysis","Compute / GPU Sizing","Architecture Design","Infrastructure Design","BOM & Solution Proposal","PoC / Benchmark Validation","Deployment","Integration & Acceptance","Operation / Scale"].map((step,index)=>`<li><span>${String(index+1).padStart(2,"0")}</span><strong>${step}</strong></li>`).join("")}</ol></section>`;
+    show("categoryView");return;
+  }
+  grid.className="device-grid";
   const products=productsFor(id);
   if(!products.length){grid.innerHTML='<div class="empty-state">這個類型目前沒有設備。</div>'}
   products.forEach(product=>{
@@ -384,6 +423,84 @@ $("heroProductsLink").onclick=goProducts;
 $("heroModelsLink").onclick=renderModelList;
 $("homeResourcesLink").onclick=renderResources;
 document.querySelectorAll("[data-footer-route]").forEach(button=>button.onclick=()=>({products:goProducts,capabilities:goCapabilities,models:renderModelList,resources:renderResources,about:renderAbout}[button.dataset.footerRoute]||renderHome)());
+
+const agentDemoButton=$("runAgentDemo");
+if(agentDemoButton){
+  agentDemoButton.onclick=()=>{
+    const demo=document.querySelector("[data-agent-demo]");
+    const steps=[...document.querySelectorAll("#agentDemoSteps span")];
+    const reply=$("agentDemoReply"),result=$("agentDemoResult");
+    demo.classList.remove("is-complete");steps.forEach(step=>step.classList.remove("is-active","is-done"));
+    result.setAttribute("aria-hidden","true");reply.textContent="Interpreting scene, material, lighting, and camera requirements…";
+    agentDemoButton.disabled=true;agentDemoButton.textContent="RUNNING…";
+    steps.forEach((step,index)=>window.setTimeout(()=>{
+      steps.slice(0,index).forEach(previous=>{previous.classList.remove("is-active");previous.classList.add("is-done")});
+      step.classList.add("is-active");
+      if(index===steps.length-1)window.setTimeout(()=>{
+        step.classList.remove("is-active");step.classList.add("is-done");demo.classList.add("is-complete");
+        result.setAttribute("aria-hidden","false");reply.textContent="Scene generated, validated, and delivered as editable Blender geometry.";
+        agentDemoButton.disabled=false;agentDemoButton.textContent="REPLAY DEMO ↻";
+      },600);
+    },index*650));
+  };
+}
+
+const consultingDetails={
+  DEFINE:{intro:"把目標先說清楚，再開始選設備。",items:[["USE CASE","RAG、Agent、生成、訓練或專業應用"],["DEMAND","使用人數、併發、模型、Context 與 SLA"],["CONSTRAINTS","既有環境、預算、安全與時程"]],output:"需求定義與工作負載基準"},
+  SELECT:{intro:"依需求選擇合適的系統層級與軟硬體組合。",items:[["LEVEL","Consumer、Workstation、Server 或 Data Center"],["COMPUTE","GPU、Memory、Storage 與 Network"],["STACK","模型、推論框架與操作介面"]],output:"選型建議與候選配置"},
+  VERIFY:{intro:"在真實硬體與使用情境中取得可比較的答案。",items:[["COMPATIBILITY","模型、框架與硬體相容性"],["BENCHMARK","TTFT、TPOT、Throughput 與 Context"],["CAPACITY TEST","併發、記憶體與壓力邊界"],["POC","vLLM／Open WebUI／llama.cpp 應用驗證"]],output:"PoC 驗證報告與適用邊界"},
+  DESIGN:{intro:"把已驗證方案轉換成可採購、可擴充的落地架構。",items:[["ARCHITECTURE","服務、節點與資料流"],["GPU SIZING","依負載推算運算容量"],["NETWORK / STORAGE","頻寬、容量、HA 與隔離"],["BOM","建議規格與方案提案"]],output:"Solution Architecture 與 BOM"},
+  DEPLOY:{intro:"將通過驗證的架構建置到正式環境並完成移交。",items:[["INSTALL","硬體、驅動與環境建置"],["SERVE","模型服務與 Endpoint"],["INTEGRATE","平台、權限與應用整合"],["ACCEPT","驗收、SOP 與知識移轉"]],output:"Production-ready AI System"},
+  APPLICATION:{intro:"讓 AI 能力真正進入團隊日常工作。",items:[["ENTERPRISE AI","RAG、知識庫與內部服務"],["AI AGENT","自動化任務與跨系統流程"],["CREATIVE / 3D","Blender Agent 與專業應用"]],output:"可操作、可維運的實際應用"}
+};
+document.querySelectorAll(".consulting-flow-six>span").forEach(step=>{
+  const name=step.querySelector("strong")?.textContent?.trim();
+  const detail=consultingDetails[name];if(!detail)return;
+  step.tabIndex=0;step.setAttribute("role","button");step.setAttribute("aria-expanded","false");
+  step.insertAdjacentHTML("beforeend",`<div class="flow-step-detail"><p>${esc(detail.intro)}</p><ul style="--flow-cols:${detail.items.length}">${detail.items.map(item=>`<li><b>${esc(item[0])}</b><em>${esc(item[1])}</em></li>`).join("")}</ul><footer><small>OUTPUT</small><b>${esc(detail.output)}</b></footer></div>`);
+  const setExpanded=value=>step.setAttribute("aria-expanded",String(value));
+  step.addEventListener("mouseenter",()=>setExpanded(true));step.addEventListener("mouseleave",()=>setExpanded(false));
+  step.addEventListener("focus",()=>setExpanded(true));step.addEventListener("blur",()=>setExpanded(false));
+  step.addEventListener("click",()=>setExpanded(step.getAttribute("aria-expanded")!=="true"));
+  step.addEventListener("keydown",event=>{if(event.key==="Escape"){setExpanded(false);step.blur()}});
+});
+
+const showreel=$("showreelSection");
+if(showreel&&showreel.dataset.videoSrc){
+  const video=document.createElement("video");
+  video.className="showreel-video";video.src=showreel.dataset.videoSrc;video.controls=true;video.playsInline=true;video.preload="metadata";
+  if(showreel.dataset.videoPoster)video.poster=showreel.dataset.videoPoster;
+  showreel.querySelector(".showreel-frame").replaceChildren(video);
+}
+
+const appDeck=document.querySelector("[data-app-deck]");
+if(appDeck){
+  const setAppOpen=(button,open)=>{
+    const panel=$(button.getAttribute("aria-controls"));if(!panel)return;
+    button.setAttribute("aria-expanded",String(open));panel.hidden=!open;appDeck.classList.toggle("has-open-app",open);
+    if(open)requestAnimationFrame(()=>panel.scrollIntoView({behavior:"smooth",block:"start"}));
+  };
+  appDeck.querySelectorAll("[data-app-open]").forEach(button=>button.onclick=()=>setAppOpen(button,button.getAttribute("aria-expanded")!=="true"));
+  const phoneDeck=matchMedia("(max-width: 760px)");
+  if(phoneDeck.matches&&"IntersectionObserver" in window){
+    appDeck.classList.add("is-collapsible");
+    const setDeckExpanded=open=>{
+      if(open||appDeck.classList.contains("has-open-app")){appDeck.classList.add("is-expanded");return}
+      if(!appDeck.classList.contains("is-expanded"))return;
+      const anchor=appDeck.closest("section")?.nextElementSibling,before=anchor?.getBoundingClientRect().top;
+      appDeck.classList.add("no-anim");appDeck.classList.remove("is-expanded");
+      if(anchor&&appDeck.getBoundingClientRect().bottom<0){const drift=anchor.getBoundingClientRect().top-before;if(drift)window.scrollBy(0,drift)}
+      requestAnimationFrame(()=>requestAnimationFrame(()=>appDeck.classList.remove("no-anim")));
+    };
+    new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)setDeckExpanded(true)}),{rootMargin:"-30% 0px -30% 0px"}).observe(appDeck.querySelector(".app-hub"));
+    new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)setDeckExpanded(false)})).observe(appDeck);
+  }
+  document.querySelectorAll("[data-app-close]").forEach(close=>close.onclick=()=>{
+    const button=appDeck.querySelector("[data-app-open][aria-expanded=true]");
+    if(button){setAppOpen(button,false);appDeck.scrollIntoView({behavior:"smooth",block:"center"});button.focus({preventScroll:true})}
+  });
+}
+
 let searchTimer;$("globalSearch").addEventListener("input",event=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>runSearch(event.target.value),220)});
 init().catch(error=>{$("categoryGrid").innerHTML=`<div class="note">AISO Platform 載入失敗：${esc(error.message)}</div>`;$("modeBadge").textContent="載入失敗"});
 

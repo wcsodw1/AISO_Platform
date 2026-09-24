@@ -1,6 +1,58 @@
 {
-  "version": 13,
-  "updated_at": "2026-09-13T08:48:34+08:00",
+  "version": 14,
+  "updated_at": "2026-09-24T09:25:54+08:00",
+  "access_policy": {
+    "tiers": [
+      {
+        "id": "public",
+        "label": "PUBLIC DEMO",
+        "name": "公開展示",
+        "description": "產品、架構、Benchmark 與預錄成果；不連接任何內網 Endpoint。"
+      },
+      {
+        "id": "internal",
+        "label": "INTERNAL LIVE",
+        "name": "公司內網",
+        "description": "透過公司 LAN 或 VPN 進入唯讀入口；即時功能將由受保護的 Gateway 提供。"
+      },
+      {
+        "id": "admin",
+        "label": "ADMIN ONLY",
+        "name": "本機管理",
+        "description": "僅限 localhost 編輯設備、管理設定、掃描資料與產生公開版本。"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "catalog",
+        "name": "產品與技術資料",
+        "description": "產品規格、公開文件、Benchmark 與 Scripts。",
+        "access": "public",
+        "availability": "available"
+      },
+      {
+        "id": "recorded-demo",
+        "name": "AI 能力展示",
+        "description": "以流程、畫面與已審核成果呈現 Endpoint 能力。",
+        "access": "public",
+        "availability": "available"
+      },
+      {
+        "id": "endpoint-runtime",
+        "name": "Endpoint 即時操作",
+        "description": "模型狀態、Prompt 測試與即時回應；不由瀏覽器直接連接模型主機。",
+        "access": "internal",
+        "availability": "planned"
+      },
+      {
+        "id": "endpoint-admin",
+        "name": "Endpoint 與發布管理",
+        "description": "Endpoint 設定、權限、啟停、稽核與公開內容發布。",
+        "access": "admin",
+        "availability": "planned"
+      }
+    ]
+  },
   "categories": [
     {
       "id": "consumer",
@@ -12,16 +64,24 @@
     {
       "id": "workstation",
       "order": "02",
-      "name": "Workstation-Mini",
+      "name": "Workstation",
       "name_zh": "工作站",
       "description": "為專業開發與內容工作設計的 AI 工作站，支援更大模型、長 Context 與進階測試。"
     },
     {
       "id": "server",
       "order": "03",
-      "name": "Workstation-Server",
+      "name": "Server",
       "name_zh": "伺服器",
       "description": "面向企業部署與多人服務的 AI Server，提供大型模型、長 Context 與高併發運算能力。"
+    },
+    {
+      "id": "data-center",
+      "order": "04",
+      "name": "Data Center",
+      "name_zh": "資料中心",
+      "image": "assets/products/data-center-ai-infrastructure-cutout.png",
+      "description": "從需求盤點、容量分析與架構設計，到 BOM、PoC、部署、驗收及後續擴充的完整 AI 基礎設施規劃。"
     }
   ],
   "model_matrix": [
