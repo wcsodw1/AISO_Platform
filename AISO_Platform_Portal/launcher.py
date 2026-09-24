@@ -170,6 +170,9 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "same-origin")
         self.send_header("X-Frame-Options", "SAMEORIGIN")
+        if getattr(self, "revalidate_static", False):
+            # Local preview: make phones revalidate pages/scripts instead of reusing a stale build.
+            self.send_header("Cache-Control", "no-cache")
         super().end_headers()
 
     def send_json(self, payload, status=200):
@@ -255,6 +258,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json({"error": str(exc)}, 400)
         if not self.is_admin_request():
             self.directory = str(BASE / "docs")
+        self.revalidate_static = True
         return super().do_GET()
 
     def do_POST(self):

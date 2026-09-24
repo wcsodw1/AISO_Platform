@@ -2933,3 +2933,49 @@ textarea{
   .app-deck:hover .app-card:nth-child(3),.app-deck:focus-within .app-card:nth-child(3),.app-deck.has-open-app .app-card:nth-child(3){transition-delay:.18s}
 }
 @media(min-width:761px) and (max-width:1180px){.app-hub{flex-basis:180px}.app-hub strong{font-size:40px}.app-hub-ring{width:170px;height:170px}.app-card{padding:20px}.app-card strong{font-size:20px}.app-card small{font-size:13px}}
+
+/* v1.21.0 - home showreel stage (reserved for the demo video) */
+.showreel-frame{position:relative;width:min(100%,1180px);aspect-ratio:16/9;margin:0 auto;overflow:hidden;border:1px solid rgba(243,239,229,.24);border-radius:28px;background:radial-gradient(ellipse 55% 60% at 50% 55%,rgba(126,220,255,.1),transparent 70%),linear-gradient(rgba(146,226,255,.04) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,rgba(146,226,255,.04) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(160deg,rgba(12,17,31,.94),rgba(4,6,12,.96));box-shadow:0 40px 120px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.05)}
+.showreel-video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.showreel-placeholder{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:14px;text-align:center}
+.showreel-corner{position:absolute;width:34px;height:34px;border-color:rgba(200,184,117,.7);border-style:solid}
+.showreel-corner-tl{left:26px;top:26px;border-width:1px 0 0 1px}
+.showreel-corner-br{right:26px;bottom:26px;border-width:0 1px 1px 0}
+.showreel-play{position:relative;display:grid;place-items:center;width:96px;height:96px;margin-bottom:10px;border:1px solid rgba(200,184,117,.7);border-radius:50%;background:rgba(200,184,117,.08)}
+.showreel-play:before,.showreel-play:after{content:"";position:absolute;inset:-14px;border:1px solid rgba(200,184,117,.25);border-radius:50%;animation:showreel-pulse 3.2s ease-out infinite}
+.showreel-play:after{inset:-30px;border-color:rgba(126,220,255,.16);animation-delay:-1.6s}
+.showreel-play i{width:0;height:0;margin-left:6px;border-style:solid;border-width:15px 0 15px 25px;border-color:transparent transparent transparent var(--fashion-ivory,#f3efe5)}
+@keyframes showreel-pulse{0%{opacity:.9;transform:scale(.9)}100%{opacity:0;transform:scale(1.25)}}
+.showreel-placeholder small{color:var(--fashion-sand,#c8b875);font-size:12px;font-weight:800;letter-spacing:.3em}
+.showreel-placeholder strong{color:var(--fashion-ivory,#f3efe5);font-size:clamp(28px,4vw,58px);line-height:1;letter-spacing:-.03em}
+.showreel-placeholder em{color:rgba(243,239,229,.5);font-size:12px;font-style:normal;font-weight:700;letter-spacing:.22em}
+@media(max-width:760px){.showreel{margin-top:36px}.showreel-frame{border-radius:20px}.showreel-play{width:68px;height:68px}.showreel-play i{border-width:11px 0 11px 18px}.showreel-corner{width:22px;height:22px}.showreel-corner-tl{left:14px;top:14px}.showreel-corner-br{right:14px;bottom:14px}.showreel-placeholder{gap:8px}.showreel-placeholder small,.showreel-placeholder em{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.showreel-play:before,.showreel-play:after{animation:none}}
+
+/* v1.21.1 - showreel lives inside the hero: copy left, video stage right */
+.brand-hero:before,.brand-hero:after{display:none!important}
+.brand-hero{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:48px}
+.brand-hero h1{font-size:clamp(60px,6.6vw,108px)}
+.hero-showreel{min-width:0}
+.hero-showreel .showreel-frame{width:100%;border-radius:22px}
+.hero-showreel .showreel-placeholder strong{font-size:clamp(22px,2.4vw,38px)}
+.hero-stat{display:flex;align-items:center;gap:14px;margin:30px 0 0}
+.hero-stat strong{color:var(--fashion-ivory,#f3efe5);font-family:Didot,"Bodoni 72",Georgia,serif;font-size:44px;font-weight:400;line-height:1}
+.hero-stat span{display:grid;gap:4px;color:var(--fashion-sand,#c8b875);font-size:11px;font-weight:800;letter-spacing:.2em}
+.hero-stat small{color:rgba(243,239,229,.5);font-size:9px;letter-spacing:.14em}
+@media(max-width:1180px){.brand-hero{grid-template-columns:1fr;gap:36px}.brand-hero h1{font-size:clamp(56px,11vw,110px)}}
+@media(max-width:760px){.hero-stat strong{font-size:34px}.hero-showreel .showreel-frame{border-radius:16px}}
+
+/* v1.21.2 - phones: the Applications deck unfolds when scrolled into view and folds when it leaves */
+@media(max-width:760px){
+  .app-deck.is-collapsible{gap:0}
+  .app-deck.is-collapsible .app-cards{max-height:0;padding-top:0;overflow:hidden;transition:max-height .75s cubic-bezier(.2,.8,.2,1),padding-top .4s ease}
+  .app-deck.is-collapsible .app-card{opacity:0;transform:translateY(-36px) scale(.94);transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .45s ease}
+  .app-deck.is-collapsible.is-expanded .app-cards{max-height:2400px;padding-top:14px}
+  .app-deck.is-collapsible.is-expanded .app-card{opacity:1;transform:none}
+  .app-deck.is-collapsible.is-expanded .app-card:nth-child(2){transition-delay:.12s}
+  .app-deck.is-collapsible.is-expanded .app-card:nth-child(3){transition-delay:.24s}
+  .app-deck.is-collapsible .app-hub:after{content:"↓";margin-top:12px;color:var(--fashion-sand,#c8b875);font-size:18px;transition:opacity .3s ease,transform .3s ease}
+  .app-deck.is-collapsible.is-expanded .app-hub:after{opacity:0;transform:translateY(8px)}
+  .app-deck.no-anim .app-cards,.app-deck.no-anim .app-card{transition:none!important}
+}

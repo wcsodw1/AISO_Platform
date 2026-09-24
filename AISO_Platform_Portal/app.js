@@ -465,6 +465,14 @@ document.querySelectorAll(".consulting-flow-six>span").forEach(step=>{
   step.addEventListener("keydown",event=>{if(event.key==="Escape"){setExpanded(false);step.blur()}});
 });
 
+const showreel=$("showreelSection");
+if(showreel&&showreel.dataset.videoSrc){
+  const video=document.createElement("video");
+  video.className="showreel-video";video.src=showreel.dataset.videoSrc;video.controls=true;video.playsInline=true;video.preload="metadata";
+  if(showreel.dataset.videoPoster)video.poster=showreel.dataset.videoPoster;
+  showreel.querySelector(".showreel-frame").replaceChildren(video);
+}
+
 const appDeck=document.querySelector("[data-app-deck]");
 if(appDeck){
   const setAppOpen=(button,open)=>{
@@ -473,6 +481,20 @@ if(appDeck){
     if(open)requestAnimationFrame(()=>panel.scrollIntoView({behavior:"smooth",block:"start"}));
   };
   appDeck.querySelectorAll("[data-app-open]").forEach(button=>button.onclick=()=>setAppOpen(button,button.getAttribute("aria-expanded")!=="true"));
+  const phoneDeck=matchMedia("(max-width: 760px)");
+  if(phoneDeck.matches&&"IntersectionObserver" in window){
+    appDeck.classList.add("is-collapsible");
+    const setDeckExpanded=open=>{
+      if(open||appDeck.classList.contains("has-open-app")){appDeck.classList.add("is-expanded");return}
+      if(!appDeck.classList.contains("is-expanded"))return;
+      const anchor=appDeck.closest("section")?.nextElementSibling,before=anchor?.getBoundingClientRect().top;
+      appDeck.classList.add("no-anim");appDeck.classList.remove("is-expanded");
+      if(anchor&&appDeck.getBoundingClientRect().bottom<0){const drift=anchor.getBoundingClientRect().top-before;if(drift)window.scrollBy(0,drift)}
+      requestAnimationFrame(()=>requestAnimationFrame(()=>appDeck.classList.remove("no-anim")));
+    };
+    new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)setDeckExpanded(true)}),{rootMargin:"-30% 0px -30% 0px"}).observe(appDeck.querySelector(".app-hub"));
+    new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)setDeckExpanded(false)})).observe(appDeck);
+  }
   document.querySelectorAll("[data-app-close]").forEach(close=>close.onclick=()=>{
     const button=appDeck.querySelector("[data-app-open][aria-expanded=true]");
     if(button){setAppOpen(button,false);appDeck.scrollIntoView({behavior:"smooth",block:"center"});button.focus({preventScroll:true})}
