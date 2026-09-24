@@ -1,5 +1,13 @@
 # AISO Platform
 
+<p align="center">
+  <a href="https://wcsodw1.github.io/AISO_Platform/"><img alt="Open AISO Platform" src="https://img.shields.io/badge/%E2%96%B6%20OPEN%20AISO%20PLATFORM-wcsodw1.github.io%2FAISO__Platform-c8b875?style=for-the-badge&labelColor=0b0d13"></a>
+</p>
+
+<h3 align="center">👉 <a href="https://wcsodw1.github.io/AISO_Platform/">進入 AISO Platform 網站 → https://wcsodw1.github.io/AISO_Platform/</a></h3>
+
+---
+
 AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果、執行腳本與 AI 能力的單一 repository。目前 Portal 版本為 **v1.19.0**。
 
 Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、四個方案層級與顧問方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。方案層級為 Consumer、Workstation、Server 與 Data Center。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
