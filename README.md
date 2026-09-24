@@ -1,10 +1,10 @@
 # AISO Platform
 
 <p align="center">
-  <a href="https://wcsodw1.github.io/AISO_Platform/"><img alt="Open AISO Platform" src="https://img.shields.io/badge/%E2%96%B6%20OPEN%20AISO%20PLATFORM-wcsodw1.github.io%2FAISO__Platform-c8b875?style=for-the-badge&labelColor=0b0d13"></a>
+  <a href="https://wcsodw1.github.io/AISO_Platform/"><img src=".github/readme-banner.svg" alt="Open AISO Platform — https://wcsodw1.github.io/AISO_Platform/" width="100%"></a>
 </p>
 
-<h3 align="center">👉 <a href="https://wcsodw1.github.io/AISO_Platform/">進入 AISO Platform 網站 → https://wcsodw1.github.io/AISO_Platform/</a></h3>
+<p align="center"><b><a href="https://wcsodw1.github.io/AISO_Platform/">Open AISO Platform</a></b> &nbsp;·&nbsp; wcsodw1.github.io/AISO_Platform</p>
 
 ---
 
