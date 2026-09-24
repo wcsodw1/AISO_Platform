@@ -12,9 +12,11 @@ v1.18.10 新增 `assets/models/` Web 3D asset library，收錄 8 個由現有單
 
 v1.19.0 納入已驗證的 AISO Blender Agent：由 Mac Blender 5.2.1 連接 PRO6000 上的 vLLM／GPT-OSS-120B，保留 Blender Python 生成、語法驗證、執行與 traceback Auto-Repair 核心；N Panel 增加 endpoint、model、修復次數與連線錯誤狀態，並移除機器綁定的絕對路徑。Portal 新增 `Blender AI Agent` capability section，以 `Prompt → Generate → Validate → Auto-Repair` 說明本地 3D 工作流程。實際 PRO6000 LAN endpoint 僅由本機環境或 Panel 設定，不進入 Public repository 內容或 GitHub Pages 輸出。
 
-目前本機預覽中的下一版架構，將首頁顧問流程擴充為 `Define → Select → Verify → Design → Deploy → Application`。六階段是共同決策骨架，`Verify`、`Design` 與 `Deploy` 可展開查看相容性、Benchmark、PoC、架構、Sizing、BOM、建置、整合與驗收子流程。Data Center 先以規劃入口呈現，後續再加入 Requirement Intake 與十階段專屬工作流。Blender AI Agent 同時加入公開安全的對話式 Application Demo；公開版只呈現經審核的 Prompt、處理階段與 GLB／Render 結果，不直接連接或揭露內網 Endpoint。
+目前本機預覽中的下一版架構，將首頁顧問流程擴充為 `Define → Select → Verify → Design → Deploy → Application`。六階段整合為單一直向互動流程；滑鼠 hover、鍵盤 focus 或手機點選任一階段時，該項會放大並展開需求、子流程及交付成果，不再另外顯示一組重複的大卡片。Data Center 以規劃入口呈現，並加入 Requirement Intake 與十階段專屬工作流。Blender AI Agent 同時加入公開安全的對話式 Application Demo；公開版只呈現經審核的 Prompt、處理階段與 GLB／Render 結果，不直接連接或揭露內網 Endpoint。
 
 Data Center 首頁卡片使用經去背整合的 AI 機櫃與加速運算模組透明素材 `assets/products/data-center-ai-infrastructure-cutout.png`，用於呈現從單一系統提升到機櫃級基礎設施的方案層級；原始參考照片不直接發布。
+
+首頁的 `Applications` 區塊是平台應用入口：平常只顯示 AISO APPS 入口卡，滑鼠移入時應用卡由入口向前展開。目前 `Blender AI Agent` 為 LIVE（點選後展開公開安全的錄製 Demo），`Interior Design Agent`（室內設計）與 `UI Design Agent`（UI 美感設計）標示為 UPCOMING；手機版預設全部展開。首頁不再呈現 Access Architecture 區塊，Public／Internal／Admin 的存取分級仍由 `launcher.py` 在伺服器端執行。
 
 - GitHub：<https://github.com/wcsodw1/AISO_Platform>（Public）
 - 預設分支：`main`

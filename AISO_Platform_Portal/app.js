@@ -444,6 +444,41 @@ if(agentDemoButton){
     },index*650));
   };
 }
+
+const consultingDetails={
+  DEFINE:{intro:"把目標先說清楚，再開始選設備。",items:[["USE CASE","RAG、Agent、生成、訓練或專業應用"],["DEMAND","使用人數、併發、模型、Context 與 SLA"],["CONSTRAINTS","既有環境、預算、安全與時程"]],output:"需求定義與工作負載基準"},
+  SELECT:{intro:"依需求選擇合適的系統層級與軟硬體組合。",items:[["LEVEL","Consumer、Workstation、Server 或 Data Center"],["COMPUTE","GPU、Memory、Storage 與 Network"],["STACK","模型、推論框架與操作介面"]],output:"選型建議與候選配置"},
+  VERIFY:{intro:"在真實硬體與使用情境中取得可比較的答案。",items:[["COMPATIBILITY","模型、框架與硬體相容性"],["BENCHMARK","TTFT、TPOT、Throughput 與 Context"],["CAPACITY TEST","併發、記憶體與壓力邊界"],["POC","vLLM／Open WebUI／llama.cpp 應用驗證"]],output:"PoC 驗證報告與適用邊界"},
+  DESIGN:{intro:"把已驗證方案轉換成可採購、可擴充的落地架構。",items:[["ARCHITECTURE","服務、節點與資料流"],["GPU SIZING","依負載推算運算容量"],["NETWORK / STORAGE","頻寬、容量、HA 與隔離"],["BOM","建議規格與方案提案"]],output:"Solution Architecture 與 BOM"},
+  DEPLOY:{intro:"將通過驗證的架構建置到正式環境並完成移交。",items:[["INSTALL","硬體、驅動與環境建置"],["SERVE","模型服務與 Endpoint"],["INTEGRATE","平台、權限與應用整合"],["ACCEPT","驗收、SOP 與知識移轉"]],output:"Production-ready AI System"},
+  APPLICATION:{intro:"讓 AI 能力真正進入團隊日常工作。",items:[["ENTERPRISE AI","RAG、知識庫與內部服務"],["AI AGENT","自動化任務與跨系統流程"],["CREATIVE / 3D","Blender Agent 與專業應用"]],output:"可操作、可維運的實際應用"}
+};
+document.querySelectorAll(".consulting-flow-six>span").forEach(step=>{
+  const name=step.querySelector("strong")?.textContent?.trim();
+  const detail=consultingDetails[name];if(!detail)return;
+  step.tabIndex=0;step.setAttribute("role","button");step.setAttribute("aria-expanded","false");
+  step.insertAdjacentHTML("beforeend",`<div class="flow-step-detail"><p>${esc(detail.intro)}</p><ul style="--flow-cols:${detail.items.length}">${detail.items.map(item=>`<li><b>${esc(item[0])}</b><em>${esc(item[1])}</em></li>`).join("")}</ul><footer><small>OUTPUT</small><b>${esc(detail.output)}</b></footer></div>`);
+  const setExpanded=value=>step.setAttribute("aria-expanded",String(value));
+  step.addEventListener("mouseenter",()=>setExpanded(true));step.addEventListener("mouseleave",()=>setExpanded(false));
+  step.addEventListener("focus",()=>setExpanded(true));step.addEventListener("blur",()=>setExpanded(false));
+  step.addEventListener("click",()=>setExpanded(step.getAttribute("aria-expanded")!=="true"));
+  step.addEventListener("keydown",event=>{if(event.key==="Escape"){setExpanded(false);step.blur()}});
+});
+
+const appDeck=document.querySelector("[data-app-deck]");
+if(appDeck){
+  const setAppOpen=(button,open)=>{
+    const panel=$(button.getAttribute("aria-controls"));if(!panel)return;
+    button.setAttribute("aria-expanded",String(open));panel.hidden=!open;appDeck.classList.toggle("has-open-app",open);
+    if(open)requestAnimationFrame(()=>panel.scrollIntoView({behavior:"smooth",block:"start"}));
+  };
+  appDeck.querySelectorAll("[data-app-open]").forEach(button=>button.onclick=()=>setAppOpen(button,button.getAttribute("aria-expanded")!=="true"));
+  document.querySelectorAll("[data-app-close]").forEach(close=>close.onclick=()=>{
+    const button=appDeck.querySelector("[data-app-open][aria-expanded=true]");
+    if(button){setAppOpen(button,false);appDeck.scrollIntoView({behavior:"smooth",block:"center"});button.focus({preventScroll:true})}
+  });
+}
+
 let searchTimer;$("globalSearch").addEventListener("input",event=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>runSearch(event.target.value),220)});
 init().catch(error=>{$("categoryGrid").innerHTML=`<div class="note">AISO Platform 載入失敗：${esc(error.message)}</div>`;$("modeBadge").textContent="載入失敗"});
 
