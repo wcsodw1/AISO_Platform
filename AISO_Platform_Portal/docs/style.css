@@ -3017,3 +3017,16 @@ textarea{
   .brand-site .category-card .category-visual-consumer-products .category-product-image.image-2,
   .brand-site .category-card .category-visual-workstation-products .category-product-image.image-2{left:auto;right:3%;width:46%;height:118px}
 }
+/* v1.21.8 - two-device collages: staggered composition on wide cards, split halves on mid widths */
+@media(min-width:1280px){
+  .brand-site .category-card .category-visual-consumer-products .category-product-image.image-1,
+  .brand-site .category-card .category-visual-workstation-products .category-product-image.image-1{top:7%!important;bottom:auto!important;left:5%!important;right:auto!important;width:64%!important;height:43%!important;z-index:1}
+  .brand-site .category-card .category-visual-consumer-products .category-product-image.image-2,
+  .brand-site .category-card .category-visual-workstation-products .category-product-image.image-2{top:auto!important;bottom:13%!important;left:auto!important;right:5%!important;width:62%!important;height:36%!important;opacity:1!important;z-index:2}
+}
+@media(min-width:761px) and (max-width:1279px){
+  .brand-site .category-card .category-visual-consumer-products .category-product-image.image-1,
+  .brand-site .category-card .category-visual-workstation-products .category-product-image.image-1{left:3%!important;right:auto!important;width:47%!important}
+  .brand-site .category-card .category-visual-consumer-products .category-product-image.image-2,
+  .brand-site .category-card .category-visual-workstation-products .category-product-image.image-2{left:auto!important;right:3%!important;width:45%!important;opacity:1!important}
+}
