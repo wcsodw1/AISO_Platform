@@ -473,6 +473,19 @@ if(showreel&&showreel.dataset.videoSrc){
   showreel.querySelector(".showreel-frame").replaceChildren(video);
 }
 
+const consultLayout=document.querySelector(".consult-layout");
+if(consultLayout){
+  const link=name=>{
+    consultLayout.classList.toggle("is-linked",Boolean(name));
+    consultLayout.querySelectorAll(".case-stage").forEach(stage=>stage.classList.toggle("is-active",stage.dataset.stage===name));
+  };
+  consultLayout.querySelectorAll(".consulting-flow-six>span").forEach(step=>{
+    const name=step.querySelector("strong")?.textContent?.trim();
+    step.addEventListener("mouseenter",()=>link(name));step.addEventListener("focus",()=>link(name));
+    step.addEventListener("mouseleave",()=>link(null));step.addEventListener("blur",()=>link(null));
+  });
+}
+
 const appDeck=document.querySelector("[data-app-deck]");
 if(appDeck){
   const setAppOpen=(button,open)=>{
