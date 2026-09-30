@@ -3121,3 +3121,53 @@ textarea{
 .case-arch-img:hover span,.case-arch-img:focus-visible span{opacity:1}
 .case-arch-img:hover{border-color:rgba(200,184,117,.6)}
 .case-arch-img span{position:static;display:block;margin:0;padding:10px 14px;border:0;border-top:1px solid rgba(146,226,255,.14);border-radius:0;background:rgba(200,184,117,.05);text-align:right}
+@media(min-width:1100px){.consult-layout .flow-step-detail li:last-child:nth-child(odd){grid-column:1/-1}}
+@media(min-width:561px) and (max-width:900px){.flow-step-detail li:last-child:nth-child(odd){grid-column:1/-1}}
+
+/* v1.23.0 - award-pass round 1: calmer background, cleaner cards, closing footer */
+/* 1. Background: the galaxy band becomes a quiet ambient glow instead of a smear across content */
+.galaxy-disc{opacity:.16!important;filter:blur(38px) saturate(.9)!important;top:18%!important;width:min(1500px,130vw)!important}
+.galaxy-dust{opacity:.25!important;top:18%!important}
+.galaxy-glow{opacity:.32!important;top:16%!important}
+/* 2. Product cards: drop the duplicate C01/W02 corner badge and its halo; the 01 pill already numbers the card */
+.brand-site .category-card:before,.brand-site .category-card:after,.brand-site .category-card:nth-child(n):before,.brand-site .category-card:nth-child(n):after{content:none!important;display:none!important}
+.brand-site .category-card .category-order{color:var(--fashion-sand,#c8b875)!important;opacity:1!important}
+.brand-site .category-card h3{opacity:1!important}
+/* 3. Hero stat uses the display face, not a stray serif */
+.hero-stat strong{font-family:var(--font-en);font-weight:700;letter-spacing:-.03em}
+/* 4. Footer: giant closing wordmark */
+.site-footer{grid-template-rows:auto auto;row-gap:34px}
+.footer-wordmark{grid-column:1/-1;margin:0;color:transparent;-webkit-text-stroke:1px rgba(243,239,229,.22);font-family:var(--font-en);font-size:clamp(64px,15.5vw,236px);font-weight:800;line-height:.82;letter-spacing:-.06em;white-space:nowrap;user-select:none;background:linear-gradient(180deg,rgba(243,239,229,.10),rgba(200,184,117,.02));-webkit-background-clip:text;background-clip:text}
+/* round 2: hero atmosphere, lighter kicker, full-bleed footer wordmark */
+.brand-hero{position:relative;overflow:hidden;background:radial-gradient(ellipse 55% 70% at 78% 42%,rgba(126,220,255,.09),transparent 62%),radial-gradient(ellipse 45% 55% at 12% 8%,rgba(200,184,117,.10),transparent 60%),linear-gradient(145deg,rgba(243,239,229,.045),rgba(243,239,229,.01))!important}
+.brand-hero .hero-kicker{background:transparent!important;border:1px solid rgba(200,184,117,.6)!important;color:var(--fashion-sand,#c8b875)!important;box-shadow:none!important}
+.footer-wordmark{font-size:clamp(60px,21.2vw,328px);text-align:center;margin-top:10px}
+.brand-hero .eyebrow{box-shadow:none!important;background:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* AI CONSULTING is the headline; JUST AI IT. becomes the slogan beside it */
+.proof-title-tag{font-style:italic;letter-spacing:-.01em}
+.products-section .home-section-heading h2.proof-title{display:flex;align-items:center;flex-wrap:wrap;gap:.08em .42em;max-width:none}
+/* desktop nav: larger, more readable labels */
+@media(min-width:1181px){.brand-site .site-nav{gap:6px}.brand-site .site-nav button{padding:10px 14px;font-size:15px;letter-spacing:.01em}}
+@media(min-width:761px) and (max-width:1180px){.brand-site .site-nav button{font-size:14px}}
+@media(min-width:1181px) and (max-width:1380px){.brand-site .site-nav button{padding:10px 10px;font-size:14px}.brand-site .search-box input{width:min(260px,22vw)}}
+/* About: Contact Us */
+.about-contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,440px);align-items:center;gap:40px;margin-top:64px;padding:clamp(28px,4vw,56px);border:1px solid rgba(200,184,117,.4);border-radius:28px;background:radial-gradient(ellipse 60% 80% at 100% 0%,rgba(200,184,117,.12),transparent 60%),linear-gradient(150deg,rgba(12,17,31,.92),rgba(5,8,15,.9));scroll-margin-top:110px}
+.about-contact h3{margin:14px 0 12px;color:var(--fashion-ivory,#f3efe5);font-size:clamp(34px,4.4vw,64px);line-height:.95;letter-spacing:-.04em}
+.about-contact-zh{margin:0;color:rgba(243,239,229,.6);font-family:var(--font-zh);font-size:15px}
+.contact-card{display:grid;gap:10px;padding:26px 28px;border:1px solid rgba(243,239,229,.22);border-radius:20px;background:rgba(243,239,229,.04);color:var(--fashion-ivory,#f3efe5);text-decoration:none;transition:border-color .25s ease,background .25s ease,transform .25s ease}
+.contact-card small{color:var(--fashion-sand,#c8b875);font-size:11px;font-weight:800;letter-spacing:.2em}
+.contact-card strong{font-size:clamp(18px,1.8vw,24px);word-break:break-all}
+.contact-card span{color:var(--fashion-sand,#c8b875);font-size:12px;font-weight:800;letter-spacing:.14em}
+.contact-card:hover,.contact-card:focus-visible{outline:0;border-color:rgba(200,184,117,.8);background:rgba(200,184,117,.1);transform:translateY(-3px)}
+@media(max-width:800px){.about-contact{grid-template-columns:1fr;gap:24px}}
+.contact-cards{display:grid;gap:12px}
+/* desktop topbar: align to the 1480px content column, nav centred, labels scale up */
+@media(min-width:1181px){
+  .brand-site .topbar{display:grid!important;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:28px;padding-inline:max(4vw,calc((100vw - 1480px) / 2))!important}
+  .brand-site .topbar>.brand{justify-self:start}
+  .brand-site .topbar>.site-nav{justify-self:center;order:0;width:auto}
+  .brand-site .topbar>:last-child{justify-self:end}
+  .brand-site .site-nav button{font-size:clamp(16px,.87vw,19px)!important;padding:10px clamp(10px,.8vw,18px)!important}
+  .brand-site .brand strong{font-size:clamp(15px,.85vw,18px)}
+}
+@media(min-width:1181px) and (max-width:1380px){.brand-site .search-box input{width:min(220px,17vw)!important}}
