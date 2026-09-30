@@ -46,7 +46,7 @@ async function init(){
     $("modeBadge").classList.add("public");
   }
   $("productCount").textContent=state.catalog.products.length;
-  $("updatedAt").textContent=`Updated ${state.catalog.updated_at||"-"}`;
+  $("updatedAt").textContent=`Updated ${(state.catalog.updated_at||"").slice(0,10).replaceAll("-",".")||"-"}`;
   renderHome();
   const demoViewport=document.querySelector(".demo-viewport");
   if(demoViewport){
@@ -422,7 +422,7 @@ $("aboutLink").onclick=renderAbout;
 $("heroProductsLink").onclick=goProducts;
 $("heroModelsLink").onclick=renderModelList;
 $("homeResourcesLink").onclick=renderResources;
-document.querySelectorAll("[data-footer-route]").forEach(button=>button.onclick=()=>({products:goProducts,capabilities:goCapabilities,models:renderModelList,resources:renderResources,about:renderAbout}[button.dataset.footerRoute]||renderHome)());
+document.querySelectorAll("[data-footer-route]").forEach(button=>button.onclick=()=>({products:goProducts,capabilities:goCapabilities,models:renderModelList,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({behavior:"smooth",block:"start"}))}}[button.dataset.footerRoute]||renderHome)());
 
 const agentDemoButton=$("runAgentDemo");
 if(agentDemoButton){
@@ -447,9 +447,9 @@ if(agentDemoButton){
 
 const consultingDetails={
   DEFINE:{intro:"把目標先說清楚，再開始選設備。",items:[["USE CASE","RAG、Agent、生成、訓練或專業應用"],["DEMAND","使用人數、併發、模型、Context 與 SLA"],["CONSTRAINTS","既有環境、預算、安全與時程"]],output:"需求定義與工作負載基準"},
-  SELECT:{intro:"依需求選擇合適的系統層級與軟硬體組合。",items:[["LEVEL","Consumer、Workstation、Server 或 Data Center"],["COMPUTE","GPU、Memory、Storage 與 Network"],["STACK","模型、推論框架與操作介面"]],output:"選型建議與候選配置"},
-  VERIFY:{intro:"在真實硬體與使用情境中取得可比較的答案。",items:[["COMPATIBILITY","模型、框架與硬體相容性"],["BENCHMARK","TTFT、TPOT、Throughput 與 Context"],["CAPACITY TEST","併發、記憶體與壓力邊界"],["POC","vLLM／Open WebUI／llama.cpp 應用驗證"]],output:"PoC 驗證報告與適用邊界"},
-  DESIGN:{intro:"把已驗證方案轉換成可採購、可擴充的落地架構。",items:[["ARCHITECTURE","服務、節點與資料流"],["GPU SIZING","依負載推算運算容量"],["NETWORK / STORAGE","頻寬、容量、HA 與隔離"],["BOM","建議規格與方案提案"]],output:"Solution Architecture 與 BOM"},
+  SELECT:{intro:"依需求選擇合適的系統層級與軟硬體組合。",items:[["LEVEL","Consumer、Workstation、Server 或 Data Center"],["COMPUTE","GPU、Memory、Storage 與 Network"],["STACK & COMPATIBILITY","模型、推論框架與硬體相容性"]],output:"選型建議與候選配置"},
+  VERIFY:{intro:"以 Benchmark 與 PoC 驗證設計，通過後定案。",items:[["BENCHMARK & CAPACITY","TTFT、TPOT、Throughput、Context 與併發壓力邊界"],["POC","vLLM／Open WebUI／llama.cpp 應用驗證"]],output:"驗證報告與定案配置"},
+  DESIGN:{intro:"依需求與選型設計架構與初步 BOM。",items:[["ARCHITECTURE","服務、節點與資料流"],["GPU SIZING","依負載推算運算容量"],["NETWORK / STORAGE","頻寬、容量、HA 與隔離"],["BOM","建議規格與方案提案"]],output:"Solution Architecture 與初步 BOM"},
   DEPLOY:{intro:"將通過驗證的架構建置到正式環境並完成移交。",items:[["INSTALL","硬體、驅動與環境建置"],["SERVE","模型服務與 Endpoint"],["INTEGRATE","平台、權限與應用整合"],["ACCEPT","驗收、SOP 與知識移轉"]],output:"Production-ready AI System"},
   APPLICATION:{intro:"讓 AI 能力真正進入團隊日常工作。",items:[["ENTERPRISE AI","RAG、知識庫與內部服務"],["AI AGENT","自動化任務與跨系統流程"],["CREATIVE / 3D","Blender Agent 與專業應用"]],output:"可操作、可維運的實際應用"}
 };
