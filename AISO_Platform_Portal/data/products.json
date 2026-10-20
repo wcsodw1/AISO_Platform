@@ -1,6 +1,6 @@
 {
   "version": 14,
-  "updated_at": "2026-09-19T00:00:00+08:00",
+  "updated_at": "2026-10-15T00:00:00+08:00",
   "access_policy": {
     "tiers": [
       {
@@ -500,8 +500,7 @@
       },
       "publish": {
         "enabled": true
-      },
-      "model_3d": "assets/models/aiso1-ai-max395.glb"
+      }
     },
     {
       "id": "gb10-ai-workstation",
@@ -552,9 +551,61 @@
       }
     },
     {
+      "id": "intel-arc-pro-b70",
+      "category": "workstation",
+      "name": "Intel Arc Pro B70",
+      "positioning": "Professional GPU Workstation",
+      "status": "Research Available",
+      "summary": "SPARKLE Intel Arc Pro B70（Intel Xe2／Battlemage）AI 工作站 GPU 研究已建立；官方規格與第三方公開 Benchmark 可查閱，AISO 內部正式結果仍待實測。",
+      "folder": "Workstation-Server/INTEL-ARC-PRO-B70",
+      "hardware": {
+        "GPU": "Intel Arc Pro B70",
+        "Architecture": "Intel Xe2 / Battlemage",
+        "VRAM": "32GB GDDR6 ECC",
+        "Memory Bandwidth": "608 GB/s",
+        "XMX Engines": "256",
+        "Intel Reference TBP": "230W",
+        "SPARKLE SKU": "待確認 Blower / Passive Part Number",
+        "System": "待確認",
+        "GPU Count": "待確認",
+        "OS": "待確認"
+      },
+      "models": [],
+      "operations": {
+        "ssh": "",
+        "notes": "已建立公開研究與 Smoke／NP1 scripts；整機型號、SPARKLE Part Number、GPU 數量、OS、Driver 與 AISO formal results 待確認。"
+      },
+      "publish": {
+        "enabled": true
+      },
+      "documents": {
+        "folder": "Workstation-Server/INTEL-ARC-PRO-B70/Documents",
+        "public_folder": "Workstation-Server/INTEL-ARC-PRO-B70/Documents/Public"
+      },
+      "benchmark": {
+        "folder": "Workstation-Server/INTEL-ARC-PRO-B70/Benchmark",
+        "public_folder": "Workstation-Server/INTEL-ARC-PRO-B70/Benchmark/Public",
+        "metrics": [
+          "TTFT",
+          "TPOT / ITL",
+          "Prompt TPS",
+          "Decode TPS",
+          "Aggregate TPS",
+          "E2E",
+          "GPU Memory",
+          "Power"
+        ],
+        "note": "目前僅收錄官方規格與第三方公開研究；AISO VERIFIED 結果尚待 formal run。"
+      },
+      "scripts": {
+        "folder": "Workstation-Server/INTEL-ARC-PRO-B70/Scripts",
+        "public_folder": "Workstation-Server/INTEL-ARC-PRO-B70/Scripts/Public"
+      }
+    },
+    {
       "id": "pro6000-hpe-2gpu",
       "category": "server",
-      "name": "PRO6000 - HPE 2 GPU（兩卡機）",
+      "name": "PRO6000 - HPE 2 GPU",
       "positioning": "HPE Dual-GPU AI Server",
       "status": "Documentation Available",
       "summary": "集中查看 HPE 兩卡設備的 SOP 與操作文件；Benchmark 待後續實機測試補充。",
@@ -608,7 +659,7 @@
       },
       "operations": {
         "ssh": "",
-        "notes": "PRO6000 - HPE 2 GPU（兩卡機）；內部連線與維運資料只顯示於本機管理版。"
+        "notes": "PRO6000 - HPE 2 GPU；內部連線與維運資料只顯示於本機管理版。"
       },
       "publish": {
         "enabled": true
@@ -617,10 +668,10 @@
     {
       "id": "pro6000-tpi-8gpu",
       "category": "server",
-      "name": "PRO6000 - TPI 8 GPU（八卡機）",
+      "name": "PRO6000 - TPI 8 GPU",
       "positioning": "TPI Eight-GPU AI Server",
       "status": "Benchmark Available",
-      "summary": "VIS（世界先進）POC：於 PRO6000 8 GPU 系統中啟用 4 張 GPU，完成 GPT-OSS-120B 與 Llama-3.3-70B Benchmark。",
+      "summary": "半導體製造龍頭 POC：於 PRO6000 8 GPU 系統中啟用 4 張 GPU，完成 GPT-OSS-120B 與 Llama-3.3-70B Benchmark。",
       "folder": "Workstation-Server/PRO6000-TPI-8GPU",
       "image": "assets/products/pro6000-8gpu-server-cutout.png",
       "image_alt": "由使用者提供素材整理的 PRO6000 八卡 AI Server 整機外型參考圖",
@@ -682,7 +733,7 @@
             "highlights": []
           }
         ],
-        "project": "VIS（世界先進）POC",
+        "project": "Leading semiconductor manufacturer POC",
         "system_gpu_count": 8,
         "active_gpu_count": 4,
         "configuration": "PRO6000 8 GPU system · 4 GPUs used for benchmark",
@@ -694,7 +745,7 @@
       },
       "operations": {
         "ssh": "",
-        "notes": "PRO6000 - TPI 8 GPU（八卡機）；內部連線與維運資料只顯示於本機管理版。"
+        "notes": "PRO6000 - TPI 8 GPU；內部連線與維運資料只顯示於本機管理版。"
       },
       "publish": {
         "enabled": true
