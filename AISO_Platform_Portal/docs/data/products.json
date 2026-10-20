@@ -1,6 +1,6 @@
 {
   "version": 14,
-  "updated_at": "2026-09-24T09:25:54+08:00",
+  "updated_at": "2026-10-20T10:59:01+08:00",
   "access_policy": {
     "tiers": [
       {
@@ -495,7 +495,7 @@
         "label": "3D PREVIEW",
         "hint": "MOVE CURSOR"
       },
-      "model_3d": "assets/models/aiso1-ai-max395.glb",
+      "model_3d": "",
       "visual_variant": "",
       "visual_alt": "",
       "visual_note": "",
@@ -719,9 +719,76 @@
       }
     },
     {
+      "id": "intel-arc-pro-b70",
+      "category": "workstation",
+      "name": "Intel Arc Pro B70",
+      "positioning": "Professional GPU Workstation",
+      "status": "Research Available",
+      "summary": "SPARKLE Intel Arc Pro B70（Intel Xe2／Battlemage）AI 工作站 GPU 研究已建立；官方規格與第三方公開 Benchmark 可查閱，AISO 內部正式結果仍待實測。",
+      "image": "",
+      "image_alt": "",
+      "image_note": "",
+      "image_count": "",
+      "preview_3d": {},
+      "model_3d": "",
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
+      "hardware": {
+        "GPU": "Intel Arc Pro B70",
+        "Architecture": "Intel Xe2 / Battlemage",
+        "VRAM": "32GB GDDR6 ECC",
+        "Memory Bandwidth": "608 GB/s",
+        "XMX Engines": "256",
+        "Intel Reference TBP": "230W",
+        "SPARKLE SKU": "待確認 Blower / Passive Part Number",
+        "System": "待確認",
+        "GPU Count": "待確認",
+        "OS": "待確認"
+      },
+      "models": [],
+      "benchmark": {
+        "date": "",
+        "comparison": "",
+        "metrics": [
+          "TTFT",
+          "TPOT / ITL",
+          "Prompt TPS",
+          "Decode TPS",
+          "Aggregate TPS",
+          "E2E",
+          "GPU Memory",
+          "Power"
+        ],
+        "results": []
+      },
+      "published": {
+        "documents": [
+          {
+            "name": "SPARKLE_Intel_Arc_Pro_B70_AI_Benchmark_Research_2026-10-15.md",
+            "extension": "md",
+            "url": "assets/intel-arc-pro-b70/manuals/SPARKLE_Intel_Arc_Pro_B70_AI_Benchmark_Research_2026-10-15.md"
+          }
+        ],
+        "benchmark": [],
+        "scripts": [
+          {
+            "name": "SB_formal_np1.sh",
+            "extension": "sh",
+            "url": "assets/intel-arc-pro-b70/scripts/SB_formal_np1.sh"
+          },
+          {
+            "name": "SB_smoke_test.sh",
+            "extension": "sh",
+            "url": "assets/intel-arc-pro-b70/scripts/SB_smoke_test.sh"
+          }
+        ]
+      }
+    },
+    {
       "id": "pro6000-hpe-2gpu",
       "category": "server",
-      "name": "PRO6000 - HPE 2 GPU（兩卡機）",
+      "name": "PRO6000 - HPE 2 GPU",
       "positioning": "HPE Dual-GPU AI Server",
       "status": "Documentation Available",
       "summary": "集中查看 HPE 兩卡設備的 SOP 與操作文件；Benchmark 待後續實機測試補充。",
@@ -775,10 +842,10 @@
     {
       "id": "pro6000-tpi-8gpu",
       "category": "server",
-      "name": "PRO6000 - TPI 8 GPU（八卡機）",
+      "name": "PRO6000 - TPI 8 GPU",
       "positioning": "TPI Eight-GPU AI Server",
       "status": "Benchmark Available",
-      "summary": "VIS（世界先進）POC：於 PRO6000 8 GPU 系統中啟用 4 張 GPU，完成 GPT-OSS-120B 與 Llama-3.3-70B Benchmark。",
+      "summary": "半導體製造龍頭 POC：於 PRO6000 8 GPU 系統中啟用 4 張 GPU，完成 GPT-OSS-120B 與 Llama-3.3-70B Benchmark。",
       "image": "assets/products/pro6000-8gpu-server-cutout.png",
       "image_alt": "由使用者提供素材整理的 PRO6000 八卡 AI Server 整機外型參考圖",
       "image_note": "PRO6000 SERVER · 8 GPU SYSTEM VIEW",

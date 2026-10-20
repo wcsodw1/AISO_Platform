@@ -1,2 +1,5 @@
-# AISO Platform Portal uses only the Python standard library.
+# AISO Platform Portal with unified benchmark YAML support.
 # Supported runtime: Python >= 3.10
+
+# Unified benchmark runtime
+PyYAML>=6.0.2,<7

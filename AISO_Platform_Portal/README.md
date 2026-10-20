@@ -22,6 +22,8 @@ v1.19.0 在產品線與顧問流程之間新增 `Blender AI Agent` capability se
 
 v1.18.9 把原本難以感受的單圖原地翻轉，改成明顯的 2.5D 軌道式環繞。產品會沿橫向與景深軌跡繞行，在前景放大、繞到後方時縮小變暗，再回到正面；過程會顯示 `360° ORBIT` 狀態與掃描光環，讓動作可被清楚辨識。完成後仍回到游標跟隨視角，並保留鍵盤 focus 與 `prefers-reduced-motion` 支援。
 
+移除 GLB 3D Viewer 與 `assets/models/`：原 8 個 GLB 為單視角產品圖生成的近似模型，旋轉時側面與背面不真實。AISO1 詳情頁改回既有 2.5D 預覽圖；Blender 示範改用概念示意圖，待真實 3D 模型完成後再導入。
+
 v1.18.10 新增 `assets/models/` Web 3D asset library，將 GLB 與原有 `assets/products/` 圖片分開管理。目前收錄 AISO1、DGX B300、GB10、RTX PRO 6000 Server Edition、PRO6000 兩卡／八卡機箱、ROG Flow Z13 與 TUF Gaming A14 共 8 個 GLB prototype，並附 `manifest.json` 與模型限制說明。AISO1 裝置詳情頁使用 `<model-viewer>` 顯示 GLB，首頁分類卡仍採 2.5D 圖片互動；模型或 viewer 載入失敗時會顯示原有 PNG fallback。
 
 v1.18.5 將獨立 `AISO-3D-Product-Card-v1` 原型以增量方式整合進 AISO1 AI MAX395：`preview_3d` metadata 明確指定專用透明素材，只有設定此欄位的產品會啟用游標跟隨旋轉、浮出、投射光、動態陰影與反光。卡片文字保持固定；手機可橫向拖曳、鍵盤 focus 後可用方向鍵調整角度，`Esc` 重置；`prefers-reduced-motion` 使用者不會收到連續 3D 動畫。原型的 `index.html`、`style.css`、`app.js` 不會覆蓋 Portal 核心檔案。
@@ -244,3 +246,7 @@ PRO6000 - HPE 2 GPU 已收錄：
 - Git（只有自動 Commit／Push 時需要）
 
 不需要額外 Python 套件。
+
+## Unified Benchmark
+
+Benchmark 區塊支援 YAML 設定下載、兩平台重測矩陣與 localhost 管理版的執行／停止／結果下載。安裝根目錄 requirements.txt 後，依 [操作指南](benchmark/README.md) 設定已啟動的服務與固定 Prompts。正式結果需精確 token 驗證；公開版不連接內網服務。
