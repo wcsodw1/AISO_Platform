@@ -18,6 +18,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from exporter import export_catalog
+from benchmark.benchmark_runner import JobManager, prepare
+
+BENCHMARK_JOBS = JobManager()
 
 BASE = Path(__file__).resolve().parent
 CONFIG_PATH = BASE / "config.json"
@@ -203,6 +206,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(catalog() if self.is_admin_request() else published_catalog())
         if url.path.startswith("/api/") and not self.is_admin_request():
             return self.send_json({"error": "This operation requires localhost administrator access."}, 403)
+        if url.path == "/api/benchmark/jobs":
+            return self.send_json(BENCHMARK_JOBS.snapshot())
         if url.path == "/api/scan":
             try:
                 product = product_by_id(query.get("product", [""])[0])
@@ -268,6 +273,23 @@ class Handler(SimpleHTTPRequestHandler):
             origin = self.headers.get("Origin", "")
             if origin and urllib.parse.urlparse(origin).hostname not in {"127.0.0.1", "localhost", "::1"}:
                 return self.send_json({"error": "Cross-origin management request blocked."}, 403)
+            if self.path.startswith("/api/benchmark/"):
+                # Strict same-origin JSON write boundary, in addition to loopback access.
+                if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+                    return self.send_json({"error": "application/json required"}, 415)
+                if origin and urllib.parse.urlparse(origin).netloc != self.headers.get("Host"):
+                    return self.send_json({"error": "Same-origin request required"}, 403)
+                if self.headers.get("Sec-Fetch-Site") == "cross-site":
+                    return self.send_json({"error": "Cross-site request blocked"}, 403)
+                if int(self.headers.get("Content-Length", "0")) > 16384:
+                    return self.send_json({"error": "Manifest too large"}, 413)
+                if self.path == "/api/benchmark/preflight":
+                    target, _ = prepare(self.parse_json_body())
+                    return self.send_json({"ok": True, "runtime": target["runtime"], "format": target["format"], "message": "本機設定檢查通過；開始後仍會驗證服務回傳的 token 數。"})
+                if self.path == "/api/benchmark/start":
+                    return self.send_json(BENCHMARK_JOBS.start(self.parse_json_body()), 202)
+                if self.path == "/api/benchmark/cancel":
+                    return self.send_json(BENCHMARK_JOBS.cancel())
             if self.path == "/api/open":
                 path = safe_resolve(self.parse_json_body().get("path", ""))
                 if not path.exists():

@@ -1,0 +1,15 @@
+schema_version: 1
+run:
+  platform: intel_b70
+  framework: vllm
+  model: gemma31
+  mode: formal
+workload:
+  np: [2, 4]
+  input_tokens: [4096, 8192, 16384, 32768, 65536]
+  output_tokens: 1024
+  repeat: 3
+  max_model_len: 69632
+  max_batched_tokens: 4096
+  gpu_memory_utilization: 0.9
+  prefix_cache: false

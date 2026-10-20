@@ -58,3 +58,8 @@ htmlcov/
 # Temporary files
 *.tmp
 *.bak
+
+# Local benchmark targets, prompt fixtures, and unreviewed evidence
+**/benchmark-targets.json
+**/benchmark-results/
+**/benchmark-private/

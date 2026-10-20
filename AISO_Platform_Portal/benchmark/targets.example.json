@@ -1,0 +1,35 @@
+{
+  "targets": [
+    {
+      "platform": "intel_b70",
+      "framework": "vllm",
+      "model": "gemma31",
+      "mode": "formal",
+      "endpoint": "http://127.0.0.1:8000/v1",
+      "served_model": "REPLACE_WITH_EXACT_SERVED_MODEL",
+      "runtime": "XPU",
+      "format": "Safetensors",
+      "framework_version": "",
+      "repository": "",
+      "revision": "",
+      "model_sha256": "",
+      "machine": "",
+      "api_key_env": "AISO_BENCHMARK_API_KEY",
+      "timeout_seconds": 300,
+      "verified": false,
+      "server_settings": {
+        "prefix_cache": false,
+        "max_model_len": 69632,
+        "max_batched_tokens": 4096,
+        "gpu_memory_utilization": 0.9
+      },
+      "prompts": {
+        "4096": "/absolute/path/to/prompt_4096.txt",
+        "8192": "/absolute/path/to/prompt_8192.txt",
+        "16384": "/absolute/path/to/prompt_16384.txt",
+        "32768": "/absolute/path/to/prompt_32768.txt",
+        "65536": "/absolute/path/to/prompt_65536.txt"
+      }
+    }
+  ]
+}
