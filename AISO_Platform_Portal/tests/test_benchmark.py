@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from benchmark import benchmark_runner as runner
-from launcher import Handler
+from launcher import BENCHMARK_BEARER_TOKEN, Handler
 
 class StreamHandler(BaseHTTPRequestHandler):
     short = False
@@ -111,7 +111,8 @@ class BenchmarkTests(unittest.TestCase):
         threading.Thread(target=server.serve_forever,daemon=True).start()
         base=f'http://127.0.0.1:{server.server_port}'
         try:
-            for headers,expected in [({'Content-Type':'text/plain'},415),({'Content-Type':'application/json','Origin':'https://evil.example'},403)]:
+            token={'Authorization':'Bearer '+BENCHMARK_BEARER_TOKEN}
+            for headers,expected in [({'Content-Type':'text/plain',**token},415),({'Content-Type':'application/json','Origin':'https://evil.example',**token},403),({'Content-Type':'application/json'},401)]:
                 req=urllib.request.Request(base+'/api/benchmark/start',b'{}',headers)
                 with self.assertRaises(urllib.error.HTTPError) as error:
                     urllib.request.urlopen(req)
@@ -122,6 +123,7 @@ class BenchmarkTests(unittest.TestCase):
                 self.assertEqual(error.exception.code,403)
         finally:
             server.shutdown();server.server_close()
+
 
 if __name__=='__main__':
     unittest.main()

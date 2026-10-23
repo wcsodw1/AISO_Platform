@@ -63,3 +63,4 @@ htmlcov/
 **/benchmark-targets.json
 **/benchmark-results/
 **/benchmark-private/
+**/machines.local.json

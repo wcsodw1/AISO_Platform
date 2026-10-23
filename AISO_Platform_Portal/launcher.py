@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import argparse
+import hmac
 import ipaddress
 import json
 import mimetypes
 import os
 import platform
 import re
+import secrets
 import shutil
 import subprocess
 import threading
@@ -19,8 +21,15 @@ from pathlib import Path
 
 from exporter import export_catalog
 from benchmark.benchmark_runner import JobManager, prepare
+from benchmark import api as machine_bench_api
 
 BENCHMARK_JOBS = JobManager()
+BENCHMARK_BEARER_TOKEN = (
+    os.environ.get("AISO_BENCHMARK_TOKEN", "").strip()
+    or os.environ.get("AISO_BENCHMARK_BEARER_TOKEN", "").strip()
+    or secrets.token_urlsafe(24)
+)
+os.environ["AISO_BENCHMARK_TOKEN"] = BENCHMARK_BEARER_TOKEN
 
 BASE = Path(__file__).resolve().parent
 CONFIG_PATH = BASE / "config.json"
@@ -194,6 +203,34 @@ class Handler(SimpleHTTPRequestHandler):
     def is_admin_request(self):
         return is_loopback_client(self.client_address[0])
 
+    def send_machine_bench(self, method, body=None):
+        result = machine_bench_api.handle(method, self.path, body, self.headers.get("Authorization"))
+        if result.content_type.startswith("application/json") and not result.filename:
+            return self.send_json(result.body, result.status)
+        payload = result.body if isinstance(result.body, bytes) else str(result.body).encode()
+        self.send_response(result.status)
+        self.send_header("Content-Type", result.content_type)
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Cache-Control", "no-store")
+        if result.filename:
+            self.send_header("Content-Disposition", f'attachment; filename="{result.filename}"')
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def has_benchmark_token(self):
+        authorization = self.headers.get("Authorization", "")
+        scheme, _, supplied = authorization.partition(" ")
+        return scheme.lower() == "bearer" and bool(supplied) and hmac.compare_digest(supplied, BENCHMARK_BEARER_TOKEN)
+
+    def require_benchmark_auth(self):
+        if not self.is_admin_request():
+            self.send_json({"error": "Benchmark management requires loopback access."}, 403)
+            return False
+        if not self.has_benchmark_token():
+            self.send_json({"error": "A valid Benchmark Bearer Token is required."}, 401)
+            return False
+        return True
+
     def do_GET(self):
         url = urllib.parse.urlparse(self.path)
         query = urllib.parse.parse_qs(url.query)
@@ -206,6 +243,10 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(catalog() if self.is_admin_request() else published_catalog())
         if url.path.startswith("/api/") and not self.is_admin_request():
             return self.send_json({"error": "This operation requires localhost administrator access."}, 403)
+        if url.path.startswith("/api/benchmark/") and not self.require_benchmark_auth():
+            return
+        if url.path.startswith(machine_bench_api.PREFIX + "/"):
+            return self.send_machine_bench("GET")
         if url.path == "/api/benchmark/jobs":
             return self.send_json(BENCHMARK_JOBS.snapshot())
         if url.path == "/api/scan":
@@ -273,7 +314,9 @@ class Handler(SimpleHTTPRequestHandler):
             origin = self.headers.get("Origin", "")
             if origin and urllib.parse.urlparse(origin).hostname not in {"127.0.0.1", "localhost", "::1"}:
                 return self.send_json({"error": "Cross-origin management request blocked."}, 403)
-            if self.path.startswith("/api/benchmark/"):
+            if self.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")):
+                if not self.require_benchmark_auth():
+                    return
                 # Strict same-origin JSON write boundary, in addition to loopback access.
                 if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
                     return self.send_json({"error": "application/json required"}, 415)
@@ -283,6 +326,8 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json({"error": "Cross-site request blocked"}, 403)
                 if int(self.headers.get("Content-Length", "0")) > 16384:
                     return self.send_json({"error": "Manifest too large"}, 413)
+                if self.path.startswith(machine_bench_api.PREFIX + "/"):
+                    return self.send_machine_bench("POST", self.parse_json_body())
                 if self.path == "/api/benchmark/preflight":
                     target, _ = prepare(self.parse_json_body())
                     return self.send_json({"ok": True, "runtime": target["runtime"], "format": target["format"], "message": "本機設定檢查通過；開始後仍會驗證服務回傳的 token 數。"})
@@ -347,6 +392,7 @@ def main():
     url = f"http://{HOST}:{PORT}"
     print(f"[AISO] Local management portal: {url}")
     print(f"[AISO] Data root: {data_root()}")
+    print(f"[AISO] Benchmark Bearer Token (loopback only): {BENCHMARK_BEARER_TOKEN}")
     print("[AISO] Remote access: use an SSH Tunnel; do not expose this port directly.")
     if CONFIG.get("open_browser", True) and not args.no_browser:
         threading.Timer(0.5, lambda: webbrowser.open(url)).start()

@@ -8,7 +8,7 @@
 
 ---
 
-AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果、執行腳本與 AI 能力的單一 repository。目前 Portal 版本為 **v1.19.0**。
+AISO Platform 是 AISO 官方產品、設備文件、Benchmark 結果、執行腳本與 AI 能力的單一 repository。目前 Portal 版本為 **v1.23.0**。
 
 Portal 採專業品牌網站資訊架構：主頁聚焦品牌主張、四個方案層級與顧問方法；`Model Guide`、`Resources`、`About AISO` 使用獨立內容頁。方案層級為 Consumer、Workstation、Server 與 Data Center。因尚無正式聯絡窗口，暫不提供空泛的 `Contact` 頁。
 
@@ -40,6 +40,8 @@ Data Center 首頁卡片使用經去背整合的 AI 機櫃與加速運算模組�
 
 首頁的 `Applications` 區塊是平台應用入口：平常只顯示 AISO APPS 入口卡，滑鼠移入時應用卡由入口向前展開。目前 `Blender AI Agent` 為 LIVE（點選後展開公開安全的錄製 Demo），`Interior Design Agent`（室內設計）與 `UI Design Agent`（UI 美感設計）標示為 UPCOMING；手機版預設全部展開。首頁不再呈現 Access Architecture 區塊，Public／Internal／Admin 的存取分級仍由 `launcher.py` 在伺服器端執行。
 
+v1.23.0 新增獨立 `Benchmark by Machine` P0 MVP：先以 2× Intel Arc Pro B70／vLLM XPU 建立 Machine Profile、Framework-aware 參數、Mock Execution、Evidence Overview、By Model 明細與 TTFT／TPOT／Aggregate TPS 圖表。管理 API 同時要求 loopback 與 Bearer Token。P0 不連線 SSH，Mock Job 一律為 `UNVERIFIED` 且以唯一 Run ID append-only 保存。SGLang XPU 已預留 Adapter，但在取得實機 Log 前標示 `RUNTIME_UNVERIFIED`。B70 既有數值未匯入 Runner／Client／Server Logs 前不升為 PASS；Gemma31 64K 保留 `FAIL` 與原始 `missing first token/usage; root cause unconfirmed`，不推定 OOM。
+
 - GitHub：<https://github.com/wcsodw1/AISO_Platform>（Public）
 - 預設分支：`main`
 - 架構更新日：2026-10-19
@@ -61,19 +63,23 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ index.html                                    ← 使用者入口頁
 │  ├─ app.js                                        ← 前台互動與資料呈現
 │  ├─ style.css                                     ← Portal 視覺與響應式版面
+│  ├─ benchmark.html／benchmark.css／benchmark-app.js ← Benchmark by Machine P0 UI
 │  ├─ manage.html                                   ← 本機管理頁
 │  ├─ manage.js                                     ← 管理功能
 │  ├─ launcher.py                                   ← 本機 HTTP Server／管理 API
 │  ├─ benchmark/                                  ← 統一 YAML、Runner、Framework Adapters 與設定範例
 │  │  ├─ mini_workstation_benchmark.yaml            ← 正式 NP2／NP4 測試規格
 │  │  ├─ benchmark_runner.py                        ← 串流量測、條件驗證、執行紀錄與 CLI
+│  │  ├─ api.py／jobs.py／reports.py                 ← P0 API、Mock Job Service 與報告核心
+│  │  ├─ machines.example.json                      ← 不含憑證的 Machine Profiles
+│  │  ├─ fixtures.py／fixtures/evidence/             ← UNVERIFIED B70 evidence 與 CSV fixture
 │  │  ├─ targets.example.json                       ← 不含真實 Endpoint 的本機設定範例
 │  │  ├─ README.md                                  ← 服務前置條件、設定與指標定義
 │  │  └─ adapters/                                  ← vLLM／llama.cpp／SGLang／OpenVINO API adapters
 │  ├─ tests/                                       ← Benchmark 量測與存取邊界測試
 │  ├─ exporter.py                                   ← 公開資料清理與靜態匯出
 │  ├─ config.json                                   ← Host、Port、資料根目錄
-│  ├─ VERSION                                       ← Portal 版本（1.19.0）
+│  ├─ VERSION                                       ← Portal 版本（1.23.0）
 │  ├─ data/
 │  │  └─ products.json                              ← Portal 設備與 Benchmark metadata
 │  ├─ assets/

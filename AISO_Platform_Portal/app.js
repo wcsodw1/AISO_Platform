@@ -596,7 +596,7 @@ async function runSearch(query){
 document.querySelectorAll("[data-back]").forEach(button=>button.onclick=()=>{if(button.dataset.back==="home")renderHome();else if(button.dataset.back==="category")renderCategory(state.category.id);else if(button.dataset.back==="search")show(previousViewId())});
 function goProducts(){renderHome(false);setSiteNav("products");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("productsSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 function goCapabilities(){renderHome(false);setSiteNav("capabilities");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("capabilitiesSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
-function goBenchmark(){renderHome(false);setSiteNav("benchmark");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("benchmarkSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
+function goBenchmark(){window.location.href="benchmark.html"}
 $("homeBrandLink").addEventListener("click",event=>{event.preventDefault();renderHome()});
 $("homeLink").onclick=renderHome;
 $("productsLink").onclick=goProducts;

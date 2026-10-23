@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "note": "Example profiles only. Real hosts, users and key names live in machines.local.json (git-ignored). Private keys never appear in this repository or the browser.",
+  "machines": [
+    {
+      "machine_id": "intel-b70",
+      "display_name": "Intel Arc Pro B70 x2 (Sparkle)",
+      "vendor": "intel",
+      "gpu_model": "Arc Pro B70",
+      "gpu_count": 2,
+      "vram_gb": 32,
+      "ram_gb": 125,
+      "os": "Ubuntu 24.04.5 LTS",
+      "memory_note": "Discrete GPUs: 2 x 32 GB dedicated memory, not a unified pool.",
+      "ssh": {
+        "host": "REPLACE_WITH_HOST",
+        "port": 22,
+        "user": "REPLACE_WITH_USER",
+        "auth_profile": "b70-key",
+        "host_key_fingerprint": ""
+      },
+      "paths": {
+        "benchmark_root": "/home/sparkle/b70_benchmark",
+        "model_dir": "/home/sparkle/b70_benchmark/models",
+        "results_dir": "frameworks/vllm/results"
+      },
+      "last_connection_check": null,
+      "frameworks": {
+        "vllm": {
+          "status": "verified",
+          "backend": "XPU",
+          "model_format": "Safetensors",
+          "container": "vllm/vllm-openai-xpu:latest",
+          "container_digest": "",
+          "port": 18090,
+          "tp": 2,
+          "runner": "frameworks/common/b70_safetensors_q4_4models_np24_benchmark.sh",
+          "models": [
+            "gemma26",
+            "gemma31",
+            "nemotron",
+            "laguna_fp8"
+          ],
+          "note": "Recorded results imported; runner, client, CSV and logs pending import (P1)."
+        },
+        "sglang": {
+          "status": "runtime_unverified",
+          "backend": "XPU",
+          "model_format": "Safetensors",
+          "note": "Runtime Unverified for platform execution. Gemma31 NP2/NP4 console output (all cases reported PASS) is imported as UNVERIFIED; status changes after the raw CSV/logs are imported.",
+          "models": [
+            "gemma31"
+          ],
+          "port": 18091,
+          "client": "frameworks/sglang/scripts/B70_SGLang_np24_V2.py",
+          "result_dir": "frameworks/sglang/results"
+        },
+        "llamacpp": {
+          "status": "not_verified",
+          "backend": "SYCL",
+          "model_format": "GGUF",
+          "container": "ghcr.io/ggml-org/llama.cpp:server-intel",
+          "note": "Earlier llama.cpp runs exist outside this module and are not imported here."
+        },
+        "openvino": {
+          "status": "not_verified",
+          "backend": "OpenVINO GPU",
+          "model_format": "OpenVINO IR",
+          "note": "No verified runtime yet."
+        }
+      }
+    },
+    {
+      "machine_id": "aiso1-amd",
+      "display_name": "AISO1 - AMD Ryzen AI Max+ 395",
+      "vendor": "amd",
+      "gpu_model": "Radeon iGPU (gfx1151)",
+      "gpu_count": 1,
+      "vram_gb": null,
+      "ram_gb": null,
+      "os": "Linux x86_64",
+      "memory_note": "Unified system memory shared with the GPU; allocation not recorded.",
+      "ssh": {
+        "host": "REPLACE_WITH_HOST",
+        "port": 22,
+        "user": "REPLACE_WITH_USER",
+        "auth_profile": "aiso1-key",
+        "host_key_fingerprint": ""
+      },
+      "paths": {
+        "benchmark_root": "~/aiso1_benchmark",
+        "model_dir": "~/aiso1_benchmark/models",
+        "results_dir": "frameworks/llamacpp/results"
+      },
+      "last_connection_check": null,
+      "frameworks": {
+        "llamacpp": {
+          "status": "not_verified",
+          "backend": "Not determined (HIP / Vulkan)",
+          "model_format": "GGUF",
+          "binary": "/home/xyzx/llama.cpp/build/bin/llama-server",
+          "note": "Build backend is still to be confirmed."
+        },
+        "vllm": {
+          "status": "not_verified",
+          "backend": "ROCm",
+          "model_format": "Safetensors",
+          "note": "Not verified."
+        },
+        "sglang": {
+          "status": "not_verified",
+          "backend": "ROCm",
+          "model_format": "Safetensors",
+          "note": "Not verified."
+        },
+        "openvino": {
+          "status": "unavailable",
+          "backend": "-",
+          "model_format": "OpenVINO IR",
+          "note": "Intel runtime; not applicable to AMD."
+        }
+      }
+    }
+  ]
+}
