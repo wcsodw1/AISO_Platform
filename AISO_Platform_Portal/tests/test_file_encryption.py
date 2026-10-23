@@ -27,6 +27,21 @@ class EncryptedPublishing(unittest.TestCase):
             self.assertNotIn(b"confidential body", blob)
             self.assertFalse((target / "report.pdf").exists())
 
+    def test_without_a_key_existing_encrypted_copies_are_kept_not_deleted(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source, target, previous = root / "src", root / "new", root / "old"
+            source.mkdir()
+            (source / "kept.pdf").write_bytes(b"one")
+            (source / "fresh.pdf").write_bytes(b"two")
+            (previous / "assets/x").mkdir(parents=True)
+            (previous / "assets/x/kept.pdf.enc").write_bytes(b"AISOENC1-previous")
+            items = public_files(source, target, "assets/x", None, previous)
+            self.assertEqual([item["name"] for item in items], ["kept.pdf"])
+            self.assertEqual((target / "kept.pdf.enc").read_bytes(), b"AISOENC1-previous")
+            self.assertFalse((target / "fresh.pdf.enc").exists())
+            self.assertFalse((target / "kept.pdf").exists())
+
     def test_each_file_gets_a_fresh_iv(self):
         key = derive_file_key("test code")
         self.assertNotEqual(encrypt_bytes(key, b"same"), encrypt_bytes(key, b"same"))
