@@ -51,10 +51,10 @@ def inside_root(root: Path, relative: str) -> Path:
     return target
 
 
-def public_files(source: Path, destination: Path, url_prefix: str, key: bytes | None = None):
-    """Publish files only in encrypted form. Without a key nothing is copied: plaintext is never published."""
+def public_files(source: Path, destination: Path, url_prefix: str, key: bytes | None = None, reuse_root: Path | None = None):
+    """Publish files only in encrypted form. Without a key, already-published encrypted copies are kept; plaintext is never published."""
     items = []
-    if not source.exists() or key is None:
+    if not source.exists():
         return items
     for file in sorted(source.rglob("*")):
         if not file.is_file() or file.suffix.lower() not in ALLOWED_EXTENSIONS:
@@ -67,8 +67,16 @@ def public_files(source: Path, destination: Path, url_prefix: str, key: bytes | 
         if any(part.startswith(".") for part in relative.parts) or BLOCKED_NAME.search(file.name):
             continue
         target = destination / (relative.as_posix() + ".enc")
+        previous = None
+        if key is None:
+            previous = reuse_root / url_prefix / (relative.as_posix() + ".enc") if reuse_root else None
+            if not previous or not previous.is_file():
+                continue
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(encrypt_bytes(key, file.read_bytes()))
+        if previous:
+            shutil.copy2(previous, target)
+        else:
+            target.write_bytes(encrypt_bytes(key, file.read_bytes()))
         items.append({"name": file.name, "extension": file.suffix.lower().lstrip("."), "url": f"{url_prefix}/{relative.as_posix()}.enc", "encrypted": True, "size": file.stat().st_size})
     return items
 
@@ -121,7 +129,7 @@ def sanitized_access_policy(policy):
     }
 
 
-def sanitized_product(product, data_root: Path, output: Path, key: bytes | None = None):
+def sanitized_product(product, data_root: Path, output: Path, key: bytes | None = None, reuse_root: Path | None = None):
     if not re.fullmatch(r"[a-z0-9-]+", str(product.get("id", ""))):
         raise ValueError(f"Unsafe product ID: {product.get('id', '')}")
     preview_3d = product.get("preview_3d", {})
@@ -158,9 +166,9 @@ def sanitized_product(product, data_root: Path, output: Path, key: bytes | None 
     documents_folder = product.get("documents", {}).get("public_folder", f"{product['folder']}/Documents/Public")
     benchmark_folder = product.get("benchmark", {}).get("public_folder", f"{product['folder']}/Benchmark/Public")
     scripts_folder = product.get("scripts", {}).get("public_folder", f"{product['folder']}/Scripts")
-    public["published"]["documents"] = public_files(inside_root(data_root, documents_folder), product_output / "manuals", f"assets/{product['id']}/manuals", key)
-    public["published"]["benchmark"] = public_files(inside_root(data_root, benchmark_folder), product_output / "benchmark", f"assets/{product['id']}/benchmark", key)
-    public["published"]["scripts"] = public_files(inside_root(data_root, scripts_folder), product_output / "scripts", f"assets/{product['id']}/scripts", key)
+    public["published"]["documents"] = public_files(inside_root(data_root, documents_folder), product_output / "manuals", f"assets/{product['id']}/manuals", key, reuse_root)
+    public["published"]["benchmark"] = public_files(inside_root(data_root, benchmark_folder), product_output / "benchmark", f"assets/{product['id']}/benchmark", key, reuse_root)
+    public["published"]["scripts"] = public_files(inside_root(data_root, scripts_folder), product_output / "scripts", f"assets/{product['id']}/scripts", key, reuse_root)
     return public
 
 
@@ -178,7 +186,7 @@ def export_catalog(base: Path, data_root: Path):
     (temporary / ".nojekyll").write_text("", encoding="utf-8")
     (temporary / "data").mkdir()
     key = file_key_from_env()
-    products = [sanitized_product(product, data_root, temporary, key) for product in catalog.get("products", []) if product.get("publish", {}).get("enabled", True)]
+    products = [sanitized_product(product, data_root, temporary, key, output) for product in catalog.get("products", []) if product.get("publish", {}).get("enabled", True)]
     published = {
         "version": catalog.get("version", 1),
         "updated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -194,7 +202,7 @@ def export_catalog(base: Path, data_root: Path):
     temporary.replace(output)
     file_count = sum(len(product["published"][kind]) for product in products for kind in ("documents", "benchmark", "scripts"))
     return {"output": str(output), "products": len(products), "files": file_count, "files_encrypted": bool(key),
-            "note": "" if key else "AISO_FILE_PASSWORD is not set: no documents, reports or scripts were published."}
+            "note": "" if key else "AISO_FILE_PASSWORD is not set: kept the already-published encrypted files; changed files were not re-published."}
 
 
 if __name__ == "__main__":
