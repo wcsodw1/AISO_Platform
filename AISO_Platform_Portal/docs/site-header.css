@@ -47,3 +47,10 @@
 .access-actions button[type=submit]{background:#c8b875;border-color:#c8b875;color:#0a0a0a}
 .access-actions button:disabled{opacity:.5;cursor:wait}
 @media(prefers-reduced-motion:reduce){.access-card.shake{animation:none}}
+
+/* Cursor glow (site-glow.js) and card hover highlight shared by every page */
+.cursor-glow{position:fixed;left:0;top:0;z-index:900;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(236,216,126,.3) 0%,rgba(216,199,121,.16) 32%,rgba(216,199,121,.05) 55%,transparent 72%);transition:opacity .3s ease;will-change:transform}
+.cursor-glow.on{opacity:1}
+.category-card,.device-card,.featured-product-card,.app-card,.resource-product-card,.contact-card,.capability-grid article,.pipeline-card,.poc-phase,.case-stage,.consulting-flow span,.ref-card,.bh-matrix article,.bh-proof article,.bh-metrics div,.benchmark-cta-grid article,.guide-tabs button,.process-next,.consulting-teaser,.contact-brief li,.about-company .capability-grid article{transition:border-color .2s ease,box-shadow .25s ease}
+.category-card:hover,.device-card:hover,.featured-product-card:hover,.app-card:hover,.resource-product-card:hover,.contact-card:hover,.capability-grid article:hover,.pipeline-card:hover,.poc-phase:hover,.case-stage:hover,.ref-card:hover,.bh-matrix article:hover,.bh-proof article:hover,.bh-metrics div:hover,.guide-tabs button:hover,.process-next:hover,.consulting-teaser:hover,.contact-brief li:hover{border-color:rgba(216,199,121,.65)!important;box-shadow:0 0 0 1px rgba(216,199,121,.28),0 12px 44px rgba(216,199,121,.14)}
+@media print{.cursor-glow{display:none}}
