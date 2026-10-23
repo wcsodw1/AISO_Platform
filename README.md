@@ -167,7 +167,7 @@ AISO_Platform/                                      ← Git repository 根目錄
 
 Intel Arc Pro B70 已建立獨立設備入口，Portal 分類為 Workstation，實體資料暫存於 `Workstation-Server/INTEL-ARC-PRO-B70/`。`Documents/Public/` 已加入 SPARKLE Intel Arc Pro B70 AI Benchmark 研究，說明 Intel Xe2／Battlemage、官方硬體規格、可核對的 llama.cpp SYCL 與 LLM Scaler／vLLM 第三方結果、AISO 測試矩陣及 Evidence 分級；公開研究不等同 AISO 內部實測。整機形式、SPARKLE Part Number、GPU 數量及 OS 仍待補齊。
 
-B70 的 Scripts 頁提供 Enter Code 互動示範，沿用深藍黑、米白與香檳金配色；示範代碼為 `AISO-DEMO`，支援錯誤提示、顯示／隱藏代碼與重新鎖定。這是前端展示，不是下載授權；正式存取保護需要伺服器驗證。
+公開站發布的 SOP、Benchmark 報告與 Scripts 一律以 AES-256-GCM 加密（`*.enc`），必須先通過存取提示，瀏覽器才會用存取碼解密開啟。這是為了避免直接用網址取得明文檔案，但存取碼很短，只能擋一般存取，不是真正的伺服器端保護。
 
 ## README 同步規則
 
@@ -219,7 +219,7 @@ AISO_DATA_ROOT=/path/to/data make run
 
 ```bash
 make check   # Python 與 JavaScript 語法檢查
-make export  # 重建 AISO_Platform_Portal/docs/
+AISO_FILE_PASSWORD=<存取碼> make export  # 重建 docs/；未設定時不會發布任何文件、報告與腳本（不發布明文）
 ```
 
 匯出會同時複製 `assets/cosmic/`、`assets/products/` 與 `assets/models/`，再加入各設備可公開的文件、Benchmark 與 Scripts。官方素材會保留來源紀錄；使用者提供的 AISO 產品照會註明取得方式。組裝系統若僅有 GPU 圖，介面會明確標示為 GPU platform reference、不是機箱照。

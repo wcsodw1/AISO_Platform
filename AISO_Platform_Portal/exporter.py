@@ -2,12 +2,39 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 from datetime import datetime
 from pathlib import Path
 
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".xlsx", ".csv", ".json", ".png", ".jpg", ".jpeg", ".webp", ".html", ".md", ".txt", ".sh", ".ps1"}
+FILE_MAGIC = b"AISOENC1"
+FILE_SALT = b"aiso-file-key-v1"
+KDF_ITERATIONS = 600_000
+
+
+def derive_file_key(password: str) -> bytes:
+    """Same derivation as access-gate.js: PBKDF2-HMAC-SHA256 over the trimmed, upper-cased access code."""
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=FILE_SALT, iterations=KDF_ITERATIONS)
+    return kdf.derive(password.strip().upper().encode("utf-8"))
+
+
+def encrypt_bytes(key: bytes, data: bytes) -> bytes:
+    """File layout: magic (8) + IV (12) + AES-256-GCM ciphertext and tag; the magic is authenticated."""
+    iv = os.urandom(12)
+    return FILE_MAGIC + iv + AESGCM(key).encrypt(iv, data, FILE_MAGIC)
+
+
+def file_key_from_env():
+    password = os.environ.get("AISO_FILE_PASSWORD", "")
+    return derive_file_key(password) if password.strip() else None
+
+
 BLOCKED_NAME = re.compile(r"(?:password|passwd|secret|credential|private|internal|\.env|\.pem$|\.key$)", re.IGNORECASE)
 
 
@@ -24,9 +51,10 @@ def inside_root(root: Path, relative: str) -> Path:
     return target
 
 
-def public_files(source: Path, destination: Path, url_prefix: str):
+def public_files(source: Path, destination: Path, url_prefix: str, key: bytes | None = None):
+    """Publish files only in encrypted form. Without a key nothing is copied: plaintext is never published."""
     items = []
-    if not source.exists():
+    if not source.exists() or key is None:
         return items
     for file in sorted(source.rglob("*")):
         if not file.is_file() or file.suffix.lower() not in ALLOWED_EXTENSIONS:
@@ -38,10 +66,10 @@ def public_files(source: Path, destination: Path, url_prefix: str):
         relative = file.relative_to(source)
         if any(part.startswith(".") for part in relative.parts) or BLOCKED_NAME.search(file.name):
             continue
-        target = destination / relative
+        target = destination / (relative.as_posix() + ".enc")
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file, target)
-        items.append({"name": file.name, "extension": file.suffix.lower().lstrip("."), "url": f"{url_prefix}/{relative.as_posix()}"})
+        target.write_bytes(encrypt_bytes(key, file.read_bytes()))
+        items.append({"name": file.name, "extension": file.suffix.lower().lstrip("."), "url": f"{url_prefix}/{relative.as_posix()}.enc", "encrypted": True, "size": file.stat().st_size})
     return items
 
 
@@ -93,7 +121,7 @@ def sanitized_access_policy(policy):
     }
 
 
-def sanitized_product(product, data_root: Path, output: Path):
+def sanitized_product(product, data_root: Path, output: Path, key: bytes | None = None):
     if not re.fullmatch(r"[a-z0-9-]+", str(product.get("id", ""))):
         raise ValueError(f"Unsafe product ID: {product.get('id', '')}")
     preview_3d = product.get("preview_3d", {})
@@ -130,9 +158,9 @@ def sanitized_product(product, data_root: Path, output: Path):
     documents_folder = product.get("documents", {}).get("public_folder", f"{product['folder']}/Documents/Public")
     benchmark_folder = product.get("benchmark", {}).get("public_folder", f"{product['folder']}/Benchmark/Public")
     scripts_folder = product.get("scripts", {}).get("public_folder", f"{product['folder']}/Scripts")
-    public["published"]["documents"] = public_files(inside_root(data_root, documents_folder), product_output / "manuals", f"assets/{product['id']}/manuals")
-    public["published"]["benchmark"] = public_files(inside_root(data_root, benchmark_folder), product_output / "benchmark", f"assets/{product['id']}/benchmark")
-    public["published"]["scripts"] = public_files(inside_root(data_root, scripts_folder), product_output / "scripts", f"assets/{product['id']}/scripts")
+    public["published"]["documents"] = public_files(inside_root(data_root, documents_folder), product_output / "manuals", f"assets/{product['id']}/manuals", key)
+    public["published"]["benchmark"] = public_files(inside_root(data_root, benchmark_folder), product_output / "benchmark", f"assets/{product['id']}/benchmark", key)
+    public["published"]["scripts"] = public_files(inside_root(data_root, scripts_folder), product_output / "scripts", f"assets/{product['id']}/scripts", key)
     return public
 
 
@@ -149,7 +177,8 @@ def export_catalog(base: Path, data_root: Path):
         shutil.copytree(base / "assets", temporary / "assets")
     (temporary / ".nojekyll").write_text("", encoding="utf-8")
     (temporary / "data").mkdir()
-    products = [sanitized_product(product, data_root, temporary) for product in catalog.get("products", []) if product.get("publish", {}).get("enabled", True)]
+    key = file_key_from_env()
+    products = [sanitized_product(product, data_root, temporary, key) for product in catalog.get("products", []) if product.get("publish", {}).get("enabled", True)]
     published = {
         "version": catalog.get("version", 1),
         "updated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -164,7 +193,8 @@ def export_catalog(base: Path, data_root: Path):
         shutil.rmtree(output)
     temporary.replace(output)
     file_count = sum(len(product["published"][kind]) for product in products for kind in ("documents", "benchmark", "scripts"))
-    return {"output": str(output), "products": len(products), "files": file_count}
+    return {"output": str(output), "products": len(products), "files": file_count, "files_encrypted": bool(key),
+            "note": "" if key else "AISO_FILE_PASSWORD is not set: no documents, reports or scripts were published."}
 
 
 if __name__ == "__main__":
