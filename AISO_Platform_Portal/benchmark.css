@@ -13,7 +13,7 @@ td details{margin-top:4px}td details summary{cursor:pointer;color:var(--muted);f
 .integrity-card code{display:block;font-size:10px;color:var(--muted);word-break:break-all}.integrity-card ul{margin:6px 0 0;padding-left:18px}
 #preflightResult{margin-top:8px;font-size:11px}#preflightResult p{margin:4px 0;display:flex;justify-content:space-between;gap:8px}
 .job-card .job-actions{display:flex;gap:8px;margin-top:8px}.job-card .job-actions button{padding:6px 10px;border-radius:8px;border:1px solid rgba(244,239,228,.2);background:transparent;color:var(--ivory);font:inherit;font-size:11px;cursor:pointer}
-@media print{body{background:#fff;color:#000}.bm-topbar,.bm-layout,.job-section,.export-row,#systemNotice,.report-tools,#reportModelSelect{display:none!important}.report-section{break-inside:avoid;border:0}.table-wrap{overflow:visible}table{font-size:9px}.badge{border-color:#000;color:#000!important}}
+@media print{body{background:#fff;color:#000}.bm-topbar,.site-header,.bm-layout,.job-section,.export-row,#systemNotice,.report-tools,#reportModelSelect{display:none!important}.report-section{break-inside:avoid;border:0}.table-wrap{overflow:visible}table{font-size:9px}.badge{border-color:#000;color:#000!important}}
 
 /* Hover glow: the region under the cursor lights up (cursor position set by benchmark-app.js) */
 .bm-side,.bm-workspace,.report-section,.job-section,.machine-card,.connection-card,.model-facts div,.chart-grid article,.issue-card,.integrity-card,.job-card,.summary-cards span,.bm-notice{--mx:50%;--my:50%;transition:border-color .2s ease,box-shadow .25s ease,background-color .2s ease}

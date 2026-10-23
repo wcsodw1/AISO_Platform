@@ -9,12 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="benchmark.css?v=1.23.5">
+  <link rel="stylesheet" href="site-header.css?v=1.24.3">
+  <link rel="stylesheet" href="benchmark.css?v=1.24.0">
 </head>
 <body>
-  <header class="bm-topbar">
-    <a class="bm-brand" href="./"><b>AISO</b><span>BENCHMARK<br><small>EVIDENCE ENGINE</small></span></a>
-    <nav><a href="./">Platform</a><span>Benchmark</span><strong>By Machine</strong></nav>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a><a role="menuitem" href="./#consulting">Consulting<small>From requirement to deployment</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#guide">Guide</a><a href="./#contact">Contact</a></nav>
     <div class="bm-auth"><input id="tokenInput" type="password" autocomplete="off" placeholder="Enter local Bearer Token"><button id="connectButton" type="button">Connect</button><span id="accessBadge">PUBLIC READ-ONLY</span></div>
   </header>
 
@@ -82,6 +83,6 @@
 
     <section class="job-section"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
   </main>
-  <script src="benchmark-app.js?v=1.23.5"></script>
+  <script src="benchmark-app.js?v=1.24.0"></script>
 </body>
 </html>

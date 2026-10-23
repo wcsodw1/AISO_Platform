@@ -3232,3 +3232,30 @@ textarea{
 .copy-zh{display:block;margin-top:.3em;font-size:.74em;font-weight:500;font-style:normal;line-height:1.55;letter-spacing:0;text-transform:none;opacity:.68}
 .app-illustration>span{padding:2px 7px;font-size:8px;letter-spacing:.12em}
 .app-card .app-illustration>span{right:8px;top:8px;font-size:8px;letter-spacing:.12em}
+
+/* v1.24 - information architecture: condensed Benchmark teaser, Guide tabs, Contact page */
+.benchmark-cta{padding-bottom:8px}
+.benchmark-cta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:22px}
+.benchmark-cta-grid article{padding:18px 20px;border:1px solid rgba(243,239,229,.14);border-radius:18px;background:rgba(243,239,229,.035);transition:border-color .2s ease,background-color .2s ease}
+.benchmark-cta-grid article:hover{border-color:rgba(200,184,117,.5);background:rgba(200,184,117,.07)}
+.benchmark-cta-grid span{color:var(--fashion-sand,#c8b875);font-size:11px;font-weight:800;letter-spacing:.2em}
+.benchmark-cta-grid b{display:block;margin:10px 0 6px;font-size:18px}
+.benchmark-cta-grid small{display:block;color:rgba(243,239,229,.6);font-size:13px;line-height:1.5}
+.benchmark-cta-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:24px}
+.benchmark-cta-actions p{margin:0;color:rgba(243,239,229,.55);font-size:13px}
+.benchmark-cta-actions .button{text-decoration:none}
+.guide-tabs{display:flex;gap:10px;margin:6px 0 26px;flex-wrap:wrap}
+.guide-tabs button{display:grid;gap:3px;min-width:220px;padding:14px 20px;border:1px solid rgba(243,239,229,.18);border-radius:16px;background:transparent;color:rgba(243,239,229,.7);font:inherit;font-size:16px;font-weight:700;text-align:left;cursor:pointer;transition:border-color .2s ease,background-color .2s ease,color .2s ease}
+.guide-tabs button small{color:rgba(243,239,229,.5);font-size:12px;font-weight:500}
+.guide-tabs button:hover{border-color:rgba(200,184,117,.6);color:#f3efe5}
+.guide-tabs button[aria-current]{border-color:var(--fashion-sand,#c8b875);background:rgba(200,184,117,.12);color:#f3efe5}
+#aboutView .contact-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.contact-brief{margin:34px 0 0;padding:28px clamp(18px,3vw,36px);border:1px solid rgba(243,239,229,.14);border-radius:24px;background:rgba(243,239,229,.03)}
+.contact-brief h3{margin:6px 0 20px;font-size:clamp(22px,2.6vw,34px);letter-spacing:-.01em}
+.contact-brief ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0;padding:0;list-style:none;counter-reset:brief}
+.contact-brief li{counter-increment:brief;position:relative;padding:16px 18px 16px 52px;border:1px solid rgba(243,239,229,.1);border-radius:16px}
+.contact-brief li:before{content:"0" counter(brief);position:absolute;left:18px;top:17px;color:var(--fashion-sand,#c8b875);font-size:12px;font-weight:800;letter-spacing:.16em}
+.contact-brief li b{display:block;margin-bottom:4px;font-size:16px}
+.contact-brief li span{color:rgba(243,239,229,.65);font-size:13px;line-height:1.55}
+.about-company{margin-top:44px;padding-top:34px;border-top:1px solid rgba(243,239,229,.12)}
+.about-company .about-lead h2{font-size:clamp(28px,3.6vw,52px)}

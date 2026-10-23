@@ -1,0 +1,27 @@
+/* Shared header pieces: Home dropdown (both pages) and the header used by benchmark.html. */
+.nav-menu{position:relative;display:block}
+.nav-menu>button .caret:after,.nav-menu>a .caret:after{content:"";display:inline-block;margin-left:7px;border:4px solid transparent;border-top-color:currentColor;border-bottom:0;vertical-align:middle;transition:transform .2s ease}
+.nav-menu.open>button .caret:after,.nav-menu:focus-within>button .caret:after,.nav-menu:hover>a .caret:after,.nav-menu:focus-within>a .caret:after{transform:rotate(180deg)}
+.site-nav{overflow:visible!important}
+.nav-dropdown{position:absolute;left:0;top:calc(100% - 2px);z-index:40;display:grid;gap:2px;min-width:272px;padding:8px;border:1px solid rgba(200,184,117,.32);border-radius:16px;background:rgba(8,11,18,.97);box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .18s ease,transform .18s ease,visibility .18s}
+.nav-menu.open .nav-dropdown,.nav-menu:focus-within .nav-dropdown,.site-header .nav-menu:hover .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.site-nav .nav-dropdown button,.site-header .nav-dropdown a{display:block!important;width:100%;padding:11px 14px!important;border:0;border-radius:11px;background:transparent;color:#f3efe5!important;font-size:14px!important;font-weight:700;letter-spacing:.02em;text-align:left;text-decoration:none;cursor:pointer;font-family:inherit}
+.site-nav .nav-dropdown button:after,.site-nav .nav-dropdown button:before{display:none!important}
+.nav-dropdown small{display:block;margin-top:3px;color:#98a0ad;font-size:11px;font-weight:500;letter-spacing:0;line-height:1.35}
+.site-nav .nav-dropdown button:hover,.site-nav .nav-dropdown button:focus-visible,.site-header .nav-dropdown a:hover,.site-header .nav-dropdown a:focus-visible{background:rgba(200,184,117,.14);color:#e8d98a!important;outline:0}
+
+/* benchmark.html header: same look as the home header */
+.site-header{display:flex;position:sticky;top:0;z-index:20;align-items:center;justify-content:space-between;gap:22px;min-height:88px;padding:14px max(4vw,calc((100vw - 1480px) / 2));background:rgba(3,6,12,.72);border-bottom:1px solid rgba(255,255,255,.12);backdrop-filter:blur(18px);box-shadow:0 18px 70px rgba(0,0,0,.24);color:#f7f7f2;font-family:"Space Grotesk","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.site-header .brand{flex:none;white-space:nowrap;display:flex;align-items:center;gap:14px;color:inherit;text-decoration:none}
+.site-header .brand-mark{display:grid;place-items:center;width:48px;height:48px;border-radius:999px;background:#f3efe5;color:#060606;font-size:12px;font-weight:950;letter-spacing:.08em;box-shadow:0 0 0 1px rgba(243,239,229,.18),0 0 28px rgba(200,184,117,.1)}
+.site-header .brand strong{display:block;font-size:15px;font-weight:700;letter-spacing:-.02em;line-height:1.5}
+.site-header .brand small{display:block;margin-top:1px;color:#999;font-size:8px;letter-spacing:.14em;line-height:12px}
+.site-header .site-nav{display:flex;align-items:center;gap:2px}
+.site-header .site-nav>a,.site-header .nav-menu>a{position:relative;display:block;white-space:nowrap;padding:10px 12px;color:rgba(243,239,229,.58);font-size:14px;font-weight:700;letter-spacing:.02em;line-height:14px;text-decoration:none;transition:color .2s ease}
+.site-header .site-nav>a:hover,.site-header .nav-menu>a:hover{color:#f3efe5}
+.site-header .site-nav>a:after,.site-header .nav-menu>a:after{content:"";position:absolute;left:9px;right:9px;bottom:4px;height:1px;background:#c8b875;transform:scaleX(0);transition:transform .2s ease}
+.site-header .site-nav>a:hover:after,.site-header .nav-menu>a:hover:after,.site-header .site-nav>a[aria-current]:after{transform:scaleX(1)}
+.site-header .site-nav>a[aria-current]{color:#f3efe5}
+@media(min-width:1180px){.site-header{display:grid;grid-template-columns:1fr auto 1fr;column-gap:28px}.site-header .site-nav{justify-self:center}.site-header .bm-auth{justify-self:end}}
+@media(max-width:760px){.site-header{position:static;flex-direction:column;align-items:flex-start}.site-header .site-nav{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.nav-dropdown,.nav-menu>button .caret:after{transition:none}}
