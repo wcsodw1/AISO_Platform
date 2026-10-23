@@ -34,6 +34,8 @@ class AccessGate(unittest.TestCase):
         self.assertNotIn('"homeView"', app.split("GATED_VIEWS")[1].split(")")[0])
         self.assertNotIn('"aboutView"', app.split("GATED_VIEWS")[1].split(")")[0])
         self.assertNotIn('"consultingView"', app.split("GATED_VIEWS")[1].split(")")[0])
+        self.assertIn('"referenceDetailView"', app.split("GATED_VIEWS")[1].split(")")[0])
+        self.assertNotIn('"referencesView"', app.split("GATED_VIEWS")[1].split(")")[0])
         self.assertIn("data-gated", (ROOT / "benchmark.html").read_text(encoding="utf-8").split("<head>")[0])
         self.assertIn("access-gate.js", (ROOT / "index.html").read_text(encoding="utf-8"))
         self.assertIn("access-gate.js", (ROOT / "exporter.py").read_text(encoding="utf-8"))

@@ -356,15 +356,15 @@ function categoryVisual(category,products){
   if(product)return `<div class="category-visual category-visual-${esc(category.id)}-image" aria-hidden="true"><img class="category-product-image" src="${esc(product.image)}" alt="" loading="lazy"><span class="category-projection-base"></span></div>`;
   return `<div class="category-visual category-visual-workstation" aria-hidden="true">${machineMarkup("workstation")}<span class="category-projection-base"></span></div>`;
 }
-const GATED_VIEWS=new Set(["categoryView","modelListView","resourcesView","deviceView","searchView"]);
+const GATED_VIEWS=new Set(["referenceDetailView","categoryView","modelListView","resourcesView","deviceView","searchView"]);
 function show(view,scroll=true){
   if(GATED_VIEWS.has(view)&&window.AISOGate&&!AISOGate.isUnlocked()){
-    AISOGate.require(()=>show(view,scroll),()=>setSiteNav(!$("aboutView").classList.contains("hidden")?"about":!$("consultingView").classList.contains("hidden")?"consulting":"home"));
+    AISOGate.require(()=>show(view,scroll),()=>setSiteNav(["about","consulting","references"].find(key=>!$(key==="about"?"aboutView":key+"View").classList.contains("hidden"))||"home"));
     return;
   }
-  ["homeView","categoryView","modelListView","resourcesView","aboutView","consultingView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
-function setSiteNav(active){const group={capabilities:"home",products:"home",models:"guide",resources:"guide",consulting:"guide"}[active]||active;document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===group));document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.toggleAttribute("aria-current",tab.dataset.guideTab===active))}
-function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",consulting:"consultingView",device:"deviceView"}[state.previousView]||"homeView"}
+  ["homeView","categoryView","modelListView","resourcesView","aboutView","consultingView","referencesView","referenceDetailView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
+function setSiteNav(active){const group={capabilities:"home",products:"home",models:"guide",resources:"guide",consulting:"guide",references:"guide"}[active]||active;document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===group));document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.toggleAttribute("aria-current",tab.dataset.guideTab===active))}
+function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",consulting:"consultingView",references:"referencesView",device:"deviceView"}[state.previousView]||"homeView"}
 
 function orbitHomeCard(card){
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||card.classList.contains("is-home-orbiting"))return;
@@ -467,6 +467,9 @@ function renderResources(){
 }
 
 function renderConsulting(){state.category=null;state.product=null;state.previousView="consulting";setSiteNav("consulting");show("consultingView")}
+
+function renderReferences(){state.category=null;state.product=null;state.previousView="references";setSiteNav("references");show("referencesView")}
+function renderReferenceCase(){state.previousView="references";setSiteNav("references");show("referenceDetailView")}
 
 function renderAbout(){state.category=null;state.product=null;state.previousView="about";setSiteNav("about");show("aboutView")}
 
@@ -596,7 +599,7 @@ async function runSearch(query){
   document.querySelectorAll("[data-result-action]").forEach(button=>button.onclick=()=>button.dataset.resultAction==="device"?renderDevice(button.dataset.resultValue):request("/api/open",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({path:button.dataset.resultValue})}));show("searchView");
 }
 
-document.querySelectorAll("[data-back]").forEach(button=>button.onclick=()=>{if(button.dataset.back==="home")renderHome();else if(button.dataset.back==="category")renderCategory(state.category.id);else if(button.dataset.back==="search")show(previousViewId())});
+document.querySelectorAll("[data-back]").forEach(button=>button.onclick=()=>{if(button.dataset.back==="home")renderHome();else if(button.dataset.back==="category")renderCategory(state.category.id);else if(button.dataset.back==="references")renderReferences();else if(button.dataset.back==="search")show(previousViewId())});
 function goProducts(){renderHome(false);setSiteNav("products");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("productsSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 function goCapabilities(){renderHome(false);setSiteNav("capabilities");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("capabilitiesSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 function scrollHomeTo(target){const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";target?.scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
@@ -610,10 +613,12 @@ document.addEventListener("click",event=>{if(!homeMenu.contains(event.target))se
 homeMenu.querySelectorAll(".nav-dropdown button").forEach(button=>button.addEventListener("click",()=>setHomeMenu(false)));
 homeMenu.querySelectorAll("[data-home-target]").forEach(button=>button.addEventListener("click",()=>({overview:()=>renderHome()}[button.dataset.homeTarget])()));
 $("consultingTeaserButton").onclick=renderConsulting;
-document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.onclick=()=>({consulting:renderConsulting,models:renderModelList,resources:renderResources}[tab.dataset.guideTab])());
+$("seeReferencesButton").onclick=renderReferences;
+document.querySelectorAll("[data-ref]").forEach(button=>button.onclick=()=>({process:renderConsulting,"02":renderReferenceCase,contact:renderAbout}[button.dataset.ref])());
+document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.onclick=()=>({consulting:renderConsulting,references:renderReferences,models:renderModelList,resources:renderResources}[tab.dataset.guideTab])());
 function routeHash(){
   const key=location.hash.replace(/^#\/?/,"").toLowerCase();
-  const routes={overview:()=>renderHome(),applications:goCapabilities,products:goProducts,consulting:renderConsulting,benchmark:goBenchmark,guide:renderConsulting,models:renderModelList,documents:renderResources,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({block:"start"}))}};
+  const routes={overview:()=>renderHome(),applications:goCapabilities,products:goProducts,consulting:renderConsulting,references:renderReferences,benchmark:goBenchmark,guide:renderConsulting,models:renderModelList,documents:renderResources,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({block:"start"}))}};
   routes[key]?.();
 }
 window.addEventListener("hashchange",routeHash);

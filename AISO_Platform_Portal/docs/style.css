@@ -3300,3 +3300,29 @@ textarea{
 .consulting-teaser .button{grid-column:2;grid-row:1}
 @media(max-width:700px){.consulting-teaser{grid-template-columns:1fr}.consulting-teaser .button{grid-column:1;grid-row:auto}}
 #consultingView .proof-section{margin-top:8px}
+
+/* v1.27 - References tab: case cards, process hand-off link */
+.ref-lead{margin:6px 0 30px;max-width:760px}
+.ref-lead h2{margin:6px 0 14px;font-size:clamp(40px,5.4vw,84px);line-height:.92;letter-spacing:-.035em}
+.ref-lead p{margin:0;color:rgba(243,239,229,.78);font-size:clamp(15px,1.3vw,19px);line-height:1.55}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.ref-card{display:flex;flex-direction:column;gap:14px;padding:26px 26px 24px;border:1px solid rgba(243,239,229,.16);border-radius:26px;background:linear-gradient(155deg,rgba(243,239,229,.05),rgba(5,8,14,.7));transition:border-color .2s ease,box-shadow .25s ease,transform .25s ease}
+.ref-card:hover{border-color:rgba(200,184,117,.6);box-shadow:0 18px 50px rgba(200,184,117,.1);transform:translateY(-3px)}
+.ref-card header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ref-tag{color:var(--fashion-sand,#c8b875);font-size:11px;font-weight:800;letter-spacing:.18em}
+.ref-card header b{color:rgba(243,239,229,.5);font-size:11px;letter-spacing:.2em}
+.ref-card h3{margin:0;font-size:clamp(22px,2vw,30px);line-height:1.1;letter-spacing:-.01em}
+.ref-card p{margin:0;color:rgba(243,239,229,.72);font-size:15px;line-height:1.55}
+.ref-stages{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 0;padding:0;list-style:none}
+.ref-stages li{padding:5px 10px;border:1px solid rgba(243,239,229,.12);border-radius:999px;color:rgba(243,239,229,.32);font-size:10px;font-weight:800;letter-spacing:.14em}
+.ref-stages li.on{border-color:rgba(200,184,117,.6);background:rgba(200,184,117,.12);color:#e8d98a}
+.ref-open{margin-top:auto;align-self:flex-start;padding:12px 20px;border:1px solid rgba(243,239,229,.28);border-radius:999px;background:transparent;color:#f3efe5;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease}
+.ref-open:hover{border-color:#c8b875;box-shadow:0 0 22px rgba(200,184,117,.25)}
+.ref-more{border-style:dashed;background:transparent}
+.process-next{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:30px 0 8px;padding:24px clamp(20px,3vw,36px);border:1px solid rgba(200,184,117,.3);border-radius:24px;background:rgba(200,184,117,.05)}
+.process-next h3{margin:4px 0 0;font-size:clamp(22px,2.4vw,34px);letter-spacing:-.01em}
+#referenceDetailView .poc-real-case{margin-top:10px}
+.guide-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.guide-tabs button{min-width:0;padding:14px 16px}
+.guide-tabs button small{line-height:1.35}
+@media(max-width:760px){.guide-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
