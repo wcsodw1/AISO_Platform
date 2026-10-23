@@ -3355,3 +3355,14 @@ textarea{
 @media(max-width:900px){.ct-track{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:26px}.ct-track:before{display:none}}
 @media(max-width:560px){.ct-track{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.ct-track:before{animation:none}}
+
+/* v1.31 - project-size switch on the Process page */
+.tier-switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 20px}
+.tier-switch button{display:grid;gap:3px;padding:14px 16px;border:1px solid rgba(243,239,229,.18);border-radius:16px;background:transparent;color:rgba(243,239,229,.72);font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;transition:border-color .2s ease,background-color .2s ease,color .2s ease}
+.tier-switch button small{color:rgba(243,239,229,.45);font-size:11px;font-weight:500}
+.tier-switch button:hover{border-color:rgba(200,184,117,.6);color:#f3efe5}
+.tier-switch button[aria-selected="true"]{border-color:#c8b875;background:rgba(200,184,117,.14);color:#f3efe5}
+@media(max-width:760px){.tier-switch{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.case-flow[hidden]{display:none!important}
+.case-disclaimer{margin:14px 0 0;padding:8px 12px;border:1px dashed rgba(200,184,117,.5);border-radius:10px;color:#e8d98a;font-size:12px;line-height:1.45}
+.case-stage.is-example em{border-color:rgba(243,239,229,.3);color:rgba(243,239,229,.6)}

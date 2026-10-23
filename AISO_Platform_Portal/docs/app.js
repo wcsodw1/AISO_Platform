@@ -605,7 +605,7 @@ homeMenu.querySelectorAll(".nav-dropdown button").forEach(button=>button.addEven
 homeMenu.querySelectorAll("[data-home-target]").forEach(button=>button.addEventListener("click",()=>({overview:()=>renderHome()}[button.dataset.homeTarget])()));
 $("consultingTeaserButton").onclick=renderConsulting;
 $("seeReferencesButton").onclick=renderReferences;
-document.querySelectorAll("[data-ref]").forEach(button=>button.onclick=()=>({process:renderConsulting,"02":renderReferenceCase,contact:renderAbout}[button.dataset.ref])());
+document.querySelectorAll("[data-ref]").forEach(button=>button.onclick=()=>({process:()=>{renderConsulting();selectTier("data-center")},"02":renderReferenceCase,contact:renderAbout}[button.dataset.ref])());
 document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.onclick=()=>({consulting:renderConsulting,references:renderReferences,models:renderModelList,resources:renderResources}[tab.dataset.guideTab])());
 function routeHash(){
   const key=location.hash.replace(/^#\/?/,"").toLowerCase();
@@ -700,6 +700,52 @@ if(showreel){
   setInterval(()=>{if(!paused&&!hovered&&!focused&&visible&&!document.hidden&&!reduced.matches)setSlide(current+1)},2000);
   playback();
 }
+
+/* Consulting walk-through per project size. Data Center is the real reference case (static markup);
+   the other sizes are illustrative scenarios built from AISO test records and are labelled as such. */
+const SCENARIOS=[
+  {id:"consumer",label:"CONSUMER",title:"Personal<br>Local AI",scale:"1 USER",scaleNote:"Private assistant on one device",
+   kpis:[["1","DEVICE"],["32GB","LPDDR5x"],["Q4","GGUF MODELS"],["4","MODELS PREPARED"]],
+   stages:[
+    ["DEFINE","A private assistant on one device","Chat, document Q&A and light coding, with the data staying on the laptop.","聊天、文件問答與輕量程式輔助，資料留在本機。",["Chat","Documents","Coding"]],
+    ["SELECT","Match the model to 32GB","ASUS ROG Flow Z13 or TUF Gaming A14 (Ryzen AI Max+ 395 / 392) running Q4 GGUF models.","依 32GB 記憶體選擇模型與設備。"],
+    ["DESIGN","One device, no cluster","llama.cpp with a local web UI; model files stay on the device.","單機、不需要叢集。"],
+    ["VERIFY","Quick test, then compare","AI MAX 392 vs 395 reports and quick-test scripts show how each model behaves on this hardware.","用快速測試與 392／395 比較報告確認實際表現。"],
+    ["DEPLOY","Install and start","Follow the startup guide: llama.cpp, model files and a launch script.","依啟動指南安裝並啟動。"],
+    ["APPLICATION","Daily use","A local chat and document assistant over the device's own files.","本機聊天與文件助理。"]]},
+  {id:"mini-workstation",label:"MINI-WORKSTATION",title:"Team AI<br>Workstation",scale:"NP 2–4",scaleNote:"Concurrent requests tested",
+   kpis:[["128GB","UNIFIED · AISO1"],["2 × 32GB","ARC PRO B70 VRAM"],["64K","MAX INPUT TESTED"],["NP 2 / 4","CONCURRENCY"]],
+   stages:[
+    ["DEFINE","A shared assistant for a team","A handful of people on one machine, with long documents and concurrent requests.","數人共用一台機器，處理長文件與併發請求。",["Chat","RAG","Coding"]],
+    ["SELECT","AISO1, Intel Arc Pro B70 or AMD ASRock","Choose by model size and memory: 128GB unified memory or 2 × 32GB dedicated GPU memory.","依模型大小與記憶體選擇機型。"],
+    ["DESIGN","One box, one inference service","vLLM, SGLang or llama.cpp behind a chat UI on a single machine.","單機單一推論服務。"],
+    ["VERIFY","NP2 / NP4, 4K to 64K input","The same model and workload on each machine; TTFT, TPOT and aggregate TPS recorded.","同模型同負載，記錄 TTFT、TPOT 與 Aggregate TPS。"],
+    ["DEPLOY","A service with logs","Scripted start-up and fixed ports; results are saved with their conditions.","腳本化啟動，結果連同條件一併保存。"],
+    ["APPLICATION","Team chat and knowledge search","Internal knowledge search and a coding assistant for the team.","團隊內部知識搜尋與程式輔助。"]]},
+  {id:"server-workstation",label:"SERVER-WORKSTATION",title:"Department-scale<br>Inference",scale:"NP 1–32",scaleNote:"Concurrent requests tested",
+   kpis:[["8","GPUs · PRO6000 SYSTEM"],["4","GPUs USED IN TEST"],["120B","GPT-OSS CLASS MODEL"],["1K–16K","INPUT TESTED"]],
+   stages:[
+    ["DEFINE","Many users, large models","A department-wide service with long context and high concurrency.","部門級服務：長 Context 與高併發。",["Chat","RAG","Agent"]],
+    ["SELECT","RTX PRO 6000 class server","2-GPU or 8-GPU PRO6000 systems, or NVIDIA DGX B300 for the heaviest workloads.","依負載選 2 卡、8 卡或 DGX B300。"],
+    ["DESIGN","Multi-GPU serving","vLLM across GPUs: decide how many GPUs each model gets and how many users per GPU.","多卡服務：決定每個模型的 GPU 數與使用人數。"],
+    ["VERIFY","NP1–32 benchmark","GPT-OSS-120B and Llama-3.3-70B at 1K–16K input, with cold and warm runs.","GPT-OSS-120B 與 Llama-3.3-70B，含冷／熱啟動。"],
+    ["DEPLOY","Server, network, endpoint","Install, configure the endpoint and keep logs next to results.","安裝、設定服務端點並保存紀錄。"],
+    ["APPLICATION","Shared department assistants","Chat, RAG and agents shared across the department.","部門共用的聊天、RAG 與 Agent。"]]}
+];
+function scenarioPanel(scenario,index){
+  const stage=([name,heading,text,zh,tags],n)=>`<li class="case-stage is-example" data-stage="${name}"><div class="case-stage-rail"><span>0${n+1}</span></div><div class="case-stage-body"><header><strong>${name}</strong><em>EXAMPLE</em></header><h4>${heading}</h4><p>${text}<span class="copy-zh" lang="zh-Hant">${zh}</span></p>${tags?`<div class="case-tags">${tags.map(tag=>`<span>${tag}</span>`).join("")}</div>`:""}</div></li>`;
+  return `<aside class="case-flow" data-tier="${scenario.id}" hidden aria-label="Illustrative scenario: ${scenario.label}"><header class="case-flow-head"><small>SCENARIO 0${index+2} · ${scenario.label} · ILLUSTRATIVE</small><h3>${scenario.title}</h3><p class="case-scale"><b>${scenario.scale}</b>${scenario.scaleNote}</p><div class="case-kpis">${scenario.kpis.map(([value,label])=>`<span><b>${value}</b>${label}</span>`).join("")}</div><p class="case-disclaimer">Built from AISO test records and product data. Not a customer project.</p></header><ol>${scenario.stages.map(stage).join("")}</ol></aside>`;
+}
+(function tierSwitch(){
+  const layout=document.querySelector(".consult-layout");if(!layout)return;
+  const dataCenter=layout.querySelector('.case-flow[data-tier="data-center"]');
+  SCENARIOS.forEach((scenario,index)=>dataCenter.insertAdjacentHTML("beforebegin",scenarioPanel(scenario,index)));
+  window.selectTier=id=>{
+    layout.querySelectorAll(".case-flow[data-tier]").forEach(panel=>{panel.hidden=panel.dataset.tier!==id});
+    document.querySelectorAll("[data-tier-tab]").forEach(tab=>tab.setAttribute("aria-selected",String(tab.dataset.tierTab===id)));
+  };
+  document.querySelectorAll("[data-tier-tab]").forEach(tab=>tab.onclick=()=>selectTier(tab.dataset.tierTab));
+})();
 
 const consultLayout=document.querySelector(".consult-layout");
 if(consultLayout){
