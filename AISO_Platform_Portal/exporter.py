@@ -143,7 +143,7 @@ def export_catalog(base: Path, data_root: Path):
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
-    for asset in ("index.html", "style.css", "site-header.css", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js"):
+    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js"):
         shutil.copy2(base / asset, temporary / asset)
     if (base / "assets").exists():
         shutil.copytree(base / "assets", temporary / "assets")

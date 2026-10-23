@@ -356,7 +356,13 @@ function categoryVisual(category,products){
   if(product)return `<div class="category-visual category-visual-${esc(category.id)}-image" aria-hidden="true"><img class="category-product-image" src="${esc(product.image)}" alt="" loading="lazy"><span class="category-projection-base"></span></div>`;
   return `<div class="category-visual category-visual-workstation" aria-hidden="true">${machineMarkup("workstation")}<span class="category-projection-base"></span></div>`;
 }
-function show(view,scroll=true){["homeView","categoryView","modelListView","resourcesView","aboutView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
+const GATED_VIEWS=new Set(["categoryView","modelListView","resourcesView","deviceView","searchView"]);
+function show(view,scroll=true){
+  if(GATED_VIEWS.has(view)&&window.AISOGate&&!AISOGate.isUnlocked()){
+    AISOGate.require(()=>show(view,scroll),()=>setSiteNav($("aboutView").classList.contains("hidden")?"home":"about"));
+    return;
+  }
+  ["homeView","categoryView","modelListView","resourcesView","aboutView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
 function setSiteNav(active){const group={capabilities:"home",products:"home",models:"guide",resources:"guide"}[active]||active;document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===group));document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.toggleAttribute("aria-current",tab.dataset.guideTab===active))}
 function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",device:"deviceView"}[state.previousView]||"homeView"}
 

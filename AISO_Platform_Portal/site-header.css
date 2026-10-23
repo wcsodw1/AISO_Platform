@@ -25,3 +25,25 @@
 @media(min-width:1180px){.site-header{display:grid;grid-template-columns:1fr auto 1fr;column-gap:28px}.site-header .site-nav{justify-self:center}.site-header .bm-auth{justify-self:end}}
 @media(max-width:760px){.site-header{position:static;flex-direction:column;align-items:flex-start}.site-header .site-nav{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.nav-dropdown,.nav-menu>button .caret:after{transition:none}}
+
+/* Access prompt */
+.aiso-locked body>*:not(#accessGate){visibility:hidden}
+.access-gate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(2,4,9,.78);backdrop-filter:blur(10px)}
+.access-gate[hidden]{display:none}
+.access-card{width:min(420px,100%);padding:30px 28px 26px;border:1px solid rgba(200,184,117,.4);border-radius:22px;background:linear-gradient(160deg,#10141c,#07090d);box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 60px rgba(200,184,117,.08);color:#f3efe5;font-family:"Space Grotesk","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.access-card.shake{animation:access-shake .32s ease}
+@keyframes access-shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.access-eyebrow{margin:0 0 8px;color:#c8b875;font-size:11px;font-weight:800;letter-spacing:.22em}
+.access-card h2{margin:0 0 10px;font-size:26px;letter-spacing:-.01em}
+.access-copy{margin:0 0 18px;color:rgba(243,239,229,.7);font-size:14px;line-height:1.55}
+.access-copy span{display:block;margin-top:3px;font-size:12px;color:rgba(243,239,229,.5)}
+.access-field{display:grid;gap:6px;font-size:11px;font-weight:700;letter-spacing:.12em;color:rgba(243,239,229,.6)}
+.access-field input{padding:13px 14px;border:1px solid rgba(243,239,229,.25);border-radius:12px;background:#0a0e15;color:#f3efe5;font:inherit;font-size:16px;letter-spacing:.2em}
+.access-field input:focus{outline:0;border-color:#c8b875;box-shadow:0 0 0 3px rgba(200,184,117,.2)}
+.access-error{min-height:20px;margin:8px 0 0;color:#ed786f;font-size:13px}
+.access-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+.access-actions button{padding:11px 20px;border-radius:999px;border:1px solid rgba(243,239,229,.28);background:transparent;color:#f3efe5;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:box-shadow .2s ease,border-color .2s ease}
+.access-actions button:hover:not(:disabled){border-color:#c8b875;box-shadow:0 0 18px rgba(200,184,117,.25)}
+.access-actions button[type=submit]{background:#c8b875;border-color:#c8b875;color:#0a0a0a}
+.access-actions button:disabled{opacity:.5;cursor:wait}
+@media(prefers-reduced-motion:reduce){.access-card.shake{animation:none}}
