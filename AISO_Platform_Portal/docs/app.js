@@ -188,16 +188,12 @@ function bi(value){const raw=String(value??"");const en=EN_COPY[raw];const zh=ZH
 
 function mountBenchmarkSection(){
   const productsSection=$("productsSection");
-  const consultingSection=document.querySelector(".proof-section");
-  if(!productsSection||!consultingSection||$("benchmarkSection"))return;
-  consultingSection.insertAdjacentHTML("beforebegin",`<section id="benchmarkSection" class="home-section benchmark-lab-section"><header class="home-section-heading benchmark-lab-heading"><div><p class="eyebrow">SPARKLEBENCHMARK / S.B</p><h2 class="proof-title">BENCHMARK<span class="proof-title-tag">EVIDENCE ENGINE</span></h2><p class="home-title-zh">Reproducible testing across hardware and backends</p></div><p>Keep models, quantization, prompts and workloads consistent. Compare hardware and backends with complete environment and result records.</p></header><div class="benchmark-lab-grid"><article class="benchmark-console"><header><span><i></i> S.B CONTROL PLANE</span><em>UNIFIED BENCHMARK</em></header><div class="benchmark-console-body"><div class="benchmark-console-command"><small>UNIFIED ENTRYPOINT</small><code>python3 benchmark_runner.py --config mini_workstation_benchmark.yaml</code></div><ol><li class="is-ready"><span>01</span><div><strong>CONFIGURE</strong><small>Model · Quant · SHA · Context</small></div><em>READY</em></li><li class="is-ready"><span>02</span><div><strong>CONNECT</strong><small>Verified service · Runtime · Format</small></div><em>ADAPTER</em></li><li><span>03</span><div><strong>RUN</strong><small>NP2 · NP4 · Full workload</small></div><em>QUEUE</em></li><li><span>04</span><div><strong>VALIDATE</strong><small>TTFT · TPOT · Throughput · E2E</small></div><em>METRICS</em></li><li><span>05</span><div><strong>EXPORT</strong><small>JSON · CSV · Reviewed evidence</small></div><em>REPORT</em></li></ol></div></article><div class="benchmark-lab-side"><article class="benchmark-matrix"><span>ACTIVE COMPARISON</span><h3>ONE MODEL.<br>TWO PLATFORMS.</h3><div><p><small>PLATFORM A</small><strong>2× Intel Arc Pro B70</strong><em>Runtime depends on Framework</em></p><b>VS</b><p><small>PLATFORM B</small><strong>AISO1 AI MAX+ 395</strong><em>Backend verification pending</em></p></div></article><article class="benchmark-metrics"><span>STANDARD METRICS</span><div><strong>TTFT<small>Time to first token</small></strong><strong>TPOT<small>Time per output token</small></strong><strong>TPS<small>Prompt / Decode / Aggregate</small></strong><strong>E2E<small>End-to-end latency</small></strong></div></article><footer><button id="benchmarkResultsLink" class="text-link" type="button">Browse benchmark evidence →</button><small>Execution access is separated from the public Portal.</small></footer></div></div></section>`);
+  if(!productsSection||$("benchmarkSection"))return;
+  const tier=(order,name,items)=>`<article><header><span>${order}</span><h3>${name}</h3></header><ul>${items.map(([label,vendor])=>`<li class="${vendor}"><i></i>${label}</li>`).join("")}</ul></article>`;
+  productsSection.insertAdjacentHTML("afterend",`<section id="benchmarkSection" class="home-section benchmark-hero"><div class="bh-top"><div class="bh-copy"><p class="eyebrow">BENCHMARK · EVIDENCE ENGINE</p><h2>PROOF,<br>NOT SPECS.</h2><p class="bh-lead">Same model. Same workload. Different hardware.<br>Measured, logged and compared across Intel, AMD and NVIDIA.<span class="copy-zh" lang="zh-Hant">同模型、同負載、不同硬體；每筆結果都保留條件與 Log 證據。</span></p><div class="bh-actions"><a id="runBenchmarkButton" class="button primary bh-cta" href="benchmark.html">Run benchmark <span lang="zh-Hant">實測</span> →</a><p>Opens Benchmark by Machine · access code required</p></div></div><div class="bh-metrics" aria-label="Metrics we record"><div><b>TTFT</b><small>Time to first token</small></div><div><b>TPOT</b><small>Time per output token</small></div><div><b>TPS</b><small>Prompt · Decode · Aggregate</small></div><div><b>E2E</b><small>End-to-end latency</small></div></div></div><div class="bh-matrix" aria-label="Systems we measure">${tier("01","CONSUMER",[["AI MAX+ 395","amd"],["AI MAX+ 392","amd"],["Intel Arc B390","intel"]])}${tier("02","MINI-WORKSTATION",[["AISO1 · AI MAX+ 395","amd"],["ASRock","neutral"],["Intel Arc Pro B70","intel"]])}${tier("03","SERVER",[["NVIDIA RTX PRO 6000","nvidia"],["NVIDIA B300","nvidia"],["AMD Instinct MI350X","amd"]])}</div><div class="bh-proof"><article><span>01</span><b>Same model file</b><small>Exact repo, quantization and SHA256</small></article><article><span>02</span><b>Same workload</b><small>Fixed prompts, NP, input and output length</small></article><article><span>03</span><b>Real metrics</b><small>Recorded per request, not estimated</small></article><article><span>04</span><b>Logs before PASS</b><small>Unverified results stay labelled</small></article></div></section>`);
 }
 
 mountBenchmarkSection();
-
-const benchmarkHeading=$("benchmarkSection")?.querySelector(".benchmark-lab-heading");
-benchmarkHeading?.insertAdjacentHTML("afterend",`<div class="benchmark-evidence-schema" aria-label="每筆 Benchmark 必須保留的證據欄位"><header><span>BENCHMARK EVIDENCE RECORD</span><strong>Every run leaves a reproducible, comparable record.</strong></header><div><article><small>01 / MODEL</small><b>What was tested</b><p>Model · Repository · Exact file · Precision / Quant · SHA</p></article><article><small>02 / SYSTEM</small><b>Where it ran</b><p>Machine · CPU / GPU / NPU · Memory · Backend · Framework version</p></article><article><small>03 / WORKLOAD</small><b>How it was tested</b><p>Context · Input / Output · NP / Concurrency · Repeat · Parameters</p></article><article><small>04 / RESULTS</small><b>What it delivered</b><p>Prompt / Decode / Aggregate TPS · TTFT · TPOT · E2E</p></article></div></div>`);
-benchmarkHeading?.insertAdjacentHTML("afterend",`<aside class="benchmark-why"><div><small>WHY IT MATTERS</small><h3>Validate the whole system.<br><strong>Prove it can serve real AI workloads.</strong></h3><p>Verify model loading, service startup, response latency, concurrent throughput and sustained stability before deployment.</p></div><ol><li><span>LOAD</span><b>Load the model</b><em>Fit model, quantization and context within memory</em></li><li><span>SERVE</span><b>Run the service</b><em>Stable drivers, framework, backend and endpoint</em></li><li><span>RESPOND</span><b>Respond in time</b><em>TTFT, TPOT and E2E meet interaction targets</em></li><li><span>SCALE</span><b>Handle concurrency</b><em>Maintain aggregate throughput and success rate under load</em></li><li><span>SUSTAIN</span><b>Sustain the workload</b><em>Validate thermals, power, error rates and output quality</em></li></ol><footer>OUTPUT <strong>Models × Precision × Users × Operating limits</strong></footer></aside>`);
 
 async function request(path,options={}){
   const response=await fetch(path,{cache:"no-store",...options});
@@ -230,7 +226,6 @@ async function init(){
   $("productCount").textContent=state.catalog.products.length;
   $("updatedAt").textContent=`Updated ${(state.catalog.updated_at||"").slice(0,10).replaceAll("-",".")||"-"}`;
   renderHome();
-  initBenchmarkConsole();
 }
 
 const productsFor=category=>state.catalog.products.filter(product=>product.category===category);
@@ -361,9 +356,15 @@ function categoryVisual(category,products){
   if(product)return `<div class="category-visual category-visual-${esc(category.id)}-image" aria-hidden="true"><img class="category-product-image" src="${esc(product.image)}" alt="" loading="lazy"><span class="category-projection-base"></span></div>`;
   return `<div class="category-visual category-visual-workstation" aria-hidden="true">${machineMarkup("workstation")}<span class="category-projection-base"></span></div>`;
 }
-function show(view,scroll=true){["homeView","categoryView","modelListView","resourcesView","aboutView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
-function setSiteNav(active){document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===active))}
-function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",device:"deviceView"}[state.previousView]||"homeView"}
+const GATED_VIEWS=new Set(["categoryView","modelListView","resourcesView","deviceView","searchView"]);
+function show(view,scroll=true){
+  if(GATED_VIEWS.has(view)&&window.AISOGate&&!AISOGate.isUnlocked()){
+    AISOGate.require(()=>show(view,scroll),()=>setSiteNav(!$("aboutView").classList.contains("hidden")?"about":!$("consultingView").classList.contains("hidden")?"consulting":"home"));
+    return;
+  }
+  ["homeView","categoryView","modelListView","resourcesView","aboutView","consultingView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
+function setSiteNav(active){const group={capabilities:"home",products:"home",models:"guide",resources:"guide",consulting:"guide"}[active]||active;document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===group));document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.toggleAttribute("aria-current",tab.dataset.guideTab===active))}
+function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",consulting:"consultingView",device:"deviceView"}[state.previousView]||"homeView"}
 
 function orbitHomeCard(card){
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||card.classList.contains("is-home-orbiting"))return;
@@ -464,6 +465,8 @@ function renderResources(){
   });
   show("resourcesView");
 }
+
+function renderConsulting(){state.category=null;state.product=null;state.previousView="consulting";setSiteNav("consulting");show("consultingView")}
 
 function renderAbout(){state.category=null;state.product=null;state.previousView="about";setSiteNav("about");show("aboutView")}
 
@@ -596,19 +599,34 @@ async function runSearch(query){
 document.querySelectorAll("[data-back]").forEach(button=>button.onclick=()=>{if(button.dataset.back==="home")renderHome();else if(button.dataset.back==="category")renderCategory(state.category.id);else if(button.dataset.back==="search")show(previousViewId())});
 function goProducts(){renderHome(false);setSiteNav("products");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("productsSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 function goCapabilities(){renderHome(false);setSiteNav("capabilities");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("capabilitiesSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
-function goBenchmark(){renderHome(false);setSiteNav("benchmark");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("benchmarkSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
+function scrollHomeTo(target){const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";target?.scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
+function goBenchmark(){renderHome(false);setSiteNav("benchmark");scrollHomeTo($("benchmarkSection"))}
+const homeMenu=$("homeMenu");
+const setHomeMenu=open=>{homeMenu.classList.toggle("open",open);$("homeLink").setAttribute("aria-expanded",String(open))};
+homeMenu.addEventListener("pointerenter",event=>{if(event.pointerType!=="touch")setHomeMenu(true)});
+homeMenu.addEventListener("pointerleave",()=>setHomeMenu(false));
+homeMenu.addEventListener("keydown",event=>{if(event.key==="Escape"){setHomeMenu(false);$("homeLink").focus()}});
+document.addEventListener("click",event=>{if(!homeMenu.contains(event.target))setHomeMenu(false)});
+homeMenu.querySelectorAll(".nav-dropdown button").forEach(button=>button.addEventListener("click",()=>setHomeMenu(false)));
+homeMenu.querySelectorAll("[data-home-target]").forEach(button=>button.addEventListener("click",()=>({overview:()=>renderHome()}[button.dataset.homeTarget])()));
+$("consultingTeaserButton").onclick=renderConsulting;
+document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.onclick=()=>({consulting:renderConsulting,models:renderModelList,resources:renderResources}[tab.dataset.guideTab])());
+function routeHash(){
+  const key=location.hash.replace(/^#\/?/,"").toLowerCase();
+  const routes={overview:()=>renderHome(),applications:goCapabilities,products:goProducts,consulting:renderConsulting,benchmark:goBenchmark,guide:renderConsulting,models:renderModelList,documents:renderResources,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({block:"start"}))}};
+  routes[key]?.();
+}
+window.addEventListener("hashchange",routeHash);
 $("homeBrandLink").addEventListener("click",event=>{event.preventDefault();renderHome()});
-$("homeLink").onclick=renderHome;
+$("homeLink").onclick=()=>{if(window.matchMedia("(hover: none)").matches&&!homeMenu.classList.contains("open")){setHomeMenu(true);return}setHomeMenu(false);renderHome()};
 $("productsLink").onclick=goProducts;
 $("capabilitiesLink").onclick=goCapabilities;
 $("benchmarkLink").onclick=goBenchmark;
-$("modelListLink").onclick=renderModelList;
-$("resourcesLink").onclick=renderResources;
+$("guideLink").onclick=renderConsulting;
 $("aboutLink").onclick=renderAbout;
 $("heroProductsLink").onclick=goProducts;
 $("heroModelsLink").onclick=renderModelList;
 $("homeResourcesLink").onclick=renderResources;
-$("benchmarkResultsLink").onclick=renderResources;
 document.querySelectorAll("[data-footer-route]").forEach(button=>button.onclick=()=>({products:goProducts,capabilities:goCapabilities,models:renderModelList,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({behavior:"smooth",block:"start"}))}}[button.dataset.footerRoute]||renderHome)());
 
 document.querySelector('[data-footer-route="benchmark"]').onclick=goBenchmark;
@@ -739,7 +757,7 @@ if(appDeck){
 }
 
 let searchTimer;$("globalSearch").addEventListener("input",event=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>runSearch(event.target.value),220)});
-init().catch(error=>{$("categoryGrid").innerHTML=`<div class="note">AISO Platform Load failed：${esc(error.message)}</div>`;$("modeBadge").textContent="Load failed"});
+init().then(routeHash).catch(error=>{$("categoryGrid").innerHTML=`<div class="note">AISO Platform Load failed：${esc(error.message)}</div>`;$("modeBadge").textContent="Load failed"});
 
 /* v1.18.7 - homepage cursor depth */
 (() => {
@@ -816,47 +834,3 @@ init().catch(error=>{$("categoryGrid").innerHTML=`<div class="note">AISO Platfor
 })();
 
 // Unified benchmark: static visitors can configure/export; execution is local-only.
-function initBenchmarkConsole(){
-  const section=$("benchmarkSection");
-  if(!section||$("sbControl"))return;
-  const options=items=>items.map(([value,label])=>`<option value="${value}">${label}</option>`).join("");
-  section.insertAdjacentHTML("beforeend",`<div id="sbControl" class="sb-control">
-    <header><p class="eyebrow">MINI-WORKSTATION / UNIFIED RUNNER</p><h3>Configure. Run. Validate.</h3><p>One YAML → One runner → Framework adapters. Connect an existing service and preserve each run’s conditions.</p></header>
-    <div class="sb-taxonomy"><span>01 <b>Hardware / Platform</b>Intel · AMD · NVIDIA</span><span>02 <b>Inference Framework</b>vLLM · llama.cpp · SGLang · OpenVINO</span><span>03 <b>Backend / Runtime</b>XPU / SYCL · ROCm / Vulkan · CUDA · OpenVINO GPU/CPU</span><span>04 <b>Model Format</b>Safetensors · GGUF · OpenVINO IR</span></div>
-    <form id="sbForm"><div class="sb-fields">
-      <label>Hardware / Platform<select id="sbPlatform">${options([['intel_b70','Sparkle｜Intel B70'],['amd_aiso1','TPI｜AISO1 AMD'],['nvidia','NVIDIA | Not configured']])}</select></label>
-      <label>Inference Framework<select id="sbFramework">${options([['vllm','vLLM'],['llamacpp','llama.cpp'],['sglang','SGLang'],['openvino','OpenVINO']])}</select></label>
-      <label>Model<select id="sbModel">${options([['gemma26','Gemma26'],['gemma31','Gemma31'],['nemotron','Nemotron'],['laguna','Laguna']])}</select></label>
-      <label>Profile<select id="sbMode">${options([['formal','Formal｜Prefix Cache OFF'],['production-cache','Production Cache｜ON']])}</select></label>
-    </div><p id="sbProfileNote"></p><div class="sb-parameters"><span>Concurrency <b>NP2 / NP4</b></span><span>Input tokens <b>4,096 → 65,536</b></span><span>Output tokens <b>1,024</b></span><span>Repeat <b>3</b></span><span>Max model length <b>69,632</b></span><span>Max batched tokens <b>4,096</b></span><span>GPU memory utilization <b>0.9</b></span><span>Total requests <b>90 / model</b></span></div>
-    <details><summary>View YAML</summary><pre id="sbYaml"></pre></details>
-    <div class="sb-actions"><button type="button" id="sbDownload">Download YAML</button><button type="button" id="sbPreflight">Check readiness</button><button type="submit" id="sbStart" disabled>Start run</button><button type="button" id="sbCancel" disabled>Stop run</button></div>
-    <p id="sbStatus" role="status" aria-live="polite"></p></form>
-    <div class="sb-baselines"><h4>Baseline status · Full @4096</h4><p>Baseline snapshot: 2026-10-19. DS validation does not certify NP2/NP4 Full. Unreviewed runs do not overwrite this record.</p>${['Sparkle｜Intel B70','TPI｜AISO1 AMD'].map((title,index)=>`<div class="sb-table-wrap"><table><caption>${title}</caption><thead><tr><th>Model</th><th>NP2 Full @4096</th><th>NP4 Full @4096</th><th>Latest status</th></tr></thead><tbody>${['Gemma26','Gemma31','Nemotron','Laguna'].map((model,i)=>`<tr><th>${model}</th><td>${i===3?(index===0?'❌ Excluded':'—'):'⏳ Rerun'}</td><td>${i===3?'—':'⏳ Rerun'}</td><td>${i===3?(index===0?'vLLM / XPU / Safetensors excluded':'Excluded from vLLM formal set'):i===1&&index===0?'✓ 4096 DS verified; Full rerun pending':'New baseline'}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>
-    <div class="sb-results"><h4>Local run history</h4><p>TTFT, TPOT and decode TPS use client-observed streaming. Multi-token chunks affect estimates. Aggregate TPS uses complete batch time; failed batches have no formal throughput.</p><div id="sbJobs"></div></div></div>`);
-  let ready=false,active=null,lastJobs=[],polling=false;
-  const local=state.access==='admin';
-  const config=()=>({schema_version:1,run:{platform:$("sbPlatform").value,framework:$("sbFramework").value,model:$("sbModel").value,mode:$("sbMode").value},workload:{np:[2,4],input_tokens:[4096,8192,16384,32768,65536],output_tokens:1024,repeat:3,max_model_len:69632,max_batched_tokens:4096,gpu_memory_utilization:0.9,prefix_cache:$("sbMode").value==='production-cache'}});
-  const yaml=()=>{const c=config();return `schema_version: 1\nrun:\n${Object.entries(c.run).map(([k,v])=>`  ${k}: ${v}`).join('\n')}\nworkload:\n${Object.entries(c.workload).map(([k,v])=>`  ${k}: ${JSON.stringify(v)}`).join('\n')}\n`};
-  const excluded=()=>config().run.model==='laguna'&&config().run.framework==='vllm'&&config().run.platform!=='nvidia';
-  const buttons=()=>{$('sbStart').disabled=!local||!ready||!!active||excluded();$('sbPreflight').disabled=!local||!!active||excluded();$('sbCancel').disabled=!local||!active};
-  const reset=()=>{ready=false;$('sbYaml').textContent=yaml();$('sbProfileNote').textContent=config().workload.prefix_cache?'Production Cache：單獨保存，不能混入 Formal baseline。':'Formal：Prefix Cache OFF；每個 request 必須符合精確 Input / Output token 數。';$('sbStatus').textContent=excluded()?'Laguna 已排除此平台的 vLLM 測試集合。':local?'請先Check readiness。Runtime、Format 與模型精確版本由本機 target 設定讀取。':'公開／內網唯讀版：可Download YAML；請在執行主機的 localhost Manage版啟動測試。';buttons()};
-  const post=(action)=>request(`/api/benchmark/${action}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config())});
-  const download=(name,content,type)=>{const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-  $('sbDownload').onclick=()=>download('mini_workstation_benchmark.yaml',yaml(),'application/yaml');
-  $('sbForm').addEventListener('change',reset);
-  $('sbPreflight').onclick=async()=>{const submitted=JSON.stringify(config());try{const data=await post('preflight');if(submitted!==JSON.stringify(config()))return;ready=true;$('sbStatus').textContent=`${data.runtime} / ${data.format} — ${data.message}`;buttons()}catch(e){ready=false;$('sbStatus').textContent=e.message;buttons()}};
-  const number=value=>typeof value==='number'?value.toFixed(2):'—';
-  async function refresh(){
-    if(!local||polling)return;
-    polling=true;
-    try{const data=await request('/api/benchmark/jobs');active=data.active;lastJobs=data.jobs;
-      $('sbJobs').innerHTML=lastJobs.length?lastJobs.map((job,index)=>`<article class="sb-job"><header><b>${esc(job.config.run.platform)} · ${esc(job.config.run.framework)} · ${esc(job.config.run.model)}</b><span>${esc(job.status)} · ${job.rows.length}/${job.total_requests}</span></header><p>${esc(job.config.run.mode)} · ${esc(job.id)} · 參數來源：操作者驗證</p><progress max="${job.total_requests}" value="${job.rows.length}"></progress><button type="button" data-sb-export="${index}">Download JSON</button><button type="button" data-sb-csv="${index}">Download CSV</button><details><summary>Measurements (latest 12)</summary><div class="sb-table-wrap"><table><thead><tr><th>NP / Input / Repeat</th><th>驗證</th><th>TTFT ms</th><th>TPOT ms</th><th>Decode TPS</th><th>Aggregate TPS</th><th>E2E s</th></tr></thead><tbody>${job.rows.slice(-12).map(r=>`<tr><td>${r.np} / ${r.input_tokens} / ${r.repeat}</td><td>${r.valid?'通過':esc(r.error||'未通過')}</td><td>${number(r.ttft_ms)}</td><td>${number(r.tpot_ms)}</td><td>${number(r.decode_tps)}</td><td>${number(r.aggregate_tps)}</td><td>${number(r.e2e_s)}</td></tr>`).join('')}</tbody></table></div></details></article>`).join(''):'尚無執行紀錄。';buttons();
-    }catch(e){$('sbStatus').textContent=`執行 API 尚未就緒：${e.message}`;ready=false;buttons()}finally{polling=false}
-  }
-  $('sbForm').onsubmit=async(event)=>{event.preventDefault();if(!ready||active)return;ready=false;buttons();try{const job=await post('start');active=job.id;$('sbStatus').textContent=`測試已啟動：${job.id}`;await refresh()}catch(e){$('sbStatus').textContent=e.message}buttons()};
-  $('sbCancel').onclick=async()=>{try{const result=await post('cancel');$('sbStatus').textContent=result.message;await refresh()}catch(e){$('sbStatus').textContent=e.message}};
-  $('sbJobs').onclick=event=>{const json=event.target.closest('[data-sb-export]'),csv=event.target.closest('[data-sb-csv]');if(json){const j=lastJobs[Number(json.dataset.sbExport)];download(j.id+'.json',JSON.stringify(j,null,2),'application/json')}if(csv){const j=lastJobs[Number(csv.dataset.sbCsv)];const rows=j.rows.map(r=>({...j.config.run,...r}));const keys=[...new Set(rows.flatMap(Object.keys))];const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';download(j.id+'.csv',[keys,...rows.map(r=>keys.map(k=>r[k]))].map(r=>r.map(cell).join(',')).join('\n'),'text/csv')}};
-  reset();$('sbJobs').textContent=local?'讀取中…':'執行紀錄僅在Local adminShow。';refresh();
-  if(local)setInterval(()=>{if(!document.hidden)refresh()},3000);
-}

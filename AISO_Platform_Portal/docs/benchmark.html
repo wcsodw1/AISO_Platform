@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Benchmark by Machine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.25.0">
+  <script src="access-gate.js?v=1.25.0"></script>
+  <link rel="stylesheet" href="benchmark.css?v=1.25.0">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><input id="tokenInput" type="password" autocomplete="off" placeholder="Enter local Bearer Token"><button id="connectButton" type="button">Connect</button><span id="accessBadge">PUBLIC READ-ONLY</span></div>
+  </header>
+
+  <main>
+    <section class="bm-hero">
+      <div><p class="eyebrow">SPARKLEBENCHMARK / P0 MVP</p><h1>BENCHMARK<br><em>BY MACHINE</em></h1><p>Prove that a complete system can load, serve, respond, scale and sustain a model workload—with reproducible evidence, not isolated GPU scores.</p></div>
+      <div class="bm-proof"><span>01 <b>SELECT</b></span><i></i><span>02 <b>CONFIGURE</b></span><i></i><span>03 <b>EXECUTE</b></span><i></i><span>04 <b>VERIFY</b></span><i></i><span>05 <b>REPORT</b></span></div>
+    </section>
+
+    <div id="systemNotice" class="bm-notice">P0 uses a safe Mock Executor. No SSH command or GPU workload is started. Mock output is always UNVERIFIED.</div>
+
+    <section class="bm-layout">
+      <aside class="bm-side">
+        <p class="section-label">LAYER 01 / MACHINE PROFILE</p>
+        <label>GPU Vendor<select id="vendorSelect"></select></label>
+        <label>Machine<select id="machineSelect"></select></label>
+        <label>Framework<select id="frameworkSelect"></select></label>
+        <article id="machineCard" class="machine-card"></article>
+        <div class="connection-card"><header><b>CONNECTION</b><span>SSH EXECUTOR: P1</span></header><dl id="connectionDetails"></dl><button id="preflightButton" type="button" disabled>Run Preflight (simulated)</button><div id="preflightResult"></div><small>SSH Key Authentication + Host Key Verification only. Credentials never enter the browser or repository.</small></div>
+      </aside>
+
+      <section class="bm-workspace">
+        <header class="workspace-head"><div><p class="section-label">LAYER 02 / BENCHMARK CONFIGURATION</p><h2>Configure the workload</h2></div><span id="frameworkStatus" class="status-chip"></span></header>
+        <form id="benchmarkForm">
+          <div class="form-grid">
+            <label>Model <button class="tip" type="button" data-tip="Exact model selection. Repository and source compliance are preserved in the evidence record.">?</button><select id="modelSelect"></select></label>
+            <label>Test Mode <button class="tip" type="button" data-tip="Smoke validates the path. Full executes the complete matrix. P0 only simulates an approved plan.">?</button><select id="modeSelect"><option value="smoke">Smoke</option><option value="full" selected>Full</option><option value="custom">Custom</option></select></label>
+            <label>NP / Concurrent Requests <button class="tip" type="button" data-tip="Number of simultaneous client requests. Aggregate TPS must be evaluated separately from per-request Decode TPS.">?</button><select id="npInput"><option value="2">2</option><option value="4" selected>4</option></select></label>
+            <label>TP / Tensor Parallel <button class="tip" type="button" data-tip="Number of GPUs used to shard the model. B70 P0 fixture uses TP=2.">?</button><input id="tpInput" type="number" min="1" value="2"></label>
+            <fieldset><legend>Input Tokens <button class="tip" type="button" data-tip="Prompt lengths included in the run. Failed or unexecuted points remain missing; the UI never inserts zero values.">?</button></legend><div id="inputTokens" class="check-row"></div></fieldset>
+            <label>Output Tokens <button class="tip" type="button" data-tip="Required generated tokens per request. PASS requires the complete expected output count.">?</button><input id="outputInput" type="number" min="1" value="1024"></label>
+            <label>Repeat Count <button class="tip" type="button" data-tip="Independent repetitions per NP and input-token case.">?</button><input id="repeatInput" type="number" min="1" value="3"></label>
+            <label>Max Model Length <button class="tip" type="button" data-tip="Maximum total sequence length accepted by the serving engine.">?</button><input id="maxModelInput" type="number" min="1" value="69632"></label>
+            <label>Max Number of Sequences <button class="tip" type="button" data-tip="Maximum concurrent sequences scheduled by vLLM.">?</button><input id="maxSeqInput" type="number" min="1" value="4"></label>
+            <label>Max Batched Tokens <button class="tip" type="button" data-tip="vLLM scheduler token budget per iteration. This is not llama.cpp batch size.">?</button><input id="maxBatchInput" type="number" min="1" value="4096"></label>
+            <label>GPU Memory Utilization <button class="tip" type="button" data-tip="Fraction of GPU memory vLLM may reserve. Range: 0–1.">?</button><input id="gpuUtilInput" type="number" min="0.01" max="1" step="0.01" value="0.90"></label>
+            <label class="switch-row">Prefix Caching <button class="tip" type="button" data-tip="Cache reuse changes workload semantics. Cache ON results must remain separate from the formal baseline.">?</button><input id="prefixInput" type="checkbox"><span>OFF</span></label>
+          </div>
+          <aside id="tooltip" role="tooltip" hidden></aside>
+          <div class="run-summary"><div><small>EXECUTION MODE</small><strong>MOCK / NO SSH</strong></div><div><small>PASS POLICY</small><strong>LOG-VERIFIED ONLY</strong></div><div><small>RESULT WRITE</small><strong>APPEND-ONLY RUN ID</strong></div></div>
+          <div class="form-actions"><button id="downloadConfig" type="button">Download Config JSON</button><button id="startMock" class="primary" type="submit">Start Mock Execution</button><button id="stopMock" type="button" disabled>Stop</button></div>
+          <p id="runStatus" class="run-status" aria-live="polite">Press Connect with the local Bearer Token to enable Mock Execution.</p>
+        </form>
+      </section>
+    </section>
+
+    <section class="report-section">
+      <header><div><p class="section-label">REPORT A / BENCHMARK OVERVIEW</p><h2>Evidence status</h2></div><div class="report-tools"><label>Source<select id="sourceSelect"><option value="recorded">Recorded (imported)</option><option value="mock">Mock jobs (simulated)</option></select></label><label>Format<select id="formatSelect"><option value="">All formats</option><option>Safetensors</option><option>GGUF</option></select></label></div></header>
+      <div id="summaryCards" class="summary-cards"></div>
+      <p id="reportNotice" class="report-notice">Enter the local Bearer Token and press Connect to load recorded results.</p>
+      <div class="table-wrap"><table><thead><tr><th>Model</th><th>Format / Quant</th><th>Source compliance</th><th>NP2 Full</th><th>NP4 Full</th><th>Overall</th><th>Verified PASS up to</th><th>Recorded OK up to</th></tr></thead><tbody id="overviewBody"></tbody></table></div>
+    </section>
+
+    <section class="report-section model-report">
+      <header><div><p class="section-label">REPORT B / BENCHMARK BY MODEL</p><h2 id="modelReportTitle">—</h2><p id="modelReportSub" class="report-sub"></p></div><select id="reportModelSelect" aria-label="Model"></select></header>
+      <div id="modelFacts" class="model-facts"></div>
+      <div class="legend"><span class="np2"><i></i>NP 2</span><span class="np4"><i></i>NP 4</span><span class="hint">Hollow marker = UNVERIFIED · ✕ = FAIL / BLOCKED · gaps are missing data, never zero</span></div>
+      <div id="chartGrid" class="chart-grid"></div>
+      <p class="normalization-note"><b>Normalization definitions</b>Per Request Normalized TPS = Aggregate TPS ÷ NP. Per GPU Normalized TPS = Aggregate TPS ÷ GPU Count. These are separate metrics and never replace single-request Decode TPS.</p>
+      <div class="table-wrap"><table><thead><tr><th>NP</th><th>Input</th><th>Run</th><th>TTFT (s)</th><th>TPOT (ms)</th><th>Aggregate TPS</th><th>Per Request</th><th>Per GPU</th><th>E2E (s)</th><th>Status / Evidence</th></tr></thead><tbody id="detailBody"></tbody></table></div>
+      <div id="issuePanel"></div>
+      <div id="integrityPanel"></div>
+      <div class="export-row"><button id="exportJson" type="button">JSON Structured Results</button><button id="exportCsv" type="button">CSV Raw Results</button><button id="exportPng" type="button">PNG Charts</button><button id="exportPdf" type="button">PDF Report (print)</button><button id="exportLogs" type="button" disabled>Log Archive — awaiting import</button></div>
+    </section>
+
+    <section class="job-section"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
+  </main>
+  <script src="benchmark-app.js?v=1.25.0"></script>
+</body>
+</html>

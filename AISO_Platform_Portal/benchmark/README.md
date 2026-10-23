@@ -2,6 +2,14 @@
 
 A local control plane for **already running** model services. It does not install frameworks, download models, start Docker/SSH services, or assume every hardware/framework combination works.
 
+## Benchmark by Machine P0
+
+`benchmark.html` is the P0 evidence UI for Intel Arc Pro B70 + vLLM XPU. `machines.example.json` contains public-safe machine metadata only; credentials and private keys are never stored in the repository or browser. `api.py`, `jobs.py`, `schema.py` and `reports.py` provide the versioned API, Mock Job contract, evidence policy and reports. Mock Jobs always remain `UNVERIFIED`, never `PASS`.
+
+Local management endpoints require both loopback access and `Authorization: Bearer <token>`. Set `AISO_BENCHMARK_BEARER_TOKEN` privately before `make run`, or use the temporary token printed in the local Terminal. P0 does not open SSH. P1 will add a whitelisted SSH Executor using Key Authentication and Host Key verification after real Runner, Client, CSV and Server Logs are exported from the B70 machine.
+
+The B70 SGLang Adapter is reserved as `RUNTIME_UNVERIFIED`; execution remains disabled until real runtime logs are reviewed. Fixture metrics without imported logs remain `UNVERIFIED`. Gemma31 64K remains `FAIL` with the original missing-first-token/usage error; its root cause is not classified as OOM.
+
 ## Run from the Portal
 
 1. Install repository dependencies: `python3 -m pip install -r requirements.txt`.

@@ -1,6 +1,8 @@
-# AISO Platform v1.19.0
+# AISO Platform v1.23.0
 
 AISO Platform 是 AISO 官方產品與技術資源入口，同時提供「Mac 本機管理＋GitHub Pages 公開展示」兩種模式。
+
+v1.23.0 新增獨立 `benchmark.html` 的 Benchmark by Machine P0 MVP。第一個 Profile 為 2× Intel Arc Pro B70／vLLM XPU，提供 Framework-aware 設定、Mock Execution、Evidence Overview、By Model 明細與 TTFT／TPOT／Aggregate TPS 圖表。P0 不啟動 SSH；管理 API 必須同時來自 loopback 並提供 Bearer Token，Mock 結果永遠標示 `UNVERIFIED` 且以唯一 Run ID append-only 保存。SGLang XPU Adapter 已預留為 `RUNTIME_UNVERIFIED`。沒有匯入 Runner／Client／Server Logs 的既有數值不得升為 PASS，Gemma31 64K 原始失敗保持 `missing first token/usage; root cause unconfirmed`，不推定 OOM。
 
 首頁以 `SELECT → VERIFY → DEPLOY` 呈現 AISO 的顧問服務流程：從工作負載與需求盤點開始，提出適用方案與硬體配置；接著在 `VERIFY` 階段透過 PoC、實機 Benchmark 與應用串接驗證技術可行性、模型、Context 與效能邊界；最後在 `DEPLOY` 階段將通過驗證的配置導入正式環境，完成部署方案、SOP、Scripts 與技術移交。每個階段都明確列出工作內容與可交付成果，避免被理解為單純硬體型錄。
 
