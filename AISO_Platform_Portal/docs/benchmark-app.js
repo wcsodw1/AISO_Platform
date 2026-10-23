@@ -2,7 +2,7 @@ const $=id=>document.getElementById(id);
 const API="/api/v1/benchmark";
 const INPUTS=[4096,8192,16384,32768,65536];
 const COLORS={2:"#d8c779",4:"#7edcff"};
-const state={token:"",meta:null,machines:[],overview:null,report:null,jobs:[],active:null,logs:{}};
+const state={seq:0,token:"",meta:null,machines:[],overview:null,report:null,jobs:[],active:null,logs:{}};
 const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const badge=status=>`<span class="badge ${String(status).toLowerCase().replaceAll("_","-")}">${esc(String(status).replaceAll("_"," "))}</span>`;
 const kfmt=tokens=>tokens>=1024?`${tokens/1024}K`:String(tokens);
@@ -70,9 +70,15 @@ function updateFramework(){
 async function loadReports(){
   if(!state.token){$("reportNotice").textContent="Enter the local Bearer Token and press Connect to load recorded results.";return}
   if(!machine())return;
+  const ticket=++state.seq;
   try{
-    state.overview=await api(`/reports/overview?${reportQuery()}&format=${encodeURIComponent($("formatSelect").value)}`);
+    const overview=await api(`/reports/overview?${reportQuery()}&format=${encodeURIComponent($("formatSelect").value)}`);
+    if(ticket!==state.seq)return;
+    state.overview=overview;
     renderOverview();
+    const chosen=$("modelSelect").value;
+    $("modelSelect").innerHTML=(machine().frameworks[framework()]?.models||[]).map(id=>`<option value="${id}">${esc(modelName(id))}</option>`).join("");
+    if(chosen)$("modelSelect").value=chosen;
     const keep=$("reportModelSelect").value;
     $("reportModelSelect").innerHTML=state.overview.models.map(model=>`<option value="${model.model}">${esc(model.name)}</option>`).join("");
     const withNumbers=state.overview.models.find(model=>model.np_compare.some(point=>point.np2!=null||point.np4!=null));
@@ -90,7 +96,8 @@ function renderOverview(){
 async function loadModel(){
   const id=$("reportModelSelect").value;
   if(!id){state.report=null;$("modelReportTitle").textContent="—";$("chartGrid").innerHTML="";$("detailBody").innerHTML="";$("modelFacts").innerHTML="";$("issuePanel").innerHTML="";$("integrityPanel").innerHTML="";return}
-  try{state.report=await api(`/reports/model?${reportQuery()}&model=${encodeURIComponent(id)}`);renderModel()}catch(error){$("reportNotice").textContent=error.message}
+  const ticket=++state.seq;
+  try{const report=await api(`/reports/model?${reportQuery()}&model=${encodeURIComponent(id)}`);if(ticket!==state.seq)return;state.report=report;renderModel()}catch(error){$("reportNotice").textContent=error.message}
 }
 function lineChart(series,unit,label){
   const w=360,h=190,left=46,right=12,top=14,bottom=26;
@@ -227,4 +234,17 @@ setInterval(()=>{if(state.token&&!document.hidden)refreshJobs()},1500);
   $("vendorSelect").innerHTML="<option>Connect to load</option>";$("machineSelect").innerHTML="";$("frameworkSelect").innerHTML="";
   $("machineCard").innerHTML="<p>Connect to load machine profiles and recorded results.</p>";
   $("startMock").disabled=true;
+})();
+
+/* hover glow: publish the cursor position to every glow region under the pointer */
+(function glow(){
+  const regions=".bm-side,.bm-workspace,.report-section,.job-section,.machine-card,.connection-card,.model-facts div,.chart-grid article,.issue-card,.integrity-card,.job-card,.summary-cards span,.bm-notice";
+  document.addEventListener("pointermove",event=>{
+    for(let node=event.target instanceof Element?event.target:null;node;node=node.parentElement){
+      if(!node.matches(regions))continue;
+      const box=node.getBoundingClientRect();
+      node.style.setProperty("--mx",`${event.clientX-box.left}px`);
+      node.style.setProperty("--my",`${event.clientY-box.top}px`);
+    }
+  },{passive:true});
 })();

@@ -14,3 +14,16 @@ td details{margin-top:4px}td details summary{cursor:pointer;color:var(--muted);f
 #preflightResult{margin-top:8px;font-size:11px}#preflightResult p{margin:4px 0;display:flex;justify-content:space-between;gap:8px}
 .job-card .job-actions{display:flex;gap:8px;margin-top:8px}.job-card .job-actions button{padding:6px 10px;border-radius:8px;border:1px solid rgba(244,239,228,.2);background:transparent;color:var(--ivory);font:inherit;font-size:11px;cursor:pointer}
 @media print{body{background:#fff;color:#000}.bm-topbar,.bm-layout,.job-section,.export-row,#systemNotice,.report-tools,#reportModelSelect{display:none!important}.report-section{break-inside:avoid;border:0}.table-wrap{overflow:visible}table{font-size:9px}.badge{border-color:#000;color:#000!important}}
+
+/* Hover glow: the region under the cursor lights up (cursor position set by benchmark-app.js) */
+.bm-side,.bm-workspace,.report-section,.job-section,.machine-card,.connection-card,.model-facts div,.chart-grid article,.issue-card,.integrity-card,.job-card,.summary-cards span,.bm-notice{--mx:50%;--my:50%;transition:border-color .2s ease,box-shadow .25s ease,background-color .2s ease}
+.bm-side:hover,.bm-workspace:hover,.report-section:hover,.job-section:hover,.machine-card:hover,.connection-card:hover,.model-facts div:hover,.chart-grid article:hover,.issue-card:hover,.integrity-card:hover,.job-card:hover,.summary-cards span:hover,.bm-notice:hover{background-image:radial-gradient(320px circle at var(--mx) var(--my),rgba(216,199,121,.2),transparent 62%);border-color:rgba(216,199,121,.5)}
+.model-facts div:hover,.chart-grid article:hover,.machine-card:hover,.connection-card:hover,.job-card:hover,.summary-cards span:hover{box-shadow:0 0 0 1px rgba(216,199,121,.25),0 10px 34px rgba(216,199,121,.1)}
+.issue-card:hover{background-image:radial-gradient(320px circle at var(--mx) var(--my),rgba(237,120,111,.16),transparent 62%);border-color:rgba(237,120,111,.7)}
+tbody tr{transition:background-color .15s ease}tbody tr:hover>*{background-color:rgba(216,199,121,.1)}tbody tr:hover>*:first-child{box-shadow:inset 3px 0 0 var(--gold)}
+button:not(:disabled),select,input[type=checkbox]+*,.badge{transition:box-shadow .2s ease,border-color .2s ease,filter .2s ease}
+button:not(:disabled):hover,select:hover{box-shadow:0 0 0 1px rgba(216,199,121,.55),0 0 22px rgba(216,199,121,.22);border-color:rgba(216,199,121,.7)}
+.badge:hover{filter:brightness(1.35);box-shadow:0 0 14px currentColor}
+.chart svg circle:hover{r:5.5;filter:drop-shadow(0 0 6px currentColor)}
+@media (prefers-reduced-motion:reduce){.bm-side,.bm-workspace,.report-section,.machine-card,.chart-grid article,tbody tr,button,select{transition:none}}
+@media print{.bm-side:hover,.report-section:hover,.chart-grid article:hover{background-image:none;box-shadow:none}}

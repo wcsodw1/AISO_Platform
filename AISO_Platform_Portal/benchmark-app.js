@@ -235,3 +235,16 @@ setInterval(()=>{if(state.token&&!document.hidden)refreshJobs()},1500);
   $("machineCard").innerHTML="<p>Connect to load machine profiles and recorded results.</p>";
   $("startMock").disabled=true;
 })();
+
+/* hover glow: publish the cursor position to every glow region under the pointer */
+(function glow(){
+  const regions=".bm-side,.bm-workspace,.report-section,.job-section,.machine-card,.connection-card,.model-facts div,.chart-grid article,.issue-card,.integrity-card,.job-card,.summary-cards span,.bm-notice";
+  document.addEventListener("pointermove",event=>{
+    for(let node=event.target instanceof Element?event.target:null;node;node=node.parentElement){
+      if(!node.matches(regions))continue;
+      const box=node.getBoundingClientRect();
+      node.style.setProperty("--mx",`${event.clientX-box.left}px`);
+      node.style.setProperty("--my",`${event.clientY-box.top}px`);
+    }
+  },{passive:true});
+})();
