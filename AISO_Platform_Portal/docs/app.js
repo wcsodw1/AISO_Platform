@@ -188,9 +188,9 @@ function bi(value){const raw=String(value??"");const en=EN_COPY[raw];const zh=ZH
 
 function mountBenchmarkSection(){
   const productsSection=$("productsSection");
-  const consultingSection=document.querySelector(".proof-section");
-  if(!productsSection||!consultingSection||$("benchmarkSection"))return;
-  consultingSection.insertAdjacentHTML("beforebegin",`<section id="benchmarkSection" class="home-section benchmark-lab-section benchmark-cta"><header class="home-section-heading benchmark-lab-heading"><div><p class="eyebrow">BENCHMARK</p><h2 class="proof-title">PROOF, NOT SPECS<span class="proof-title-tag">EVIDENCE ENGINE</span></h2><p class="home-title-zh">Same model, same workload, different hardware.</p></div><p>Compare Intel, AMD and NVIDIA systems under identical conditions. Every result keeps its model file, settings and software versions, and a run is PASS only when its logs confirm it.<span class="copy-zh" lang="zh-Hant">同模型、同負載、不同硬體；每筆結果都保留條件與 Log 證據。</span></p></header><div class="benchmark-cta-grid"><article><span>01</span><b>Same model file</b><small>Exact repo, quantization and SHA256</small></article><article><span>02</span><b>Same workload</b><small>Fixed prompts, NP, input and output length</small></article><article><span>03</span><b>Real metrics</b><small>TTFT · TPOT · Aggregate TPS · E2E</small></article><article><span>04</span><b>Logs before PASS</b><small>Unverified results stay labelled</small></article></div><div class="benchmark-cta-actions"><a id="runBenchmarkButton" class="button primary" href="benchmark.html">Run benchmark <span lang="zh-Hant">實測</span> →</a><p>Opens Benchmark by Machine · local admin access</p></div></section>`);
+  if(!productsSection||$("benchmarkSection"))return;
+  const tier=(order,name,items)=>`<article><header><span>${order}</span><h3>${name}</h3></header><ul>${items.map(([label,vendor])=>`<li class="${vendor}"><i></i>${label}</li>`).join("")}</ul></article>`;
+  productsSection.insertAdjacentHTML("afterend",`<section id="benchmarkSection" class="home-section benchmark-hero"><div class="bh-top"><div class="bh-copy"><p class="eyebrow">BENCHMARK · EVIDENCE ENGINE</p><h2>PROOF,<br>NOT SPECS.</h2><p class="bh-lead">Same model. Same workload. Different hardware.<br>Measured, logged and compared across Intel, AMD and NVIDIA.<span class="copy-zh" lang="zh-Hant">同模型、同負載、不同硬體；每筆結果都保留條件與 Log 證據。</span></p><div class="bh-actions"><a id="runBenchmarkButton" class="button primary bh-cta" href="benchmark.html">Run benchmark <span lang="zh-Hant">實測</span> →</a><p>Opens Benchmark by Machine · access code required</p></div></div><div class="bh-metrics" aria-label="Metrics we record"><div><b>TTFT</b><small>Time to first token</small></div><div><b>TPOT</b><small>Time per output token</small></div><div><b>TPS</b><small>Prompt · Decode · Aggregate</small></div><div><b>E2E</b><small>End-to-end latency</small></div></div></div><div class="bh-matrix" aria-label="Systems we measure">${tier("01","CONSUMER",[["AI MAX+ 395","amd"],["AI MAX+ 392","amd"],["Intel Arc B390","intel"]])}${tier("02","MINI-WORKSTATION",[["AISO1 · AI MAX+ 395","amd"],["ASRock","neutral"],["Intel Arc Pro B70","intel"]])}${tier("03","SERVER",[["NVIDIA RTX PRO 6000","nvidia"],["NVIDIA B300","nvidia"],["AMD Instinct MI350X","amd"]])}</div><div class="bh-proof"><article><span>01</span><b>Same model file</b><small>Exact repo, quantization and SHA256</small></article><article><span>02</span><b>Same workload</b><small>Fixed prompts, NP, input and output length</small></article><article><span>03</span><b>Real metrics</b><small>Recorded per request, not estimated</small></article><article><span>04</span><b>Logs before PASS</b><small>Unverified results stay labelled</small></article></div></section>`);
 }
 
 mountBenchmarkSection();
@@ -359,12 +359,12 @@ function categoryVisual(category,products){
 const GATED_VIEWS=new Set(["categoryView","modelListView","resourcesView","deviceView","searchView"]);
 function show(view,scroll=true){
   if(GATED_VIEWS.has(view)&&window.AISOGate&&!AISOGate.isUnlocked()){
-    AISOGate.require(()=>show(view,scroll),()=>setSiteNav($("aboutView").classList.contains("hidden")?"home":"about"));
+    AISOGate.require(()=>show(view,scroll),()=>setSiteNav(!$("aboutView").classList.contains("hidden")?"about":!$("consultingView").classList.contains("hidden")?"consulting":"home"));
     return;
   }
-  ["homeView","categoryView","modelListView","resourcesView","aboutView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
-function setSiteNav(active){const group={capabilities:"home",products:"home",models:"guide",resources:"guide"}[active]||active;document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===group));document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.toggleAttribute("aria-current",tab.dataset.guideTab===active))}
-function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",device:"deviceView"}[state.previousView]||"homeView"}
+  ["homeView","categoryView","modelListView","resourcesView","aboutView","consultingView","deviceView","searchView"].forEach(id=>$(id).classList.toggle("hidden",id!==view));if(scroll)window.scrollTo({top:0,behavior:"smooth"})}
+function setSiteNav(active){const group={capabilities:"home",products:"home",models:"guide",resources:"guide",consulting:"guide"}[active]||active;document.querySelectorAll("[data-site-nav]").forEach(item=>item.toggleAttribute("aria-current",item.dataset.siteNav===group));document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.toggleAttribute("aria-current",tab.dataset.guideTab===active))}
+function previousViewId(){return {home:"homeView",category:"categoryView",models:"modelListView",resources:"resourcesView",about:"aboutView",consulting:"consultingView",device:"deviceView"}[state.previousView]||"homeView"}
 
 function orbitHomeCard(card){
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||card.classList.contains("is-home-orbiting"))return;
@@ -465,6 +465,8 @@ function renderResources(){
   });
   show("resourcesView");
 }
+
+function renderConsulting(){state.category=null;state.product=null;state.previousView="consulting";setSiteNav("consulting");show("consultingView")}
 
 function renderAbout(){state.category=null;state.product=null;state.previousView="about";setSiteNav("about");show("aboutView")}
 
@@ -599,7 +601,6 @@ function goProducts(){renderHome(false);setSiteNav("products");const root=docume
 function goCapabilities(){renderHome(false);setSiteNav("capabilities");const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";$("capabilitiesSection").scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 function scrollHomeTo(target){const root=document.documentElement,previous=root.style.scrollBehavior;root.style.scrollBehavior="auto";target?.scrollIntoView({block:"start"});root.style.scrollBehavior=previous}
 function goBenchmark(){renderHome(false);setSiteNav("benchmark");scrollHomeTo($("benchmarkSection"))}
-function goConsulting(){renderHome(false);setSiteNav("home");scrollHomeTo(document.querySelector(".proof-section"))}
 const homeMenu=$("homeMenu");
 const setHomeMenu=open=>{homeMenu.classList.toggle("open",open);$("homeLink").setAttribute("aria-expanded",String(open))};
 homeMenu.addEventListener("pointerenter",event=>{if(event.pointerType!=="touch")setHomeMenu(true)});
@@ -607,11 +608,12 @@ homeMenu.addEventListener("pointerleave",()=>setHomeMenu(false));
 homeMenu.addEventListener("keydown",event=>{if(event.key==="Escape"){setHomeMenu(false);$("homeLink").focus()}});
 document.addEventListener("click",event=>{if(!homeMenu.contains(event.target))setHomeMenu(false)});
 homeMenu.querySelectorAll(".nav-dropdown button").forEach(button=>button.addEventListener("click",()=>setHomeMenu(false)));
-homeMenu.querySelectorAll("[data-home-target]").forEach(button=>button.addEventListener("click",()=>({overview:()=>renderHome(),consulting:goConsulting}[button.dataset.homeTarget])()));
-document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.onclick=()=>tab.dataset.guideTab==="models"?renderModelList():renderResources());
+homeMenu.querySelectorAll("[data-home-target]").forEach(button=>button.addEventListener("click",()=>({overview:()=>renderHome()}[button.dataset.homeTarget])()));
+$("consultingTeaserButton").onclick=renderConsulting;
+document.querySelectorAll("[data-guide-tab]").forEach(tab=>tab.onclick=()=>({consulting:renderConsulting,models:renderModelList,resources:renderResources}[tab.dataset.guideTab])());
 function routeHash(){
   const key=location.hash.replace(/^#\/?/,"").toLowerCase();
-  const routes={overview:()=>renderHome(),applications:goCapabilities,products:goProducts,consulting:goConsulting,benchmark:goBenchmark,guide:renderModelList,models:renderModelList,documents:renderResources,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({block:"start"}))}};
+  const routes={overview:()=>renderHome(),applications:goCapabilities,products:goProducts,consulting:renderConsulting,benchmark:goBenchmark,guide:renderConsulting,models:renderModelList,documents:renderResources,resources:renderResources,about:renderAbout,contact:()=>{renderAbout();requestAnimationFrame(()=>$("contactSection")?.scrollIntoView({block:"start"}))}};
   routes[key]?.();
 }
 window.addEventListener("hashchange",routeHash);
@@ -620,7 +622,7 @@ $("homeLink").onclick=()=>{if(window.matchMedia("(hover: none)").matches&&!homeM
 $("productsLink").onclick=goProducts;
 $("capabilitiesLink").onclick=goCapabilities;
 $("benchmarkLink").onclick=goBenchmark;
-$("guideLink").onclick=renderModelList;
+$("guideLink").onclick=renderConsulting;
 $("aboutLink").onclick=renderAbout;
 $("heroProductsLink").onclick=goProducts;
 $("heroModelsLink").onclick=renderModelList;
