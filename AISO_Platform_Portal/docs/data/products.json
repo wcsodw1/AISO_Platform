@@ -1,6 +1,6 @@
 {
   "version": 14,
-  "updated_at": "2026-10-23T08:27:22+08:00",
+  "updated_at": "2026-10-23T23:20:10+08:00",
   "access_policy": {
     "tiers": [
       {
@@ -300,36 +300,48 @@
           {
             "name": "AIMAX395_Benchmark_Startup_Operation_Guide_v1.0.docx",
             "extension": "docx",
-            "url": "assets/asus-rog-ai-max395/manuals/AIMAX395_Benchmark_Startup_Operation_Guide_v1.0.docx"
+            "url": "assets/asus-rog-ai-max395/manuals/AIMAX395_Benchmark_Startup_Operation_Guide_v1.0.docx.enc",
+            "encrypted": true,
+            "size": 43618
           }
         ],
         "benchmark": [
           {
             "name": "benchmark_report.md",
             "extension": "md",
-            "url": "assets/asus-rog-ai-max395/benchmark/benchmark_report.md"
+            "url": "assets/asus-rog-ai-max395/benchmark/benchmark_report.md.enc",
+            "encrypted": true,
+            "size": 3043
           },
           {
             "name": "benchmark_summary.csv",
             "extension": "csv",
-            "url": "assets/asus-rog-ai-max395/benchmark/benchmark_summary.csv"
+            "url": "assets/asus-rog-ai-max395/benchmark/benchmark_summary.csv.enc",
+            "encrypted": true,
+            "size": 3765
           },
           {
             "name": "environment.json",
             "extension": "json",
-            "url": "assets/asus-rog-ai-max395/benchmark/environment.json"
+            "url": "assets/asus-rog-ai-max395/benchmark/environment.json.enc",
+            "encrypted": true,
+            "size": 2063
           }
         ],
         "scripts": [
           {
             "name": "V5_0828_AIMAX395_1np_Benchmark.ps1",
             "extension": "ps1",
-            "url": "assets/asus-rog-ai-max395/scripts/V5_0828_AIMAX395_1np_Benchmark.ps1"
+            "url": "assets/asus-rog-ai-max395/scripts/V5_0828_AIMAX395_1np_Benchmark.ps1.enc",
+            "encrypted": true,
+            "size": 42713
           },
           {
             "name": "V5_0828_AIMAX395_1np_QuickTest_1K_2K.ps1",
             "extension": "ps1",
-            "url": "assets/asus-rog-ai-max395/scripts/V5_0828_AIMAX395_1np_QuickTest_1K_2K.ps1"
+            "url": "assets/asus-rog-ai-max395/scripts/V5_0828_AIMAX395_1np_QuickTest_1K_2K.ps1.enc",
+            "encrypted": true,
+            "size": 43965
           }
         ]
       }
@@ -444,36 +456,48 @@
           {
             "name": "AI_MAX392_vs_AIMAX395_V5_Report.pdf",
             "extension": "pdf",
-            "url": "assets/asus-tuf-gaming-ai-max392/manuals/AI_MAX392_vs_AIMAX395_V5_Report.pdf"
+            "url": "assets/asus-tuf-gaming-ai-max392/manuals/AI_MAX392_vs_AIMAX395_V5_Report.pdf.enc",
+            "encrypted": true,
+            "size": 49187
           }
         ],
         "benchmark": [
           {
             "name": "benchmark_report.md",
             "extension": "md",
-            "url": "assets/asus-tuf-gaming-ai-max392/benchmark/benchmark_report.md"
+            "url": "assets/asus-tuf-gaming-ai-max392/benchmark/benchmark_report.md.enc",
+            "encrypted": true,
+            "size": 5039
           },
           {
             "name": "benchmark_summary.csv",
             "extension": "csv",
-            "url": "assets/asus-tuf-gaming-ai-max392/benchmark/benchmark_summary.csv"
+            "url": "assets/asus-tuf-gaming-ai-max392/benchmark/benchmark_summary.csv.enc",
+            "encrypted": true,
+            "size": 3707
           }
         ],
         "scripts": [
           {
             "name": "AIMAX_QuickTest_1K_2K.ps1",
             "extension": "ps1",
-            "url": "assets/asus-tuf-gaming-ai-max392/scripts/AIMAX_QuickTest_1K_2K.ps1"
+            "url": "assets/asus-tuf-gaming-ai-max392/scripts/AIMAX_QuickTest_1K_2K.ps1.enc",
+            "encrypted": true,
+            "size": 39871
           },
           {
             "name": "V3_0828_AIMAX392_Benchmark.ps1",
             "extension": "ps1",
-            "url": "assets/asus-tuf-gaming-ai-max392/scripts/V3_0828_AIMAX392_Benchmark.ps1"
+            "url": "assets/asus-tuf-gaming-ai-max392/scripts/V3_0828_AIMAX392_Benchmark.ps1.enc",
+            "encrypted": true,
+            "size": 38417
           },
           {
             "name": "V3_0828_AIMAX392_MultiNP_Benchmark.ps1",
             "extension": "ps1",
-            "url": "assets/asus-tuf-gaming-ai-max392/scripts/V3_0828_AIMAX392_MultiNP_Benchmark.ps1"
+            "url": "assets/asus-tuf-gaming-ai-max392/scripts/V3_0828_AIMAX392_MultiNP_Benchmark.ps1.enc",
+            "encrypted": true,
+            "size": 47440
           }
         ]
       }
@@ -550,127 +574,177 @@
           {
             "name": "check_ctx_train.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/ctx_check/check_ctx_train.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/ctx_check/check_ctx_train.sh.enc",
+            "encrypted": true,
+            "size": 2327
           },
           {
             "name": "001_qwen3.6-35b-a3b_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/001_qwen3.6-35b-a3b_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/001_qwen3.6-35b-a3b_np1.sh.enc",
+            "encrypted": true,
+            "size": 8854
           },
           {
             "name": "003_ornith-1.0-35b_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/003_ornith-1.0-35b_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/003_ornith-1.0-35b_np1.sh.enc",
+            "encrypted": true,
+            "size": 8845
           },
           {
             "name": "005_qwen3-coder-next-80b-a3b_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/005_qwen3-coder-next-80b-a3b_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/005_qwen3-coder-next-80b-a3b_np1.sh.enc",
+            "encrypted": true,
+            "size": 8892
           },
           {
             "name": "007_gemma-4-26b-a4b_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/007_gemma-4-26b-a4b_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/007_gemma-4-26b-a4b_np1.sh.enc",
+            "encrypted": true,
+            "size": 8796
           },
           {
             "name": "009_devstral-small-2505_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/009_devstral-small-2505_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/009_devstral-small-2505_np1.sh.enc",
+            "encrypted": true,
+            "size": 8814
           },
           {
             "name": "011_magistral-small-2509_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/011_magistral-small-2509_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/011_magistral-small-2509_np1.sh.enc",
+            "encrypted": true,
+            "size": 8820
           },
           {
             "name": "013_gpt-oss-120b_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/013_gpt-oss-120b_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/013_gpt-oss-120b_np1.sh.enc",
+            "encrypted": true,
+            "size": 8863
           },
           {
             "name": "015_llama-3.3-70b_np1.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1/015_llama-3.3-70b_np1.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1/015_llama-3.3-70b_np1.sh.enc",
+            "encrypted": true,
+            "size": 8852
           },
           {
             "name": "025_qwen3.6-35b-a3b_np1advanced.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/025_qwen3.6-35b-a3b_np1advanced.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/025_qwen3.6-35b-a3b_np1advanced.sh.enc",
+            "encrypted": true,
+            "size": 5903
           },
           {
             "name": "026_ornith-1.0-35b_np1advanced.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/026_ornith-1.0-35b_np1advanced.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/026_ornith-1.0-35b_np1advanced.sh.enc",
+            "encrypted": true,
+            "size": 5895
           },
           {
             "name": "027_qwen3-coder-next-80b-a3b_np1advanced.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/027_qwen3-coder-next-80b-a3b_np1advanced.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/027_qwen3-coder-next-80b-a3b_np1advanced.sh.enc",
+            "encrypted": true,
+            "size": 5924
           },
           {
             "name": "028_gemma-4-26b-a4b_np1advanced.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/028_gemma-4-26b-a4b_np1advanced.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/028_gemma-4-26b-a4b_np1advanced.sh.enc",
+            "encrypted": true,
+            "size": 5906
           },
           {
             "name": "029_gpt-oss-120b_np1advanced.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/029_gpt-oss-120b_np1advanced.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np1-Advance/029_gpt-oss-120b_np1advanced.sh.enc",
+            "encrypted": true,
+            "size": 5899
           },
           {
             "name": "040_qwen3.6-35b-a3b_stress.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/040_qwen3.6-35b-a3b_stress.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/040_qwen3.6-35b-a3b_stress.sh.enc",
+            "encrypted": true,
+            "size": 13057
           },
           {
             "name": "041_ornith-1.0-35b_stress.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/041_ornith-1.0-35b_stress.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/041_ornith-1.0-35b_stress.sh.enc",
+            "encrypted": true,
+            "size": 13048
           },
           {
             "name": "042_qwen3-coder-next-80b-a3b_stress.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/042_qwen3-coder-next-80b-a3b_stress.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/042_qwen3-coder-next-80b-a3b_stress.sh.enc",
+            "encrypted": true,
+            "size": 13095
           },
           {
             "name": "043_gemma-4-26b-a4b_stress.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/043_gemma-4-26b-a4b_stress.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/043_gemma-4-26b-a4b_stress.sh.enc",
+            "encrypted": true,
+            "size": 12999
           },
           {
             "name": "044_gpt-oss-120b_stress.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/044_gpt-oss-120b_stress.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/044_gpt-oss-120b_stress.sh.enc",
+            "encrypted": true,
+            "size": 13066
           },
           {
             "name": "045_laguna-xs-2.1_real_highctx_concurrency.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/045_laguna-xs-2.1_real_highctx_concurrency.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/045_laguna-xs-2.1_real_highctx_concurrency.sh.enc",
+            "encrypted": true,
+            "size": 26331
           },
           {
             "name": "050_qwen3.6-35b-a3b_stressadv.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/050_qwen3.6-35b-a3b_stressadv.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/050_qwen3.6-35b-a3b_stressadv.sh.enc",
+            "encrypted": true,
+            "size": 13066
           },
           {
             "name": "051_ornith-1.0-35b_stressadv.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/051_ornith-1.0-35b_stressadv.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/051_ornith-1.0-35b_stressadv.sh.enc",
+            "encrypted": true,
+            "size": 13057
           },
           {
             "name": "052_qwen3-coder-next-80b-a3b_stressadv.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/052_qwen3-coder-next-80b-a3b_stressadv.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/052_qwen3-coder-next-80b-a3b_stressadv.sh.enc",
+            "encrypted": true,
+            "size": 13104
           },
           {
             "name": "053_gemma-4-26b-a4b_stressadv.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/053_gemma-4-26b-a4b_stressadv.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/053_gemma-4-26b-a4b_stressadv.sh.enc",
+            "encrypted": true,
+            "size": 13008
           },
           {
             "name": "054_gpt-oss-120b_stressadv.sh",
             "extension": "sh",
-            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/054_gpt-oss-120b_stressadv.sh"
+            "url": "assets/aiso1-ai-max395/scripts/Public/np_multi_stress/054_gpt-oss-120b_stressadv.sh.enc",
+            "encrypted": true,
+            "size": 13075
           }
         ]
       }
@@ -767,7 +841,9 @@
           {
             "name": "SPARKLE_Intel_Arc_Pro_B70_AI_Benchmark_Research_2026-10-15.md",
             "extension": "md",
-            "url": "assets/intel-arc-pro-b70/manuals/SPARKLE_Intel_Arc_Pro_B70_AI_Benchmark_Research_2026-10-15.md"
+            "url": "assets/intel-arc-pro-b70/manuals/SPARKLE_Intel_Arc_Pro_B70_AI_Benchmark_Research_2026-10-15.md.enc",
+            "encrypted": true,
+            "size": 8649
           }
         ],
         "benchmark": [],
@@ -775,12 +851,16 @@
           {
             "name": "SB_formal_np1.sh",
             "extension": "sh",
-            "url": "assets/intel-arc-pro-b70/scripts/SB_formal_np1.sh"
+            "url": "assets/intel-arc-pro-b70/scripts/SB_formal_np1.sh.enc",
+            "encrypted": true,
+            "size": 10691
           },
           {
             "name": "SB_smoke_test.sh",
             "extension": "sh",
-            "url": "assets/intel-arc-pro-b70/scripts/SB_smoke_test.sh"
+            "url": "assets/intel-arc-pro-b70/scripts/SB_smoke_test.sh.enc",
+            "encrypted": true,
+            "size": 8223
           }
         ]
       }
@@ -911,12 +991,16 @@
           {
             "name": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-25_v9.pdf",
             "extension": "pdf",
-            "url": "assets/pro6000-tpi-8gpu/benchmark/GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-25_v9.pdf"
+            "url": "assets/pro6000-tpi-8gpu/benchmark/GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-25_v9.pdf.enc",
+            "encrypted": true,
+            "size": 1318143
           },
           {
             "name": "Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf",
             "extension": "pdf",
-            "url": "assets/pro6000-tpi-8gpu/benchmark/Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf"
+            "url": "assets/pro6000-tpi-8gpu/benchmark/Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf.enc",
+            "encrypted": true,
+            "size": 10539371
           }
         ],
         "scripts": []

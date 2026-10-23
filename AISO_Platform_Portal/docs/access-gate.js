@@ -28,13 +28,32 @@
     return H.map(value=>value.toString(16).padStart(8,"0")).join("");
   }
 
-  if(typeof module!=="undefined"&&module.exports){module.exports={sha256,EXPECTED_FORMAT:/^[0-9a-f]{64}$/.test(EXPECTED)};return}
+  const FILE_MAGIC="AISOENC1",FILE_SALT="aiso-file-key-v1",KDF_ITERATIONS=600000,KEY_STORE="aiso.fkey.v1";
+  const text=value=>new TextEncoder().encode(value);
+  const toB64=bytes=>btoa(String.fromCharCode(...bytes)),fromB64=value=>Uint8Array.from(atob(value),char=>char.charCodeAt(0));
+  const subtle=()=>{const api=(typeof crypto!=="undefined"&&crypto.subtle)||null;if(!api)throw new Error("Protected files need a secure (HTTPS) page.");return api};
+  async function deriveFileKey(code){
+    const material=await subtle().importKey("raw",text(String(code).trim().toUpperCase()),"PBKDF2",false,["deriveBits"]);
+    return new Uint8Array(await subtle().deriveBits({name:"PBKDF2",hash:"SHA-256",salt:text(FILE_SALT),iterations:KDF_ITERATIONS},material,256));
+  }
+  async function decryptBytes(bytes,keyBytes){
+    const magic=text(FILE_MAGIC);
+    if(bytes.length<28||!magic.every((value,index)=>bytes[index]===value))throw new Error("This file is not in the protected format.");
+    const key=await subtle().importKey("raw",keyBytes,"AES-GCM",false,["decrypt"]);
+    try{return new Uint8Array(await subtle().decrypt({name:"AES-GCM",iv:bytes.slice(8,20),additionalData:magic},key,bytes.slice(20)))}
+    catch{throw new Error("Could not decrypt the file with this access code.")}
+  }
+
+  if(typeof module!=="undefined"&&module.exports){module.exports={sha256,deriveFileKey,decryptBytes,EXPECTED_FORMAT:/^[0-9a-f]{64}$/.test(EXPECTED)};return}
 
   const store={
     unlocked(){try{return root.sessionStorage.getItem(KEY)==="1"}catch{return false}},
     grant(){try{root.sessionStorage.setItem(KEY,"1")}catch{}},
-    clear(){try{root.sessionStorage.removeItem(KEY)}catch{}}
+    clear(){try{root.sessionStorage.removeItem(KEY);root.sessionStorage.removeItem(KEY_STORE)}catch{}},
+    key(){try{const value=root.sessionStorage.getItem(KEY_STORE);return value?fromB64(value):null}catch{return null}},
+    saveKey(bytes){try{root.sessionStorage.setItem(KEY_STORE,toB64(bytes))}catch{}}
   };
+  let keyReady=Promise.resolve();
   const matches=code=>sha256(SALT+String(code).trim().toUpperCase())===EXPECTED;
   let dialog=null,failures=0;
 
@@ -55,7 +74,7 @@
     const onKey=event=>{if(event.key==="Escape")cancel()};
     form.onsubmit=event=>{
       event.preventDefault();
-      if(matches(input.value)){failures=0;store.grant();close();root.document.documentElement.classList.remove("aiso-locked");onGranted?.();return}
+      if(matches(input.value)){failures=0;const code=input.value;store.grant();keyReady=deriveFileKey(code).then(store.saveKey).catch(()=>{});close();root.document.documentElement.classList.remove("aiso-locked");onGranted?.();return}
       failures+=1;input.value="";error.textContent="That code is not correct.";
       form.classList.remove("shake");void form.offsetWidth;form.classList.add("shake");
       const submit=dialog.querySelector("#accessSubmit");submit.disabled=true;setTimeout(()=>{submit.disabled=false;input.focus()},Math.min(400*failures,3000));
@@ -65,7 +84,16 @@
     dialog.hidden=false;setTimeout(()=>input.focus(),30);
   }
 
-  root.AISOGate={isUnlocked:store.unlocked,require,lock:()=>store.clear()};
+  async function fetchProtected(url){
+    await keyReady;
+    const keyBytes=store.key();
+    if(!keyBytes){store.clear();throw new Error("Please enter the access code again to open this file.")}
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok)throw new Error(`Could not load the file (HTTP ${response.status}).`);
+    return decryptBytes(new Uint8Array(await response.arrayBuffer()),keyBytes);
+  }
+
+  root.AISOGate={isUnlocked:store.unlocked,require,fetchProtected,lock:()=>store.clear()};
 
   if(document.documentElement.hasAttribute("data-gated")&&!store.unlocked()){
     document.documentElement.classList.add("aiso-locked");

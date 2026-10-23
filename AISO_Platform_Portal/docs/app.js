@@ -356,6 +356,23 @@ function categoryVisual(category,products){
   if(product)return `<div class="category-visual category-visual-${esc(category.id)}-image" aria-hidden="true"><img class="category-product-image" src="${esc(product.image)}" alt="" loading="lazy"><span class="category-projection-base"></span></div>`;
   return `<div class="category-visual category-visual-workstation" aria-hidden="true">${machineMarkup("workstation")}<span class="category-projection-base"></span></div>`;
 }
+const FILE_MIME={pdf:"application/pdf",md:"text/markdown",csv:"text/csv",json:"application/json",txt:"text/plain",html:"text/html",sh:"text/x-shellscript",ps1:"text/plain",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",webp:"image/webp"};
+document.addEventListener("click",async event=>{
+  const button=event.target.closest("[data-protected]");if(!button)return;
+  event.preventDefault();if(button.dataset.busy)return;
+  const open=async()=>{
+    button.dataset.busy="1";const label=button.textContent;button.textContent="Decrypting…";
+    try{
+      const bytes=await AISOGate.fetchProtected(button.dataset.protected);
+      const ext=(button.dataset.ext||"").toLowerCase(),blob=new Blob([bytes],{type:FILE_MIME[ext]||"application/octet-stream"}),url=URL.createObjectURL(blob);
+      if(ext==="pdf"||ext==="html"||ext==="txt"||ext==="png"||ext==="jpg"||ext==="jpeg"||ext==="webp")window.open(url,"_blank","noopener");
+      else{const link=document.createElement("a");link.href=url;link.download=button.dataset.name||"download";link.click()}
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+    }catch(error){window.alert(error.message)}
+    finally{button.textContent=label;delete button.dataset.busy}
+  };
+  AISOGate.require(open,()=>{});
+});
 const GATED_VIEWS=new Set(["referenceDetailView","categoryView","modelListView","resourcesView","deviceView","searchView"]);
 function show(view,scroll=true){
   if(GATED_VIEWS.has(view)&&window.AISOGate&&!AISOGate.isUnlocked()){
@@ -518,7 +535,7 @@ function benchmarkSummary(benchmark={}){
 function renderPublishedFiles(files=[],type){
   const label={documents:"SOP",benchmark:"Benchmark",scripts:"Scripts"}[type]||"檔案";
   if(!files.length)return empty(`尚未發布 ${label}`);
-  return `<div class="file-list">${files.map(file=>`<div class="file-row"><span class="file-name">${esc(file.name)}</span><span class="file-type">${esc(file.extension||file.type)}</span><a class="file-link" href="${esc(encodeURI(file.url))}" target="_blank" rel="noopener">Open</a></div>`).join("")}</div>`;
+  return `<div class="file-list">${files.map(file=>`<div class="file-row"><span class="file-name">${esc(file.name)}</span><span class="file-type">${esc(file.extension||file.type)}</span>${file.encrypted?`<button class="file-link" type="button" data-protected="${esc(file.url)}" data-name="${esc(file.name)}" data-ext="${esc(file.extension||"")}">Open</button>`:`<a class="file-link" href="${esc(encodeURI(file.url))}" target="_blank" rel="noopener">Open</a>`}</div>`).join("")}</div>`;
 }
 
 async function renderLocalFiles(kind,prefix=""){
@@ -529,29 +546,6 @@ async function renderLocalFiles(kind,prefix=""){
     panel.innerHTML=prefix+`<div class="action-row"><button class="button secondary" data-open-folder="${esc(data.folder)}">Open folder</button></div><div class="file-list">${data.items.map(file=>`<div class="file-row"><span class="file-name" title="${esc(file.path)}">${esc(file.name)}</span><span class="file-type">${esc(file.type)}</span><span><button class="button secondary" data-open-path="${esc(file.path)}">Open</button></span></div>`).join("")}</div>`;
     bindLocalActions();
   }catch(error){panel.innerHTML=prefix+`<div class="note">${esc(error.message)}</div>`}
-}
-
-const scriptsDemoUnlocked=new Set();
-function renderScriptsGate(product){
-  const panel=$("tabPanel");
-  panel.innerHTML=`<section class="scripts-gate" aria-labelledby="scriptsGateTitle">
-    <div class="scripts-gate-copy"><span class="scripts-gate-kicker">AISO RESOURCES / SCRIPTS</span>
-      <div class="scripts-gate-lock" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="11" y="21" width="26" height="21" rx="5"/><path d="M17 21v-7a7 7 0 0 1 14 0v7M24 29v5"/></svg></div>
-      <h3 id="scriptsGateTitle">Unlock<br><em>your next step.</em></h3>
-      <p>輸入Access code，Open ${esc(product.name)} 的測試腳本。</p>
-      <span class="scripts-gate-tag">INTERACTIVE PREVIEW</span>
-    </div>
-    <form class="scripts-gate-form"><span class="scripts-gate-kicker">SCRIPT ACCESS</span><h4>Enter Code</h4>
-      <label for="scriptsAccessCode">Access code</label>
-      <div class="scripts-code-field"><input id="scriptsAccessCode" name="code" type="password" placeholder="Enter Code" required maxlength="64" autocomplete="off" spellcheck="false" aria-describedby="scriptsCodeHint scriptsCodeError"><button type="button" class="scripts-code-toggle" aria-label="Show代碼" aria-pressed="false">Show</button></div>
-      <p id="scriptsCodeError" class="scripts-code-error" role="alert"></p>
-      <button type="submit" class="scripts-unlock-button">Unlock Scripts <span aria-hidden="true">↗</span></button>
-      <p id="scriptsCodeHint" class="scripts-code-hint">Demo code:<strong>AISO-DEMO</strong><br>This demo does not enforce file access control.</p>
-    </form></section>`;
-  const input=$("scriptsAccessCode"),toggle=panel.querySelector(".scripts-code-toggle");
-  toggle.onclick=()=>{const visible=input.type==="password";input.type=visible?"text":"password";toggle.textContent=visible?"Hide":"Show";toggle.setAttribute("aria-pressed",String(visible));toggle.setAttribute("aria-label",visible?"Hide代碼":"Show代碼")};
-  input.oninput=()=>{input.removeAttribute("aria-invalid");$("scriptsCodeError").textContent=""};
-  panel.querySelector("form").onsubmit=event=>{event.preventDefault();if(input.value!=="AISO-DEMO"){input.setAttribute("aria-invalid","true");$("scriptsCodeError").textContent="代碼不正確，請重新輸入。";input.focus();return}scriptsDemoUnlocked.add(product.id);renderTabPanel();$("scriptsRelock")?.focus()};
 }
 
 function renderTabPanel(){
@@ -568,12 +562,9 @@ function renderTabPanel(){
     if(state.mode==="local")renderLocalFiles("benchmark",prefix);else panel.innerHTML=prefix+renderPublishedFiles(product.published?.benchmark,"benchmark");return;
   }
   if(state.tab==="Scripts"){
-    const demo=product.id==="intel-arc-pro-b70";
-    if(demo&&!scriptsDemoUnlocked.has(product.id)){renderScriptsGate(product);return}
-    const prefix='<h3 class="content-title">Scripts</h3>'+(demo?'<div class="scripts-access-status"><span>Demo unlocked</span><button id="scriptsRelock" type="button">Lock demo</button></div>':"");
-    const bindRelock=()=>{const button=$("scriptsRelock");if(button)button.onclick=()=>{scriptsDemoUnlocked.delete(product.id);renderTabPanel();$("scriptsAccessCode")?.focus()}};
+    const prefix='<h3 class="content-title">Scripts</h3>';
     panel.innerHTML=prefix;
-    if(state.mode==="local")renderLocalFiles("scripts",prefix).then(bindRelock);else{panel.innerHTML+=renderPublishedFiles(product.published?.scripts,"scripts");bindRelock()}return;
+    if(state.mode==="local")renderLocalFiles("scripts",prefix);else panel.innerHTML+=renderPublishedFiles(product.published?.scripts,"scripts");return;
   }
   if(state.tab==="Operations"){
     panel.innerHTML=`<div class="note"><strong>Local management</strong><br>${esc(product.operations?.notes||"尚未填寫操作資訊")}</div><div class="action-row" style="margin-top:16px"><button class="button secondary" data-copy="${esc(product.operations?.ssh||"")}" ${product.operations?.ssh?"":"disabled"}>Copy SSH command</button><a class="button secondary" href="manage.html?id=${encodeURIComponent(product.id)}">Edit system</a></div>`;bindLocalActions();return;

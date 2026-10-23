@@ -3326,3 +3326,8 @@ textarea{
 .guide-tabs button{min-width:0;padding:14px 16px}
 .guide-tabs button small{line-height:1.35}
 @media(max-width:760px){.guide-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* v1.29 - reference stage tags: covered vs not covered must be unmistakable */
+.ref-stages li{border-style:dashed;opacity:.5}
+.ref-stages li.on{border-style:solid;opacity:1;color:#f0e29a;border-color:rgba(232,214,132,.8);background:rgba(200,184,117,.2)}
+.ref-stages li.on:before{content:"✓ ";font-weight:900}
