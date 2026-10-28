@@ -49,7 +49,7 @@ const SERIES={cpu:{cold:["CPU Cold","#6b7380"],warm:["CPU Warm","#70d3a2"]},ssd:
 const fmtV=v=>v===0?"0":v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2);
 const fmtT=v=>v>=100?v.toFixed(0):String(+v.toFixed(2));
 function plot(title,unit,zh,labels,series,deltas,W=700,H=360){
- const L=56,R=12,T=34,B=deltas.length?92:56,pw=W-L-R,ph=H-T-B;
+ const L=56,R=12,T=34,B=56+18*deltas.length,pw=W-L-R,ph=H-T-B;
  const max=Math.max(...series.flatMap(s=>s.vals)),step=[1,2,2.5,5,10].map(m=>m*Math.pow(10,Math.floor(Math.log10(max/4)))).find(v=>max/v<=4.001)||max/4,top=Math.ceil(max/step)*step;
  const y=v=>T+ph-ph*v/top,gw=pw/labels.length,bw=Math.min(48,gw*.78/series.length),gap=bw*series.length;
  let g=`<text x="${L}" y="22" class="lm-t">${title}<tspan class="lm-z" dx="10">${zh}</tspan></text><text x="${W-R}" y="20" text-anchor="end" class="lm-u">${unit}</text>`;
@@ -97,24 +97,24 @@ function renderLines(){
 }
 
 const BCOL={baseline:["Baseline","#9aa3b2"],cpu:["CPU","#70d3a2"],ssd:["SSD","#7aaee8"]};
-let lmC=10,lmStage="warm";
+const BC2={baseline:["Baseline","#6e7787","#c4ccd8"],cpu:["CPU","#3f8f6b","#70d3a2"],ssd:["SSD","#4a6d99","#7aaee8"]};
+let lmC=10;
 function renderBaseline(){
  const sm=lmData.summary;if(!sm)return;
  document.querySelectorAll("#lmConc [data-c]").forEach(b=>b.setAttribute("aria-checked",String(+b.dataset.c===lmC)));
- document.querySelectorAll("#lmStage [data-stage]").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.stage===lmStage)));
- const ctx=[2048,4096],labels=ctx.map(t=>`~${t} tokens`);
- const get=(k,t)=>sm.rows.find(r=>r.backend===k&&r.context_target===t&&r.concurrency===lmC&&r.stage===lmStage);
- const ser=(f,keys=["baseline","cpu","ssd"])=>keys.map(k=>({name:BCOL[k][0],color:BCOL[k][1],vals:ctx.map(t=>f(get(k,t)))}));
- const dl=(f,low)=>["cpu","ssd"].map(k=>({name:BCOL[k][0],vals:ctx.map(t=>{const p=100*(f(get(k,t))/f(get("baseline",t))-1);return {text:lmPctI(p),good:low?p<=0:p>=0}})}));
+ const ctx=[2048,4096],labels=ctx.map(t=>`~${t} tokens`),KS=["baseline","cpu","ssd"];
+ const get=(k,t,st)=>sm.rows.find(r=>r.backend===k&&r.context_target===t&&r.concurrency===lmC&&r.stage===st);
+ const ser=(f,keys=KS)=>keys.flatMap(k=>[{name:BC2[k][0]+" Cold",color:BC2[k][1],vals:ctx.map(t=>f(get(k,t,"cold")))},{name:BC2[k][0]+" Warm",color:BC2[k][2],vals:ctx.map(t=>f(get(k,t,"warm")))}]);
+ const pc=(a,b,low)=>{const p=100*(a/b-1);return {text:lmPctI(p),good:low?p<=0:p>=0}};
+ const dl=(f,low)=>KS.map(k=>({name:BC2[k][0]+" Cold→Warm",vals:ctx.map(t=>pc(f(get(k,t,"warm")),f(get(k,t,"cold")),low))})).concat(["cpu","ssd"].map(k=>({name:BC2[k][0]+" vs Baseline (Warm)",vals:ctx.map(t=>pc(f(get(k,t,"warm")),f(get("baseline",t,"warm")),low))})));
  const m=[["TTFT p50","ms","中位數 · 越低越好",r=>r.ttft_p50_ms,true],["TTFT p95","ms","偏慢的 5% 邊界 · 越低越好",r=>r.ttft_p95_ms,true],["TPOT p50","ms","每個字的間隔 · 越低越好",r=>r.tpot_p50_ms,true],["Output TPS","tok/s","越高越好",r=>r.batch_output_tps,false]];
- let html=m.map(([t,u,z,f,low])=>plot(t,u,z,labels,ser(f),dl(f,low),520,340)).join("");
- if(lmStage==="warm")html+=plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1060,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
+ let html=m.map(([t,u,z,f,low])=>plot(t,u,z,labels,ser(f),dl(f,low),640,400)).join("");
+ html+=plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1300,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
  $lm("lmBase").innerHTML=html;
- $lm("lmBaseLegend").innerHTML=["baseline","cpu","ssd"].map(k=>`<span><i style="background:${BCOL[k][1]}"></i>${BCOL[k][0]}${k==="baseline"?'<span class="zh-i">未開 LMCache</span>':""}</span>`).join("");
- $lm("lmBaseNote").textContent=`Shared prefix · ${lmStage==="warm"?"Warm":"Cold"} · 併發 ${lmC}。百分比是相對 Baseline 的變化。`+(lmStage==="cold"?" Cold 是第一次問、快取尚未命中；這一輪 CPU / SSD 都比 Baseline 慢。":" SSD 的實體 I/O 歸因仍待確認。");
+ $lm("lmBaseLegend").innerHTML=KS.flatMap(k=>[[BC2[k][0]+" Cold",BC2[k][1]],[BC2[k][0]+" Warm",BC2[k][2]]]).map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")+'<span class="zh-i">Baseline = 未開 LMCache</span>';
+ $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC}。每組左邊 Cold（第一次問）、右邊 Warm（第二次問）；圖下方的百分比是 Cold→Warm 的變化，以及開 LMCache 後相對 Baseline 的變化。SSD 的實體 I/O 歸因仍待確認。`;
 }
 $lm("lmConc").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;lmC=+b.dataset.c;renderBaseline()};
-$lm("lmStage").onclick=e=>{const b=e.target.closest("[data-stage]");if(!b||!lmData)return;lmStage=b.dataset.stage;renderBaseline()};
 function renderLM(){
  const mode=$lm("lmMode").value,scenario=$lm("scenario").value,runs=lmData.runs;
  const note=scenario==="no_reuse"?"No reuse 沒有可重用前綴（命中 0），Cold／Warm 的差異是系統暖機與波動，不是快取效果。":"";
