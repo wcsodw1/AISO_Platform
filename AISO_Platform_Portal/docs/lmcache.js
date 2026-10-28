@@ -62,6 +62,29 @@ function renderPlots(){
  const legend=series("cold","warm").map(s=>`<span><i style="background:${s.color}"></i>${s.name}</span>`).join("");
  $lm("lmPlots").innerHTML=`<div class="lm-legend">${legend}</div><div class="lm-plot-row">${plot("TTFT","ms","越低越好",labels,series("cold","warm"),dl(g=>100*(g.warm/g.cold-1),true))}${plot("Output TPS","tok/s","越高越好",labels,series("ctps","wtps"),dl(g=>g.tpsGain,false))}</div>`;
 }
+
+function lines(title,sub,reps,series,labels){
+ const W=520,H=300,L=52,R=40,T=40,B=40,pw=W-L-R,ph=H-T-B;
+ const all=series.flatMap(s=>s.vals),lo=Math.min(...all),hi=Math.max(...all),pad=(hi-lo||hi)*.18,min=Math.max(0,lo-pad),max=hi+pad;
+ const x=i=>L+pw*(reps.length===1?.5:i/(reps.length-1)),y=v=>T+ph-ph*(v-min)/(max-min||1);
+ let g=`<text x="${L}" y="22" class="lm-t">${title}<tspan class="lm-z" dx="8">${sub}</tspan></text>`;
+ for(let k=0;k<=3;k++){const v=min+(max-min)*k/3;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="lm-grid"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" class="lm-ax">${fmtV(v)}</text>`}
+ reps.forEach((r,i)=>g+=`<text x="${x(i)}" y="${H-14}" text-anchor="middle" class="lm-x">Repeat ${r}</text>`);
+ series.forEach(s=>{
+  g+=`<polyline fill="none" stroke="${s.color}" stroke-width="3" ${s.dash?'stroke-dasharray="7 5"':""} points="${s.vals.map((v,i)=>x(i)+","+y(v)).join(" ")}"/>`;
+  s.vals.forEach((v,i)=>{g+=`<circle cx="${x(i)}" cy="${y(v)}" r="5" fill="${s.color}"><title>${s.name} · Repeat ${reps[i]}: ${fmtV(v)}</title></circle>`;if(labels)g+=`<text x="${x(i)}" y="${y(v)+(s.warm?18:-10)}" text-anchor="middle" class="lm-v" fill="${s.color}">${fmtV(v)}</text>`});
+ });
+ return `<figure class="lm-plot"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}">${g}</svg></figure>`;
+}
+function renderLines(){
+ const mode=$lm("lmMode").value,scenario=$lm("scenario").value,key=$lm("lmBatchMetric").value,runs=lmData.runs;
+ const modes=mode==="compare"?["cpu","ssd"]:[mode],reps=[1,2,3];
+ const unit=key==="ttft_p50_ms"?"ms":"tok/s",zh=key==="ttft_p50_ms"?"越低越好":"越高越好";
+ $lm("lmLines").innerHTML=[2048,4096].flatMap(t=>[1,5].map(c=>{
+  const series=modes.flatMap(m=>["cold","warm"].map(ph=>({name:`${MODES[m]} ${ph}`,warm:ph==="warm",dash:m==="ssd",color:ph==="cold"?"#6fb4ff":"#ff9a4d",vals:reps.map(r=>runs[m].rows.find(x=>x.scenario===scenario&&x.target_tokens===t&&x.concurrency===c&&x.repeat===r&&x.phase===ph)[key])})));
+  return lines(`~${t} / C${c}`,`${unit} · ${zh}${modes.length>1?" · 實線 CPU / 虛線 SSD":""}`,reps,series,modes.length===1);
+ })).join("");
+}
 function renderLM(){
  const mode=$lm("lmMode").value,scenario=$lm("scenario").value,runs=lmData.runs;
  const note=scenario==="no_reuse"?"No reuse 沒有可重用前綴（命中 0），Cold／Warm 的差異是系統暖機與波動，不是快取效果。":"";
@@ -80,11 +103,11 @@ function renderLM(){
   head=`<tr>${th("Target / C")}${th("Cold TTFT")}${th("Warm TTFT")}${th("TTFT Reduction","降幅")}${th("Cold Output TPS")}${th("Warm Output TPS")}${th("TPS Change","變化")}${th("Warm Hit Rate","命中率")}</tr>`;
   body=gs.map(g=>`<tr><th>~${g.t} / C${g.c}</th><td>${lmNum(g.cold)} ms</td><td>${lmNum(g.warm)} ms</td><td>${lmNum(g.red)}%</td><td>${lmNum(g.ctps)}</td><td>${lmNum(g.wtps)}</td><td>${lmPct(g.tpsGain)}</td><td>${lmNum(g.hit)}%</td></tr>`).join("");
  }
- renderPlots();$lm("lmCharts").innerHTML=cards;$lm("lmHead").innerHTML=head;$lm("lmSummary").innerHTML=body;
+ renderPlots();renderLines();$lm("lmCharts").innerHTML=cards;$lm("lmHead").innerHTML=head;$lm("lmSummary").innerHTML=body;
  const list=mode==="compare"?["cpu","ssd"]:[mode];
  $lm("lmRows").innerHTML=list.flatMap(m=>runs[m].rows.filter(r=>r.scenario===scenario).map(r=>`<tr><td>${MODES[m]}</td><td>${lmEsc(r.scenario)}</td><td>~${r.target_tokens}</td><td>${r.concurrency}</td><td>${r.repeat}</td><td>${lmEsc(r.phase)}</td><td>${lmNum(r.ttft_p50_ms)}</td><td>${lmNum(r.output_tps)}</td><td>${r.cache_hits} / ${r.cache_queries}</td></tr>`)).join("");
  $lm("lmStatus").textContent=list.map(m=>{const r=runs[m];return `${MODES[m]} ${r.run_id} · ${r.rows.length} 批次 · ${r.evidence_status==="REPORTED_PASS"?"REPORTED PASS":"完成（PASS 檢查結果未見）"}`}).join("　｜　")+"（原始證據待核對）";
 }
-["lmMode","scenario"].forEach(id=>$lm(id).onchange=()=>{if(lmData)renderLM()});
+["lmMode","scenario","lmBatchMetric"].forEach(id=>$lm(id).onchange=()=>{if(lmData)renderLM()});
 fetch("data/lmcache-summary.json").then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{lmData=data;renderLM();renderPoints();$lm("lmDownload").disabled=false}).catch(()=>{$lm("lmStatus").textContent="資料載入失敗，請重新整理。"});
 $lm("lmDownload").onclick=()=>{if(!lmData)return;const url=URL.createObjectURL(new Blob([JSON.stringify(lmData,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="lmcache-extended-summary.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
