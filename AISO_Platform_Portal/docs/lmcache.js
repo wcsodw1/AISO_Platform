@@ -131,7 +131,7 @@ function renderReuse(){
  $lm("lmReuseLegend").innerHTML='<span><i style="background:#7aaee8"></i>SSD</span><span><i style="background:#9aa3b2"></i>Baseline<span class="zh-i">原始 A/B 的 Cold / Warm</span></span>';
  const hit=k=>rs.levels[k].hit_pct.slice(1).map(v=>v.toFixed(1)+"%").join(" / ");
  const vb=(c,k)=>{const bw=sm.rows.find(r=>r.backend==="baseline"&&r.context_target===4096&&r.concurrency===c&&r.stage==="warm").ttft_p50_ms;return rs.levels[k].ttft_p50_ms.slice(1).map(v=>lmPctI(100*(v/bw-1))).join(" / ")};
- $lm("lmReuseNote").textContent=`補充實驗：只有 SSD、~4096、C1 與 C10，每組 3 次。命中率 Warm 1/2/3：C1 ${hit("C1")}；C10 ${hit("C10")}。相對 Baseline 的 TTFT（Warm 1/2/3）：C1 ${vb(1,"C1")}；C10 ${vb(10,"C10")}。與前面的 A/B 結果分開看，不要合併。`;
+ $lm("lmReuseNote").textContent=`補充實驗：只有 SSD、~4096、C1 與 C10，每組 3 次。命中率 Warm 1/2/3：C1 ${hit("C1")}；C10 ${hit("C10")}。相對 Baseline 的 TTFT（Warm 1/2/3）：C1 ${vb(1,"C1")}；C10 ${vb(10,"C10")}。實際 prompt 為 ${rs.actual_prompt_tokens.min.toLocaleString()}–${rs.actual_prompt_tokens.max.toLocaleString()} tokens；132 筆請求、0 錯誤。磁碟上限 5 GB 是否發生淘汰沒有證據（log 無相關紀錄，但不能據此排除）。與前面的 A/B 結果分開看，不要合併。`;
 }
 
 function renderVerdict(){

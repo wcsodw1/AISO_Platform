@@ -1521,7 +1521,8 @@
         "logical_size_gib": 11.43,
         "note": "observed after the runs; exceeds max_local_disk_size, accounting not verified"
       }
-    }
+    },
+    "context_label_note": "Context targets 2048 / 4096 are labels; actual prompts are about 2.5K / 5.0K tokens (derived from per-request cache query counts; measured 5010-5072 in the reuse series)"
   },
   "ssd_reuse_series": {
     "run_id": "20261028_101020_7b1667",
@@ -1593,6 +1594,12 @@
           80.45
         ]
       }
-    }
+    },
+    "actual_prompt_tokens": {
+      "min": 5010,
+      "max": 5072
+    },
+    "verification": "132 requests / 24 batches / 0 errors",
+    "eviction_evidence": "server.log has no capacity/evict lines; absence does not prove no eviction (max_local_disk_size 5.0 GB, LRU)"
   }
 }
