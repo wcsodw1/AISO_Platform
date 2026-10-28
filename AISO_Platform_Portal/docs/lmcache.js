@@ -20,7 +20,7 @@ function groupsFor(run,scenario){
 const bar=(label,value,max,cls)=>`<div class="lm-bar ${cls}"><span>${label}</span><i><u style="width:${Math.max(2,100*value/max).toFixed(1)}%"></u></i><b>${lmNum(value)} ms</b></div>`;
 const chip=(pct,label)=>`<em class="lm-chip ${pct>=0?"good":"bad"}">${label} ${lmPct(-pct)}</em>`;
 
-const range=(vals,f=v=>v)=>{const a=Math.min(...vals),b=Math.max(...vals);return Math.round(a)===Math.round(b)?lmPctI(a):`${lmPctI(a)} ~ ${lmPctI(b)}`};
+const range=(vals,low)=>{const a=Math.min(...vals),b=Math.max(...vals),c=v=>{const r=Math.round(v);return `<span class="${r===0?"":(low?r<0:r>0)?"gain":"loss"}">${lmPctI(v)}</span>`};return Math.round(a)===Math.round(b)?c(a):`${c(a)} ~ ${c(b)}`};
 const lmPctI=n=>`${n>0?"+":n<0?"−":""}${Math.abs(Math.round(n))}%`;
 function renderPoints(){
  const R=lmData.runs,g=(m,s)=>groupsFor(R[m],s);
@@ -31,9 +31,9 @@ function renderPoints(){
  const row=(n,title,sub,ttft,tps)=>`<article class="lm-point"><div class="lm-point-h"><i>${n}</i><h3>${title}</h3><p>${sub}</p></div><div class="lm-point-m"><section><h4>TTFT<span class="zh-i">第一個字多久出現</span></h4>${ttft}</section><section><h4>Output TPS<span class="zh-i">每秒輸出量</span></h4>${tps}</section></div></article>`;
  const r1c=reuse("cpu"),r1s=reuse("ssd"),c=cw("cpu"),s=cw("ssd");
  $lm("lmPoints").innerHTML=
-  row(1,"Shared prefix vs No reuse","Prefix 重用：開頭重複 vs 每題不同",line("CPU",range(r1c.ttft))+line("SSD",range(r1s.ttft)),line("CPU",range(r1c.tps))+line("SSD",range(r1s.tps)))+
-  row(2,"Cold → Warm","第一次問 vs 第二次問",line("CPU",range(c.ttft))+line("SSD",range(s.ttft)),line("CPU",range(c.tps))+line("SSD",range(s.tps)))+
-  row(3,"SSD vs CPU","快取放硬碟 vs 記憶體",line("SSD 比 CPU",range(ssdcpu.ttft)),line("SSD 比 CPU",range(ssdcpu.tps)));
+  row(1,"Shared prefix vs No reuse","Prefix 重用：開頭重複 vs 每題不同",line("CPU",range(r1c.ttft,true))+line("SSD",range(r1s.ttft,true)),line("CPU",range(r1c.tps,false))+line("SSD",range(r1s.tps,false)))+
+  row(2,"Cold → Warm","第一次問 vs 第二次問",line("CPU",range(c.ttft,true))+line("SSD",range(s.ttft,true)),line("CPU",range(c.tps,false))+line("SSD",range(s.tps,false)))+
+  row(3,"SSD vs CPU","快取放硬碟 vs 記憶體",line("SSD 比 CPU",range(ssdcpu.ttft,true)),line("SSD 比 CPU",range(ssdcpu.tps,false)));
 }
 
 const SERIES={cpu:{cold:["CPU Cold","#6b7380"],warm:["CPU Warm","#70d3a2"]},ssd:{cold:["SSD Cold","#5d7fa8"],warm:["SSD Warm","#7aaee8"]}};
