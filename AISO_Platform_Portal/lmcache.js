@@ -112,7 +112,7 @@ function renderBaseline(){
  html+=plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1300,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
  $lm("lmBase").innerHTML=html;
  $lm("lmBaseLegend").innerHTML=KS.flatMap(k=>[[BC2[k][0]+" Cold",BC2[k][1]],[BC2[k][0]+" Warm",BC2[k][2]]]).map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")+'<span class="zh-i">Baseline = 未開 LMCache</span>';
- $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC}。每組左邊 Cold（第一次問）、右邊 Warm（第二次問）；圖下方的百分比是 Cold→Warm 的變化，以及開 LMCache 後相對 Baseline 的變化。SSD 的實體 I/O 歸因仍待確認。`;
+ $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC}。每組左邊 Cold（第一次問）、右邊 Warm（第二次問）；圖下方的百分比是 Cold→Warm 的變化，以及開 LMCache 後相對 Baseline 的變化。SSD 的實體 I/O 歸因仍待確認。SSD 設定：chunk 256 tokens · 磁碟上限 5 GB · LRU · 不使用 CPU 快取層。`;
 }
 $lm("lmConc").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;lmC=+b.dataset.c;renderBaseline()};
 function renderLM(){

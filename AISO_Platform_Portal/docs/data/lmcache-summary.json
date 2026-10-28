@@ -1509,6 +1509,18 @@
         "batch_output_tps": 495.5,
         "external_hit_ratio_pct": 80.42
       }
-    ]
+    ],
+    "ssd_config": {
+      "chunk_size": 256,
+      "local_cpu": false,
+      "local_disk": "file:///ssd/kv_cache/",
+      "max_local_disk_size_gb": 5.0,
+      "cache_policy": "LRU",
+      "kv_cache_dir_observed": {
+        "files": 418,
+        "logical_size_gib": 11.43,
+        "note": "observed after the runs; exceeds max_local_disk_size, accounting not verified"
+      }
+    }
   }
 }
