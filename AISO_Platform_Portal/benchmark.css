@@ -153,3 +153,4 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 .lm-raw summary{display:inline-flex;align-items:center;gap:8px;list-style:none;padding:12px 20px;border:1px solid var(--gold);border-radius:12px;background:rgba(216,199,121,.08);color:var(--gold);font-size:16px;font-weight:700}
 .lm-raw summary::-webkit-details-marker{display:none}.lm-raw summary:hover{background:rgba(216,199,121,.16)}.lm-raw summary:before{content:"▸";margin-right:6px}.lm-raw[open] summary:before{content:"▾"}
 .lm-raw .lm-close,.lm-raw[open] .lm-open{display:none}.lm-raw[open] .lm-close{display:inline}.lm-raw[open] summary{margin-bottom:14px}
+.lm-lines .lm-wide{grid-column:1/-1}.lm-lines .lm-plot .lm-d{font-size:14px}

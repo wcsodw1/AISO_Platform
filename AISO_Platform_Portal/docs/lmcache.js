@@ -31,19 +31,20 @@ function renderPoints(){
  const row=(n,title,sub,ttft,tps)=>`<article class="lm-point"><div class="lm-point-h"><i>${n}</i><h3>${title}</h3><p>${sub}</p></div><div class="lm-point-m"><section><h4>TTFT<span class="zh-i">第一個字多久出現</span></h4>${ttft}</section><section><h4>Output TPS<span class="zh-i">每秒輸出量</span></h4>${tps}</section></div></article>`;
  const r1c=reuse("cpu"),r1s=reuse("ssd"),c=cw("cpu"),s=cw("ssd");
  $lm("lmPoints").innerHTML=
-  row(1,"Shared prefix vs No reuse","Prefix 重用：開頭重複 vs 每題不同（Baseline 尚未匯入）",line("CPU",range(r1c.ttft))+line("SSD",range(r1s.ttft)),line("CPU",range(r1c.tps))+line("SSD",range(r1s.tps)))+
+  row(1,"Shared prefix vs No reuse","Prefix 重用：開頭重複 vs 每題不同",line("CPU",range(r1c.ttft))+line("SSD",range(r1s.ttft)),line("CPU",range(r1c.tps))+line("SSD",range(r1s.tps)))+
   row(2,"Cold → Warm","第一次問 vs 第二次問",line("CPU",range(c.ttft))+line("SSD",range(s.ttft)),line("CPU",range(c.tps))+line("SSD",range(s.tps)))+
   row(3,"SSD vs CPU","快取放硬碟 vs 記憶體",line("SSD 比 CPU",range(ssdcpu.ttft)),line("SSD 比 CPU",range(ssdcpu.tps)));
 }
 
 const SERIES={cpu:{cold:["CPU Cold","#6b7380"],warm:["CPU Warm","#70d3a2"]},ssd:{cold:["SSD Cold","#5d7fa8"],warm:["SSD Warm","#7aaee8"]}};
-const fmtV=v=>v>=100?v.toFixed(0):v.toFixed(1);
-function plot(title,unit,zh,labels,series,deltas){
- const W=700,H=360,L=56,R=12,T=34,B=deltas.length?92:56,pw=W-L-R,ph=H-T-B;
+const fmtV=v=>v===0?"0":v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2);
+const fmtT=v=>v>=100?v.toFixed(0):String(+v.toFixed(2));
+function plot(title,unit,zh,labels,series,deltas,W=700,H=360){
+ const L=56,R=12,T=34,B=deltas.length?92:56,pw=W-L-R,ph=H-T-B;
  const max=Math.max(...series.flatMap(s=>s.vals)),step=[1,2,2.5,5,10].map(m=>m*Math.pow(10,Math.floor(Math.log10(max/4)))).find(v=>max/v<=4.001)||max/4,top=Math.ceil(max/step)*step;
- const y=v=>T+ph-ph*v/top,gw=pw/labels.length,bw=Math.min(36,gw*.78/series.length),gap=bw*series.length;
+ const y=v=>T+ph-ph*v/top,gw=pw/labels.length,bw=Math.min(48,gw*.78/series.length),gap=bw*series.length;
  let g=`<text x="${L}" y="22" class="lm-t">${title}<tspan class="lm-z" dx="10">${zh}</tspan></text><text x="${W-R}" y="20" text-anchor="end" class="lm-u">${unit}</text>`;
- for(let v=0;v<=top+1e-9;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="lm-grid"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" class="lm-ax">${fmtV(v)}</text>`;
+ for(let v=0;v<=top+1e-9;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="lm-grid"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" class="lm-ax">${fmtT(v)}</text>`;
  labels.forEach((lab,i)=>{
   const x0=L+gw*i+(gw-gap)/2;
   series.forEach((s,k)=>{const v=s.vals[i],x=x0+k*bw;g+=`<rect x="${x+2}" y="${y(v)}" width="${bw-4}" height="${T+ph-y(v)}" rx="4" fill="${s.color}"><title>${s.name} · ${lab}: ${fmtV(v)} ${unit}</title></rect><text x="${x+bw/2}" y="${y(v)-6}" text-anchor="middle" class="lm-v">${fmtV(v)}</text>`});
@@ -85,6 +86,19 @@ function renderLines(){
   return lines(`~${t} / C${c}`,`${unit} · ${zh}${modes.length>1?" · 實線 CPU / 虛線 SSD":""}`,reps,series,modes.length===1);
  })).join("");
 }
+
+const BCOL={baseline:["Baseline","#9aa3b2"],cpu:["CPU","#70d3a2"],ssd:["SSD","#7aaee8"]};
+function renderBaseline(){
+ const b=lmData.baseline_c10;if(!b)return;
+ const ctx=[2048,4096],get=(k,t)=>b.rows.find(r=>r.backend===k&&r.context_target===t);
+ const labels=ctx.map(t=>`~${t} tokens`);
+ const ser=(f,keys=["baseline","cpu","ssd"])=>keys.map(k=>({name:BCOL[k][0],color:BCOL[k][1],vals:ctx.map(t=>f(get(k,t)))}));
+ const dl=(f,low)=>["cpu","ssd"].map(k=>({name:BCOL[k][0],vals:ctx.map(t=>{const p=100*(f(get(k,t))/f(get("baseline",t))-1);return {text:lmPctI(p),good:low?p<=0:p>=0}})}));
+ const m=[["TTFT p50","ms","越低越好",r=>r.ttft_p50_ms,true],["TTFT p95","ms","越低越好",r=>r.ttft_p95_ms,true],["TPOT p50","ms","越低越好",r=>r.tpot_p50_ms,true],["Output TPS","tok/s","越高越好",r=>r.batch_output_tps,false]];
+ $lm("lmBase").innerHTML=m.map(([t,u,z,f,low])=>plot(t,u,z,labels,ser(f),dl(f,low),520,340)).join("")+plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1060,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
+ $lm("lmBaseLegend").innerHTML=["baseline","cpu","ssd"].map(k=>`<span><i style="background:${BCOL[k][1]}"></i>${BCOL[k][0]}${k==="baseline"?'<span class="zh-i">未開 LMCache</span>':""}</span>`).join("");
+ $lm("lmBaseNote").textContent=`Shared prefix · Warm · 併發 ${b.concurrency} · 重複 ${b.repetitions} 次。百分比是相對 Baseline 的變化。來源為使用者提供的試算表截圖，尚未核對原始檔。`;
+}
 function renderLM(){
  const mode=$lm("lmMode").value,scenario=$lm("scenario").value,runs=lmData.runs;
  const note=scenario==="no_reuse"?"No reuse 沒有可重用前綴（命中 0），Cold／Warm 的差異是系統暖機與波動，不是快取效果。":"";
@@ -109,5 +123,5 @@ function renderLM(){
  $lm("lmStatus").textContent=list.map(m=>{const r=runs[m];return `${MODES[m]} ${r.run_id} · ${r.rows.length} 批次 · ${r.evidence_status==="REPORTED_PASS"?"REPORTED PASS":"完成（PASS 檢查結果未見）"}`}).join("　｜　")+"（原始證據待核對）";
 }
 ["lmMode","scenario","lmBatchMetric"].forEach(id=>$lm(id).onchange=()=>{if(lmData)renderLM()});
-fetch("data/lmcache-summary.json").then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{lmData=data;renderLM();renderPoints();$lm("lmDownload").disabled=false}).catch(()=>{$lm("lmStatus").textContent="資料載入失敗，請重新整理。"});
+fetch("data/lmcache-summary.json").then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{lmData=data;renderLM();renderPoints();renderBaseline();$lm("lmDownload").disabled=false}).catch(()=>{$lm("lmStatus").textContent="資料載入失敗，請重新整理。"});
 $lm("lmDownload").onclick=()=>{if(!lmData)return;const url=URL.createObjectURL(new Blob([JSON.stringify(lmData,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="lmcache-extended-summary.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};

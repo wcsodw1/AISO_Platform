@@ -1102,5 +1102,69 @@
       ],
       "note": "Transcript ends with 'ssd SMOKE COMPLETED' (script run_phase3_extended_safe.sh); the 144-request / 0-error PASS check was not shown."
     }
+  },
+  "baseline_c10": {
+    "source": "User-supplied spreadsheet screenshot; original CSV not imported. Column J header is truncated in the screenshot ('batch_outp...'); read as batch output tokens per second.",
+    "evidence_status": "SCREENSHOT_REPORTED",
+    "scenario": "shared_prefix",
+    "stage": "warm",
+    "concurrency": 10,
+    "repetitions": 3,
+    "rows": [
+      {
+        "backend": "baseline",
+        "context_target": 2048,
+        "ttft_p50_ms": 116.367,
+        "ttft_p95_ms": 158.463,
+        "tpot_p50_ms": 5.053,
+        "batch_output_tps": 1115.834,
+        "external_hit_ratio_pct": null
+      },
+      {
+        "backend": "cpu",
+        "context_target": 2048,
+        "ttft_p50_ms": 118.835,
+        "ttft_p95_ms": 128.75,
+        "tpot_p50_ms": 3.689,
+        "batch_output_tps": 1314.892,
+        "external_hit_ratio_pct": 93.22
+      },
+      {
+        "backend": "ssd",
+        "context_target": 2048,
+        "ttft_p50_ms": 247.606,
+        "ttft_p95_ms": 254.267,
+        "tpot_p50_ms": 4.084,
+        "batch_output_tps": 834.873,
+        "external_hit_ratio_pct": 92.88
+      },
+      {
+        "backend": "baseline",
+        "context_target": 4096,
+        "ttft_p50_ms": 219.887,
+        "ttft_p95_ms": 319.479,
+        "tpot_p50_ms": 8.915,
+        "batch_output_tps": 623.974,
+        "external_hit_ratio_pct": null
+      },
+      {
+        "backend": "cpu",
+        "context_target": 4096,
+        "ttft_p50_ms": 155.626,
+        "ttft_p95_ms": 162.647,
+        "tpot_p50_ms": 5.841,
+        "batch_output_tps": 917.145,
+        "external_hit_ratio_pct": 96.5
+      },
+      {
+        "backend": "ssd",
+        "context_target": 4096,
+        "ttft_p50_ms": 441.014,
+        "ttft_p95_ms": 468.296,
+        "tpot_p50_ms": 6.043,
+        "batch_output_tps": 495.495,
+        "external_hit_ratio_pct": 80.42
+      }
+    ]
   }
 }
