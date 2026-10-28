@@ -63,12 +63,15 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ index.html                                    ← 使用者入口頁
 │  ├─ app.js                                        ← 前台互動與資料呈現
 │  ├─ style.css                                     ← Portal 視覺與響應式版面
+│  ├─ aidaptiv.html                                ← aiDAPTIV Cold／Warm Benchmark 分類頁
+│  ├─ lmcache.html／lmcache.js                     ← LMCache CPU／SSD 結果比較
 │  ├─ benchmark.html／benchmark.css／benchmark-app.js ← Benchmark by Machine P0 UI
 │  ├─ manage.html                                   ← 本機管理頁
 │  ├─ manage.js                                     ← 管理功能
 │  ├─ launcher.py                                   ← 本機 HTTP Server／管理 API
 │  ├─ benchmark/                                  ← 統一 YAML、Runner、Framework Adapters 與設定範例
 │  │  ├─ mini_workstation_benchmark.yaml            ← 正式 NP2／NP4 測試規格
+│  │  ├─ live.py                                  ← 實機 HTTP 模型偵測、探索量測與私有結果
 │  │  ├─ benchmark_runner.py                        ← 串流量測、條件驗證、執行紀錄與 CLI
 │  │  ├─ api.py／jobs.py／reports.py                 ← P0 API、Mock Job Service 與報告核心
 │  │  ├─ machines.example.json                      ← 不含憑證的 Machine Profiles
@@ -233,3 +236,21 @@ AISO_FILE_PASSWORD=<存取碼> make export  # 重建 docs/；未設定時不會�
 - Commit 依用途區分，例如 `feat:`、`fix:`、`docs:`、`data:`、`chore:`。
 - Portal 發布版本使用 tag，例如 `v1.18.5`。
 - 不提交密碼、Token、SSH Key、`.env` 或未整理的原始 Benchmark 輸出。
+
+### 實機 Benchmark：PRO6000 / AISO1
+
+`benchmark.html` 的「實機 Benchmark」面板使用本機 `benchmark/machines.local.json` 中 `live_services` 設定，透過既有模型服務執行真實推論。PRO6000 機器範本已加入；AISO1 使用既有 `aiso1-amd` 範本。每個 Framework 可設定多個服務，先偵測模型再測試，支援 NP 1–4、輸出 1–1024 tokens、重複 1–3 次、停止與 JSON 下載。`benchmark/live.py` 負責實機工作，不更動遠端容器。
+
+此面板是探索量測，輸入 token 數取自服務回報，未驗證的服務端配置不會宣稱為正式 4K–64K 基準。結果保存在 `~/.aiso/benchmark-live-results/`（可用 `AISO_LIVE_RESULTS` 覆寫），與 Mock／正式測試分開；不儲存 prompt 原文或生成文字，不自動發布。本機服務網址只存在 git-ignored 設定，不會出現在公開機器範本或靜態匯出。設定與 API 操作詳見 Benchmark README；新增後請重新啟動 Portal。
+
+Benchmark 介面採三步驟獨立畫面：硬體類型（NVIDIA／AMD／Intel）→ Unit → 參數。NVIDIA RTX PRO6000 標示為 Workstation / Server；提供 NP1、Output 128、Repeat 1 快速實測預設及自訂參數，正式 Server 矩陣尚未定義，不沿用 Mini-workstation 規格。AISO1、B70 保留 Mini-workstation 分類。使用網址 hash 支援上一頁／下一頁與直接連結；未登入仍可選機型與編輯參數，實機偵測和執行維持本機 Token 保護。
+
+Benchmark 首頁現整合並排的硬體類型、對應 Unit 與機器規模選擇；切換 NVIDIA／AMD／Intel 立即更新旁邊的機台。規模可選 Consumer、Mini-workstation、Server-Workstation，預選機台建議規模並允許調整；按「設定參數」後將所選規模帶至下一頁與網址。只有 Mini-workstation 已定義正式預設，另外兩類標示待設定；快速連線測試獨立保留。
+
+### Benchmark — LMCache
+
+Benchmark 頁面新增 `lmcache.html` 入口，以 `lmcache.js` 與 `data/lmcache-summary.json` 呈現 Phase 3 Extended 結果。三者納入靜態匯出；`make check` 驗證腳本語法。資料為使用者提供終端紀錄中的 48 筆 CPU 批次數值，已移除原始命令、內網位址與主機路徑；原始 stdout 不納管。CPU 的 144 requests／48 batches／0 errors 為來源回報，標示 REPORTED_PASS，非平台獨立驗證。Baseline 無數據、SSD 僅有啟動紀錄，均不推定完成。
+
+頁面提供 no_reuse／shared_prefix 篩選、Cold／Warm TTFT 與 Output TPS 對照、命中率及整理後 JSON 下載。約 2K／4K context、C1／C5、輸出上限 32、Repeat 3 是 LMCache 專用計畫，獨立於 Consumer／Mini-workstation／Server-Workstation 通用預設。本入口展示結果，不啟停遠端容器；完整比較須補入原始 manifest、requests.csv、batches.csv 與 SSD 結果。
+
+Benchmark 主標下方固定顯示 `Normal`、`aiDAPTIV`、`LMCache` 三個分類。`Normal` 進入機器與參數設定；`aiDAPTIV` 顯示 without／Cold／Warm 比較範圍與既有報告狀態；`LMCache` 顯示 KV cache Cold／Warm 結果。各頁使用相同分類列並標示目前所在分類。

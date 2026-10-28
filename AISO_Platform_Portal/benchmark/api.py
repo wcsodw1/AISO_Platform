@@ -9,7 +9,7 @@ import hmac
 import os
 from urllib.parse import parse_qs, urlparse
 
-from . import reports
+from . import reports, live
 from .frameworks import ADAPTER_CLASSES, FRAMEWORK_STATUS, PARAMS, TEST_MODES
 from .jobs import JobError, JobService
 from .machines import VENDORS, load_machines, mock_preflight, public_profile
@@ -63,6 +63,22 @@ def handle(method, raw_path, body=None, authorization=None, machines=None, servi
             raise JobError("JSON body must be an object.")
         if not authorized(authorization):
             return Result({"error": "Bearer token required."}, 401)
+        if parts[:1] == ["live"]:
+            try:
+                if method == "GET" and parts == ["live", "jobs"]:
+                    return Result(live.SERVICE.snapshot())
+                if method == "POST" and parts == ["live", "stop"]:
+                    return Result(live.SERVICE.cancel())
+                if method == "POST" and parts in (["live", "discover"], ["live", "start"]):
+                    machine = _machine(machines, body.get("machine_id"))
+                    framework = body.get("framework")
+                    if parts[-1] == "discover":
+                        return Result({"models": live.discover(machine, framework, body.get("service"))})
+                    if not isinstance(body.get("config"), dict):
+                        raise ValueError("config must be an object.")
+                    return Result(live.SERVICE.start(machine, framework, body["config"]), 202)
+            except ValueError as error:
+                return Result({"error": str(error)}, 400)
         if method == "GET" and parts == ["status"]:
             active = service.active()
             return Result({"api_version": 1, "executor": "mock", "auth": auth_mode(), "ssh_executor": "not implemented (P1)",

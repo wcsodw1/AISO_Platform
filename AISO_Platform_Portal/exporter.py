@@ -179,12 +179,13 @@ def export_catalog(base: Path, data_root: Path):
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
-    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "site-glow.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js"):
+    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "site-glow.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js", "aidaptiv.html", "lmcache.html", "lmcache.js"):
         shutil.copy2(base / asset, temporary / asset)
     if (base / "assets").exists():
         shutil.copytree(base / "assets", temporary / "assets")
     (temporary / ".nojekyll").write_text("", encoding="utf-8")
     (temporary / "data").mkdir()
+    shutil.copy2(base / "data" / "lmcache-summary.json", temporary / "data" / "lmcache-summary.json")
     key = file_key_from_env()
     products = [sanitized_product(product, data_root, temporary, key, output) for product in catalog.get("products", []) if product.get("publish", {}).get("enabled", True)]
     published = {

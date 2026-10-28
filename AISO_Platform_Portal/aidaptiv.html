@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO aiDAPTIV Benchmark — Cold and Warm acceleration comparisons.">
+  <title>AISO — Benchmark / aiDAPTIV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-18">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main>
+    <section class="bm-hero">
+      <div><p class="eyebrow">BENCHMARK / AIDAPTIV</p><h1>AIDAPTIV<br><em>BENCHMARK</em></h1><nav class="benchmark-types" aria-label="Benchmark type"><a href="benchmark.html"><b>Normal</b><small>Standard inference</small></a><a class="active" href="aidaptiv.html" aria-current="page"><b>aiDAPTIV</b><small>Cold / Warm acceleration</small></a><a href="lmcache.html"><b>LMCache</b><small>KV cache reuse</small></a></nav><p>Compare standard inference with aiDAPTIV Cold and Warm runs under a recorded workload.</p></div>
+      <div class="bm-proof"><span>01 <b>WITHOUT</b></span><i></i><span>02 <b>COLD</b></span><i></i><span>03 <b>WARM</b></span><i></i><span>04 <b>COMPARE</b></span></div>
+    </section>
+
+    <section class="report-section">
+      <header><div><p class="section-label">SERVER-WORKSTATION / PRO6000</p><h2>without aiDAPTIV vs aiDAPTIV</h2></div><span class="badge unverified">REPORTS AVAILABLE</span></header>
+      <div class="model-facts">
+        <div><small>SYSTEM</small><b>RTX PRO 6000 × 8</b></div>
+        <div><small>ACTIVE GPU</small><b>4 GPUs</b></div>
+        <div><small>COMPARISON</small><b>Without / Cold / Warm</b></div>
+        <div><small>METRICS</small><b>TTFT · TPOT · Aggregate / Normalized Throughput</b></div>
+      </div>
+      <p class="report-notice">目前產品目錄記錄兩組已完成報告。等原始 CSV／JSON 匯入後，這裡會加入模型、NP、Input／Output tokens 篩選與比較圖。</p>
+    </section>
+
+    <section class="report-section">
+      <header><div><p class="section-label">AVAILABLE REPORTS</p><h2>Tested Scope<span class="zh">已記錄的測試範圍</span></h2></div></header>
+      <div class="table-wrap"><table><thead><tr><th>Model</th><th>GPU / NP</th><th>Input</th><th>Output</th><th>Evidence</th></tr></thead><tbody><tr><th>GPT-OSS-120B</th><td>4 GPU · NP1–32</td><td>1K–16K</td><td>1K / 2K</td><td><span class="badge unverified">PDF REPORT</span></td></tr><tr><th>Llama-3.3-70B-Instruct</th><td>4 GPU · NP16 / NP32</td><td>1K–16K</td><td>1K / 2K</td><td><span class="badge unverified">PDF REPORT</span></td></tr></tbody></table></div>
+    </section>
+  </main>
+</body>
+</html>

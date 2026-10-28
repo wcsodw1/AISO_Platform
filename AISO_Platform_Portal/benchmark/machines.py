@@ -46,10 +46,12 @@ def public_profile(machine):
     """Profile as shown to the (loopback/token) admin UI; the key itself is only a profile name."""
     ssh = machine["ssh"]
     configured = not str(ssh.get("host", "")).startswith("REPLACE")
-    out = {k: v for k, v in machine.items() if k != "ssh"}
+    out = {k: v for k, v in machine.items() if k not in {"ssh", "live_services"}}
     out["ssh"] = {"configured": configured, "host": ssh["host"] if configured else None,
                   "port": ssh.get("port", 22), "user": ssh["user"] if configured else None,
                   "auth_profile": ssh.get("auth_profile"), "host_key_pinned": bool(ssh.get("host_key_fingerprint"))}
+    out["live_services"] = {name: [{"id": item["id"], "label": item.get("label", item["id"])} for item in items]
+                            for name, items in machine.get("live_services", {}).items()}
     out["framework_status"] = {
         name: {"status": spec["status"], "label": FRAMEWORK_STATUS[spec["status"]]} for name, spec in machine["frameworks"].items()}
     return out

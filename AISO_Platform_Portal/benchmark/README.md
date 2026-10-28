@@ -48,3 +48,19 @@ Optional `--targets /private/path/targets.json` and `--output /private/path/resu
 The status matrix is a user-provided snapshot dated 2026-10-19: Gemma26/Gemma31/Nemotron need NP2/NP4 Full @4096 reruns on both platforms; only B70 Gemma31 has DS @4096 verified. Laguna is excluded for Intel/AMD vLLM; this is not a blanket exclusion for other frameworks.
 
 Protocol reference: [vLLM OpenAI-compatible server](https://docs.vllm.ai/en/stable/serving/openai_compatible_server/). Adapter contract must be tested against the actual installed service/version; mock tests do not certify hardware support.
+
+## Live HTTP benchmark
+
+The live panel attaches to existing OpenAI-compatible vLLM, llama.cpp or SGLang services, independent of the P0 mock executor. Configure each machine in the git-ignored `machines.local.json` (the overlay replaces the entire profile). Add:
+
+```json
+"live_services": {
+  "vllm": [{"id": "main", "label": "Main model service", "endpoint": "http://127.0.0.1:8000/v1", "api_key_env": "OPTIONAL_SERVICE_KEY"}]
+}
+```
+
+Use machine IDs `pro6000-tpi` and `aiso1-amd`. Keep real hosts in local configuration. API model discovery is required before execution; a service ID cannot be replaced by a browser-supplied URL. The existing loopback + Bearer boundary protects `/api/v1/benchmark/live/{discover,start,stop,jobs}`. Restart the launcher after code updates.
+
+The live panel takes a literal prompt (up to 8192 characters), NP 1–4, output 1–1024 tokens and 1–3 repeats. Actual usage, TTFT, client-observed TPOT, E2E and batch Aggregate TPS are saved under `~/.aiso/benchmark-live-results/` (`AISO_LIVE_RESULTS` override). Output must reach the requested length with a complete stream and valid usage; otherwise the batch fails without Aggregate TPS. Stop prevents subsequent batches, with in-flight cancellation at the next stream chunk or socket timeout. Interrupted jobs remain marked interrupted after restart. JSON export includes real measurement history; it never contains prompt text or generated text.
+
+These runs are labelled `MEASURED_EXPLORATORY`, not formal PASS: exact long-input fixtures, model SHA and server cache/batching settings are not certified. Use the existing strict YAML runner for the formal baseline. Public static exports cannot discover models or execute jobs.

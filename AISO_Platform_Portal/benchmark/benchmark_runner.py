@@ -138,7 +138,7 @@ def measure(target, config, prompt, expected_input, stop):
              and output == config['workload']['output_tokens'] and finish == 'length')
     # Client-observed stream timing; chunks may contain multiple tokens.
     decode = last - first if first is not None else 0
-    return {'valid': valid, 'input_tokens_actual': actual_input, 'output_tokens_actual': output,
+    return {'valid': valid, 'stream_complete': done, 'input_tokens_actual': actual_input, 'output_tokens_actual': output,
             'ttft_ms': (first - started) * 1000 if first is not None else None,
             'tpot_ms': decode * 1000 / (output - 1) if decode > 0 and isinstance(output, int) and output > 1 else None,
             'decode_tps': (output - 1) / decode if decode > 0 and isinstance(output, int) and output > 1 else None,
