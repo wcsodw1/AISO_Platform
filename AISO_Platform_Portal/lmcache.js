@@ -31,17 +31,19 @@ function renderPoints(){
  const ba=(label,f,from,to,low)=>{const a=f(from),b=f(to),p=100*(b/a-1),cls=Math.abs(p)<1?"":(low?p<0:p>0)?"gain":"loss";return `<div class="lm-ba"><small>${label}</small><b><u>${fmtV(a)}</u><i>→</i>${fmtV(b)}</b><em class="${cls}">${lmPctI(p)}</em></div>`};
  const tile=(h,zh,body)=>`<section><h4>${h}<span class="zh-i">${zh}</span></h4>${body}</section>`;
  const row=(n,title,sub,a,b)=>`<article class="lm-point"><div class="lm-point-h"><i>${n}</i><h3>${title}</h3><p>${sub}</p></div><div class="lm-point-m">${a}${b}</div></article>`;
- const W={b:g("baseline","warm"),c:g("cpu","warm"),s:g("ssd","warm")};
+ const f=(st)=>({b:g("baseline",st),c:g("cpu",st),s:g("ssd",st)});
+ const C=f("cold"),W=f("warm");
+ const p95=r=>r.ttft_p95_ms,tpot=r=>r.tpot_p50_ms;
  $lm("lmPoints").innerHTML=
-  row(1,"LMCache vs Baseline","沒開 LMCache → 開了（Warm）",
+  row(1,"Cold vs Baseline","第一次問：沒開 LMCache → 開了",
+   tile("TTFT ms","越低越好",ba("Baseline → CPU",ttft,C.b,C.c,true)+ba("Baseline → SSD",ttft,C.b,C.s,true)),
+   tile("Output TPS tok/s","越高越好",ba("Baseline → CPU",tps,C.b,C.c,false)+ba("Baseline → SSD",tps,C.b,C.s,false)))+
+  row(2,"Warm vs Baseline","第二次問：沒開 LMCache → 開了",
    tile("TTFT ms","越低越好",ba("Baseline → CPU",ttft,W.b,W.c,true)+ba("Baseline → SSD",ttft,W.b,W.s,true)),
    tile("Output TPS tok/s","越高越好",ba("Baseline → CPU",tps,W.b,W.c,false)+ba("Baseline → SSD",tps,W.b,W.s,false)))+
-  row(2,"Cold → Warm","第一次問 → 第二次問",
-   tile("TTFT ms","越低越好",["baseline","cpu","ssd"].map(k=>ba(BCOL[k][0]+" Cold → Warm",ttft,g(k,"cold"),g(k,"warm"),true)).join("")),
-   tile("Output TPS tok/s","越高越好",["baseline","cpu","ssd"].map(k=>ba(BCOL[k][0]+" Cold → Warm",tps,g(k,"cold"),g(k,"warm"),false)).join("")))+
-  row(3,"CPU vs SSD","快取放記憶體 → 放硬碟（Warm）",
-   tile("TTFT ms","越低越好",ba("CPU → SSD",ttft,W.c,W.s,true)),
-   tile("Output TPS tok/s","越高越好",ba("CPU → SSD",tps,W.c,W.s,false)));
+  row(3,"p95 & TPOT vs Baseline","偏慢情況與輸出順暢度（Warm）",
+   tile("TTFT p95 ms","越低越好",ba("Baseline → CPU",p95,W.b,W.c,true)+ba("Baseline → SSD",p95,W.b,W.s,true)),
+   tile("TPOT ms","越低越好",ba("Baseline → CPU",tpot,W.b,W.c,true)+ba("Baseline → SSD",tpot,W.b,W.s,true)));
 }
 $lm("lmPtT").onclick=e=>{const b=e.target.closest("[data-t]");if(!b||!lmData)return;ptT=+b.dataset.t;renderPoints()};
 $lm("lmPtC").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;ptC=+b.dataset.c;renderPoints()};
@@ -106,13 +108,13 @@ function renderBaseline(){
  const get=(k,t,st)=>sm.rows.find(r=>r.backend===k&&r.context_target===t&&r.concurrency===lmC&&r.stage===st);
  const ser=(f,keys=KS)=>keys.flatMap(k=>[{name:BC2[k][0]+" Cold",color:BC2[k][1],vals:ctx.map(t=>f(get(k,t,"cold")))},{name:BC2[k][0]+" Warm",color:BC2[k][2],vals:ctx.map(t=>f(get(k,t,"warm")))}]);
  const pc=(a,b,low)=>{const p=100*(a/b-1);return {text:lmPctI(p),good:low?p<=0:p>=0}};
- const dl=(f,low)=>KS.map(k=>({name:BC2[k][0]+" Cold→Warm",vals:ctx.map(t=>pc(f(get(k,t,"warm")),f(get(k,t,"cold")),low))})).concat(["cpu","ssd"].map(k=>({name:BC2[k][0]+" vs Baseline (Warm)",vals:ctx.map(t=>pc(f(get(k,t,"warm")),f(get("baseline",t,"warm")),low))})));
+ const dl=(f,low)=>["cpu","ssd"].flatMap(k=>["cold","warm"].map(st=>({name:`${BC2[k][0]} ${st==="cold"?"Cold":"Warm"} vs Baseline`,vals:ctx.map(t=>pc(f(get(k,t,st)),f(get("baseline",t,st)),low))})));
  const m=[["TTFT p50","ms","中位數 · 越低越好",r=>r.ttft_p50_ms,true],["TTFT p95","ms","偏慢的 5% 邊界 · 越低越好",r=>r.ttft_p95_ms,true],["TPOT p50","ms","每個字的間隔 · 越低越好",r=>r.tpot_p50_ms,true],["Output TPS","tok/s","越高越好",r=>r.batch_output_tps,false]];
  let html=m.map(([t,u,z,f,low])=>plot(t,u,z,labels,ser(f),dl(f,low),640,400)).join("");
  html+=plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1300,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
  $lm("lmBase").innerHTML=html;
  $lm("lmBaseLegend").innerHTML=KS.flatMap(k=>[[BC2[k][0]+" Cold",BC2[k][1]],[BC2[k][0]+" Warm",BC2[k][2]]]).map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")+'<span class="zh-i">Baseline = 未開 LMCache</span>';
- $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC}。每組左邊 Cold（第一次問）、右邊 Warm（第二次問）；圖下方的百分比是 Cold→Warm 的變化，以及開 LMCache 後相對 Baseline 的變化。SSD 的實體 I/O 歸因仍待確認。SSD 設定：chunk 256 tokens · 磁碟上限 5 GB · LRU · 不使用 CPU 快取層。`;
+ $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC}。每組左邊 Cold（第一次問）、右邊 Warm（第二次問）；圖下方的百分比都是相對 Baseline 的變化（Cold 對 Cold、Warm 對 Warm）。SSD 的實體 I/O 歸因仍待確認。SSD 設定：chunk 256 tokens · 磁碟上限 5 GB · LRU · 不使用 CPU 快取層。`;
 }
 $lm("lmConc").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;lmC=+b.dataset.c;renderBaseline()};
 
@@ -128,7 +130,8 @@ function renderReuse(){
  $lm("lmReuse").innerHTML=out.join("");
  $lm("lmReuseLegend").innerHTML='<span><i style="background:#7aaee8"></i>SSD</span><span><i style="background:#9aa3b2"></i>Baseline<span class="zh-i">原始 A/B 的 Cold / Warm</span></span>';
  const hit=k=>rs.levels[k].hit_pct.slice(1).map(v=>v.toFixed(1)+"%").join(" / ");
- $lm("lmReuseNote").textContent=`補充實驗：只有 SSD、~4096、C1 與 C10，每組 3 次。命中率 Warm 1/2/3：C1 ${hit("C1")}；C10 ${hit("C10")}。與前面的 A/B 結果分開看，不要合併。`;
+ const vb=(c,k)=>{const bw=sm.rows.find(r=>r.backend==="baseline"&&r.context_target===4096&&r.concurrency===c&&r.stage==="warm").ttft_p50_ms;return rs.levels[k].ttft_p50_ms.slice(1).map(v=>lmPctI(100*(v/bw-1))).join(" / ")};
+ $lm("lmReuseNote").textContent=`補充實驗：只有 SSD、~4096、C1 與 C10，每組 3 次。命中率 Warm 1/2/3：C1 ${hit("C1")}；C10 ${hit("C10")}。相對 Baseline 的 TTFT（Warm 1/2/3）：C1 ${vb(1,"C1")}；C10 ${vb(10,"C10")}。與前面的 A/B 結果分開看，不要合併。`;
 }
 function renderLM(){
  const mode=$lm("lmMode").value,scenario=$lm("scenario").value,runs=lmData.runs;
