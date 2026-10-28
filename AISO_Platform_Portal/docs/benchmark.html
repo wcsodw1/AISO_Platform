@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="site-header.css?v=1.28.2">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
-  <link rel="stylesheet" href="benchmark.css?v=1.25.0">
+  <link rel="stylesheet" href="benchmark.css?v=family-1">
 </head>
 <body>
   <header class="site-header">
@@ -23,23 +23,47 @@
 
   <main>
     <section class="bm-hero">
-      <div><p class="eyebrow">SPARKLEBENCHMARK / P0 MVP</p><h1>BENCHMARK<br><em>BY MACHINE</em></h1><p>Prove that a complete system can load, serve, respond, scale and sustain a model workload—with reproducible evidence, not isolated GPU scores.</p></div>
+      <div><p class="eyebrow">SPARKLEBENCHMARK / HARDWARE FIRST</p><h1>BENCHMARK<br><em>BY MACHINE</em></h1><nav class="benchmark-types" aria-label="Benchmark type"><a class="active" href="benchmark.html" aria-current="page"><b>Normal</b><small>Standard inference</small></a><a href="aidaptiv.html"><b>aiDAPTIV</b><small>Cold / Warm acceleration</small></a><a href="lmcache.html"><b>LMCache</b><small>KV cache reuse</small></a></nav><p>Prove that a complete system can load, serve, respond, scale and sustain a model workload—with reproducible evidence, not isolated GPU scores.</p></div>
       <div class="bm-proof"><span>01 <b>SELECT</b></span><i></i><span>02 <b>CONFIGURE</b></span><i></i><span>03 <b>EXECUTE</b></span><i></i><span>04 <b>VERIFY</b></span><i></i><span>05 <b>REPORT</b></span></div>
     </section>
 
+    <nav class="wizard-steps" aria-label="Benchmark steps"><button id="stepVendors" type="button">01 / 選擇機器</button><span>→</span><span id="stepParams">02 / 參數設定</span></nav>
+    <section id="vendorPage" class="wizard-page">
+      <p class="section-label">01 / SELECT YOUR MACHINE</p><h2 tabindex="-1">選擇測試機器</h2><p>選擇硬體類型、對應機台與機器規模，再進入參數設定。</p>
+      <div class="picker-console">
+        <section class="pc-col pc-vendor"><header><i>01</i><h3>硬體類型</h3><small>Vendor</small></header><div class="vendor-options">
+          <button type="button" class="pc-row" data-vendor="nvidia"><strong>NVIDIA</strong><span>CUDA</span></button>
+          <button type="button" class="pc-row" data-vendor="amd"><strong>AMD</strong><span>ROCm</span></button>
+          <button type="button" class="pc-row" data-vendor="intel"><strong>Intel</strong><span>XPU</span></button>
+        </div></section>
+        <section class="pc-col pc-unit"><header><i>02</i><h3 id="unitTitle">機器項目</h3><small>Unit</small></header><div id="unitChoices" class="unit-options"></div></section>
+        <section class="pc-col pc-scale"><header><i>03</i><h3>機器規模</h3><small>Preset class</small></header>
+          <select id="machineScale" hidden><option value="consumer">Consumer</option><option value="mini">Mini-workstation</option><option value="server">Server-Workstation</option></select>
+          <div class="scale-options" id="scaleOptions">
+            <button type="button" class="pc-row" data-scale="consumer"><strong>Consumer</strong><span>個人／消費級</span></button>
+            <button type="button" class="pc-row" data-scale="mini"><strong>Mini-workstation</strong><span>迷你工作站</span></button>
+            <button type="button" class="pc-row" data-scale="server"><strong>Server-Workstation</strong><span>伺服器／工作站</span></button>
+          </div>
+          <p id="scaleNote" class="scale-note"></p>
+        </section>
+        <footer class="pc-foot"><p id="selectionSummary"></p><button id="configureUnit" class="primary" type="button">設定參數 →</button></footer>
+      </div>
+    </section>
+    <div id="parameterPage" hidden>
+      <header class="parameter-heading"><div><p class="section-label">02 / CONFIGURE BENCHMARK</p><h2 id="selectedUnitTitle" tabindex="-1">RTX PRO6000</h2></div><span id="unitTier" class="status-chip">WORKSTATION / SERVER</span></header>
     <div id="systemNotice" class="bm-notice">P0 uses a safe Mock Executor. No SSH command or GPU workload is started. Mock output is always UNVERIFIED.</div>
 
-    <section class="bm-layout">
+    <section class="bm-layout" id="legacyConfig">
       <aside class="bm-side">
         <p class="section-label">LAYER 01 / MACHINE PROFILE</p>
-        <label>GPU Vendor<select id="vendorSelect"></select></label>
-        <label>Machine<select id="machineSelect"></select></label>
-        <label>Framework<select id="frameworkSelect"></select></label>
+        <label hidden>GPU Vendor<select id="vendorSelect"></select></label>
+        <label hidden>Machine<select id="machineSelect"></select></label>
+        <label class="fw-label">推論引擎 <small>Inference Engine</small><select id="frameworkSelect" class="fw-select" hidden></select><div id="fwSeg" class="fw-seg" role="radiogroup" aria-label="Inference Engine"></div></label>
         <article id="machineCard" class="machine-card"></article>
         <div class="connection-card"><header><b>CONNECTION</b><span>SSH EXECUTOR: P1</span></header><dl id="connectionDetails"></dl><button id="preflightButton" type="button" disabled>Run Preflight (simulated)</button><div id="preflightResult"></div><small>SSH Key Authentication + Host Key Verification only. Credentials never enter the browser or repository.</small></div>
       </aside>
 
-      <section class="bm-workspace">
+      <section class="bm-workspace" id="mockWorkspace">
         <header class="workspace-head"><div><p class="section-label">LAYER 02 / BENCHMARK CONFIGURATION</p><h2>Configure the workload</h2></div><span id="frameworkStatus" class="status-chip"></span></header>
         <form id="benchmarkForm">
           <div class="form-grid">
@@ -56,12 +80,32 @@
             <label>GPU Memory Utilization <button class="tip" type="button" data-tip="Fraction of GPU memory vLLM may reserve. Range: 0–1.">?</button><input id="gpuUtilInput" type="number" min="0.01" max="1" step="0.01" value="0.90"></label>
             <label class="switch-row">Prefix Caching <button class="tip" type="button" data-tip="Cache reuse changes workload semantics. Cache ON results must remain separate from the formal baseline.">?</button><input id="prefixInput" type="checkbox"><span>OFF</span></label>
           </div>
-          <aside id="tooltip" role="tooltip" hidden></aside>
+          <aside id="infoPop" class="info-pop" role="tooltip" hidden></aside><aside id="tooltip" role="tooltip" hidden></aside>
           <div class="run-summary"><div><small>EXECUTION MODE</small><strong>MOCK / NO SSH</strong></div><div><small>PASS POLICY</small><strong>LOG-VERIFIED ONLY</strong></div><div><small>RESULT WRITE</small><strong>APPEND-ONLY RUN ID</strong></div></div>
           <div class="form-actions"><button id="downloadConfig" type="button">Download Config JSON</button><button id="startMock" class="primary" type="submit">Start Mock Execution</button><button id="stopMock" type="button" disabled>Stop</button></div>
           <p id="runStatus" class="run-status" aria-live="polite">Press Connect with the local Bearer Token to enable Mock Execution.</p>
         </form>
       </section>
+    </section>
+
+    <section class="report-section" id="livePanel">
+      <header class="live-head"><div><p class="section-label">LIVE / REAL INFERENCE</p><h2>參數與執行</h2></div><button id="paramHelp" class="info big" type="button" aria-label="參數說明" title="所有參數說明">?</button></header>
+      <div class="preset-bar"><button id="resetLivePreset" class="primary" type="button">Default · 還原預設值</button><span id="presetState">目前使用：規模預設</span></div>
+      <p id="presetDescription">Workstation / Server：先驗證模型服務，再調整工作負載。</p>
+      <p class="report-notice">TP、Context、Batch 與 GPU 記憶體配置由目前模型服務決定；此處不會修改服務啟動參數。輸入 token 數依服務實際回報。</p>
+      <div class="form-grid">
+        <label>Service<select id="liveService"></select></label>
+        <label>Model<select id="liveModel"></select></label>
+        <label>Concurrency (NP)<input id="liveNp" type="number" min="1" max="4" value="1"></label>
+        <label>Output tokens<input id="liveOutput" type="number" min="1" max="1024" value="128"></label>
+        <label>Repeats<input id="liveRepeat" type="number" min="1" max="3" value="1"></label>
+        <label>Prompt<textarea id="livePrompt" maxlength="8192" rows="3">Explain how a local language model processes a prompt, step by step.</textarea></label>
+      </div>
+      <div class="form-actions"><button id="liveStart" class="primary" type="button">▶ 開始測試</button><button id="liveDiscover" type="button">偵測實機模型</button><button id="liveStop" type="button" disabled>停止</button><button id="liveExport" type="button" disabled>下載實測 JSON</button></div>
+      <div class="manual-row"><button id="terminalToggle" type="button" aria-expanded="false">&gt;_ Terminal</button></div>
+      <section id="termPanel" class="term" hidden><header><b>TERMINAL</b><span id="termState">idle</span><button id="termClear" type="button">Clear</button></header><pre id="termBody" aria-live="polite"></pre></section>
+      <p id="liveStatus" aria-live="polite">連線後選擇實機服務。</p>
+      <div id="liveJobs"></div>
     </section>
 
     <section class="report-section">
@@ -84,7 +128,8 @@
     </section>
 
     <section class="job-section"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
+    </div>
   </main>
-  <script src="benchmark-app.js?v=1.25.0"></script>
+  <script src="benchmark-app.js?v=picker-8"></script>
 </body>
 </html>

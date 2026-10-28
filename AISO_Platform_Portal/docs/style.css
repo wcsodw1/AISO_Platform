@@ -2858,10 +2858,10 @@ textarea{
 @media(hover:hover) and (min-width:761px){
   .app-card{opacity:0;transform:translateX(calc(-100% - 40px)) scale(.86)}
   .app-card:nth-child(2){transform:translateX(calc(-200% - 70px)) scale(.8)}
-  .app-deck:hover .app-card,.app-deck:focus-within .app-card,.app-deck.has-open-app .app-card{opacity:1;transform:none}
-  .app-deck:hover .app-card:nth-child(2),.app-deck:focus-within .app-card:nth-child(2),.app-deck.has-open-app .app-card:nth-child(2){transition-delay:.09s}
-  .app-deck:hover .app-hub,.app-deck:focus-within .app-hub,.app-deck.has-open-app .app-hub{border-color:rgba(200,184,117,.8)}
-  .app-deck:not(:hover):not(:focus-within):not(.has-open-app) .app-cards:after{content:"HOVER TO EXPAND →";position:absolute;left:34px;top:50%;color:rgba(243,239,229,.4);font-size:11px;font-weight:800;letter-spacing:.24em;transform:translateY(-50%)}
+  .app-deck:hover .app-card,.app-deck:focus-within .app-card,.app-deck.has-open-app .app-card,.app-deck.is-expanded .app-card{opacity:1;transform:none}
+  .app-deck:hover .app-card:nth-child(2),.app-deck:focus-within .app-card:nth-child(2),.app-deck.has-open-app .app-card:nth-child(2),.app-deck.is-expanded .app-card:nth-child(2){transition-delay:.09s}
+  .app-deck:hover .app-hub,.app-deck:focus-within .app-hub,.app-deck.has-open-app .app-hub,.app-deck.is-expanded .app-hub{border-color:rgba(200,184,117,.8)}
+  .app-deck:not(:hover):not(:focus-within):not(.has-open-app):not(.is-expanded) .app-cards:after{content:"SCROLL OR HOVER →";position:absolute;left:34px;top:50%;color:rgba(243,239,229,.4);font-size:11px;font-weight:800;letter-spacing:.24em;transform:translateY(-50%)}
 }
 .app-panel{margin-top:20px;scroll-margin-top:110px}
 .app-panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:16px}

@@ -243,7 +243,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(catalog() if self.is_admin_request() else published_catalog())
         if url.path.startswith("/api/") and not self.is_admin_request():
             return self.send_json({"error": "This operation requires localhost administrator access."}, 403)
-        if url.path.startswith("/api/benchmark/") and not self.require_benchmark_auth():
+        if url.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")) and not self.require_benchmark_auth():
             return
         if url.path.startswith(machine_bench_api.PREFIX + "/"):
             return self.send_machine_bench("GET")

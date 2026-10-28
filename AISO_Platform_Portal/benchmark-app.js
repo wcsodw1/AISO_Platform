@@ -20,6 +20,8 @@ const post=(path,body={})=>api(path,{method:"POST",headers:{"Content-Type":"appl
 function saveBlob(name,blob){const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
 async function downloadApi(path,name){saveBlob(name,await (await request(API+path)).blob())}
 
+const tseen={};
+let tlast="";
 const machine=()=>state.machines.find(item=>item.machine_id===$("machineSelect").value);
 const framework=()=>$("frameworkSelect").value;
 const frameworkInfo=()=>machine()?.framework_status?.[framework()];
@@ -42,12 +44,13 @@ function renderFrameworks(){
   const keep=$("frameworkSelect").value;
   $("frameworkSelect").innerHTML=Object.entries(item.framework_status).map(([id,info])=>`<option value="${id}">${esc(frameworkLabel(id))} — ${esc(info.label)}</option>`).join("");
   if(item.framework_status[keep])$("frameworkSelect").value=keep;
-  $("machineCard").innerHTML=`<header><div><small>${esc(item.vendor.toUpperCase())} / ${esc(item.gpu_model)}</small><h3>${esc(item.display_name)}</h3></div><b class="gpu-count">${item.gpu_count}×</b></header><dl><div><dt>VRAM</dt><dd>${item.vram_gb?`${item.vram_gb} GB each`:"Unified / not recorded"}</dd></div><div><dt>RAM</dt><dd>${item.ram_gb?`${item.ram_gb} GB`:"Not recorded"}</dd></div><div><dt>OS</dt><dd>${esc(item.os)}</dd></div><div><dt>Benchmark Root</dt><dd>${esc(item.paths.benchmark_root)}</dd></div></dl><p class="memory-note">${esc(item.memory_note||"")}</p>`;
+  $("machineCard").innerHTML=`<header><div><small>${esc(item.vendor.toUpperCase())} / ${esc(item.gpu_model)}</small><h3>${esc(item.display_name)}</h3></div><b class="gpu-count">${item.gpu_count}<small> × GPU</small></b></header><dl><div><dt>VRAM</dt><dd>${item.vram_gb?`${item.vram_gb} GB each`:"Unified / not recorded"}</dd></div><div><dt>RAM</dt><dd>${item.ram_gb?`${item.ram_gb} GB`:"Not recorded"}</dd></div><div><dt>OS</dt><dd>${esc(item.os)}</dd></div><div><dt>Benchmark Root</dt><dd>${esc(item.paths.benchmark_root)}</dd></div></dl><p class="memory-note">${esc(item.memory_note||"")}</p>`;
   const ssh=item.ssh;
   $("connectionDetails").innerHTML=`<div><dt>Target</dt><dd>${ssh.configured?`${esc(ssh.user)}@${esc(ssh.host)}:${ssh.port}`:"Not configured (placeholder profile)"}</dd></div><div><dt>Authentication</dt><dd>Key only · profile ${esc(ssh.auth_profile||"—")}</dd></div><div><dt>Host Key</dt><dd>${ssh.host_key_pinned?"Pinned":"Not pinned — required before P1"}</dd></div><div><dt>Executor</dt><dd>Mock (P0)</dd></div>`;
   const models=item.frameworks[framework()]?.models||[];
   $("modelSelect").innerHTML=models.map(id=>`<option value="${id}">${esc(modelName(id))}</option>`).join("");
   updateFramework();
+  renderLiveServices();
   loadReports();
 }
 const modelName=id=>state.overview?.models.find(model=>model.model===id)?.name||id;
@@ -63,7 +66,7 @@ function updateFramework(){
     runtime_unverified:`${frameworkLabel(framework())} is Runtime Unverified on this machine. Execution stays disabled until real machine logs are imported; recorded results below are UNVERIFIED.`,
     not_verified:`${frameworkLabel(framework())} is not verified on this machine; execution is disabled.`,
     unavailable:`${frameworkLabel(framework())} is unavailable on this machine.`}[info.status];
-  $("systemNotice").textContent=note;
+  $("systemNotice").textContent=state.token?"已登入本機管理。選擇服務並偵測模型後，即可執行實機測試。":"請使用頁面上方的本機 Bearer Token 登入，以偵測服務與執行實機測試。";
 }
 
 /* ---------- reports ---------- */
@@ -196,15 +199,16 @@ async function exportCharts(){
 }
 
 /* ---------- wiring ---------- */
+const tokenStore={get(){try{return localStorage.getItem("aiso_bm_token")||""}catch{return ""}},set(v){try{v?localStorage.setItem("aiso_bm_token",v):localStorage.removeItem("aiso_bm_token")}catch{}}};
 $("connectButton").onclick=async()=>{
-  state.token=$("tokenInput").value.trim();if(!state.token)return;
+  state.token=$("tokenInput").value.trim()||state.token;if(!state.token)return;
   try{
     const [status,meta,machines]=await Promise.all([api("/status"),api("/frameworks"),api("/machines")]);
     state.meta=meta;state.machines=machines.machines;
-    $("accessBadge").textContent="LOCAL ADMIN / TOKEN";$("tokenInput").value="";
+    $("accessBadge").textContent="LOCAL ADMIN / TOKEN";$("tokenInput").value="";tokenStore.set(state.token);
     $("runStatus").textContent=`Authenticated. ${status.executor.toUpperCase()} executor available; SSH executor is not implemented in P0.`;
-    renderVendors();renderMachines();refreshJobs();
-  }catch(error){state.token="";$("accessBadge").textContent="AUTH FAILED";$("runStatus").textContent=error.message}
+    renderVendors();renderMachines();renderWizard();refreshJobs();
+  }catch(error){state.token="";tokenStore.set("");$("accessBadge").textContent="AUTH FAILED";$("runStatus").textContent=error.message;if(typeof tlog==="function")tlog("連線失敗："+error.message,"err")}
 };
 $("vendorSelect").onchange=renderMachines;$("machineSelect").onchange=renderFrameworks;
 $("frameworkSelect").onchange=()=>{renderFrameworks()};
@@ -248,3 +252,202 @@ setInterval(()=>{if(state.token&&!document.hidden)refreshJobs()},1500);
     }
   },{passive:true});
 })();
+
+/* Live measurements use configured HTTP targets; prompts and generated text are not persisted. */
+let liveSnapshot={jobs:[],active:null};
+let liveTicket=0;
+const knownCatalog={
+  "intel-b70":{
+    vllm:{service:"B70 vLLM XPU · port 18090 · TP 2",models:["Gemma 4 26B","Gemma 4 31B","Nemotron","Laguna FP8"]},
+    sglang:{service:"B70 SGLang XPU · port 18091 · TP 2",models:["Gemma 4 31B"]},
+    llamacpp:{service:"B70 llama.cpp SYCL · 未設定埠",models:[]}
+  }
+};
+function renderLiveServices(){
+  liveTicket++;
+  const services=machine()?.live_services?.[framework()]||[];
+  const known=knownCatalog[machine()?.machine_id]?.[framework()];
+  if(services.length){
+    $("liveService").innerHTML=services.map(s=>`<option value="${esc(s.id)}">${esc(s.label)}</option>`).join("");
+    $("liveModel").innerHTML="";
+  }else if(known){
+    $("liveService").innerHTML=`<option value="">${esc(known.service)}（待連線）</option>`;
+    $("liveModel").innerHTML=known.models.length?known.models.map(m=>`<option value="">${esc(m)}（待偵測）</option>`).join(""):'<option value="">尚無已驗證模型</option>';
+  }else{
+    $("liveService").innerHTML="";$("liveModel").innerHTML="";
+  }
+  $("liveDiscover").classList.toggle("is-idle",!!(!state.token||!services.length));
+  $("liveStart").classList.toggle("is-idle",!!(true));
+  $("liveStatus").textContent=!state.token?"請先於上方輸入本機 Bearer Token 並按 Connect。":services.length?"請偵測模型，再開始實機測試。":known?"清單為 B70 已測過的服務與模型；需先在 machines.local.json 設定 B70 位址後才能偵測並執行。":"此機器／Framework 尚未設定可連線的實機服務。";
+  tlog($("liveStatus").textContent,"");
+}
+$("liveService").onchange=()=>{liveTicket++;$("liveModel").innerHTML="";$("liveStart").classList.toggle("is-idle",!!(true));};
+$("liveDiscover").onclick=async()=>{
+  if(!liveReady("discover"))return;
+  const ticket=++liveTicket;
+  $("liveStart").classList.toggle("is-idle",!!(true));
+  $("liveStatus").textContent="正在查詢實機模型…";
+  try{
+    const result=await post("/live/discover",{machine_id:machine().machine_id,framework:framework(),service:$("liveService").value});
+    if(ticket!==liveTicket)return;
+    $("liveModel").innerHTML=result.models.map(m=>`<option value="${esc(m.id)}">${esc(m.id)}</option>`).join("");
+    $("liveStart").classList.toggle("is-idle",!!(!result.models.length||!!liveSnapshot.active));
+    $("liveStatus").textContent=`已連接服務，找到 ${result.models.length} 個模型。`;tlog(`discover ${$("liveService").value}: ${result.models.map(m=>m.id).join(", ")||"no models"}`,"ok");
+  }catch(error){if(ticket===liveTicket)$("liveStatus").textContent=error.message}
+};
+async function refreshLive(){
+  if(!state.token)return;
+  try{
+    liveSnapshot=await api("/live/jobs");
+    $("liveStop").disabled=!liveSnapshot.active;
+    $("liveExport").disabled=!liveSnapshot.jobs.length;
+    $("liveStart").classList.toggle("is-idle",!!(!$("liveModel").value||!!liveSnapshot.active));
+    liveSnapshot.jobs.slice().reverse().forEach(job=>{
+      const seen=tseen[job.id]||(tseen[job.id]={rows:job.rows.length,status:job.status,fresh:false});
+      if(seen.fresh===false&&!seen.init){seen.init=true;seen.rows=job.status==="running"?0:job.rows.length}
+      job.rows.slice(seen.rows).forEach(r=>tlog(`repeat ${r.repeat} req ${r.request}: ${r.valid?"OK":"FAIL"} · in ${r.input_tokens_actual??"-"} · out ${r.output_tokens_actual??"-"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · agg ${num(r.aggregate_tps)} tok/s${r.error?" · "+r.error:""}`,r.valid?"":"err"));
+      seen.rows=job.rows.length;
+      if(job.status!==seen.status){tlog(`job ${job.id.slice(0,8)} ${job.status}`,job.status==="completed"?"ok":job.status==="running"?"":"err");seen.status=job.status}
+    });
+    $("termState").textContent=liveSnapshot.active?"running":"idle";
+    $("liveJobs").innerHTML=liveSnapshot.jobs.filter(job=>job.machine_id===machine()?.machine_id&&job.framework===framework()).map(job=>`<article class="job-card"><b>${esc(job.machine_id)} · ${esc(job.config.model)} · ${esc(job.status)}</b><p>MEASURED EXPLORATORY · ${job.rows.length}/${job.total_requests} requests</p>${job.rows.map(r=>`<p>Repeat ${r.repeat} / Request ${r.request}: ${r.valid?"Measured":"Failed"} · Input ${r.input_tokens_actual??"—"} · Output ${r.output_tokens_actual??"—"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · Aggregate ${num(r.aggregate_tps)} tok/s${r.error?` · ${esc(r.error)}`:""}</p>`).join("")}</article>`).join("");
+  }catch(error){$("liveStatus").textContent=error.message}
+}
+$("liveStart").onclick=async()=>{
+  if(!liveReady("start"))return;
+  $("liveStart").classList.toggle("is-idle",!!(true));
+  termOpen(true);tlog(`$ start  ${machine().machine_id} · ${framework()} · ${$("liveModel").value} · NP${$("liveNp").value} · out ${$("liveOutput").value} · repeat ${$("liveRepeat").value}`);
+  try{
+    const result=await post("/live/start",{machine_id:machine().machine_id,framework:framework(),config:{service:$("liveService").value,model:$("liveModel").value,prompt:$("livePrompt").value,np:Number($("liveNp").value),output_tokens:Number($("liveOutput").value),repeat:Number($("liveRepeat").value)}});
+    $("liveStatus").textContent=`實機測試 ${result.id} 已啟動。`;termOpen(true);tlog(`job ${result.id.slice(0,8)} started`,"ok");
+  }catch(error){$("liveStatus").textContent=error.message;tlog(error.message,"err")}
+  await refreshLive();
+};
+$("liveStop").onclick=async()=>{try{const result=await post("/live/stop");$("liveStatus").textContent=result.message}catch(error){$("liveStatus").textContent=error.message}};
+$("liveExport").onclick=()=>saveBlob("live-benchmark-results.json",new Blob([JSON.stringify(liveSnapshot,null,2)],{type:"application/json"}));
+setInterval(refreshLive,1500);
+
+// Public-safe navigation catalog; real service details arrive only after authentication.
+const unitCatalog=[
+  {id:"pro6000-tpi",vendor:"nvidia",name:"NVIDIA RTX PRO6000",tier:"Server-Workstation",detail:"TPI · 8 × RTX PRO 6000 Blackwell · 96 GB / GPU",gpu:"RTX PRO 6000 Blackwell Server Edition",count:8,vram:96,frameworks:["vllm","llamacpp"]},
+  {id:"aiso1-amd",vendor:"amd",name:"AISO1",tier:"Mini-workstation",detail:"AMD Ryzen AI Max+ 395 · 服務連線待設定",gpu:"Radeon iGPU (gfx1151)",count:1,vram:null,frameworks:["llamacpp","vllm","sglang"]},
+  {id:"intel-b70",vendor:"intel",name:"Intel Arc Pro B70",tier:"Mini-workstation",detail:"2 × Arc Pro B70 · 32 GB / GPU",gpu:"Arc Pro B70",count:2,vram:32,frameworks:["vllm","sglang","llamacpp"]}
+];
+if(!state.meta){
+  state.meta={vendors:[{id:"nvidia",label:"NVIDIA"},{id:"amd",label:"AMD"},{id:"intel",label:"Intel"}],frameworks:[{name:"vllm",label:"vLLM"},{name:"llamacpp",label:"llama.cpp"},{name:"sglang",label:"SGLang"}]};
+  state.machines=unitCatalog.map(u=>({machine_id:u.id,display_name:u.name,vendor:u.vendor,gpu_model:u.gpu,gpu_count:u.count,vram_gb:u.vram,os:"請連線確認",paths:{benchmark_root:"本機設定"},ssh:{configured:false},frameworks:Object.fromEntries(u.frameworks.map(f=>[f,{status:"not_verified"}])),framework_status:Object.fromEntries(u.frameworks.map(f=>[f,{status:"not_verified",label:"未連線 · 按 Connect 載入"}]))}));
+}
+const scalePresets={
+  consumer:{np:1,out:128,rep:1,note:"Consumer 正式預設待設定；暫用快速測試 NP1／128 tokens／Repeat 1。"},
+  mini:{np:2,out:1024,rep:3,note:"Mini-workstation 正式預設：NP2（再測 NP4）、Output 1024、Repeat 3。"},
+  server:{np:1,out:128,rep:1,note:"Server-Workstation 正式預設待設定；暫用快速測試 NP1／128 tokens／Repeat 1。"}
+};
+function setManual(on){
+  $("presetState").textContent=on?"手動調整中（按 Default 還原）":"目前使用：規模預設";
+}
+function resetQuickPreset(){
+  const p=scalePresets[pickedScale]||scalePresets.server;
+  $("liveNp").value=p.np;$("liveOutput").value=p.out;$("liveRepeat").value=p.rep;
+  $("livePrompt").value="Explain how a local language model processes a prompt, step by step.";
+  setManual(false);
+}
+const scales={consumer:"Consumer",mini:"Mini-workstation",server:"Server-Workstation"};
+const scaleDescriptions={consumer:"Consumer 正式預設參數待設定；目前可使用快速連線測試。",mini:"Mini-workstation 正式預設：NP2／NP4、Input 4K–64K、Output 1024、Repeat 3。正式測試須由 Runner 驗證；快速連線測試另外提供。",server:"Server-Workstation 正式預設參數待設定；目前可使用快速連線測試。"};
+let pickedUnit="pro6000-tpi",pickedScale="server";
+const defaultScale=unit=>unit.tier==="Mini-workstation"?"mini":"server";
+function renderSelection(){
+  const unit=unitCatalog.find(u=>u.id===pickedUnit);
+  document.querySelectorAll("[data-unit]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.unit===pickedUnit)));
+  $("machineScale").value=pickedScale;
+  $("scaleNote").textContent=scaleDescriptions[pickedScale];
+  $("selectionSummary").innerHTML=`<small>已選擇</small><b>${esc(unit.name)}</b><span>${esc(scales[pickedScale])}</span>`;
+  document.querySelectorAll("[data-scale]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.scale===pickedScale)));
+}
+function renderWizard(){
+  const parts=location.hash.slice(1).split("/").filter(Boolean);
+  const vendor=["nvidia","amd","intel"].includes(parts[1])?parts[1]:"nvidia";
+  const unit=unitCatalog.find(u=>u.vendor===vendor&&u.id===parts[2]);
+  $("vendorPage").hidden=!!unit;$("parameterPage").hidden=!unit;
+  $("stepVendors").setAttribute("aria-current",unit?"false":"step");
+  $("stepParams").setAttribute("aria-current",unit?"step":"false");
+  document.querySelectorAll("[data-vendor]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.vendor===vendor)));
+  $("unitTitle").textContent=`${vendor.toUpperCase()} / 機器項目`;
+  const choices=unitCatalog.filter(u=>u.vendor===vendor);
+  if(!choices.some(u=>u.id===pickedUnit)){pickedUnit=choices[0].id;pickedScale=defaultScale(choices[0])}
+  $("unitChoices").innerHTML=choices.map(u=>`<button type="button" class="pc-unit-card" data-unit="${u.id}"><b>${esc(u.name)}</b><span>${esc(u.detail)}</span><em>${esc(u.tier)}</em></button>`).join("");
+  if(unit){
+    pickedUnit=unit.id;pickedScale=Object.hasOwn(scales,parts[3])?parts[3]:defaultScale(unit);
+    document.querySelectorAll("#parameterPage .report-section:not(#livePanel), #parameterPage .job-section").forEach(section=>{section.hidden=unit.vendor==="nvidia"});
+    renderVendors();$("vendorSelect").value=vendor;renderMachines();$("machineSelect").value=unit.id;renderFrameworks();
+    $("selectedUnitTitle").textContent=unit.name;$("unitTier").textContent=scales[pickedScale];
+    resetQuickPreset();$("presetDescription").textContent=scalePresets[pickedScale].note;
+  }
+  renderSelection();
+}
+$("vendorPage").onclick=event=>{const button=event.target.closest("[data-vendor]");if(button)location.hash=`/pick/${button.dataset.vendor}`};
+$("unitChoices").onclick=event=>{const button=event.target.closest("[data-unit]");if(button){pickedUnit=button.dataset.unit;pickedScale=defaultScale(unitCatalog.find(u=>u.id===pickedUnit));renderSelection()}};
+$("machineScale").onchange=()=>{pickedScale=$("machineScale").value;renderSelection()};
+$("configureUnit").onclick=()=>{const unit=unitCatalog.find(u=>u.id===pickedUnit);resetQuickPreset();location.hash=`/pick/${unit.vendor}/${unit.id}/${pickedScale}`};
+$("stepVendors").onclick=()=>{location.hash=`/pick/${unitCatalog.find(u=>u.id===pickedUnit).vendor}`};
+["liveNp","liveOutput","liveRepeat","livePrompt"].forEach(id=>$(id).addEventListener("input",()=>setManual(true)));
+$("resetLivePreset").onclick=()=>{resetQuickPreset();tlog("Default 預設值已套用："+$("liveNp").value+" NP / "+$("liveOutput").value+" tokens / "+$("liveRepeat").value+" repeat")};
+
+window.addEventListener("hashchange",()=>{renderWizard();document.querySelector(".wizard-page:not([hidden]) h2, #parameterPage:not([hidden]) h2")?.focus()});
+renderWizard();
+
+document.addEventListener("click",event=>{
+  const pop=$("infoPop"),button=event.target.closest(".info");
+  if(!button){if(!event.target.closest("#infoPop"))pop.hidden=true;return}
+  event.preventDefault();event.stopPropagation();
+  pop.textContent=button.dataset.info;pop.hidden=false;
+  const box=button.getBoundingClientRect();
+  pop.style.top=`${window.scrollY+box.bottom+8}px`;
+  pop.style.left=`${Math.max(12,Math.min(window.scrollX+box.left,window.innerWidth-pop.offsetWidth-12))}px`;
+});
+document.addEventListener("keydown",event=>{if(event.key==="Escape")$("infoPop").hidden=true});
+
+$("scaleOptions").onclick=event=>{const b=event.target.closest("[data-scale]");if(b){pickedScale=b.dataset.scale;$("machineScale").value=pickedScale;renderSelection()}};
+
+function tlog(text,cls=""){
+  if(text===tlast)return;tlast=text;
+  const body=$("termBody"),t=new Date().toTimeString().slice(0,8);
+  body.insertAdjacentHTML("beforeend",`<span class="tl ${cls}"><i>${t}</i> ${esc(text)}</span>\n`);
+  body.scrollTop=body.scrollHeight;
+}
+function termOpen(on){$("termPanel").hidden=!on;$("terminalToggle").setAttribute("aria-expanded",String(on))}
+$("terminalToggle").onclick=()=>termOpen($("termPanel").hidden);
+$("termClear").onclick=()=>{$("termBody").textContent=""};
+const helpHtml=`<h4>參數說明</h4><dl>
+<dt>Service</dt><dd>已設定的模型服務（vLLM／llama.cpp）。TP、Context、Batch 由服務啟動參數決定，此處不會修改。</dd>
+<dt>Model</dt><dd>偵測服務後列出的模型。</dd>
+<dt>Concurrency (NP)</dt><dd>同時送出的請求數。越高總吞吐量通常越高，但每個請求延遲變長。</dd>
+<dt>Output tokens</dt><dd>每個請求產生的長度。越長，TPOT／Decode 越準，但耗時越久。</dd>
+<dt>Repeats</dt><dd>每組重複次數。越多平均越穩定，但耗時越長。</dd>
+<dt>Prompt</dt><dd>送給模型的文字。輸入 token 數以服務實際回報為準。</dd>
+<dt>Default</dt><dd>Mini-workstation：NP2、Output 1024、Repeat 3；Consumer／Server：NP1、Output 128、Repeat 1（暫定）。</dd></dl>`;
+$("paramHelp").addEventListener("click",event=>{
+  event.stopPropagation();const pop=$("infoPop");
+  if(!pop.hidden&&pop.dataset.owner==="help"){pop.hidden=true;return}
+  pop.innerHTML=helpHtml;pop.dataset.owner="help";pop.hidden=false;
+  const b=event.currentTarget.getBoundingClientRect();
+  pop.style.top=`${window.scrollY+b.bottom+10}px`;
+  pop.style.left=`${Math.max(12,window.scrollX+b.right-pop.offsetWidth)}px`;
+});
+
+function syncFwSeg(){
+  const sel=$("frameworkSelect");
+  $("fwSeg").innerHTML=[...sel.options].map(o=>{const [name,status]=o.textContent.split(" — ");return `<button type="button" role="radio" class="fw-opt" data-fw="${esc(o.value)}" aria-checked="${o.value===sel.value}"><b>${esc(name)}</b><span>${esc(status||"")}</span></button>`}).join("");
+}
+new MutationObserver(syncFwSeg).observe($("frameworkSelect"),{childList:true,characterData:true,subtree:true});
+$("frameworkSelect").addEventListener("change",syncFwSeg);
+$("fwSeg").onclick=e=>{const b=e.target.closest("[data-fw]");if(!b)return;$("frameworkSelect").value=b.dataset.fw;$("frameworkSelect").dispatchEvent(new Event("change",{bubbles:true}))};
+syncFwSeg();
+
+function liveReady(kind){
+  const msg=text=>{termOpen(true);tlog(text,"err");$("liveStatus").textContent=text;return false};
+  if(!state.token)return msg("尚未連線：請在頁面上方輸入本機 Bearer Token 並按 Connect。");
+  if(!(machine()?.live_services?.[framework()]||[]).length)return msg(`${machine()?.display_name||"此機器"} 的 ${framework()} 服務位址尚未設定（machines.local.json 的 live_services）。`);
+  if(kind==="start"&&!$("liveModel").value)return msg("請先按「偵測實機模型」，再選模型。");
+  return true;
+}
+if(tokenStore.get()){state.token=tokenStore.get();$("connectButton").click()}

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Benchmark / LMCache</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-12">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main>
+    <section class="bm-hero"><div><p class="eyebrow">BENCHMARK / LMCACHE / PHASE 3</p><h1>KV CACHE<br><em>BENCHMARK</em></h1><nav class="benchmark-types" aria-label="Benchmark type"><a href="benchmark.html"><b>Normal</b><small>Standard inference</small></a><a href="aidaptiv.html"><b>aiDAPTIV</b><small>Cold / Warm acceleration</small></a><a class="active" href="lmcache.html" aria-current="page"><b>LMCache</b><small>KV cache reuse</small></a></nav><p>NVIDIA RTX PRO6000 · GPU 4 · Server-Workstation</p></div><nav class="bm-back" aria-label="Back to machine"><small>BACK TO MACHINE · 回到機器</small><div><a href="benchmark.html#/pick/nvidia/pro6000-tpi/server"><b>NVIDIA RTX PRO6000</b><span>Server-Workstation</span></a><a href="benchmark.html#/pick/amd/aiso1-amd/mini"><b>AISO1</b><span>Mini-workstation</span></a><a href="benchmark.html#/pick/intel/intel-b70/mini"><b>Intel Arc Pro B70</b><span>Mini-workstation</span></a></div></nav></section>
+    <div class="bm-notice">來源：使用者提供的終端紀錄。CPU 的 PASS 為紀錄回報，尚未獨立核對原始 manifest／CSV。SSD 已跑完 48 批次（終端紀錄），但 144 requests／0 errors 的 PASS 檢查結果未見，標示為「完成、待核對」。</div>
+    <section class="report-section"><header><div><p class="section-label">SUMMARY</p><h2>Key Takeaways<span class="zh">三個重點</span></h2></div></header><div id="lmPoints" class="lm-points"><p>載入中…</p></div><aside class="lm-next"><h3>Next · CacheBlend<span class="zh-i">下一步：Non-prefix 重用</span></h3><p>以上三項測的都是 <b>Prefix</b> 重用（開頭相同才能重用）。<b>CacheBlend</b> 要處理 <b>Non-prefix</b>：同樣的文件、不同順序的 RAG Prompt。目前尚無測試結果。</p><ol><li><b>Runtime Shape Inspection</b><span class="zh-i">2.4-06 · 取得實際 KV Tensor 的 shape、stride、dtype，以及 Key / Value Layout</span></li><li><b>Connector Compatibility</b><span class="zh-i">2.4-06 · 依實際 Layout 修正 Transfer 路徑，不只改維度索引</span></li><li><b>Non-Prefix Smoke Test</b><span class="zh-i">2.4-05 · 相同文件、不同排序的 RAG Prompt；確認 ON 真的 Retrieve，並與 OFF 比 TTFT、TPS、Cache Hit</span></li></ol></aside><p class="lm-plan">Context ~2K / 4K tokens · Concurrency 1 / 5 · Output 32 tokens · 3 repeats<span class="zh-i">測試條件</span></p></section>
+    <section class="report-section"><header><div><p class="section-label">COLD VS WARM / CPU · SSD</p><h2>Cache Reuse<span class="zh">快取重用效果</span></h2></div><div class="lm-controls"><label>Storage <select id="lmMode"><option value="cpu">CPU</option><option value="ssd">SSD</option><option value="compare">CPU vs SSD</option></select></label><label>Scenario <select id="scenario"><option value="shared_prefix">Shared prefix</option><option value="no_reuse">No reuse</option></select></label></div></header><p id="lmNote" class="report-notice" hidden></p><p>每格為三次重複的平均值；TTFT 是「每批次 p50 的平均」，不是整體 requests 的 p50。快取命中率為 hits 總和 ÷ queries 總和。</p><div id="lmPlots" class="lm-plots"></div><div id="lmCharts" class="chart-grid"></div><div class="table-wrap"><table><thead id="lmHead"></thead><tbody id="lmSummary"></tbody></table></div><p class="report-notice">Output TPS 沿用來源欄位，尚未核對計算定義；Cold／Warm 比較不等於 Baseline／CPU／SSD 比較。</p></section>
+    <section class="report-section"><header><div><p class="section-label">IMPORTED BATCH METRICS</p><h2>Batch Detail<span class="zh">批次明細</span></h2></div><button id="lmDownload" type="button" disabled>Download JSON<span class="zh-i">下載整理後</span></button></header><p id="lmStatus" role="status">載入中…</p><div class="table-wrap"><table><thead><tr><th>Mode</th><th>Scenario</th><th>Target</th><th>C</th><th>Repeat</th><th>Phase</th><th>TTFT p50 (ms)</th><th>Output TPS</th><th>Cache hits / queries</th></tr></thead><tbody id="lmRows"></tbody></table></div></section>
+  </main><script src="lmcache.js?v=10"></script>
+</body></html>
