@@ -88,17 +88,30 @@ function renderLines(){
 }
 
 const BCOL={baseline:["Baseline","#9aa3b2"],cpu:["CPU","#70d3a2"],ssd:["SSD","#7aaee8"]};
+let lmC=10;
 function renderBaseline(){
- const b=lmData.baseline_c10;if(!b)return;
- const ctx=[2048,4096],get=(k,t)=>b.rows.find(r=>r.backend===k&&r.context_target===t);
- const labels=ctx.map(t=>`~${t} tokens`);
- const ser=(f,keys=["baseline","cpu","ssd"])=>keys.map(k=>({name:BCOL[k][0],color:BCOL[k][1],vals:ctx.map(t=>f(get(k,t)))}));
- const dl=(f,low)=>["cpu","ssd"].map(k=>({name:BCOL[k][0],vals:ctx.map(t=>{const p=100*(f(get(k,t))/f(get("baseline",t))-1);return {text:lmPctI(p),good:low?p<=0:p>=0}})}));
- const m=[["TTFT p50","ms","越低越好",r=>r.ttft_p50_ms,true],["TTFT p95","ms","越低越好",r=>r.ttft_p95_ms,true],["TPOT p50","ms","越低越好",r=>r.tpot_p50_ms,true],["Output TPS","tok/s","越高越好",r=>r.batch_output_tps,false]];
- $lm("lmBase").innerHTML=m.map(([t,u,z,f,low])=>plot(t,u,z,labels,ser(f),dl(f,low),520,340)).join("")+plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1060,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
- $lm("lmBaseLegend").innerHTML=["baseline","cpu","ssd"].map(k=>`<span><i style="background:${BCOL[k][1]}"></i>${BCOL[k][0]}${k==="baseline"?'<span class="zh-i">未開 LMCache</span>':""}</span>`).join("");
- $lm("lmBaseNote").textContent=`Shared prefix · Warm · 併發 ${b.concurrency} · 重複 ${b.repetitions} 次。百分比是相對 Baseline 的變化。來源為使用者提供的試算表截圖，尚未核對原始檔。`;
+ document.querySelectorAll("#lmConc [data-c]").forEach(b=>b.setAttribute("aria-checked",String(+b.dataset.c===lmC)));
+ const ctx=[2048,4096],labels=ctx.map(t=>`~${t} tokens`),legend=(items)=>items.map(([n,c,z])=>`<span><i style="background:${c}"></i>${n}${z?`<span class="zh-i">${z}</span>`:""}</span>`).join("");
+ if(lmC===10){
+  const b=lmData.baseline_c10;if(!b)return;
+  const get=(k,t)=>b.rows.find(r=>r.backend===k&&r.context_target===t);
+  const ser=(f,keys=["baseline","cpu","ssd"])=>keys.map(k=>({name:BCOL[k][0],color:BCOL[k][1],vals:ctx.map(t=>f(get(k,t)))}));
+  const dl=(f,low)=>["cpu","ssd"].map(k=>({name:BCOL[k][0],vals:ctx.map(t=>{const p=100*(f(get(k,t))/f(get("baseline",t))-1);return {text:lmPctI(p),good:low?p<=0:p>=0}})}));
+  const m=[["TTFT p50","ms","中位數 · 越低越好",r=>r.ttft_p50_ms,true],["TTFT p95","ms","偏慢的 5% 邊界 · 越低越好",r=>r.ttft_p95_ms,true],["TPOT p50","ms","每個字的間隔 · 越低越好",r=>r.tpot_p50_ms,true],["Output TPS","tok/s","越高越好",r=>r.batch_output_tps,false]];
+  $lm("lmBase").innerHTML=m.map(([t,u,z,f,low])=>plot(t,u,z,labels,ser(f),dl(f,low),520,340)).join("")+plot("External Hit Ratio","%","越高越好",labels,ser(r=>r.external_hit_ratio_pct,["cpu","ssd"]),[],1060,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
+  $lm("lmBaseLegend").innerHTML=legend([["Baseline","#9aa3b2","未開 LMCache"],["CPU","#70d3a2"],["SSD","#7aaee8"]]);
+  $lm("lmBaseNote").textContent=`Shared prefix · Warm · 併發 ${b.concurrency} · 重複 ${b.repetitions} 次。百分比是相對 Baseline 的變化。`;
+ }else{
+  const runs=lmData.runs,g=m=>groupsFor(runs[m],"shared_prefix").filter(x=>x.c===lmC);
+  const G={cpu:g("cpu"),ssd:g("ssd")};
+  const ser=(ck,wk)=>["cpu","ssd"].flatMap(m=>[{name:SERIES[m].cold[0],color:SERIES[m].cold[1],vals:G[m].map(x=>x[ck])},{name:SERIES[m].warm[0],color:SERIES[m].warm[1],vals:G[m].map(x=>x[wk])}]);
+  const dl=(f,low)=>["cpu","ssd"].map(m=>({name:MODES[m],vals:G[m].map(x=>{const p=f(x);return {text:lmPctI(p),good:low?p<=0:p>=0}})}));
+  $lm("lmBase").innerHTML=plot("TTFT p50","ms","中位數 · 越低越好",labels,ser("cold","warm"),dl(x=>100*(x.warm/x.cold-1),true),520,340)+plot("Output TPS","tok/s","越高越好",labels,ser("ctps","wtps"),dl(x=>x.tpsGain,false),520,340)+plot("External Hit Ratio (Warm)","%","越高越好",labels,["cpu","ssd"].map(m=>({name:MODES[m],color:SERIES[m].warm[1],vals:G[m].map(x=>x.hit)})),[],1060,300).replace('<figure class="lm-plot">','<figure class="lm-plot lm-wide">');
+  $lm("lmBaseLegend").innerHTML=legend([["CPU Cold",SERIES.cpu.cold[1]],["CPU Warm",SERIES.cpu.warm[1]],["SSD Cold",SERIES.ssd.cold[1]],["SSD Warm",SERIES.ssd.warm[1]]]);
+  $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC} · 重複 3 次。百分比是 Warm 相對 Cold 的變化。此併發沒有 Baseline、p95 與 TPOT 資料；Baseline 只有 C10。`;
+ }
 }
+$lm("lmConc").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;lmC=+b.dataset.c;renderBaseline()};
 function renderLM(){
  const mode=$lm("lmMode").value,scenario=$lm("scenario").value,runs=lmData.runs;
  const note=scenario==="no_reuse"?"No reuse 沒有可重用前綴（命中 0），Cold／Warm 的差異是系統暖機與波動，不是快取效果。":"";

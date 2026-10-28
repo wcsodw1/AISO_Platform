@@ -159,3 +159,9 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 .bm-hero{align-items:start;min-height:420px}.bm-hero>div:first-child>p:last-child{min-height:5.2em;margin-bottom:0}.bm-hero>:last-child{align-self:start;margin-top:8px}
 .site-header .bm-auth{flex-wrap:nowrap}.site-header .bm-auth span{white-space:nowrap}.site-header .bm-auth input{width:190px;min-width:0}
 .bm-hero+.wizard-steps{margin-top:18px}
+
+/* Concurrency toggle + p50/p95 definitions */
+.lm-seg{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}.lm-seg button{min-height:44px;min-width:76px;padding:0 20px;border:0;border-radius:0;background:rgba(255,255,255,.03);color:var(--muted);font-size:17px;font-weight:700}
+.lm-seg button+button{border-left:1px solid var(--line)}.lm-seg button[aria-checked=true]{background:var(--gold);color:#0b0d12}.lm-seg button:hover:not([aria-checked=true]){background:rgba(216,199,121,.12);color:var(--ivory)}
+.lm-defs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 0}.lm-defs>div{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03)}.lm-defs dt{margin:0 0 6px;color:var(--gold);font-size:17px;font-weight:700}.lm-defs dd{margin:0;color:#d9d3bd;font-size:14px;line-height:1.65}
+@media(max-width:900px){.lm-defs{grid-template-columns:1fr}}
