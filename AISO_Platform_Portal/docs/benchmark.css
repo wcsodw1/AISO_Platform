@@ -167,3 +167,9 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 @media(max-width:900px){.lm-defs{grid-template-columns:1fr}}
 .lm-point-m b .gain{color:#7ef0ad}.lm-point-m b .loss{color:#ff9d92}
 .lm-segs{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}
+
+/* Before -> after tiles */
+.lm-ba{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px;padding:8px 0;border-top:1px solid rgba(244,239,228,.06)}.lm-ba:first-of-type{border-top:0}
+.lm-ba small{flex-basis:100%;color:var(--muted);font-size:14px}.lm-ba b{font-size:24px;font-variant-numeric:tabular-nums;white-space:nowrap}.lm-ba b u{text-decoration:none;color:var(--muted);font-weight:500}.lm-ba b i{margin:0 10px;color:var(--gold);font-style:normal;font-weight:400}
+.lm-ba em{font-style:normal;font-size:20px;font-weight:700}.lm-ba em.gain,.lm-key .gain{color:#7ef0ad}.lm-ba em.loss,.lm-key .loss{color:#ff9d92}.lm-ba em:not(.gain):not(.loss){color:var(--muted)}
+.lm-key{margin:0 0 16px;color:var(--muted);font-size:15px}

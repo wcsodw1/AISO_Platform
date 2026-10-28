@@ -22,24 +22,29 @@ const chip=(pct,label)=>`<em class="lm-chip ${pct>=0?"good":"bad"}">${label} ${l
 
 const range=(vals,low)=>{const a=Math.min(...vals),b=Math.max(...vals),c=v=>{const r=Math.round(v);return `<span class="${r===0?"":(low?r<0:r>0)?"gain":"loss"}">${lmPctI(v)}</span>`};return Math.round(a)===Math.round(b)?c(a):`${c(a)} ~ ${c(b)}`};
 const lmPctI=n=>`${n>0?"+":n<0?"−":""}${Math.abs(Math.round(n))}%`;
+let ptT=4096,ptC=10;
 function renderPoints(){
- const S=lmData.summary.rows,g=(b,t,c,st)=>S.find(r=>r.backend===b&&r.context_target===t&&r.concurrency===c&&r.stage===st);
- const keys=[[2048,1],[2048,5],[2048,10],[4096,1],[4096,5],[4096,10]];
- const rel=(f,a,b,stA,stB)=>keys.map(([t,c])=>100*(f(g(a,t,c,stA))/f(g(b,t,c,stB))-1));
+ const S=lmData.summary.rows,g=(b,st)=>S.find(r=>r.backend===b&&r.context_target===ptT&&r.concurrency===ptC&&r.stage===st);
+ document.querySelectorAll("#lmPtT [data-t]").forEach(b=>b.setAttribute("aria-checked",String(+b.dataset.t===ptT)));
+ document.querySelectorAll("#lmPtC [data-c]").forEach(b=>b.setAttribute("aria-checked",String(+b.dataset.c===ptC)));
  const ttft=r=>r.ttft_p50_ms,tps=r=>r.batch_output_tps;
- const line=(l,v)=>`<div><small>${l}</small><b>${v}</b></div>`;
- const row=(n,title,sub,t,p)=>`<article class="lm-point"><div class="lm-point-h"><i>${n}</i><h3>${title}</h3><p>${sub}</p></div><div class="lm-point-m"><section><h4>TTFT<span class="zh-i">第一個字多久出現</span></h4>${t}</section><section><h4>Output TPS<span class="zh-i">每秒輸出量</span></h4>${p}</section></div></article>`;
- const vs=(f,a,b,sa,sb,low)=>range(rel(f,a,b,sa,sb),low);
+ const ba=(label,f,from,to,low)=>{const a=f(from),b=f(to),p=100*(b/a-1),cls=Math.abs(p)<1?"":(low?p<0:p>0)?"gain":"loss";return `<div class="lm-ba"><small>${label}</small><b><u>${fmtV(a)}</u><i>→</i>${fmtV(b)}</b><em class="${cls}">${lmPctI(p)}</em></div>`};
+ const tile=(h,zh,body)=>`<section><h4>${h}<span class="zh-i">${zh}</span></h4>${body}</section>`;
+ const row=(n,title,sub,a,b)=>`<article class="lm-point"><div class="lm-point-h"><i>${n}</i><h3>${title}</h3><p>${sub}</p></div><div class="lm-point-m">${a}${b}</div></article>`;
+ const W={b:g("baseline","warm"),c:g("cpu","warm"),s:g("ssd","warm")};
  $lm("lmPoints").innerHTML=
-  row(1,"LMCache vs Baseline","有開 LMCache vs 沒開（Shared prefix · Warm）",
-   line("CPU",vs(ttft,"cpu","baseline","warm","warm",true))+line("SSD",vs(ttft,"ssd","baseline","warm","warm",true)),
-   line("CPU",vs(tps,"cpu","baseline","warm","warm",false))+line("SSD",vs(tps,"ssd","baseline","warm","warm",false)))+
-  row(2,"Cold → Warm","第一次問 vs 第二次問",
-   line("Baseline",vs(ttft,"baseline","baseline","warm","cold",true))+line("CPU",vs(ttft,"cpu","cpu","warm","cold",true))+line("SSD",vs(ttft,"ssd","ssd","warm","cold",true)),
-   line("Baseline",vs(tps,"baseline","baseline","warm","cold",false))+line("CPU",vs(tps,"cpu","cpu","warm","cold",false))+line("SSD",vs(tps,"ssd","ssd","warm","cold",false)))+
-  row(3,"SSD vs CPU","快取放硬碟 vs 記憶體（Warm）",
-   line("SSD 比 CPU",vs(ttft,"ssd","cpu","warm","warm",true)),line("SSD 比 CPU",vs(tps,"ssd","cpu","warm","warm",false)));
+  row(1,"LMCache vs Baseline","沒開 LMCache → 開了（Warm）",
+   tile("TTFT ms","越低越好",ba("Baseline → CPU",ttft,W.b,W.c,true)+ba("Baseline → SSD",ttft,W.b,W.s,true)),
+   tile("Output TPS tok/s","越高越好",ba("Baseline → CPU",tps,W.b,W.c,false)+ba("Baseline → SSD",tps,W.b,W.s,false)))+
+  row(2,"Cold → Warm","第一次問 → 第二次問",
+   tile("TTFT ms","越低越好",["baseline","cpu","ssd"].map(k=>ba(BCOL[k][0]+" Cold → Warm",ttft,g(k,"cold"),g(k,"warm"),true)).join("")),
+   tile("Output TPS tok/s","越高越好",["baseline","cpu","ssd"].map(k=>ba(BCOL[k][0]+" Cold → Warm",tps,g(k,"cold"),g(k,"warm"),false)).join("")))+
+  row(3,"CPU vs SSD","快取放記憶體 → 放硬碟（Warm）",
+   tile("TTFT ms","越低越好",ba("CPU → SSD",ttft,W.c,W.s,true)),
+   tile("Output TPS tok/s","越高越好",ba("CPU → SSD",tps,W.c,W.s,false)));
 }
+$lm("lmPtT").onclick=e=>{const b=e.target.closest("[data-t]");if(!b||!lmData)return;ptT=+b.dataset.t;renderPoints()};
+$lm("lmPtC").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;ptC=+b.dataset.c;renderPoints()};
 const SERIES={cpu:{cold:["CPU Cold","#6b7380"],warm:["CPU Warm","#70d3a2"]},ssd:{cold:["SSD Cold","#5d7fa8"],warm:["SSD Warm","#7aaee8"]}};
 const fmtV=v=>v===0?"0":v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2);
 const fmtT=v=>v>=100?v.toFixed(0):String(+v.toFixed(2));
