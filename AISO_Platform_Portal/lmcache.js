@@ -73,13 +73,13 @@ function renderPlots(){
  $lm("lmPlots").innerHTML=`<div class="lm-legend">${legend}</div><div class="lm-plot-row">${plot("TTFT","ms","越低越好",labels,series("cold","warm"),dl(g=>100*(g.warm/g.cold-1),true))}${plot("Output TPS","tok/s","越高越好",labels,series("ctps","wtps"),dl(g=>g.tpsGain,false))}</div>`;
 }
 
-function lines(title,sub,reps,series,labels){
+function lines(title,sub,reps,series,labels,xl=r=>`Repeat ${r}`){
  const W=520,H=300,L=52,R=40,T=40,B=40,pw=W-L-R,ph=H-T-B;
  const all=series.flatMap(s=>s.vals),lo=Math.min(...all),hi=Math.max(...all),pad=(hi-lo||hi)*.18,min=Math.max(0,lo-pad),max=hi+pad;
  const x=i=>L+pw*(reps.length===1?.5:i/(reps.length-1)),y=v=>T+ph-ph*(v-min)/(max-min||1);
  let g=`<text x="${L}" y="22" class="lm-t">${title}<tspan class="lm-z" dx="8">${sub}</tspan></text>`;
  for(let k=0;k<=3;k++){const v=min+(max-min)*k/3;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="lm-grid"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" class="lm-ax">${fmtV(v)}</text>`}
- reps.forEach((r,i)=>g+=`<text x="${x(i)}" y="${H-14}" text-anchor="middle" class="lm-x">Repeat ${r}</text>`);
+ reps.forEach((r,i)=>g+=`<text x="${x(i)}" y="${H-14}" text-anchor="middle" class="lm-x">${xl(r)}</text>`);
  series.forEach(s=>{
   g+=`<polyline fill="none" stroke="${s.color}" stroke-width="3" ${s.dash?'stroke-dasharray="7 5"':""} points="${s.vals.map((v,i)=>x(i)+","+y(v)).join(" ")}"/>`;
   s.vals.forEach((v,i)=>{g+=`<circle cx="${x(i)}" cy="${y(v)}" r="5" fill="${s.color}"><title>${s.name} · Repeat ${reps[i]}: ${fmtV(v)}</title></circle>`;if(labels)g+=`<text x="${x(i)}" y="${y(v)+(s.warm?18:-10)}" text-anchor="middle" class="lm-v" fill="${s.color}">${fmtV(v)}</text>`});
@@ -115,6 +115,21 @@ function renderBaseline(){
  $lm("lmBaseNote").textContent=`Shared prefix · 併發 ${lmC}。每組左邊 Cold（第一次問）、右邊 Warm（第二次問）；圖下方的百分比是 Cold→Warm 的變化，以及開 LMCache 後相對 Baseline 的變化。SSD 的實體 I/O 歸因仍待確認。SSD 設定：chunk 256 tokens · 磁碟上限 5 GB · LRU · 不使用 CPU 快取層。`;
 }
 $lm("lmConc").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!lmData)return;lmC=+b.dataset.c;renderBaseline()};
+
+function renderReuse(){
+ const rs=lmData.ssd_reuse_series,sm=lmData.summary;if(!rs)return;
+ const stages=rs.stages,names={cold:"Cold",warm1:"Warm 1",warm2:"Warm 2",warm3:"Warm 3"},xl=r=>names[r];
+ const base=(c,f)=>{const g=st=>sm.rows.find(r=>r.backend==="baseline"&&r.context_target===4096&&r.concurrency===c&&r.stage===st);return [f(g("cold")),f(g("warm")),f(g("warm")),f(g("warm"))]};
+ const out=[];
+ [[1,"C1"],[10,"C10"]].forEach(([c,k])=>{const L=rs.levels[k];
+  [["TTFT p50","ms · 越低越好","ttft_p50_ms",r=>r.ttft_p50_ms],["Output TPS","tok/s · 越高越好","output_tps",r=>r.batch_output_tps]].forEach(([t,u,key,f])=>{
+   out.push(lines(`${t} · ${k}`,`${u} · n=${L.n}`,stages,[{name:"Baseline（原始 A/B）",color:"#9aa3b2",dash:true,warm:false,vals:base(c,f)},{name:"SSD",color:"#7aaee8",warm:true,vals:L[key]}],true,xl));
+  });});
+ $lm("lmReuse").innerHTML=out.join("");
+ $lm("lmReuseLegend").innerHTML='<span><i style="background:#7aaee8"></i>SSD</span><span><i style="background:#9aa3b2"></i>Baseline<span class="zh-i">原始 A/B 的 Cold / Warm</span></span>';
+ const hit=k=>rs.levels[k].hit_pct.slice(1).map(v=>v.toFixed(1)+"%").join(" / ");
+ $lm("lmReuseNote").textContent=`補充實驗：只有 SSD、~4096、C1 與 C10，每組 3 次。命中率 Warm 1/2/3：C1 ${hit("C1")}；C10 ${hit("C10")}。與前面的 A/B 結果分開看，不要合併。`;
+}
 function renderLM(){
  const mode=$lm("lmMode").value,scenario=$lm("scenario").value,runs=lmData.runs;
  const note=scenario==="no_reuse"?"No reuse 沒有可重用前綴（命中 0），Cold／Warm 的差異是系統暖機與波動，不是快取效果。":"";
@@ -139,5 +154,5 @@ function renderLM(){
  $lm("lmStatus").textContent=list.map(m=>{const r=runs[m];return `${MODES[m]} ${r.run_id} · ${r.rows.length} 批次 · ${r.evidence_status==="REPORTED_PASS"?"REPORTED PASS":"完成（PASS 檢查結果未見）"}`}).join("　｜　")+"（原始證據待核對）";
 }
 ["lmMode","scenario","lmBatchMetric"].forEach(id=>$lm(id).onchange=()=>{if(lmData)renderLM()});
-fetch("data/lmcache-summary.json").then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{lmData=data;renderLM();renderPoints();renderBaseline();$lm("lmDownload").disabled=false}).catch(()=>{$lm("lmStatus").textContent="資料載入失敗，請重新整理。"});
+fetch("data/lmcache-summary.json").then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{lmData=data;renderLM();renderPoints();renderBaseline();renderReuse();$lm("lmDownload").disabled=false}).catch(()=>{$lm("lmStatus").textContent="資料載入失敗，請重新整理。"});
 $lm("lmDownload").onclick=()=>{if(!lmData)return;const url=URL.createObjectURL(new Blob([JSON.stringify(lmData,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="lmcache-extended-summary.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};

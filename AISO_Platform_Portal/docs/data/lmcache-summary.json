@@ -1522,5 +1522,77 @@
         "note": "observed after the runs; exceeds max_local_disk_size, accounting not verified"
       }
     }
+  },
+  "ssd_reuse_series": {
+    "run_id": "20261028_101020_7b1667",
+    "mode": "ssd",
+    "context_target": 4096,
+    "scenario": "shared_prefix",
+    "trials": 3,
+    "stages": [
+      "cold",
+      "warm1",
+      "warm2",
+      "warm3"
+    ],
+    "requests": 132,
+    "batches": 24,
+    "note": "Supplemental SSD experiment (same prefix reused three times); not merged into the original A/B results.",
+    "levels": {
+      "C1": {
+        "n": 3,
+        "ttft_p50_ms": [
+          80.53,
+          72.58,
+          61.83,
+          67.25
+        ],
+        "e2e_p50_ms": [
+          158.03,
+          136.3,
+          124.77,
+          133.87
+        ],
+        "output_tps": [
+          202.82,
+          233.13,
+          252.0,
+          239.68
+        ],
+        "hit_pct": [
+          0.0,
+          96.3,
+          96.3,
+          96.3
+        ]
+      },
+      "C10": {
+        "n": 30,
+        "ttft_p50_ms": [
+          597.91,
+          414.5,
+          420.33,
+          442.82
+        ],
+        "e2e_p50_ms": [
+          923.72,
+          601.81,
+          608.3,
+          631.88
+        ],
+        "output_tps": [
+          346.44,
+          508.77,
+          510.92,
+          502.26
+        ],
+        "hit_pct": [
+          0.0,
+          80.45,
+          83.67,
+          80.45
+        ]
+      }
+    }
   }
 }
