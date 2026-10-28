@@ -154,3 +154,8 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 .lm-raw summary::-webkit-details-marker{display:none}.lm-raw summary:hover{background:rgba(216,199,121,.16)}.lm-raw summary:before{content:"▸";margin-right:6px}.lm-raw[open] summary:before{content:"▾"}
 .lm-raw .lm-close,.lm-raw[open] .lm-open{display:none}.lm-raw[open] .lm-close{display:inline}.lm-raw[open] summary{margin-bottom:14px}
 .lm-lines .lm-wide{grid-column:1/-1}.lm-lines .lm-plot .lm-d{font-size:14px}
+
+/* Keep Normal / aiDAPTIV / LMCache heroes identical so the tabs and content below line up */
+.bm-hero{align-items:start;min-height:420px}.bm-hero>div:first-child>p:last-child{min-height:5.2em;margin-bottom:0}.bm-hero>:last-child{align-self:start;margin-top:8px}
+.site-header .bm-auth{flex-wrap:nowrap}.site-header .bm-auth span{white-space:nowrap}.site-header .bm-auth input{width:190px;min-width:0}
+.bm-hero+.wizard-steps{margin-top:18px}
