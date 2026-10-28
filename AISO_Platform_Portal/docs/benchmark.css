@@ -166,3 +166,4 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 .lm-defs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 0}.lm-defs>div{padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.03)}.lm-defs dt{margin:0 0 6px;color:var(--gold);font-size:17px;font-weight:700}.lm-defs dd{margin:0;color:#d9d3bd;font-size:14px;line-height:1.65}
 @media(max-width:900px){.lm-defs{grid-template-columns:1fr}}
 .lm-point-m b .gain{color:#7ef0ad}.lm-point-m b .loss{color:#ff9d92}
+.lm-segs{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}
