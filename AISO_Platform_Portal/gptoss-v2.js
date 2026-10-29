@@ -66,7 +66,7 @@ function renderCold(){
 
 function msg(k){
  const d=METRICS[k],la=avg(TW,k,"la","Reuse");
- if(k==="tpot_ms")return `高 Concurrency（C5）比較中，aiDAPTIV 優於 Baseline ${f1(c5(k,"ab"))}%，LMCache ${f1(c5(k,"lb"))}%；LMCache 優於 aiDAPTIV ${f1(c5(k,"la"))}%`;
+ if(k==="tpot_ms")return `高 Concurrency（C5）比較中，LMCache 與 aiDAPTIV 各自優於 Baseline ${f1(c5(k,"lb"))}%, ${f1(c5(k,"ab"))}%；LMCache 優於 aiDAPTIV ${f1(c5(k,"la"))}%`;
  if(k==="output_tps")return `兩者 Input、並發越高優勢越大；高 Concurrency（C5）比較中 LMCache 平均 TPS 較 aiDAPTIV 快 ${f1(c5(k,"la"))}%`;
  return `開啟 aiDAPTIV 或 LMCache 後效果皆遠優於 Baseline，同時 LMCache 平均優於 aiDAPTIV ${f1(la)}%`;
 }
