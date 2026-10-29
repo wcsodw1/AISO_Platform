@@ -41,7 +41,7 @@ function renderSetup(){
  const s=V.scope,row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
  $v("v2Setup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">比較 <b>aiDAPTIV</b>、<b>LMCache</b> 相對 <b>Baseline</b>（無 KV 快取），以及 <b>LMCache 相對 aiDAPTIV</b> 的 TTFT、TPOT、TPS 差異。</p></section>
  <section class="v2-pane"><h2>測試方式及參數<span>Method &amp; Parameters</span></h2>
- <p class="v2-goal">每個情境送<b>同一組 Prompt</b>：<b>KV Cold</b> 1 次（快取空）→ <b>KV Warm</b> 3 次（快取已有）；量 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p>
+ <p class="v2-goal">每個情境送<b>同一組 Prompt</b>：<b>KV Cold</b> 1 次（快取空）→ <b>KV Warm</b> 3 次（快取已有）；測試 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p>
  <dl class="v2-params">${row("Model 模型",vEsc(s.model))}${row("Context 上限",`${tok(s.max_model_len)} tokens`)}${row("Input 輸入",`${s.input_tokens.map(tok).join(" / ")} tokens`)}${row("Output 輸出",`${s.output_tokens} tokens`)}${row("Concurrency 並發",s.concurrency.join(" / "))}</dl></section>`;
 }
 
