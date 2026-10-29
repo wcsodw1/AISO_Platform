@@ -61,7 +61,7 @@ function renderCold(){
  const a=(k,key)=>avg(TC,k,key,"Cold");
  $v("v2ColdSub").textContent=`即便在 KV Cold，LMCache 在 TPOT、TPS 仍優於 aiDAPTIV：TPOT +${f1(a("tpot_ms","la"))}%、TPS +${f1(a("output_tps","la"))}%；TTFT 則慢 ${f1(a("ttft_ms","la"))}%`;
  $v("v2ColdSum").innerHTML=sumTable(TC,"Cold");
- $v("v2ColdTake").innerHTML=`<b>第一次請求需 offload 到 DRAM 與 SSD，TTFT 慢於 Baseline 屬正常現象；即便如此，LMCache 平均在 TPOT、TPS 的表現仍皆優於 Baseline 與 aiDAPTIV。</b>`;
+ $v("v2ColdTake").innerHTML=`<b>第一次請求需 offload 到 DRAM 與 SSD，各項數據慢於 Baseline 屬正常現象；即便如此，LMCache 平均在 TPOT、TPS 的表現仍皆優於 Baseline 與 aiDAPTIV。</b>`;
 }
 
 function msg(k){
