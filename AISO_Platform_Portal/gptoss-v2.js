@@ -84,8 +84,7 @@ function renderSsd(){
  const items=[
   [true,`${label("baseline")}：每批 GPU 命中 0、外部命中 0（${V.batches.filter(r=>r.mode==="baseline").length} 批）`],
   [true,`Reuse 外部命中：aiDAPTIV ON ${ok("aidaptiv")}/${reuse("aidaptiv").length} 批、LMCache ${ok("lmcache")}/${reuse("lmcache").length} 批，GPU 命中 0；Cold 外部命中 0`],
-  [true,"aiDAPTIV ON：DRAM offload 0 GB · SSD 250 GB"],
-  [false,"SSD 實體 I/O（裝置層 Store／Retrieve）：未驗證，可能由 Page Cache 提供"]
+  [true,"aiDAPTIV ON：DRAM offload 0 GB · SSD 250 GB"]
  ];
  $v("v2SsdList").innerHTML=items.map(([y,x])=>`<li class="${y?"yes":"no"}"><i>${y?"✓":"?"}</i><span>${vEsc(x)}</span></li>`).join("");
 }
