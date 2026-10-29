@@ -77,3 +77,10 @@
 .v2-sum{margin:0 0 12px;color:#eafff2;font-size:18px;line-height:1.7;font-weight:600}.v2-find{display:grid;gap:8px;margin:0;padding-left:22px;color:#d9dfe7;font-size:15px;line-height:1.7}.v2-find b{color:#9dffc4}
 .v2-verdict.good{padding:18px 22px}
 .v2-find b{display:inline;font-size:inherit;color:#9dffc4}.v2-find li::marker{color:#9dffc4}
+/* test setup */
+.v2-setup{margin:18px 0 0;padding:18px 22px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}
+.v2-params{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 24px;margin:0}.v2-params dt{color:var(--muted);font-size:13px}.v2-params dd{margin:4px 0 0;color:var(--ivory);font-size:16px;font-weight:600}
+.v2-how{margin:16px 0 0;padding-top:14px;border-top:1px solid rgba(244,239,228,.1);color:#d9dfe7;font-size:15px;line-height:1.8}.v2-how b{color:var(--gold)}
+.v2-check{margin:10px 0 0;font-size:14px}.v2-check.ok{color:#8fe3b4}.v2-check.bad{color:var(--red)}
+.v2-chart h3 .zh-i{margin-left:10px}
+@media(max-width:900px){.v2-params{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.v2-params{grid-template-columns:1fr}.v2-setup{padding:16px}}

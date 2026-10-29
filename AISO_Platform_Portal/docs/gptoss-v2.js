@@ -4,9 +4,9 @@ const vEsc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;
 const MODES=["baseline","aidaptiv","lmcache"],CAND=["aidaptiv","lmcache"];
 const COL={baseline:"#c9ced6",aidaptiv:"#ff8a4c",lmcache:"#4fd1b0"};
 const METRICS={
- ttft_ms:{short:"TTFT",unit:"ms",higher:false,dec:2},
- output_tps:{short:"TPS",unit:"tok/s",higher:true,dec:2},
- tpot_ms:{short:"TPOT",unit:"ms/token",higher:false,dec:2}};
+ ttft_ms:{short:"TTFT",zh:"首字延遲",unit:"ms",higher:false,dec:2},
+ output_tps:{short:"TPS",zh:"每秒輸出 token",unit:"tok/s",higher:true,dec:2},
+ tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false,dec:2}};
 const VIEWS={"reuse-base":{view:"reuse",basis:"baseline"},"reuse-own":{view:"reuse",basis:"own"},"cold-base":{view:"first",basis:"baseline"}};
 const S={view:"reuse",basis:"baseline",rphase:"mean",input:"all",c:"all",metric:"ttft_ms",rMode:"all",rInput:"all",rC:"all",rPhase:"all"};
 let V,SC;
@@ -50,25 +50,26 @@ function withView(view,fn){const keep={view:S.view,basis:S.basis,rphase:S.rphase
 
 function renderTop(){
  const s=V.scope;
- $v("v2Chips").innerHTML=[`Model ${s.model}`,`MAX_MODEL_LEN ${s.max_model_len}`,`Input ${s.input_tokens.join(" / ")}`,`Output ${s.output_tokens}`,`C ${s.concurrency.join(" / ")}`,`Cold + Reuse ×3`,`Run ${V.run_id}`].map(t=>`<li>${vEsc(t)}</li>`).join("");
+ const nGood=V.batches.filter(valid).length,okAll=nGood===V.batches.length;
+ const row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
+ $v("v2Setup").innerHTML=`<dl class="v2-params">${row("Model 模型",s.model)}${row("Context 上限",`${tok(s.max_model_len)} tokens`)}${row("Input 輸入長度",`${s.input_tokens.map(tok).join(" / ")} tokens`)}${row("Output 輸出長度",`${s.output_tokens} tokens`)}${row("Concurrency 同時請求數",s.concurrency.join(" / "))}${row("Scenarios 情境",`${SC.length} 個（Input × Concurrency；15950 × C5 不納入）`)}</dl>
+ <p class="v2-how"><b>測試方式</b>：每個情境對三個模式送同一組 Prompt，先送 1 次（Cold，快取還是空的），再重複送 3 次（Reuse，快取已有內容），比較首字延遲 TTFT、每個字的間隔 TPOT 與每秒輸出 token 數 TPS。</p>
+ <p class="v2-check ${okAll?"ok":"bad"}">${okAll?"✓":"✗"} 資料檢查：${nGood} / ${V.batches.length} 筆符合快取規則（Baseline 沒有任何命中；aiDAPTIV、LMCache 的 Reuse 都有外部命中）</p>`;
  const R=withView({view:"reuse",basis:"baseline",rphase:"mean"},()=>Object.fromEntries(Object.keys(METRICS).map(k=>[k,CAND.map(m=>average(m,k,SC))])));
  const C=withView({view:"first",basis:"baseline"},()=>CAND.map(m=>average(m,"ttft_ms",SC)));
  const hits=m=>V.batches.filter(r=>r.mode===m&&r.phase==="Reuse_1").map(r=>r.external_hit_tokens),lo=Math.min(...hits("aidaptiv"),...hits("lmcache")),hi=Math.max(...hits("aidaptiv"),...hits("lmcache"));
  const wins=a=>a.every(x=>x.wins===x.n)?"全部 8 個情境":`${a.map(x=>x.wins).join("／")} / 8 個情境`;
  const f=x=>x.toFixed(1);
  $v("v2Verdict").innerHTML=`<p class="v2-sum">跟沒有快取的 Baseline 比，aiDAPTIV 與 LMCache 在重複請求（Reuse）時 ${wins(R.ttft_ms)}都更快，TTFT 降低約 ${f(R.ttft_ms[0].avg)}–${f(R.ttft_ms[1].avg)}%。</p><ol class="v2-find"><li><b>TTFT</b>：aiDAPTIV −${f(R.ttft_ms[0].avg)}%、LMCache −${f(R.ttft_ms[1].avg)}%；第一次（Cold）反而慢 ${f(Math.abs(C[0].avg))}% / ${f(Math.abs(C[1].avg))}%，快取要重複請求才有效。</li><li><b>Output TPS</b>：aiDAPTIV +${f(R.output_tps[0].avg)}%、LMCache +${f(R.output_tps[1].avg)}%，Input 越長改善越大；LMCache 是不同 runtime，TPS／TPOT 差距不全來自快取。</li><li><b>命中</b>：每批外部命中 ${tok(lo)}–${tok(hi)} tokens（幾乎等於整個 Prompt），GPU 命中 0；Baseline 命中 0。</li></ol>`;
- const b=V.batches,base=b.filter(r=>r.mode==="baseline"),re=b.filter(r=>r.mode!=="baseline"&&r.phase!=="Cold");
- const checks=[["Batches",b.length,96],["Scenarios",SC.length,8],["Baseline hits = 0",base.filter(valid).length,base.length],["Reuse external hits > 0",re.filter(valid).length,re.length]];
- $v("v2Qa").innerHTML=checks.map(([n,a,x])=>`<li class="${a===x?"ok":"bad"}">${a===x?"✓":"✗"} ${n} <b>${a} / ${x}</b></li>`).join("");
 }
 function renderCards(){
  const list=scenarios(),own=ownView();
  $v("v2Cards").innerHTML=MODES.map(m=>{
   const info=V.modes[m];
   const rows=Object.entries(METRICS).map(([k,d])=>{
-   if(!own&&m==="baseline")return `<li><span>${d.short}<small>${d.unit}</small></span><b class="v2-big flat">Reference</b></li>`;
+   if(!own&&m==="baseline")return `<li><span>${d.short}<small>${d.zh} · ${d.unit}</small></span><b class="v2-big flat">Reference</b></li>`;
    const a=average(m,k,list);
-   return `<li><span>${d.short}<small>${d.higher?"↑ higher is better":"↓ lower is better"}</small></span>${Number.isFinite(a.avg)?pct2(a.avg):`<b class="v2-big flat">—</b>`}<small class="v2-win">${a.wins} / ${a.n} better</small></li>`;
+   return `<li><span>${d.short}<small>${d.zh} · ${d.higher?"越高越好":"越低越好"}</small></span>${Number.isFinite(a.avg)?pct2(a.avg):`<b class="v2-big flat">—</b>`}<small class="v2-win">${a.wins} / ${a.n} better</small></li>`;
   }).join("");
   return `<article class="v2-card" style="--mc:${COL[m]}"><header><h3>${vEsc(info.label)}</h3><span>GPU ${info.gpu} · :${info.port}</span></header><p class="v2-rank">${own?"Reuse vs own Cold":S.view==="first"?"Cold vs Baseline":"Reuse vs Baseline"}<small>${vEsc(info.cache)}</small></p><ul>${rows}</ul></article>`;
  }).join("");
@@ -116,7 +117,7 @@ function renderCharts(){
  const list=scenarios(),own=ownView();
  $v("v2Count").textContent=`${list.length} / ${SC.length}`;
  $v("v2Legend").innerHTML=MODES.map(m=>`<span><i style="background:${COL[m]}"></i>${vEsc(label(m))}<small>GPU ${gpu(m)}</small></span>`).join("");
- $v("v2ChartList").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<small>${own?"% vs own Cold · positive = better":`${d.unit} · ${d.higher?"↑ higher is better":"↓ lower is better"}`}</small></h3>${chart(k,list,own?"gain":"value")}</article>`).join("");
+ $v("v2ChartList").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<span class="zh-i">${d.zh}</span><small>${own?"% vs own Cold · 正數＝改善":`${d.unit} · ${d.higher?"越高越好 ↑":"越低越好 ↓"}`}</small></h3>${chart(k,list,own?"gain":"value")}</article>`).join("");
 }
 function renderTable(){
  const d=METRICS[S.metric],k=S.metric,own=ownView();
