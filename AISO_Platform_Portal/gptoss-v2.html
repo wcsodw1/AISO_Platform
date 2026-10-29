@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=5">
+  <link rel="stylesheet" href="gptoss-v2.css?v=6">
 </head>
 <body>
   <header class="site-header">
@@ -42,7 +42,7 @@
 
     <section class="v2-ssd" aria-label="SSD verification">
       <h2>SSD Verification<span class="zh-i">SSD 快取驗證</span></h2>
-      <p class="v2-ssd-line">Offload configured / 250 GB initialized; store seen at startup; <b>external KV hits counted, SSD actual read/write still unverified</b></p>
+      <p class="v2-ssd-line"><b>Per-request external KV hits verified</b> (aiDAPTIV and LMCache, GPU prefix hits 0); <b>SSD device I/O not measured</b></p>
       <ul id="v2SsdList"></ul>
     </section>
 
@@ -86,5 +86,5 @@
     <section class="report-section">
       <details class="v2-details" id="v2Method"><summary><span>Method &amp; Limitations<span class="zh-i">測試方法／限制</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
-  </main><script src="gptoss-v2.js?v=5"></script>
+  </main><script src="gptoss-v2.js?v=6"></script>
 </body></html>

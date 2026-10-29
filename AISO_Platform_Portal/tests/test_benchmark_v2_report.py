@@ -107,17 +107,24 @@ class FirstVsRepeatedTests(unittest.TestCase):
                 self.assertLess(h[f"{key}_vs_baseline_pct"], 0)  # both phases regress against same-phase Baseline
 
 
-
-class ColdVsReuseEvidenceTests(unittest.TestCase):
-    def test_reported_percentages_follow_the_values(self):
-        data = json.loads((DATA / "AISO_BenchmarkV2_Cold_vs_Reuse_Evidence.json").read_text(encoding="utf-8"))
-        for mode, reported in data["reported_improvement_pct"].items():
-            cold, reuse = data["modes"][mode]["cold"], data["modes"][mode]["reuse_avg"]
-            self.assertAlmostEqual(gain(reuse["ttft_ms"], cold["ttft_ms"], False), reported["ttft"], delta=0.06)
-            self.assertAlmostEqual(gain(reuse["output_tps"], cold["output_tps"], True), reported["tps"], delta=0.06)
-            self.assertEqual(data["modes"][mode]["cache"]["gpu_prefix_cache_hits_tokens"], 0)
-            self.assertGreater(data["modes"][mode]["cache"]["external_prefix_cache_hits_tokens_cumulative"], 0)
-            self.assertEqual(data["modes"][mode]["cache"]["ssd_actual_read_write"], "unverified")
+class SharedPromptProbeTests(unittest.TestCase):
+    def test_hit_deltas_and_averages(self):
+        data = json.loads((DATA / "AISO_BenchmarkV2_SharedPrompt_Reuse_Probe.json").read_text(encoding="utf-8"))
+        modes = data["modes"]
+        for key, mode in modes.items():
+            cold, reuse = mode["requests"][0], mode["requests"][1:]
+            self.assertEqual((cold["gpu_hit_delta"], cold["external_hit_delta"]), (0, 0), key)
+            self.assertEqual(len(reuse), 3)
+            self.assertTrue(all(r["output_tokens"] == 200 for r in mode["requests"]))
+            if key == "baseline":
+                self.assertTrue(all(r["gpu_hit_delta"] > 0 and r["external_hit_delta"] == 0 for r in reuse))
+            else:
+                self.assertTrue(all(r["gpu_hit_delta"] == 0 and r["external_hit_delta"] > 0 for r in reuse), key)
+        mean = lambda mode, k: sum(r[k] for r in modes[mode]["requests"][1:]) / 3
+        self.assertAlmostEqual(mean("baseline", "ttft_ms"), 41.81, delta=0.01)
+        self.assertAlmostEqual(mean("aidaptiv", "ttft_ms"), 67.57, delta=0.01)
+        self.assertAlmostEqual(mean("lmcache", "output_tps"), 226.13, delta=0.01)
+        self.assertEqual(data["aidaptiv_config"]["dram_kv_offload_gb"], 0)
 
 
 if __name__ == "__main__":
