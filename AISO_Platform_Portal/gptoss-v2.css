@@ -84,3 +84,4 @@
 .v2-check{margin:10px 0 0;font-size:14px}.v2-check.ok{color:#8fe3b4}.v2-check.bad{color:var(--red)}
 .v2-chart h3 .zh-i{margin-left:10px}
 @media(max-width:900px){.v2-params{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.v2-params{grid-template-columns:1fr}.v2-setup{padding:16px}}
+.v2-seg3 button{flex:0 0 auto;padding:8px 26px}@media(max-width:900px){.v2-seg3{flex-wrap:wrap}.v2-seg3 button{flex:1 1 220px}}
