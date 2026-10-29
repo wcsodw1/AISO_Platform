@@ -58,3 +58,7 @@
 .v2-ev3{grid-template-columns:repeat(3,minmax(0,1fr))}.v2-evtype{margin:0 0 6px;color:var(--muted);font-size:12px}.v2-evhit{margin:12px 0 0;padding-top:10px;border-top:1px solid rgba(244,239,228,.08);font-size:13px}.v2-evhit small{display:block;color:var(--muted);font-size:11px}.v2-evhit .v2-hit{font-size:22px}
 .v2-take-mid{margin:14px 0}.v2-ref td{color:var(--muted);font-size:12px}
 @media(max-width:900px){.v2-ev3{grid-template-columns:1fr}}
+.v2-tabs{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px}.v2-tabs [hidden]{display:none!important}.v2-seg[hidden]{display:none!important}
+.v2-evid h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}.v2-ssd h2{margin:0 0 10px}.v2-secthead{display:none}
+#secFilter{padding:14px 18px}#secFilter .v2-count{align-self:center;color:var(--muted);font-size:13px}
+#evidBaseSec .v2-evid{margin:0;border:0;background:none;padding:0}#v2Reuse .v2-evid{margin-bottom:20px}

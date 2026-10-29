@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=6">
+  <link rel="stylesheet" href="gptoss-v2.css?v=7">
 </head>
 <body>
   <header class="site-header">
@@ -26,65 +26,55 @@
     <section class="v2-hero">
       <p class="eyebrow">BENCHMARK / V2 · GPT-OSS-20B · 2026-10-29</p>
       <h1 id="v2Title">TPI Benchmark V2｜GPU Inference Comparison</h1>
-      <p class="v2-sub">Baseline · aiDAPTIV · LMCache<span class="zh-i">三模式同條件比較，一律跟 Baseline 比</span></p>
       <ul class="v2-chips" id="v2Chips" aria-label="Test conditions"></ul>
-      <aside class="v2-verdict" role="note"><b>Performance target not met<span class="zh-i">本輪未達預期</span></b><p>Against the same-phase Baseline, aiDAPTIV and LMCache are <em>slower</em> on average in Output TPS, TTFT and TPOT, in both the first run (R1) and the repeated runs (R2/R3). Baseline ranks first; LMCache stays closer to Baseline than aiDAPTIV.<span class="zh">不論第一次（R1）或重複請求（R2/R3），與同階段 Baseline 相比，aiDAPTIV 與 LMCache 的 Output TPS、TTFT、TPOT 平均皆退步；Baseline 整體第一，LMCache 比 aiDAPTIV 更接近 Baseline。</span></p></aside>
+      <aside class="v2-verdict" role="note"><b>Performance target not met<span class="zh-i">未達預期</span></b><p>vs Baseline：aiDAPTIV、LMCache 的 TPS、TTFT、TPOT 平均皆較差。</p></aside>
       <ul class="v2-qa" id="v2Qa" aria-label="Data checks"></ul>
     </section>
 
-    <section class="report-section v2-phase" aria-label="Phase">
-      <header><div><p class="section-label">PHASE</p><h2>First vs Reuse<span class="zh">第一次、重複請求（Reuse）分開看</span></h2></div>
-        <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="repeated">Repeated Run<small>R2 / R3 · 重複請求</small></button><button type="button" data-v="reuse">Reuse<small>跟自己的第一次比</small></button></div></header>
-      <p class="v2-phasecap" id="phaseCap"></p>
+    <section class="v2-tabs" aria-label="View">
+      <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="reuse">Reuse<small>R2/R3 · 重複請求</small></button></div>
+      <div class="v2-seg" id="basisSeg" role="group" aria-label="Compare with"><button type="button" data-v="baseline">vs Baseline</button><button type="button" data-v="own">vs own First Run</button></div>
     </section>
 
     <section class="v2-cards" id="v2Cards" aria-label="Summary"></section>
 
     <section class="v2-ssd" aria-label="SSD verification">
-      <h2>SSD Verification<span class="zh-i">SSD 快取驗證</span></h2>
-      <p class="v2-ssd-line"><b>Per-request external KV hits verified</b> (aiDAPTIV and LMCache, GPU prefix hits 0); <b>SSD device I/O not measured</b></p>
+      <h2>SSD<span class="zh-i">快取驗證</span></h2>
       <ul id="v2SsdList"></ul>
     </section>
 
+    <section class="report-section" id="secFilter">
+      <div class="v2-filters"><label>Input<select id="fInput"></select></label><label>Concurrency<select id="fC"></select></label><span class="v2-count" id="v2Count"></span></div>
+    </section>
+
+    <section class="report-section" id="v2Charts"><div class="v2-legend" id="v2Legend"></div><p class="v2-hint">← 左右滑動 →</p><div id="v2ChartList"></div></section>
+
+    <section class="report-section" id="secTable">
+      <header><h2>Scenarios<span class="zh">情境比較</span></h2>
+        <div class="v2-filters"><div class="v2-seg" id="tMetric" role="group" aria-label="Metric"></div><label>Sort<select id="tSort"><option value="order">Scenario</option><option value="aidaptiv">aiDAPTIV vs Baseline</option><option value="lmcache">LMCache vs Baseline</option></select></label><button type="button" id="tDir" aria-label="Sort direction">↑ ASC</button></div></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tScenario"></table></div>
+    </section>
+
+    <section class="report-section" id="evidBaseSec"><div class="v2-evid" id="evidBase"></div></section>
+
     <section class="report-section" id="v2Reuse" hidden>
-      <header><div><p class="section-label">REPEAT OBSERVATION</p><h2>Repeated vs Its Own First Run<span class="zh">重複請求比自己的第一次快多少（未證實為 SSD 快取命中）</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></header>
       <div class="v2-evid" id="evid"></div>
-      <div class="v2-bvs"><h3>Reuse vs Baseline<span class="zh-i">重複請求（R2/R3）跟 Baseline 的速度比較</span></h3><p class="v2-note" id="bNote"></p><div class="v2-filters"><div class="v2-seg" id="bMetric" role="group" aria-label="Metric"></div></div><div class="v2-bsum" id="bSum"></div><p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tBVs"></table></div></div>
-      <h3 class="v2-sub3">Repeated vs its own first run<span class="zh-i">跟自己的第一次比</span></h3>
-      <p class="v2-note" id="wNote"></p>
-      <div class="v2-example" id="wExample"></div>
       <div class="v2-wcards" id="wCards"></div>
-      <p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="wCharts"></div>
-      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div></div>
-      <p class="v2-hint">← 左右滑動 · Swipe →</p>
+      <p class="v2-hint">← 左右滑動 →</p><div id="wCharts"></div>
+      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></div>
+      <p class="v2-hint">← 左右滑動 →</p>
       <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
     </section>
 
-
-    <section class="report-section" id="secFilter">
-      <header><div><p class="section-label">FILTER</p><h2>Scenarios<span class="zh">情境篩選</span></h2></div>
-        <div class="v2-filters"><label>Input<select id="fInput"></select></label><label>Concurrency<select id="fC"></select></label></div></header>
-      <p class="v2-count" id="v2Count"></p>
-    </section>
-
-    <section class="report-section" id="v2Charts"><header><div><p class="section-label">CHARTS</p><h2>Three-mode Charts<span class="zh">三模式圖表（依上方階段）</span></h2></div></header><div class="v2-legend" id="v2Legend"></div><p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="v2ChartList"></div></section>
-
-    <section class="report-section" id="secTable">
-      <header><div><p class="section-label">SCENARIO TABLE</p><h2>8 Scenario Comparison<span class="zh">8 情境詳細比較</span></h2></div>
-        <div class="v2-filters"><div class="v2-seg" id="tMetric" role="group" aria-label="Metric"></div><label>Sort<select id="tSort"><option value="order">Scenario order · 情境順序</option><option value="aidaptiv">aiDAPTIV vs Baseline</option><option value="lmcache">LMCache vs Baseline</option></select></label><button type="button" id="tDir" aria-label="Sort direction">↑ ASC</button></div></header>
-      <p class="v2-note" id="tNote"></p>
-      <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tScenario"></table></div>
-    </section>
-
     <section class="report-section">
-      <header><div><p class="section-label">RAW RUNS</p><h2>72 Raw Runs<span class="zh">72 筆原始測試明細（R1／R2／R3）</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_Benchmark_Valid72.csv" download>CSV ↓</a></header>
+      <header><div><p class="section-label">RAW RUNS</p><h2>72 Raw Runs<span class="zh">原始明細 R1／R2／R3</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_Benchmark_Valid72.csv" download>CSV ↓</a></header>
       <div class="v2-filters v2-rawf"><label>Model<select id="rModel"></select></label><label>Mode<select id="rMode"></select></label><label>C<select id="rC"></select></label><label>Input<select id="rInput"></select></label><label>Run<select id="rRun"></select></label></div>
       <p class="v2-count" id="rCount"></p>
       <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
     </section>
 
     <section class="report-section">
-      <details class="v2-details" id="v2Method"><summary><span>Method &amp; Limitations<span class="zh-i">測試方法／限制</span></span></summary><div id="v2MethodBody"></div></details>
+      <details class="v2-details" id="v2Method"><summary><span>Notes &amp; Downloads<span class="zh-i">說明與下載</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
-  </main><script src="gptoss-v2.js?v=6"></script>
+  </main><script src="gptoss-v2.js?v=7"></script>
 </body></html>
