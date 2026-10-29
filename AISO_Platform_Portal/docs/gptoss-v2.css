@@ -80,6 +80,7 @@
 /* test setup */
 .v2-setup{margin:18px 0 0;padding:18px 22px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}
 .v2-params{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 24px;margin:0}.v2-params dt{color:var(--muted);font-size:13px}.v2-params dd{margin:4px 0 0;color:var(--ivory);font-size:16px;font-weight:600}
+.v2-pane+.v2-pane{margin-top:18px;padding-top:18px;border-top:1px solid rgba(244,239,228,.1)}.v2-pane h2{margin:0 0 10px;font-size:20px;color:var(--ivory)}.v2-pane h2 span{margin-left:10px;color:var(--muted);font-size:13px;font-weight:500}.v2-goal{margin:0;color:#d9dfe7;font-size:16px;line-height:1.8}.v2-goal b{color:var(--gold)}.v2-steps{margin:0 0 18px;padding-left:22px;color:#d9dfe7;font-size:15px;line-height:1.9}.v2-steps b{color:var(--gold)}
 .v2-how{margin:16px 0 0;padding-top:14px;border-top:1px solid rgba(244,239,228,.1);color:#d9dfe7;font-size:15px;line-height:1.8}.v2-how b{color:var(--gold)}
 .v2-check{margin:10px 0 0;font-size:14px}.v2-check.ok{color:#8fe3b4}.v2-check.bad{color:var(--red)}
 .v2-chart h3 .zh-i{margin-left:10px}
@@ -90,3 +91,16 @@
 .v2-chart h3 small{margin-left:auto}.v2-card em.dir{color:var(--gold);font-style:normal;font-weight:700}
 .v2-chartwrap .bl{font-size:12px;font-weight:800;paint-order:stroke;stroke:#10141c;stroke-width:3px}.v2-chartwrap .bl.up{fill:#5dff9f}.v2-chartwrap .bl.dn{fill:#ff8a80}
 .v2-rate{margin-left:6px;color:var(--muted);font-size:13px}
+.v2-goal+.v2-params{margin-top:16px}#secHits .v2-check{margin:0 0 12px}
+/* deck-order layout: conclusion, per-metric chart + table, KV Cold, hit tokens */
+.v2-sumt{min-width:0;width:100%}.v2-sumt th{vertical-align:bottom}.v2-sumt thead th{font-size:15px;color:var(--ivory)}.v2-sumt tbody th{font-size:18px;color:var(--ivory);letter-spacing:0}.v2-sumt td{padding:16px 12px}.v2-sw{display:inline-block;width:12px;height:12px;margin-right:8px;border-radius:3px}
+.v2-take{margin:16px 0 0;padding:14px 22px;font-size:15px;line-height:1.85}.v2-take b{color:#eafff2}.v2-take .ga{color:#ff8a4c}.v2-take .gl{color:#4fd1b0}
+.v2-metric .v2-chart{margin-top:12px}
+.v2-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0;color:#c5ccd6;font-size:15px;line-height:1.6}.v2-line .v2-dir{margin-left:0}
+.v2-legend2{display:flex;flex-wrap:wrap;gap:4px 16px;margin-left:auto;font-size:13px}.v2-legend2 span{display:flex;align-items:center;gap:6px;color:var(--ivory)}.v2-legend2 i{width:12px;height:12px;border-radius:3px}
+.v2-sub3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:22px 0 10px}.v2-sub3 .zh-i{margin-left:0;color:var(--muted);font-size:14px;font-weight:500}
+.v2-table td.la,.v2-table th.la{background:rgba(93,255,159,.05)}.v2-table tfoot td small{display:block;margin-top:2px;color:var(--muted);font-size:12px}.v2-table tfoot td{color:var(--ivory);font-weight:700}
+#secCold>.v2-fine,#secHits>.v2-fine{margin:0 0 12px;font-size:15px;color:#c5ccd6}
+@media(max-width:620px){.v2-sumt td{padding:12px 6px}.v2-sumt thead th{font-size:13px}.v2-sumt tbody th{font-size:15px}.v2-take{font-size:15px;padding:14px 16px}.v2-legend2{margin-left:0}}
+.v2-fn{margin:10px 2px 0;color:var(--muted);font-size:13px;text-align:right}
+.v2-approx{display:block;margin-top:2px;color:var(--muted);font-size:13px;font-weight:400}
