@@ -10,7 +10,7 @@ const METRICS={
 const S={phase:"first",input:"all",c:"all",metric:"output_tps",sort:"order",dir:1,rMode:"all",rC:"all",rInput:"all",rRun:"all",wMetric:"ttft",bMetric:"ttft"};
 const PHASE={first:"first_observed_r1",repeated:"repeated_observed_r2_r3"};
 const PHASE_NAME={first:"First Run (R1)",repeated:"Repeated Run (R2/R3)",reuse:"Reuse (R2/R3 vs own R1)"};
-let D,F,LABEL={},GPU={};
+let D,F,E,LABEL={},GPU={};
 
 const num=(v,d)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
 function pct(v){
@@ -74,8 +74,17 @@ function renderPhase(){
 }
 function seg2(el,cur){el.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===cur))}
 function renderSsd(){
- const e=F.aiDAPTIV_evidence;
- const items=[[true,"Offload configured · 已設定 SSD offload"],[true,"250 GB SSD space initialized at previous startup · 先前啟動時初始化 250 GB"],[true,"Store seen at startup (6 / 6 tokens) · 啟動時看到 Store"],[false,`Benchmark SSD retrieve verified: ${e.verified_benchmark_retrieve?"yes":"NO / unknown"} · 本次測試期間的 SSD 讀取未證實`],[false,`Benchmark external cache hit verified: ${e.verified_benchmark_external_cache_hit?"yes":"NO / unknown"} · 外部快取命中未證實（先前啟動的外部 prefix 命中率 ${e.prior_startup_external_prefix_cache_hit_rate_pct}%）`],[false,"Random second-run reuse setting prints reuse_percent=80 as an argument default while random_run_phase=1 · 80% 只是參數預設值，不是已執行的重用階段"]];
+ const m=E.modes,hit=k=>m[k].cache.external_prefix_cache_hits_tokens_cumulative.toLocaleString("en-US");
+ const items=[
+  [true,"Offload configured · 已設定 SSD offload"],
+  [true,"250 GB SSD space initialized (aiDAPTIV) · 初始化 250 GB；LMCache 設定 Disk 5 GB"],
+  [true,"Store seen at startup (6 / 6 tokens) · 啟動時看到 Store"],
+  [true,`External prefix cache hits counted · 外部 KV 快取命中（累積）：aiDAPTIV ${hit("aidaptiv")} tokens；LMCache ${hit("lmcache")} tokens`],
+  [true,`GPU prefix cache hits = ${m.aidaptiv.cache.gpu_prefix_cache_hits_tokens} (both) with native GPU prefix caching disabled in the Cold/Reuse run · 該次 Cold/Reuse 測試原生 GPU Prefix Cache 關閉，GPU 命中為 0`],
+  [false,"Hits served from SSD: unverified — counters are cumulative, not per-request deltas · 命中是否來自 SSD 待驗證（目前是累積值，不是這幾個請求新增的）"],
+  [false,"SSD actual read/write: unverified · SSD 實際讀寫待驗證"],
+  [false,"The 72-run benchmark: no per-run hit telemetry; reuse_percent=80 is only the argument default (random_run_phase=1) · 72 筆正式 Benchmark 沒有逐批命中資料"]
+ ];
  $v("v2SsdList").innerHTML=items.map(([ok,t])=>`<li class="${ok?"yes":"no"}"><i>${ok?"✓":"?"}</i><span>${vEsc(t)}</span></li>`).join("");
 }
 function niceTop(max){const raw=max/4,mag=10**Math.floor(Math.log10(raw)),step=[1,2,2.5,5,10].find(s=>s*mag>=raw)*mag;return {step,top:step*4}}
@@ -136,6 +145,27 @@ function gainChart(key,list){
  });
  return `<div class="v2-chartwrap"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.max(W,360)}px" role="img" aria-label="${w.en} gain of repeated vs own first run">${g}</svg></div>`;
 }
+function renderEvidence(){
+ const s=E.scope,keys=Object.keys(E.modes),f=(v,d)=>num(v,d);
+ const drop=(c,r)=>(1-r/c)*100,up=(c,r)=>(r/c-1)*100;
+ $v("evid").innerHTML=`<h3>Cold vs Reuse<span class="zh-i">同一組請求：第一次（Cold）vs 重複（Reuse）</span></h3>
+ <p class="v2-note">Input ${s.input_tokens} · C${s.concurrency} · Output ${s.output_tokens} · ${s.requests.cold} Cold + ${s.requests.reuse} Reuse 請求（Reuse 取三次算術平均）· 原生 GPU Prefix Caching：${vEsc(s.native_gpu_prefix_caching)}。${vEsc(s.note)}</p>
+ <div class="v2-evcards">${keys.map(k=>{const m=E.modes[k],c=m.cold,r=m.reuse_avg;return `<article class="v2-evcard" style="--mc:${COL[k]}"><h4>${vEsc(m.label)}<small>GPU ${m.gpu}</small></h4><p class="v2-evbig"><b class="v2-big gain">${drop(c.ttft_ms,r.ttft_ms).toFixed(1)}%</b><span>Reuse TTFT lower<small>${f(c.ttft_ms,2)} → ~${f(r.ttft_ms,2)} ms</small></span></p><p class="v2-evbig"><b class="v2-big gain">+${up(c.output_tps,r.output_tps).toFixed(1)}%</b><span>Output TPS higher<small>${f(c.output_tps,2)} → ${f(r.output_tps,2)} tok/s</small></span></p></article>`}).join("")}</div>
+ <div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Metric</th>${keys.map(k=>`<th>${vEsc(E.modes[k].label)} Cold</th><th>${vEsc(E.modes[k].label)} Reuse avg</th>`).join("")}</tr></thead><tbody>
+ <tr><td>TTFT (ms) ↓</td>${keys.map(k=>`<td>${f(E.modes[k].cold.ttft_ms,2)}</td><td><b>${f(E.modes[k].reuse_avg.ttft_ms,2)}</b></td>`).join("")}</tr>
+ <tr><td>TPOT (ms) ↓</td>${keys.map(k=>`<td>${f(E.modes[k].cold.tpot_ms,2)}</td><td>${f(E.modes[k].reuse_avg.tpot_ms,2)}</td>`).join("")}</tr>
+ <tr><td>Output TPS ↑</td>${keys.map(k=>`<td>${f(E.modes[k].cold.output_tps,2)}</td><td><b>${f(E.modes[k].reuse_avg.output_tps,2)}</b></td>`).join("")}</tr>
+ <tr><td>Output tokens</td>${keys.map(k=>`<td>${E.modes[k].cold.output_tokens}</td><td>${E.modes[k].reuse_avg.output_tokens_per_request} × ${E.modes[k].reuse_avg.requests}</td>`).join("")}</tr></tbody></table></div>
+ <h3 class="v2-sub3">Cache hit tokens<span class="zh-i">快取命中 Token 數</span></h3>
+ <div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Metric</th>${keys.map(k=>`<th>${vEsc(E.modes[k].label)}</th>`).join("")}</tr></thead><tbody>
+ <tr><td>GPU prefix cache hits</td>${keys.map(k=>`<td>${E.modes[k].cache.gpu_prefix_cache_hits_tokens}</td>`).join("")}</tr>
+ <tr><td><b>External prefix cache hits</b> (cumulative)</td>${keys.map(k=>`<td><b class="v2-hit">${E.modes[k].cache.external_prefix_cache_hits_tokens_cumulative.toLocaleString("en-US")}</b> tokens</td>`).join("")}</tr>
+ <tr><td>Native GPU prefix caching</td>${keys.map(()=>`<td>${vEsc(s.native_gpu_prefix_caching)}</td>`).join("")}</tr>
+ <tr><td>KV connector</td>${keys.map(k=>`<td>${vEsc(E.modes[k].cache.kv_connector)}</td>`).join("")}</tr>
+ <tr><td>SSD backend</td>${keys.map(k=>`<td>${vEsc(E.modes[k].cache.ssd_backend)}</td>`).join("")}</tr>
+ <tr><td>SSD actual read/write</td>${keys.map(k=>`<td class="v2-pending">${E.modes[k].cache.ssd_actual_read_write==="unverified"?"待驗證 · unverified":vEsc(E.modes[k].cache.ssd_actual_read_write)}</td>`).join("")}</tr></tbody></table></div>
+ <ul class="v2-caveats">${E.caveats.map(c=>`<li>${vEsc(c)}</li>`).join("")}</ul>`;
+}
 function renderBVs(){
  const m=WSRC[S.bMetric],key={tps:"tps",ttft:"ttft_ms",tpot:"tpot_ms"}[S.bMetric];
  const at=(phase,mode,i,c)=>F.phase_comparison.find(r=>r.phase===PHASE[phase]&&r.mode===mode&&r.input_tokens===i&&r.concurrency===c)[key];
@@ -170,7 +200,7 @@ function renderMethod(){
  <h4>Metric definitions<span class="zh-i">指標定義</span></h4><ul>${["output_tps","ttft_median_ms","tpot_median_ms","normalized_tps_per_c_reported","improvement_percent","headline_aggregation","rounding_caveat"].map(k=>`<li><code>${k}</code> ${vEsc(d[k])}</li>`).join("")}</ul>
  <h4>Limitations<span class="zh-i">限制</span></h4><ul>${D.limitations.map(x=>`<li>${vEsc(x)}</li>`).join("")}<li>三個模式使用不同實體 GPU（Baseline GPU 7、aiDAPTIV GPU 6、LMCache GPU 4）與不同 vLLM／容器版本。</li><li>Baseline 的 vLLM 原生 Prefix Cache 沒有完全控制；Random Prompt 與固定 seed 可能受益。</li><li>三組測試同時在同一台 Server 執行，可能共用 CPU／RAM／NVMe。</li><li>數值取自終端機顯示的 2 位小數，不代表伺服器原始高精度值。</li><li>R1 不保證是真正的冷快取；沒有逐請求的 SSD 讀取／命中遙測；比較時 R1 對 R1、R2/R3 對 R2/R3，另外才看各模式自己的 R2/R3 對 R1。</li><li>下一輪若要宣稱 SSD 快取重用：先查測試期間的廠商 log 與 metrics（store／retrieve／hit／miss），確認有效設定（含 <code>--disable-gpu-reuse</code>）與 GPU 對應，並控制 GPU prefix cache 或 eviction，記錄相同 prompt 前後的外部命中數。</li></ul>
  <h4>QA exclusions<span class="zh-i">排除紀錄（不納入任何圖表、表格或排名）</span></h4><p class="v2-note">Input 15950 / C5 整組排除：Baseline、LMCache 各 3 筆異常，aiDAPTIV 3 筆雖有效，為確保對照一致一併排除。</p><div class="table-wrap"><table class="v2-table"><thead><tr><th>Mode</th><th>GPU</th><th>Input</th><th>C</th><th>Run</th><th>Status</th><th>Reason</th></tr></thead><tbody>${D.excluded.map(r=>`<tr><td>${vEsc(modeName(r.mode))}</td><td>${r.gpu}</td><td>${r.input_tokens}</td><td>C${r.concurrency}</td><td>R${r.repetition}</td><td>${vEsc(r.status)}</td><td>${vEsc(r.reason)}</td></tr>`).join("")}</tbody></table></div>
- <h4>Downloads<span class="zh-i">原始資料</span></h4><ul class="v2-links">${[["AISO_BenchmarkV2_First_vs_Repeated.json","First vs Repeated JSON"],["AISO_FvR_phase_comparison_48.csv","Phase comparison (48)"],["AISO_FvR_first_run_R1_24.csv","First run R1 (24)"],["AISO_FvR_repeated_run_R2_R3_24.csv","Repeated R2/R3 (24)"],["AISO_FvR_repeated_vs_own_first_24.csv","Repeated vs own first (24)"],["AISO_FvR_phase_headlines.csv","Phase headlines"],["AISO_Benchmark_Valid72.csv","72 raw runs"],["AISO_BenchmarkV2_20000.json","Earlier blended JSON"],["AISO_Scenario_Comparison_8.csv","Earlier blended 8 scenarios"],["AISO_Excluded9.csv","9 exclusions"]].map(([f,t])=>`<li><a href="data/benchmark-v2/${f}" download>${t}</a></li>`).join("")}</ul>`;
+ <h4>Downloads<span class="zh-i">原始資料</span></h4><ul class="v2-links">${[["AISO_BenchmarkV2_Cold_vs_Reuse_Evidence.json","Cold vs Reuse + cache hits JSON"],["AISO_BenchmarkV2_First_vs_Repeated.json","First vs Repeated JSON"],["AISO_FvR_phase_comparison_48.csv","Phase comparison (48)"],["AISO_FvR_first_run_R1_24.csv","First run R1 (24)"],["AISO_FvR_repeated_run_R2_R3_24.csv","Repeated R2/R3 (24)"],["AISO_FvR_repeated_vs_own_first_24.csv","Repeated vs own first (24)"],["AISO_FvR_phase_headlines.csv","Phase headlines"],["AISO_Benchmark_Valid72.csv","72 raw runs"],["AISO_BenchmarkV2_20000.json","Earlier blended JSON"],["AISO_Scenario_Comparison_8.csv","Earlier blended 8 scenarios"],["AISO_Excluded9.csv","9 exclusions"]].map(([f,t])=>`<li><a href="data/benchmark-v2/${f}" download>${t}</a></li>`).join("")}</ul>`;
 }
 function renderFilters(){
  const inputs=[...new Set(D.batchDetail72.map(r=>r.input_tokens))].sort((a,b)=>a-b),cs=[...new Set(D.batchDetail72.map(r=>r.concurrency))].sort((a,b)=>a-b);
@@ -196,12 +226,12 @@ function bind(){
  $v("phaseSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.phase=b.dataset.v;renderPhase()}});
 }
 const getJson=u=>fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(u);return r.json()});
-Promise.all([getJson("data/benchmark-v2/AISO_BenchmarkV2_20000.json"),getJson("data/benchmark-v2/AISO_BenchmarkV2_First_vs_Repeated.json")]).then(([d,f])=>{
- D=d;F=f;
+Promise.all([getJson("data/benchmark-v2/AISO_BenchmarkV2_20000.json"),getJson("data/benchmark-v2/AISO_BenchmarkV2_First_vs_Repeated.json"),getJson("data/benchmark-v2/AISO_BenchmarkV2_Cold_vs_Reuse_Evidence.json")]).then(([d,f,e])=>{
+ D=d;F=f;E=e;
  // Input 15950 / C5 must never reach a chart, table or ranking, even if a future data file contains it.
  const keep=r=>!excluded(+r.input_tokens,+r.concurrency);
  ["batchDetail72","scenarioComparison","scenarioMetricsLong","repetitionComparison"].forEach(k=>{D[k]=D[k].filter(keep)});
  ["phase_comparison","within_mode","raw_runs"].forEach(k=>{F[k]=F[k].filter(keep)});
  D.modes.forEach(m=>{LABEL[m.key]=m.label;GPU[m.key]=m.gpu});
- renderTop();renderFilters();renderMethod();renderSsd();renderBVs();renderReuse();renderPhase();renderRaw();bind();
+ renderTop();renderFilters();renderMethod();renderSsd();renderEvidence();renderBVs();renderReuse();renderPhase();renderRaw();bind();
 }).catch(()=>{$v("v2Count").textContent="載入失敗：data/benchmark-v2/*.json"});
