@@ -1,0 +1,77 @@
+{
+  "schema_version": "2.0",
+  "title": "Shared-prompt Cold vs Reuse with per-request cache-hit deltas",
+  "provenance": "User-supplied terminal output of a 2026-10-29 probe (same 3950-token prompt sent to all three modes, vLLM /metrics read before and after each request). Transcribed from the terminal text, 2 decimal places.",
+  "scope": {
+    "input_tokens": 3950,
+    "output_tokens": 200,
+    "concurrency": 1,
+    "temperature": 0,
+    "requests_per_mode": {"cold": 1, "reuse": 3},
+    "same_prompt_for_all_modes": true,
+    "note": "One prompt, one pass per mode (1 Cold + 3 Reuse requests), C1 only. Not the 8-scenario benchmark."
+  },
+  "modes": {
+    "baseline": {
+      "label": "Baseline",
+      "gpu": 7,
+      "cache_type": "GPU prefix cache (vLLM native, enabled)",
+      "requests": [
+        {"phase": "Cold", "ttft_ms": 159.81, "tpot_ms": 4.11, "output_tps": 204.45, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 0},
+        {"phase": "Reuse_1", "ttft_ms": 45.81, "tpot_ms": 4.14, "output_tps": 230.13, "output_tokens": 200, "gpu_hit_delta": 3936, "external_hit_delta": 0},
+        {"phase": "Reuse_2", "ttft_ms": 42.59, "tpot_ms": 4.14, "output_tps": 231.01, "output_tokens": 200, "gpu_hit_delta": 3936, "external_hit_delta": 0},
+        {"phase": "Reuse_3", "ttft_ms": 37.04, "tpot_ms": 4.14, "output_tps": 232.07, "output_tokens": 200, "gpu_hit_delta": 3936, "external_hit_delta": 0}
+      ]
+    },
+    "aidaptiv": {
+      "label": "aiDAPTIV",
+      "gpu": 6,
+      "cache_type": "External KV cache (aiDAPTIV, SSD-backed by configuration)",
+      "requests": [
+        {"phase": "Cold", "ttft_ms": 185.16, "tpot_ms": 5.12, "output_tps": 166.0, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 0},
+        {"phase": "Reuse_1", "ttft_ms": 60.36, "tpot_ms": 5.05, "output_tps": 187.89, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 3936},
+        {"phase": "Reuse_2", "ttft_ms": 71.33, "tpot_ms": 5.06, "output_tps": 185.5, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 3936},
+        {"phase": "Reuse_3", "ttft_ms": 71.03, "tpot_ms": 5.08, "output_tps": 184.74, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 3936}
+      ]
+    },
+    "lmcache": {
+      "label": "LMCache",
+      "gpu": 4,
+      "cache_type": "External KV cache (LMCacheConnectorV1, disk cache configured)",
+      "requests": [
+        {"phase": "Cold", "ttft_ms": 179.3, "tpot_ms": 4.16, "output_tps": 198.45, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 0},
+        {"phase": "Reuse_1", "ttft_ms": 68.72, "tpot_ms": 4.13, "output_tps": 224.68, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 3840},
+        {"phase": "Reuse_2", "ttft_ms": 60.66, "tpot_ms": 4.14, "output_tps": 226.07, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 3840},
+        {"phase": "Reuse_3", "ttft_ms": 58.18, "tpot_ms": 4.12, "output_tps": 227.64, "output_tokens": 200, "gpu_hit_delta": 0, "external_hit_delta": 3840}
+      ]
+    }
+  },
+  "aidaptiv_config": {
+    "dram_kv_offload_gb": 0,
+    "ssd_kv_offload_gb": 250,
+    "disable_gpu_reuse": true,
+    "no_resume_kv_cache": true,
+    "nvme_filesystem": "XFS on a 5.6 TB NVMe volume",
+    "note": "DRAM KV offload is 0 GB, so the external KV cache can only be backed by the SSD tier. Device-level SSD I/O was not measured."
+  },
+  "vendor_log_corroboration": {
+    "source": "aiDAPTIV engine log, 3950-token requests",
+    "requests": [
+      {"phase": "Cold", "total_tokens": 3950, "gpu_cache_hit": 0, "aidaptiv_cache_hit": 0},
+      {"phase": "Reuse_1", "total_tokens": 3950, "gpu_cache_hit": 0, "aidaptiv_cache_hit": 3936},
+      {"phase": "Reuse_2", "total_tokens": 3950, "gpu_cache_hit": 0, "aidaptiv_cache_hit": 3936},
+      {"phase": "Reuse_3", "total_tokens": 3950, "gpu_cache_hit": 0, "aidaptiv_cache_hit": 3936}
+    ]
+  },
+  "repeat_probe": {
+    "note": "An earlier probe with a different prompt gave the same per-request external hits.",
+    "aidaptiv": {"external_hit_delta_per_reuse_request": 3936, "gpu_hit_delta": 0},
+    "lmcache": {"external_hit_delta_per_reuse_request": 3840, "gpu_hit_delta": 0}
+  },
+  "caveats": [
+    "Per-request counter deltas show the external KV cache served 3,936 (aiDAPTIV) and 3,840 (LMCache) of the 3,950 prompt tokens on every Reuse request, with 0 GPU prefix hits.",
+    "Baseline reused 3,936 tokens from the GPU prefix cache, which is faster than either external cache, so Baseline stays fastest on repeated prompts.",
+    "SSD-backing is inferred from configuration (aiDAPTIV DRAM offload 0 GB); device-level SSD reads were not measured, so SSD I/O remains unverified.",
+    "Single prompt and a single pass per mode (3 Reuse requests): treat percentages as indicative."
+  ]
+}
