@@ -1,0 +1,34 @@
+/* TPI Benchmark V2 | GPT-OSS-20B three-mode report. Additive: nothing here styles existing pages. */
+.v2 .report-section{margin-top:18px}
+.v2-hero{padding:34px 4px 8px}.v2-hero h1{margin:0;font-size:clamp(30px,5vw,60px);line-height:1.08;letter-spacing:-.04em}.v2-sub{margin:14px 0 0;color:var(--ivory);font-size:18px}.v2-sub .zh-i{margin-left:12px}
+.v2-chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}.v2-chips li{padding:6px 12px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:12px}
+.v2-verdict{margin:22px 0 0;padding:18px 22px;border:1px solid rgba(237,120,111,.5);border-left:4px solid var(--red);border-radius:14px;background:rgba(237,120,111,.07)}.v2-verdict b{display:block;color:#ffb0a8;font-size:20px}.v2-verdict p{margin:8px 0 0;color:#d9dce1;font-size:15px;line-height:1.7}.v2-verdict em{color:#ffb0a8;font-style:normal;font-weight:700}.v2-verdict .zh{display:block;margin-top:6px;color:var(--muted);font-size:13px}
+.v2-qa{display:flex;flex-wrap:wrap;gap:8px 18px;margin:16px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}.v2-qa .ok{color:#8fe3b4}.v2-qa .bad{color:var(--red)}.v2-qa b{margin-left:4px;color:var(--ivory)}
+.v2-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}.v2-card{min-width:0;padding:20px;border:1px solid var(--line);border-top:3px solid var(--mc);border-radius:18px;background:linear-gradient(145deg,rgba(19,24,34,.97),rgba(10,13,19,.98))}.v2-card header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}.v2-card h3{margin:0;font-size:26px;color:var(--mc)}.v2-card header span{color:var(--muted);font-size:12px}
+.v2-rank{margin:10px 0 14px;font-size:14px;color:var(--ivory)}.v2-rank small{margin-left:8px;color:var(--muted);font-size:11px}
+.v2-card ul{display:grid;gap:12px;margin:0;padding:0;list-style:none}.v2-card li{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:2px 10px;padding-top:10px;border-top:1px solid rgba(244,239,228,.08)}.v2-card li>span{font-size:15px;font-weight:700}.v2-card li>span small{display:block;color:var(--muted);font-size:11px;font-weight:400}.v2-win{grid-column:2;text-align:right;color:var(--muted);font-size:11px}
+.v2-big{font-size:26px;letter-spacing:-.02em;text-align:right;font-variant-numeric:tabular-nums}.v2-big.gain,.v2-d.gain{color:#5dff9f}.v2-big.loss,.v2-d.loss{color:var(--red)}.v2-big.flat,.v2-d.flat{color:var(--muted)}.v2-card .v2-big.flat{font-size:17px}
+.v2-d{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}.v2-na{color:var(--muted)}
+.v2-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end}.v2-filters label{display:grid;gap:6px;color:var(--muted);font-size:11px;letter-spacing:.06em}.v2-filters select,.v2-filters button{min-height:42px}.v2-count{margin:0;color:var(--muted);font-size:13px}.v2-note{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.7}
+.v2-seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}.v2-seg button{min-width:72px;border:0;border-radius:0;background:rgba(255,255,255,.03);color:var(--muted);font-weight:700}.v2-seg button+button{border-left:1px solid var(--line)}.v2-seg button[aria-pressed=true]{background:var(--gold);color:#0b0d12}
+.v2-legend{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 18px;font-size:15px}.v2-legend span{display:flex;align-items:center;gap:8px}.v2-legend i{width:26px;height:10px;border-radius:3px}.v2-legend small{color:var(--muted)}
+.v2-chart{margin-top:22px;padding:18px;border:1px solid rgba(244,239,228,.1);border-radius:16px;background:rgba(255,255,255,.02)}.v2-chart h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:0 0 10px;font-size:22px}.v2-chart h3 small{margin-left:auto;color:var(--muted);font-size:12px;font-weight:400}
+.v2-chartwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}.v2-chartwrap svg{display:block;width:100%;height:auto}.v2-chartwrap text{fill:var(--muted);font-size:12px}.v2-chartwrap .xl{fill:var(--ivory);font-size:13px;font-weight:700}.v2-chartwrap .gl{stroke:rgba(244,239,228,.1)}
+.v2-empty{padding:28px 0;color:var(--muted);text-align:center}
+.v2-table{min-width:560px}.v2-table th,.v2-table td{white-space:nowrap;font-variant-numeric:tabular-nums}.v2-table th small{display:block;margin-top:2px;color:var(--muted);font-size:10px;font-weight:400;letter-spacing:0;text-transform:none}.v2-table th.b{color:var(--ivory)}.v2-table th.a{color:#ff8a4c}.v2-table th.l{color:#4fd1b0}.v2-table tfoot td{border-top:1px solid var(--line);color:var(--muted);font-size:12px}.v2-dot{display:inline-block;width:9px;height:9px;margin-right:8px;border-radius:50%}
+.v2-rawwrap{max-height:560px}.v2-rawwrap thead th{position:sticky;top:0;background:#10141c;z-index:1}.v2-rawf{margin-bottom:12px}
+.v2-dl,.v2-links a{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid var(--line);border-radius:10px;color:var(--gold);font-size:13px;text-decoration:none}.v2-links{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.v2-details>summary{cursor:pointer;font-size:20px;font-weight:700}.v2-details>summary .zh-i{margin-left:12px}.v2-details[open]>summary{margin-bottom:14px}.v2-details h4{margin:22px 0 8px;color:var(--gold);font-size:14px;letter-spacing:.08em}.v2-details ul:not(.v2-links){margin:0;padding-left:20px;color:#d0d4db;font-size:14px;line-height:1.75}.v2-details code{color:var(--gold);font-size:12px}
+@media(max-width:900px){.v2-cards{grid-template-columns:1fr}}
+@media(max-width:620px){.v2 .report-section{padding:18px 16px}.v2-hero{padding-top:20px}.v2-sub{font-size:15px}.v2-sub .zh-i{display:block;margin:4px 0 0}.v2-filters{width:100%}.v2-filters label{flex:1;min-width:120px}.v2-filters select{width:100%}.v2-chart{padding:12px}.v2-chart h3{font-size:19px}.v2-chart h3 small{margin-left:0;width:100%}.v2-big{font-size:23px}.v2-details>summary{font-size:17px}.v2-table th,.v2-table td{padding:10px}.v2-rawwrap{max-height:460px}}
+
+.v2-hint{display:none;margin:0 0 8px;color:var(--muted);font-size:12px}.v2-dl{white-space:nowrap}
+@media(max-width:620px){
+ .v2-hint{display:block}
+ .v2 .report-section>header{flex-direction:column;align-items:stretch}
+ .v2-filters .v2-seg{width:100%}.v2-seg button{flex:1;min-width:0}
+ .v2-filters #tDir{min-width:92px}
+ .v2-verdict b .zh-i{display:block;margin:4px 0 0}
+ .v2-sc{min-width:0}.v2-sc th,.v2-sc td{padding:9px 6px;font-size:12px}.v2-sc th small{display:none}
+ .v2-dl{align-self:flex-start}
+}

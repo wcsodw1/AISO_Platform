@@ -1,0 +1,10 @@
+﻿mode,gpu,input_tokens,concurrency,repetition,status,reason,exclude_from_all_charts
+baseline,7,15950,5,1,INVALID,Overlong generated output detected in matched condition,True
+baseline,7,15950,5,2,INVALID,Overlong generated output detected in matched condition,True
+baseline,7,15950,5,3,INVALID,Overlong generated output detected in matched condition,True
+aidaptiv,6,15950,5,1,EXCLUDED_FOR_MATCHED_COMPARISON,Excluded because Baseline and LMCache same matched condition invalid; no three-way pairing,True
+aidaptiv,6,15950,5,2,EXCLUDED_FOR_MATCHED_COMPARISON,Excluded because Baseline and LMCache same matched condition invalid; no three-way pairing,True
+aidaptiv,6,15950,5,3,EXCLUDED_FOR_MATCHED_COMPARISON,Excluded because Baseline and LMCache same matched condition invalid; no three-way pairing,True
+lmcache,4,15950,5,1,INVALID,Overlong generated output detected in matched condition,True
+lmcache,4,15950,5,2,INVALID,Overlong generated output detected in matched condition,True
+lmcache,4,15950,5,3,INVALID,Overlong generated output detected in matched condition,True
