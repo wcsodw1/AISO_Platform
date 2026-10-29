@@ -55,7 +55,7 @@ function sumTable(T,ph){
 function renderConclusion(){
  $v("v2Sum").innerHTML=sumTable(TW,"Reuse");
  const a=(k,key)=>f1(avg(TW,k,key,"Reuse"));
- $v("v2Take").innerHTML=`<b>相較 Baseline（無 aiDAPTIV），aiDAPTIV 與 LMCache 都大幅降低 TTFT（首字延遲）：+${a("ttft_ms","ab")}% / +${a("ttft_ms","lb")}%。<br>LMCache 在 TPOT、TPS 上更遠勝 aiDAPTIV：TPOT +${a("tpot_ms","lb")}% vs +${a("tpot_ms","ab")}%，TPS +${a("output_tps","lb")}% vs +${a("output_tps","ab")}%。</b>`;
+ $v("v2Take").innerHTML=`<b>相較 Baseline（無 aiDAPTIV），aiDAPTIV 與 LMCache 都大幅降低 TTFT（首字延遲）：<span class="g">+${a("ttft_ms","ab")}%</span> / <span class="g">+${a("ttft_ms","lb")}%</span>。<br>LMCache 在 TPOT、TPS 上更遠勝 aiDAPTIV：TPOT <span class="g">+${a("tpot_ms","lb")}%</span> vs <span class="g">+${a("tpot_ms","ab")}%</span>，TPS <span class="g">+${a("output_tps","lb")}%</span> vs <span class="g">+${a("output_tps","ab")}%</span>。</b>`;
 }
 function renderCold(){
  const a=(k,key)=>avg(TC,k,key,"Cold");
