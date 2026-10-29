@@ -62,3 +62,9 @@
 .v2-evid h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}.v2-ssd h2{margin:0 0 10px}.v2-secthead{display:none}
 #secFilter{padding:14px 18px}#secFilter .v2-count{align-self:center;color:var(--muted);font-size:13px}
 #evidBaseSec .v2-evid{margin:0;border:0;background:none;padding:0}#v2Reuse .v2-evid{margin-bottom:20px}
+/* verified reuse view */
+.v2-verdict.good{border-color:rgba(93,255,159,.45);border-left-color:#5dff9f;background:rgba(93,255,159,.06)}.v2-verdict.good b{color:#9dffc4}.v2-verdict em.up{color:#5dff9f;font-style:normal;font-weight:700}
+.v2-fine{margin:10px 2px 0;color:var(--muted);font-size:12px;line-height:1.6}.v2-warm{margin-left:2px;color:#ffcf7a;font-weight:700}
+.v2-seg-sm button{min-width:52px;min-height:38px;padding:0 12px;font-size:13px}
+@media(max-width:620px){.v2-tabs .v2-seg{width:100%}.v2-tabs .v2-seg button{flex:1;min-width:0}}
+.v2-verdict em.down{color:var(--red);font-style:normal;font-weight:700}
