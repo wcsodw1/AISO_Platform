@@ -107,5 +107,18 @@ class FirstVsRepeatedTests(unittest.TestCase):
                 self.assertLess(h[f"{key}_vs_baseline_pct"], 0)  # both phases regress against same-phase Baseline
 
 
+
+class ColdVsReuseEvidenceTests(unittest.TestCase):
+    def test_reported_percentages_follow_the_values(self):
+        data = json.loads((DATA / "AISO_BenchmarkV2_Cold_vs_Reuse_Evidence.json").read_text(encoding="utf-8"))
+        for mode, reported in data["reported_improvement_pct"].items():
+            cold, reuse = data["modes"][mode]["cold"], data["modes"][mode]["reuse_avg"]
+            self.assertAlmostEqual(gain(reuse["ttft_ms"], cold["ttft_ms"], False), reported["ttft"], delta=0.06)
+            self.assertAlmostEqual(gain(reuse["output_tps"], cold["output_tps"], True), reported["tps"], delta=0.06)
+            self.assertEqual(data["modes"][mode]["cache"]["gpu_prefix_cache_hits_tokens"], 0)
+            self.assertGreater(data["modes"][mode]["cache"]["external_prefix_cache_hits_tokens_cumulative"], 0)
+            self.assertEqual(data["modes"][mode]["cache"]["ssd_actual_read_write"], "unverified")
+
+
 if __name__ == "__main__":
     unittest.main()
