@@ -7,9 +7,9 @@ const METRICS={
  output_tps:{short:"TPS",en:"Output TPS",zh:"每秒輸出 token",unit:"tokens/s",higher:true,dec:2,formula:"Improvement = (Mode ÷ Baseline − 1) × 100%"},
  ttft_median_ms:{short:"TTFT",en:"TTFT",zh:"首字延遲",unit:"ms",higher:false,dec:2,formula:"Improvement = (1 − Mode ÷ Baseline) × 100%"},
  tpot_median_ms:{short:"TPOT",en:"TPOT",zh:"每個輸出 token 的時間",unit:"ms/token",higher:false,dec:2,formula:"Improvement = (1 − Mode ÷ Baseline) × 100%"}};
-const S={phase:"first",input:"all",c:"all",metric:"output_tps",sort:"order",dir:1,rMode:"all",rC:"all",rInput:"all",rRun:"all",wMetric:"ttft"};
+const S={phase:"first",input:"all",c:"all",metric:"output_tps",sort:"order",dir:1,rMode:"all",rC:"all",rInput:"all",rRun:"all",wMetric:"ttft",bMetric:"ttft"};
 const PHASE={first:"first_observed_r1",repeated:"repeated_observed_r2_r3"};
-const PHASE_NAME={first:"First Run (R1)",repeated:"Repeated Run (R2/R3)"};
+const PHASE_NAME={first:"First Run (R1)",repeated:"Repeated Run (R2/R3)",reuse:"Reuse (R2/R3 vs own R1)"};
 let D,F,LABEL={},GPU={};
 
 const num=(v,d)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
@@ -62,6 +62,12 @@ function renderCards(){
 }
 function renderPhase(){
  seg2($v("phaseSeg"),S.phase);
+ const reuse=S.phase==="reuse";
+ ["v2Cards","secFilter","v2Charts","secTable"].forEach(id=>{$v(id).hidden=reuse});$v("v2Reuse").hidden=!reuse;
+ if(reuse){
+  $v("phaseCap").innerHTML=`<b>Reuse：每個模式拿自己的 R2/R3 平均，去比自己的第一次（R1）</b><br>這跟「三模式互比」是兩種不同的比較，不要混在一起看。${vEsc(F.caveat)}`;
+  return;
+ }
  $v("phaseCap").innerHTML=S.phase==="first"?`<b>${vEsc(F.first_label)}</b><br>每個情境只有 1 次觀測；R1 不保證是真正的冷快取（Baseline 原生 Prefix Cache、暖機都可能影響）。`:`<b>${vEsc(F.repeated_label)}</b><br>每個情境取 R2、R3 平均。${vEsc(F.caveat)}`;
  D.scenarioComparison=phaseScenarios(S.phase);
  renderCards();renderCharts();renderTable();
@@ -130,10 +136,25 @@ function gainChart(key,list){
  });
  return `<div class="v2-chartwrap"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.max(W,360)}px" role="img" aria-label="${w.en} gain of repeated vs own first run">${g}</svg></div>`;
 }
+function renderBVs(){
+ const m=WSRC[S.bMetric],key={tps:"tps",ttft:"ttft_ms",tpot:"tpot_ms"}[S.bMetric];
+ const at=(phase,mode,i,c)=>F.phase_comparison.find(r=>r.phase===PHASE[phase]&&r.mode===mode&&r.input_tokens===i&&r.concurrency===c)[key];
+ const g=(v,b)=>m.higher?(v/b-1)*100:(1-v/b)*100;
+ const sc=[...new Set(F.phase_comparison.map(r=>skey(r)))].map(k=>k.split("/").map(Number)).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+ const rows=sc.map(([i,c])=>{const b1=at("first","baseline",i,c),b2=at("repeated","baseline",i,c),o={i,c,b1,b2};["aidaptiv","lmcache"].forEach(x=>{const v=at("repeated",x,i,c);o[x]={v,same:g(v,b2),cross:g(v,b1)}});return o});
+ const avg=(x,f)=>rows.reduce((a,r)=>a+r[x][f],0)/rows.length;
+ $v("bNote").innerHTML=`每格是 R2/R3 平均（${m.en}，${m.unit}）。<b>同階段</b>＝跟 Baseline 自己的 R2/R3 比（公平：兩邊都有重複請求）；<b>跟 Baseline R1</b>＝跟 Baseline 的第一次比，只是參考，因為 Baseline 自己重複後也變快，這個比較對 Baseline 不公平。`;
+ seg($v("bMetric"),Object.entries(WSRC).map(([v,x])=>[v,x.en]),S.bMetric);
+ $v("bSum").innerHTML=["aidaptiv","lmcache"].map(x=>`<div class="v2-bs" style="--mc:${COL[x]}"><h4>${vEsc(modeName(x))}</h4><p><span>R2/R3 vs Baseline R2/R3<small>同階段 · 公平比較</small></span>${pct2(avg(x,"same"))}</p><p class="v2-cross"><span>R2/R3 vs Baseline R1<small>參考 · 對 Baseline 不公平</small></span>${pct2(avg(x,"cross"))}</p></div>`).join("");
+ $v("tBVs").innerHTML=`<thead><tr><th>Input</th><th>C</th><th class="b">Baseline R1<small>${m.unit}</small></th><th class="b">Baseline R2/R3<small>${m.unit}</small></th><th class="a">aiDAPTIV R2/R3<small>${m.unit}</small></th><th>vs Base R2/R3</th><th>vs Base R1</th><th class="l">LMCache R2/R3<small>${m.unit}</small></th><th>vs Base R2/R3</th><th>vs Base R1</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.i}</td><td>C${r.c}</td><td>${num(r.b1,m.dec)}</td><td>${num(r.b2,m.dec)}</td><td>${num(r.aidaptiv.v,m.dec)}</td><td>${pct(r.aidaptiv.same)}</td><td class="v2-cross">${pct(r.aidaptiv.cross)}</td><td>${num(r.lmcache.v,m.dec)}</td><td>${pct(r.lmcache.same)}</td><td class="v2-cross">${pct(r.lmcache.cross)}</td></tr>`).join("")}</tbody>`;
+}
 function renderReuse(){
  $v("wNote").innerHTML=`每個模式拿自己的 R2/R3 平均去比自己的 R1，所以 <b>Baseline 也會變快</b>：這個加速不能歸因於 SSD。<br>Repeated vs its own first run, per mode. Baseline accelerates too — the speed-up cannot be attributed to SSD. ${vEsc(F.caveat)}`;
+ const faster=F.within_mode.filter(r=>r.ttft_gain_pct>0).length,hw0=F.headline.filter(h=>h.phase==="repeat_vs_own_first");
+ const ex=F.within_mode.filter(r=>r.input_tokens===7950&&r.concurrency===5);
+ $v("wExample").innerHTML=`<p class="v2-take"><b>Reuse 沒有變慢：</b>${faster} / ${F.within_mode.length} 個「模式 × 情境」的 TTFT，R2/R3 都比自己的 R1 快。aiDAPTIV 的 TPS 重複後 ${hw0.find(h=>h.mode==="aidaptiv").tps_vs_baseline_pct>0?"+":""}${hw0.find(h=>h.mode==="aidaptiv").tps_vs_baseline_pct.toFixed(2)}%，比 Baseline 自己的 ${hw0.find(h=>h.mode==="baseline").tps_vs_baseline_pct.toFixed(2)}% 更大，但絕對 TPS 仍低於 Baseline，兩個結論不矛盾。</p>${ex.length?`<div class="table-wrap"><table class="v2-table v2-sc"><caption>範例 Example · Input 7950 · C5</caption><thead><tr><th>Mode</th><th>TTFT R1<small>ms</small></th><th>TTFT R2/R3<small>ms</small></th><th>TTFT</th><th>TPS R1<small>tok/s</small></th><th>TPS R2/R3<small>tok/s</small></th><th>TPS</th></tr></thead><tbody>${MODES.map(m=>{const r=ex.find(x=>x.mode===m);return r?`<tr><td><i class="v2-dot" style="background:${COL[m]}"></i>${vEsc(modeName(m))}</td><td>${num(r.first_ttft_ms,2)}</td><td>${num(r.repeated_ttft_ms,2)}</td><td>${pct(r.ttft_gain_pct)}</td><td>${num(r.first_tps,2)}</td><td>${num(r.repeated_tps,2)}</td><td>${pct(r.tps_gain_pct)}</td></tr>`:""}).join("")}</tbody></table></div>`:""}`;
  const hw=F.headline.filter(h=>h.phase==="repeat_vs_own_first");
- $v("wCards").innerHTML=MODES.map(m=>{const h=hw.find(x=>x.mode===m);return `<article class="v2-wcard" style="--mc:${COL[m]}"><h3>${vEsc(modeName(m))}<small> GPU ${GPU[m]}</small></h3><ul><li><span>TPS gain</span>${pct2(h.tps_vs_baseline_pct)}</li><li><span>TTFT improvement</span>${pct2(h.ttft_vs_baseline_pct)}</li><li><span>TPOT improvement</span>${pct2(h.tpot_vs_baseline_pct)}</li></ul></article>`}).join("");
+ $v("wCards").innerHTML=MODES.map(m=>{const h=hw.find(x=>x.mode===m);return `<article class="v2-wcard" style="--mc:${COL[m]}"><h3>${vEsc(modeName(m))}<small> GPU ${GPU[m]}</small></h3><ul>${[["TPS gain","tps","tps_gain_pct"],["TTFT improvement","ttft","ttft_gain_pct"],["TPOT improvement","tpot","tpot_gain_pct"]].map(([t,k,c])=>`<li><span>${t}<small>${F.within_mode.filter(r=>r.mode===m&&r[c]>0).length} / 8 scenarios improved</small></span>${pct2(h[k+"_vs_baseline_pct"])}</li>`).join("")}</ul></article>`}).join("");
  const list=[...new Set(F.within_mode.map(r=>skey(r)))].map(k=>{
   const rows=F.within_mode.filter(r=>skey(r)===k),o={input_tokens:rows[0].input_tokens,concurrency:rows[0].concurrency};
   rows.forEach(r=>{o[r.mode]=r});return o;
@@ -170,6 +191,7 @@ function bind(){
  on("rMode","rMode",renderRaw);on("rC","rC",renderRaw);on("rInput","rInput",renderRaw);on("rRun","rRun",renderRaw);
  $v("tDir").addEventListener("click",()=>{S.dir*=-1;renderTable()});
  $v("tMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.metric=b.dataset.v;renderTable()}});
+ $v("bMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.bMetric=b.dataset.v;renderBVs()}});
  $v("wMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.wMetric=b.dataset.v;renderReuse()}});
  $v("phaseSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.phase=b.dataset.v;renderPhase()}});
 }
@@ -181,5 +203,5 @@ Promise.all([getJson("data/benchmark-v2/AISO_BenchmarkV2_20000.json"),getJson("d
  ["batchDetail72","scenarioComparison","scenarioMetricsLong","repetitionComparison"].forEach(k=>{D[k]=D[k].filter(keep)});
  ["phase_comparison","within_mode","raw_runs"].forEach(k=>{F[k]=F[k].filter(keep)});
  D.modes.forEach(m=>{LABEL[m.key]=m.label;GPU[m.key]=m.gpu});
- renderTop();renderFilters();renderMethod();renderSsd();renderReuse();renderPhase();renderRaw();bind();
+ renderTop();renderFilters();renderMethod();renderSsd();renderBVs();renderReuse();renderPhase();renderRaw();bind();
 }).catch(()=>{$v("v2Count").textContent="載入失敗：data/benchmark-v2/*.json"});
