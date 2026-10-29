@@ -114,8 +114,8 @@ function renderHits(){
   const a=r("aidaptiv",i,c),l=r("lmcache",i,c),t=i*c,d=(l/a-1)*100;dl.push(d);
   return `<tr><td>${tok(i)}</td><td>C${c}</td><td>${tok(t)}</td><td class="a"><b class="v2-hit">${tok(a)}</b> <span class="v2-rate">${rate(a,t)}</span></td><td class="l"><b class="v2-hit">${tok(l)}</b> <span class="v2-rate">${rate(l,t)}</span></td><td class="la">${pct(d)}</td></tr>`}).join("");
  const m=mean(dl);
- $v("v2HitSub").textContent=`C ＝ 並發數，一次測試同時送出 C 個請求；aiDAPTIV 在 Hit tokens 命中數上小幅優於 LMCache，平均約 ${f1(m)}%`;
- $v("tHits").innerHTML=`<thead><tr><th>Input</th><th>C</th><th>Prompt tokens</th><th class="a">aiDAPTIV ON<small>External hit</small></th><th class="l">LMCache<small>External hit</small></th><th class="la">LMCache vs aiDAPTIV<small>命中數差異</small></th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">All Scenario average differential<small>全情境平均差異</small></td><td></td><td></td><td class="la">${pct(m)}</td></tr></tfoot>`;
+ $v("v2HitSub").textContent=`aiDAPTIV 在 Hit tokens 命中數上小幅優於 LMCache，平均約 ${f1(m)}%`;
+ $v("tHits").innerHTML=`<thead><tr><th>Input</th><th>C*</th><th>Prompt tokens</th><th class="a">aiDAPTIV ON<small>External hit</small></th><th class="l">LMCache<small>External hit</small></th><th class="la">LMCache vs aiDAPTIV<small>命中數差異</small></th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">All Scenario average differential<small>全情境平均差異</small></td><td></td><td></td><td class="la">${pct(m)}</td></tr></tfoot>`;
 }
 
 fetch("data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
