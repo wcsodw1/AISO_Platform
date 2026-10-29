@@ -67,7 +67,7 @@ function renderCold(){
 function msg(k){
  const d=METRICS[k],la=avg(TW,k,"la","Reuse");
  if(k==="tpot_ms")return `高 Concurrency（C5）比較中，LMCache 與 aiDAPTIV 各自優於 Baseline ${f1(c5(k,"lb"))}%, ${f1(c5(k,"ab"))}%；LMCache 優於 aiDAPTIV ${f1(c5(k,"la"))}%`;
- if(k==="output_tps"){const pi=i0=>mean(SC.filter(([i])=>i===i0).map(([i,c])=>at(TW,k,i,c).la));return `LMCache 平均 TPS 較 aiDAPTIV 快：3,950（4K）${f1(pi(3950))}%、7,950（8K）${f1(pi(7950))}%、15,950（16K）${f1(pi(15950))}%，Input 越長差距越大`}
+ if(k==="output_tps"){const pi=i0=>mean(SC.filter(([i])=>i===i0).map(([i,c])=>at(TW,k,i,c).la));return `LMCache 平均 TPS 在 4K、8K、16K 分別較 aiDAPTIV 快出 ${f1(pi(3950))}%、${f1(pi(7950))}%、${f1(pi(15950))}%`}
  return `開啟 aiDAPTIV 或 LMCache 後效果皆遠優於 Baseline，同時 LMCache 平均優於 aiDAPTIV ${f1(la)}%`;
 }
 function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
