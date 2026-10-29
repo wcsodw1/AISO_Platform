@@ -1,0 +1,9 @@
+﻿input_tokens,concurrency,repetitions,status,output_target,max_model_len,baseline_output_tps,aidaptiv_output_tps,lmcache_output_tps,aidaptiv_output_tps_improvement_pct,lmcache_output_tps_improvement_pct,baseline_ttft_median_ms,aidaptiv_ttft_median_ms,lmcache_ttft_median_ms,aidaptiv_ttft_median_ms_improvement_pct,lmcache_ttft_median_ms_improvement_pct,baseline_tpot_median_ms,aidaptiv_tpot_median_ms,lmcache_tpot_median_ms,aidaptiv_tpot_median_ms_improvement_pct,lmcache_tpot_median_ms_improvement_pct
+3950,1,3,PASS,200,20000,170.44,168.02,170.38,-1.4,-0.0,79.56,99.24,101.96,-24.7,-28.2,4.17,5.23,4.2,-25.3,-0.8
+3950,2,3,PASS,200,20000,230.61,197.29,225.17,-14.4,-2.4,76.77,104.67,102.04,-36.3,-32.9,4.28,5.72,4.42,-33.8,-3.4
+3950,5,3,PASS,200,20000,434.73,371.96,406.07,-14.4,-6.6,85.23,108.88,105.12,-27.8,-23.3,6.52,8.74,7.1,-34.2,-9.0
+7950,1,3,PASS,200,20000,163.98,151.25,163.4,-7.8,-0.3,133.1,202.0,179.41,-51.8,-34.8,4.15,5.68,4.36,-37.0,-5.0
+7950,2,3,PASS,200,20000,233.69,187.44,220.4,-19.8,-5.7,135.68,183.84,170.99,-35.5,-26.0,4.7,6.71,5.12,-42.8,-9.0
+7950,5,3,PASS,200,20000,506.17,378.59,473.62,-25.2,-6.4,316.48,478.79,494.47,-51.3,-56.2,7.5,10.48,7.45,-39.7,0.7
+15950,1,3,PASS,200,20000,98.16,96.04,98.32,-2.2,0.2,250.04,389.46,360.38,-55.8,-44.1,4.26,6.38,4.66,-49.9,-9.4
+15950,2,3,PASS,200,20000,145.07,120.85,131.8,-16.7,-9.2,271.94,409.12,383.71,-50.4,-41.1,4.29,7.16,5.5,-66.8,-28.1

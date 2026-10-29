@@ -182,3 +182,5 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 .lm-verdict td.v-fast{background:rgba(126,240,173,.10)}.lm-verdict td.v-fast b{color:#7ef0ad}.lm-verdict td.v-slow{background:rgba(255,157,146,.09)}.lm-verdict td.v-slow b{color:#ff9d92}.lm-verdict td.v-same b{color:var(--muted)}
 .lm-verdict td em.gain{color:#7ef0ad}.lm-verdict td em.loss{color:#ff9d92}
 @media(max-width:700px){.lm-vsum{grid-template-columns:1fr}}
+
+.benchmark-types{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));max-width:820px}

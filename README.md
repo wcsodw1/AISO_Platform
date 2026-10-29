@@ -65,6 +65,7 @@ AISO_Platform/                                      ← Git repository 根目錄
 │  ├─ style.css                                     ← Portal 視覺與響應式版面
 │  ├─ aidaptiv.html                                ← aiDAPTIV Cold／Warm Benchmark 分類頁
 │  ├─ lmcache.html／lmcache.js                     ← LMCache CPU／SSD 結果比較
+│  ├─ gptoss-v2.html／.js／.css                     ← TPI Benchmark V2：GPT-OSS-20B 三模式比較（資料在 data/benchmark-v2/）
 │  ├─ benchmark.html／benchmark.css／benchmark-app.js ← Benchmark by Machine P0 UI
 │  ├─ manage.html                                   ← 本機管理頁
 │  ├─ manage.js                                     ← 管理功能
