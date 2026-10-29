@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Benchmark V2 Historical</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-29">
+  <link rel="stylesheet" href="gptoss-v2.css?v=7">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2">
+    <section class="v2-hero">
+      <p class="eyebrow">BENCHMARK / V2 · GPT-OSS-20B · 2026-10-29</p>
+      <h1 id="v2Title">TPI Benchmark V2｜Historical</h1>
+      <aside class="v2-verdict" role="note"><b>Historical · Pure vLLM Baseline / GPU Prefix Cache ON<span class="zh-i">歷史資料</span></b><p>Baseline 開著 GPU Prefix Cache，不是無快取對照；不可與 Baseline · KV Offload OFF 混算。正式結果見 <a href="gptoss-v2.html">TPI Benchmark V2</a>。</p></aside>
+      <ul class="v2-chips" id="v2Chips" aria-label="Test conditions"></ul>
+      <aside class="v2-verdict" role="note"><b>Performance target not met<span class="zh-i">未達預期</span></b><p>vs Baseline：aiDAPTIV、LMCache 的 TPS、TTFT、TPOT 平均皆較差。</p></aside>
+      <ul class="v2-qa" id="v2Qa" aria-label="Data checks"></ul>
+    </section>
+
+    <section class="v2-tabs" aria-label="View">
+      <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="reuse">Reuse<small>R2/R3 · 重複請求</small></button></div>
+      <div class="v2-seg" id="basisSeg" role="group" aria-label="Compare with"><button type="button" data-v="baseline">vs Baseline</button><button type="button" data-v="own">vs own First Run</button></div>
+    </section>
+
+    <section class="v2-cards" id="v2Cards" aria-label="Summary"></section>
+
+    <section class="v2-ssd" aria-label="SSD verification">
+      <h2>SSD<span class="zh-i">快取驗證</span></h2>
+      <ul id="v2SsdList"></ul>
+    </section>
+
+    <section class="report-section" id="secFilter">
+      <div class="v2-filters"><label>Input<select id="fInput"></select></label><label>Concurrency<select id="fC"></select></label><span class="v2-count" id="v2Count"></span></div>
+    </section>
+
+    <section class="report-section" id="v2Charts"><div class="v2-legend" id="v2Legend"></div><p class="v2-hint">← 左右滑動 →</p><div id="v2ChartList"></div></section>
+
+    <section class="report-section" id="secTable">
+      <header><h2>Scenarios<span class="zh">情境比較</span></h2>
+        <div class="v2-filters"><div class="v2-seg" id="tMetric" role="group" aria-label="Metric"></div><label>Sort<select id="tSort"><option value="order">Scenario</option><option value="aidaptiv">aiDAPTIV vs Baseline</option><option value="lmcache">LMCache vs Baseline</option></select></label><button type="button" id="tDir" aria-label="Sort direction">↑ ASC</button></div></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tScenario"></table></div>
+    </section>
+
+    <section class="report-section" id="evidBaseSec"><div class="v2-evid" id="evidBase"></div></section>
+
+    <section class="report-section" id="v2Reuse" hidden>
+      <div class="v2-evid" id="evid"></div>
+      <div class="v2-wcards" id="wCards"></div>
+      <p class="v2-hint">← 左右滑動 →</p><div id="wCharts"></div>
+      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></div>
+      <p class="v2-hint">← 左右滑動 →</p>
+      <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
+    </section>
+
+    <section class="report-section">
+      <header><div><p class="section-label">RAW RUNS</p><h2>72 Raw Runs<span class="zh">原始明細 R1／R2／R3</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_Benchmark_Valid72.csv" download>CSV ↓</a></header>
+      <div class="v2-filters v2-rawf"><label>Model<select id="rModel"></select></label><label>Mode<select id="rMode"></select></label><label>C<select id="rC"></select></label><label>Input<select id="rInput"></select></label><label>Run<select id="rRun"></select></label></div>
+      <p class="v2-count" id="rCount"></p>
+      <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
+    </section>
+
+    <section class="report-section">
+      <details class="v2-details" id="v2Method"><summary><span>Notes &amp; Downloads<span class="zh-i">說明與下載</span></span></summary><div id="v2MethodBody"></div></details>
+    </section>
+  </main><script src="gptoss-v2-historical.js?v=1"></script>
+</body></html>

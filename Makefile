@@ -13,6 +13,7 @@ check:
 	node --check AISO_Platform_Portal/app.js
 	node --check AISO_Platform_Portal/lmcache.js
 	node --check AISO_Platform_Portal/gptoss-v2.js
+	node --check AISO_Platform_Portal/gptoss-v2-historical.js
 	node --check AISO_Platform_Portal/benchmark-app.js
 	node --check AISO_Platform_Portal/manage.js
 	python3 -m unittest discover -s AISO_Platform_Portal/tests -p "test_*.py"

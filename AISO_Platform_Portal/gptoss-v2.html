@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=7">
+  <link rel="stylesheet" href="gptoss-v2.css?v=8">
 </head>
 <body>
   <header class="site-header">
@@ -27,19 +27,21 @@
       <p class="eyebrow">BENCHMARK / V2 · GPT-OSS-20B · 2026-10-29</p>
       <h1 id="v2Title">TPI Benchmark V2｜GPU Inference Comparison</h1>
       <ul class="v2-chips" id="v2Chips" aria-label="Test conditions"></ul>
-      <aside class="v2-verdict" role="note"><b>Performance target not met<span class="zh-i">未達預期</span></b><p>vs Baseline：aiDAPTIV、LMCache 的 TPS、TTFT、TPOT 平均皆較差。</p></aside>
+      <aside class="v2-verdict good" role="note" id="v2Verdict"></aside>
       <ul class="v2-qa" id="v2Qa" aria-label="Data checks"></ul>
     </section>
 
     <section class="v2-tabs" aria-label="View">
-      <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="reuse">Reuse<small>R2/R3 · 重複請求</small></button></div>
+      <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>Cold · 第一次</small></button><button type="button" data-v="reuse">Reuse<small>3 次重複平均</small></button></div>
       <div class="v2-seg" id="basisSeg" role="group" aria-label="Compare with"><button type="button" data-v="baseline">vs Baseline</button><button type="button" data-v="own">vs own First Run</button></div>
+      <div class="v2-seg v2-seg-sm" id="rphaseSeg" role="group" aria-label="Reuse run"><button type="button" data-v="mean">Mean</button><button type="button" data-v="Reuse_1">#1</button><button type="button" data-v="Reuse_2">#2</button><button type="button" data-v="Reuse_3">#3</button></div>
     </section>
 
     <section class="v2-cards" id="v2Cards" aria-label="Summary"></section>
+    <p class="v2-fine" id="v2Fine"></p>
 
-    <section class="v2-ssd" aria-label="SSD verification">
-      <h2>SSD<span class="zh-i">快取驗證</span></h2>
+    <section class="v2-ssd" aria-label="Cache checks">
+      <h2>Cache hits<span class="zh-i">快取命中驗證</span></h2>
       <ul id="v2SsdList"></ul>
     </section>
 
@@ -51,30 +53,24 @@
 
     <section class="report-section" id="secTable">
       <header><h2>Scenarios<span class="zh">情境比較</span></h2>
-        <div class="v2-filters"><div class="v2-seg" id="tMetric" role="group" aria-label="Metric"></div><label>Sort<select id="tSort"><option value="order">Scenario</option><option value="aidaptiv">aiDAPTIV vs Baseline</option><option value="lmcache">LMCache vs Baseline</option></select></label><button type="button" id="tDir" aria-label="Sort direction">↑ ASC</button></div></header>
+        <div class="v2-filters"><div class="v2-seg" id="tMetric" role="group" aria-label="Metric"></div><label>Sort<select id="tSort"><option value="order">Scenario</option><option value="aidaptiv">aiDAPTIV</option><option value="lmcache">LMCache</option></select></label><button type="button" id="tDir" aria-label="Sort direction">↑ ASC</button></div></header>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tScenario"></table></div>
     </section>
 
-    <section class="report-section" id="evidBaseSec"><div class="v2-evid" id="evidBase"></div></section>
-
-    <section class="report-section" id="v2Reuse" hidden>
-      <div class="v2-evid" id="evid"></div>
-      <div class="v2-wcards" id="wCards"></div>
-      <p class="v2-hint">← 左右滑動 →</p><div id="wCharts"></div>
-      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></div>
-      <p class="v2-hint">← 左右滑動 →</p>
-      <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
+    <section class="report-section" id="secHits">
+      <header><h2>Hit tokens per batch<span class="zh">每批命中 Token（Reuse）</span></h2></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tHits"></table></div>
     </section>
 
     <section class="report-section">
-      <header><div><p class="section-label">RAW RUNS</p><h2>72 Raw Runs<span class="zh">原始明細 R1／R2／R3</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_Benchmark_Valid72.csv" download>CSV ↓</a></header>
-      <div class="v2-filters v2-rawf"><label>Model<select id="rModel"></select></label><label>Mode<select id="rMode"></select></label><label>C<select id="rC"></select></label><label>Input<select id="rInput"></select></label><label>Run<select id="rRun"></select></label></div>
+      <header><h2>96 Batches<span class="zh">原始明細 Cold／Reuse 1–3</span></h2><a class="v2-dl" href="data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json" download>JSON ↓</a></header>
+      <div class="v2-filters v2-rawf"><label>Mode<select id="rMode"></select></label><label>Input<select id="rInput"></select></label><label>C<select id="rC"></select></label><label>Phase<select id="rPhase"></select></label></div>
       <p class="v2-count" id="rCount"></p>
-      <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
     </section>
 
     <section class="report-section">
       <details class="v2-details" id="v2Method"><summary><span>Notes &amp; Downloads<span class="zh-i">說明與下載</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
-  </main><script src="gptoss-v2.js?v=7"></script>
+  </main><script src="gptoss-v2.js?v=8"></script>
 </body></html>

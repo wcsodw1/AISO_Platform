@@ -127,5 +127,38 @@ class SharedPromptProbeTests(unittest.TestCase):
         self.assertEqual(data["aidaptiv_config"]["dram_kv_offload_gb"], 0)
 
 
+class VerifiedReuseTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = json.loads((DATA / "AISO_BenchmarkV2_Verified_Reuse.json").read_text(encoding="utf-8"))
+
+    def test_counts_hits_and_exclusion(self):
+        rows = self.data["batches"]
+        self.assertEqual(len(rows), 96)
+        self.assertEqual(len({(r["input_tokens"], r["concurrency"]) for r in rows}), 8)
+        self.assertFalse([r for r in rows if (r["input_tokens"], r["concurrency"]) == (15950, 5)])
+        for r in rows:
+            if r["mode"] == "baseline":
+                self.assertEqual((r["gpu_hit_tokens"], r["external_hit_tokens"]), (0, 0))
+            elif r["phase"] == "Cold":
+                self.assertEqual(r["external_hit_tokens"], 0)
+            else:
+                self.assertEqual(r["gpu_hit_tokens"], 0)
+                self.assertGreater(r["external_hit_tokens"], 0)
+
+    def test_summary_matches_batches(self):
+        rows = self.data["batches"]
+        for s in self.data["reuse_summary"]:
+            higher = s["metric"] == "output_tps"
+            for mode in ("baseline", "aidaptiv", "lmcache"):
+                vals = [r[s["metric"]] for r in rows if r["mode"] == mode and r["input_tokens"] == s["input_tokens"]
+                        and r["concurrency"] == s["concurrency"] and r["phase"].startswith("Reuse")]
+                self.assertEqual(len(vals), 3)
+                self.assertAlmostEqual(sum(vals) / 3 / s[mode], 1, delta=0.002)  # printed 1dp batches vs full-precision means
+            for mode in ("aidaptiv", "lmcache"):
+                # gains were printed from full-precision means; the 2dp TPOT values only reproduce them within rounding
+                self.assertAlmostEqual(gain(s[mode], s["baseline"], higher), s[f"{mode}_gain_pct"], delta=0.3)
+
+
 if __name__ == "__main__":
     unittest.main()
