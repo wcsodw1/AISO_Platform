@@ -7,7 +7,7 @@ const METRICS={
  ttft_ms:{short:"TTFT",unit:"ms",higher:false,dec:2},
  output_tps:{short:"TPS",unit:"tok/s",higher:true,dec:2},
  tpot_ms:{short:"TPOT",unit:"ms/token",higher:false,dec:2}};
-const PHASES={mean:"Reuse mean",Reuse_1:"Reuse #1",Reuse_2:"Reuse #2",Reuse_3:"Reuse #3"};
+const VIEWS={"reuse-base":{view:"reuse",basis:"baseline"},"reuse-own":{view:"reuse",basis:"own"},"cold-base":{view:"first",basis:"baseline"}};
 const S={view:"reuse",basis:"baseline",rphase:"mean",input:"all",c:"all",metric:"ttft_ms",sort:"order",dir:1,rMode:"all",rInput:"all",rC:"all",rPhase:"all"};
 let V,SC;
 
@@ -68,7 +68,7 @@ function renderCards(){
    const a=average(m,k,list);
    return `<li><span>${d.short}<small>${d.higher?"↑ higher is better":"↓ lower is better"}</small></span>${Number.isFinite(a.avg)?pct2(a.avg):`<b class="v2-big flat">—</b>`}<small class="v2-win">${a.wins} / ${a.n} better</small></li>`;
   }).join("");
-  return `<article class="v2-card" style="--mc:${COL[m]}"><header><h3>${vEsc(info.label)}</h3><span>GPU ${info.gpu} · :${info.port}</span></header><p class="v2-rank">${own?`${PHASES[S.rphase]} vs own Cold`:S.view==="first"?"Cold vs Baseline":`${PHASES[S.rphase]} vs Baseline`}<small>${vEsc(info.cache)}</small></p><ul>${rows}</ul></article>`;
+  return `<article class="v2-card" style="--mc:${COL[m]}"><header><h3>${vEsc(info.label)}</h3><span>GPU ${info.gpu} · :${info.port}</span></header><p class="v2-rank">${own?"Reuse vs own Cold":S.view==="first"?"Cold vs Baseline":"Reuse vs Baseline"}<small>${vEsc(info.cache)}</small></p><ul>${rows}</ul></article>`;
  }).join("");
  const fine=["TTFT 是快取效果的主要指標；LMCache 為不同 runtime（GPU 記憶體 0.65 vs 0.85），TPS／TPOT 差距不全來自快取。"];
  if(S.view==="first"||own)fine.push("* Cold 平均不含 3950／C1（Baseline 第一個請求含暖機 790.9 ms）。");
@@ -112,8 +112,6 @@ function renderCharts(){
  const list=scenarios(),own=ownView();
  $v("v2Count").textContent=`${list.length} / ${SC.length}`;
  $v("v2Legend").innerHTML=MODES.map(m=>`<span><i style="background:${COL[m]}"></i>${vEsc(label(m))}<small>GPU ${gpu(m)}</small></span>`).join("");
- $v("rphaseSeg").hidden=S.view!=="reuse";
- setPressed($v("rphaseSeg"),S.rphase);
  $v("v2ChartList").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<small>${own?"% vs own Cold · positive = better":`${d.unit} · ${d.higher?"↑ higher is better":"↓ lower is better"}`}</small></h3>${chart(k,list,own?"gain":"value")}</article>`).join("");
 }
 function renderTable(){
@@ -126,7 +124,7 @@ function renderTable(){
  const mark=(i,c)=>warm(i,c)&&(S.view==="first"||own)?`<span class="v2-warm" title="Baseline warm-up">*</span>`:"";
  let head,body,foot;
  if(own){
-  head=`<tr><th>Input</th><th>C</th>${MODES.map(m=>`<th class="${m[0]}">${vEsc(label(m))}<small>Cold → ${PHASES[S.rphase]}</small></th><th>Δ</th>`).join("")}</tr>`;
+  head=`<tr><th>Input</th><th>C</th>${MODES.map(m=>`<th class="${m[0]}">${vEsc(label(m))}<small>Cold → Reuse</small></th><th>Δ</th>`).join("")}</tr>`;
   body=list.map(([i,c])=>`<tr><td>${i}${mark(i,c)}</td><td>C${c}</td>${MODES.map(m=>{const x=cell(i,c,m,k);return `<td>${num(x.ref,d.dec)} → <b>${num(x.v,d.dec)}</b></td><td>${pct(x.g)}</td>`}).join("")}</tr>`).join("");
   foot=`<tr><td colspan="2">Average (excl. *)</td>${MODES.map(m=>`<td></td><td>${pct(average(m,k,list).avg)}</td>`).join("")}</tr>`;
  }else{
@@ -163,8 +161,7 @@ function renderFilters(){
 }
 function setPressed(el,cur){el.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===cur))}
 function renderView(){
- setPressed($v("phaseSeg"),S.view);setPressed($v("basisSeg"),S.basis);
- $v("basisSeg").hidden=S.view!=="reuse";
+ setPressed($v("viewSeg"),S.view==="first"?"cold-base":S.basis==="own"?"reuse-own":"reuse-base");
  $v("secHits").hidden=S.view!=="reuse";
  renderCards();renderCharts();renderTable();
 }
@@ -175,9 +172,7 @@ function bind(){
  $v("tDir").addEventListener("click",()=>{S.dir*=-1;renderTable()});
  const click=(id,fn)=>$v(id).addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(b)fn(b.dataset.v)});
  click("tMetric",v=>{S.metric=v;renderTable()});
- click("phaseSeg",v=>{S.view=v;renderView()});
- click("basisSeg",v=>{S.basis=v;renderView()});
- click("rphaseSeg",v=>{S.rphase=v;renderView()});
+ click("viewSeg",v=>{Object.assign(S,VIEWS[v]);renderView()});
 }
 fetch("data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
  V=d;

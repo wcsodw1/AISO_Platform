@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=8">
+  <link rel="stylesheet" href="gptoss-v2.css?v=9">
 </head>
 <body>
   <header class="site-header">
@@ -32,9 +32,7 @@
     </section>
 
     <section class="v2-tabs" aria-label="View">
-      <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>Cold · 第一次</small></button><button type="button" data-v="reuse">Reuse<small>3 次重複平均</small></button></div>
-      <div class="v2-seg" id="basisSeg" role="group" aria-label="Compare with"><button type="button" data-v="baseline">vs Baseline</button><button type="button" data-v="own">vs own First Run</button></div>
-      <div class="v2-seg v2-seg-sm" id="rphaseSeg" role="group" aria-label="Reuse run"><button type="button" data-v="mean">Mean</button><button type="button" data-v="Reuse_1">#1</button><button type="button" data-v="Reuse_2">#2</button><button type="button" data-v="Reuse_3">#3</button></div>
+      <div class="v2-seg v2-seg-lg v2-seg3" id="viewSeg" role="group" aria-label="Compare"><button type="button" data-v="reuse-base">Reuse vs Baseline<small>重複請求 對 無快取</small></button><button type="button" data-v="reuse-own">Reuse vs own Cold<small>重複請求 對 自己第一次</small></button><button type="button" data-v="cold-base">Cold vs Baseline<small>第一次 對 無快取</small></button></div>
     </section>
 
     <section class="v2-cards" id="v2Cards" aria-label="Summary"></section>
@@ -72,5 +70,5 @@
     <section class="report-section">
       <details class="v2-details" id="v2Method"><summary><span>Notes &amp; Downloads<span class="zh-i">說明與下載</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
-  </main><script src="gptoss-v2.js?v=8"></script>
+  </main><script src="gptoss-v2.js?v=9"></script>
 </body></html>
