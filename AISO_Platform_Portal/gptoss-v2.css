@@ -92,3 +92,13 @@
 .v2-chartwrap .bl{font-size:12px;font-weight:800;paint-order:stroke;stroke:#10141c;stroke-width:3px}.v2-chartwrap .bl.up{fill:#5dff9f}.v2-chartwrap .bl.dn{fill:#ff8a80}
 .v2-rate{margin-left:6px;color:var(--muted);font-size:13px}
 .v2-goal+.v2-params{margin-top:16px}#secHits .v2-check{margin:0 0 12px}
+/* deck-order layout: conclusion, per-metric chart + table, KV Cold, hit tokens */
+.v2-sumt{min-width:0;width:100%}.v2-sumt th{vertical-align:bottom}.v2-sumt thead th{font-size:15px;color:var(--ivory)}.v2-sumt tbody th{font-size:18px;color:var(--ivory);letter-spacing:0}.v2-sumt td{padding:16px 12px}.v2-sw{display:inline-block;width:12px;height:12px;margin-right:8px;border-radius:3px}
+.v2-take{margin:16px 0 0;padding:16px 22px;font-size:17px;line-height:1.85}.v2-take b{color:#eafff2}
+.v2-metric .v2-chart{margin-top:12px}
+.v2-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0;color:#c5ccd6;font-size:15px;line-height:1.6}.v2-line .v2-dir{margin-left:0}
+.v2-legend2{display:flex;flex-wrap:wrap;gap:4px 16px;margin-left:auto;font-size:13px}.v2-legend2 span{display:flex;align-items:center;gap:6px;color:var(--ivory)}.v2-legend2 i{width:12px;height:12px;border-radius:3px}
+.v2-sub3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:22px 0 10px}.v2-sub3 .zh-i{margin-left:0;color:var(--muted);font-size:14px;font-weight:500}
+.v2-table td.la,.v2-table th.la{background:rgba(93,255,159,.05)}.v2-table tfoot td small{display:block;margin-top:2px;color:var(--muted);font-size:12px}.v2-table tfoot td{color:var(--ivory);font-weight:700}
+#secCold>.v2-fine,#secHits>.v2-fine{margin:0 0 12px;font-size:15px;color:#c5ccd6}
+@media(max-width:620px){.v2-sumt td{padding:12px 6px}.v2-sumt thead th{font-size:13px}.v2-sumt tbody th{font-size:15px}.v2-take{font-size:15px;padding:14px 16px}.v2-legend2{margin-left:0}}
