@@ -1,0 +1,8 @@
+﻿phase,mode,n_scenarios,tps_vs_baseline_pct,ttft_vs_baseline_pct,tpot_vs_baseline_pct
+first_observed_r1,aidaptiv,8,-16.10366,-36.40781,-45.15635
+first_observed_r1,lmcache,8,-4.70101,-28.11946,-10.50638
+repeated_observed_r2_r3,aidaptiv,8,-11.14859,-55.04097,-39.30872
+repeated_observed_r2_r3,lmcache,8,-3.53443,-52.88122,-6.80426
+repeat_vs_own_first,baseline,8,12.76851,78.10206,7.06749
+repeat_vs_own_first,aidaptiv,8,19.2089,75.23389,9.79859
+repeat_vs_own_first,lmcache,8,15.03012,73.35809,8.9716

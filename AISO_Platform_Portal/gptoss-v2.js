@@ -7,8 +7,10 @@ const METRICS={
  output_tps:{short:"TPS",en:"Output TPS",zh:"每秒輸出 token",unit:"tokens/s",higher:true,dec:2,formula:"Improvement = (Mode ÷ Baseline − 1) × 100%"},
  ttft_median_ms:{short:"TTFT",en:"TTFT",zh:"首字延遲",unit:"ms",higher:false,dec:2,formula:"Improvement = (1 − Mode ÷ Baseline) × 100%"},
  tpot_median_ms:{short:"TPOT",en:"TPOT",zh:"每個輸出 token 的時間",unit:"ms/token",higher:false,dec:2,formula:"Improvement = (1 − Mode ÷ Baseline) × 100%"}};
-const S={input:"all",c:"all",metric:"output_tps",sort:"order",dir:1,rMode:"all",rC:"all",rInput:"all",rRun:"all",rrMetric:"output_tps"};
-let D,LABEL={},GPU={};
+const S={phase:"first",input:"all",c:"all",metric:"output_tps",sort:"order",dir:1,rMode:"all",rC:"all",rInput:"all",rRun:"all",wMetric:"ttft"};
+const PHASE={first:"first_observed_r1",repeated:"repeated_observed_r2_r3"};
+const PHASE_NAME={first:"First Run (R1)",repeated:"Repeated Run (R2/R3)"};
+let D,F,LABEL={},GPU={};
 
 const num=(v,d)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
 function pct(v){
@@ -29,17 +31,47 @@ function renderTop(){
  $v("v2Chips").innerHTML=[`Model ${md.model}`,`MAX_MODEL_LEN ${md.max_model_len}`,`Input ${[...new Set(D.scenarioComparison.map(s=>s.input_tokens))].join(" / ")}`,`Output target ${md.output_target_tokens}`,`C ${cs.join(" / ")}`,`${md.repetitions} runs (R1–R3)`,`Seed = ${md.seed_formula}`,`Run ${md.run_id}`].map(t=>`<li>${vEsc(t)}</li>`).join("");
  const checks=[["Runs",D.batchDetail72.length,72],["Scenarios",D.scenarioComparison.length,8],["Chart groups",D.scenarioMetricsLong.length,24],["Excluded records",D.excluded.length,9]];
  $v("v2Qa").innerHTML=checks.map(([n,a,b])=>`<li class="${a===b?"ok":"bad"}">${a===b?"✓":"✗"} ${n} <b>${a} / ${b}</b></li>`).join("");
- const h=D.headlineImprovementPct,sc=D.scenarioComparison;
- const wins=(m,k)=>sc.filter(s=>s[`${m}_${k}_improvement_pct`]>0).length;
- const score=m=>m==="baseline"?0:Object.keys(METRICS).reduce((a,k)=>a+h[`${m}_${k}_average_improvement_pct`],0)/3;
- const rank=[...MODES].sort((a,b)=>score(b)-score(a));
- $v("v2Cards").innerHTML=MODES.map(m=>{
-  const info=D.modes.find(x=>x.key===m);
-  const rows=Object.entries(METRICS).map(([k,def])=>m==="baseline"?`<li><span>${def.short}<small>${def.unit}</small></span><b class="v2-big flat">Reference</b></li>`:`<li><span>${def.short}<small>${def.higher?"higher is better":"lower is better"}</small></span>${pct2(h[`${m}_${k}_average_improvement_pct`])}<small class="v2-win">${wins(m,k)} / 8 wins</small></li>`).join("");
-  return `<article class="v2-card" style="--mc:${COL[m]}"><header><h3>${vEsc(info.label)}</h3><span>GPU ${info.gpu} · :${info.port}</span></header><p class="v2-rank">Overall rank #${rank.indexOf(m)+1}<small>8 情境等權平均</small></p><ul>${rows}</ul></article>`;
- }).join("");
 }
 
+// Scenario rows for one phase, in the same shape the charts and tables already use.
+const SHORT={output_tps:"tps",ttft_median_ms:"ttft",tpot_median_ms:"tpot"},SRC={output_tps:"tps",ttft_median_ms:"ttft_ms",tpot_median_ms:"tpot_ms"};
+function phaseScenarios(phase){
+ const rows=F.phase_comparison.filter(r=>r.phase===PHASE[phase]&&!excluded(r.input_tokens,r.concurrency)),out=new Map();
+ rows.forEach(r=>{
+  const k=skey(r);
+  if(!out.has(k))out.set(k,{input_tokens:r.input_tokens,concurrency:r.concurrency,status:"PASS"});
+  const s=out.get(k);
+  Object.keys(METRICS).forEach(m=>{s[`${r.mode}_${m}`]=r[SRC[m]];s[`${r.mode}_${m}_improvement_pct`]=r[`${SHORT[m]}_improvement_vs_baseline_pct`]});
+ });
+ return [...out.values()].sort((a,b)=>a.input_tokens-b.input_tokens||a.concurrency-b.concurrency);
+}
+function headline(phase,mode){
+ const h=F.headline.find(x=>x.phase===PHASE[phase]&&x.mode===mode);
+ return h?{output_tps:h.tps_vs_baseline_pct,ttft_median_ms:h.ttft_vs_baseline_pct,tpot_median_ms:h.tpot_vs_baseline_pct}:null;
+}
+function renderCards(){
+ const sc=D.scenarioComparison;
+ const wins=(m,k)=>sc.filter(s=>s[`${m}_${k}_improvement_pct`]>0).length;
+ const score=m=>{const h=headline(S.phase,m);return m==="baseline"?0:Object.keys(METRICS).reduce((a,k)=>a+h[k],0)/3};
+ const rank=[...MODES].sort((a,b)=>score(b)-score(a));
+ $v("v2Cards").innerHTML=MODES.map(m=>{
+  const info=D.modes.find(x=>x.key===m),h=headline(S.phase,m);
+  const rows=Object.entries(METRICS).map(([k,def])=>m==="baseline"?`<li><span>${def.short}<small>${def.unit}</small></span><b class="v2-big flat">Reference</b></li>`:`<li><span>${def.short}<small>${def.higher?"higher is better":"lower is better"}</small></span>${pct2(h[k])}<small class="v2-win">${wins(m,k)} / 8 wins</small></li>`).join("");
+  return `<article class="v2-card" style="--mc:${COL[m]}"><header><h3>${vEsc(info.label)}</h3><span>GPU ${info.gpu} · :${info.port}</span></header><p class="v2-rank">Overall rank #${rank.indexOf(m)+1}<small>${PHASE_NAME[S.phase]} · 8 情境等權平均 · vs 同階段 Baseline</small></p><ul>${rows}</ul></article>`;
+ }).join("");
+}
+function renderPhase(){
+ seg2($v("phaseSeg"),S.phase);
+ $v("phaseCap").innerHTML=S.phase==="first"?`<b>${vEsc(F.first_label)}</b><br>每個情境只有 1 次觀測；R1 不保證是真正的冷快取（Baseline 原生 Prefix Cache、暖機都可能影響）。`:`<b>${vEsc(F.repeated_label)}</b><br>每個情境取 R2、R3 平均。${vEsc(F.caveat)}`;
+ D.scenarioComparison=phaseScenarios(S.phase);
+ renderCards();renderCharts();renderTable();
+}
+function seg2(el,cur){el.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===cur))}
+function renderSsd(){
+ const e=F.aiDAPTIV_evidence;
+ const items=[[true,"Offload configured · 已設定 SSD offload"],[true,"250 GB SSD space initialized at previous startup · 先前啟動時初始化 250 GB"],[true,"Store seen at startup (6 / 6 tokens) · 啟動時看到 Store"],[false,`Benchmark SSD retrieve verified: ${e.verified_benchmark_retrieve?"yes":"NO / unknown"} · 本次測試期間的 SSD 讀取未證實`],[false,`Benchmark external cache hit verified: ${e.verified_benchmark_external_cache_hit?"yes":"NO / unknown"} · 外部快取命中未證實（先前啟動的外部 prefix 命中率 ${e.prior_startup_external_prefix_cache_hit_rate_pct}%）`],[false,"Random second-run reuse setting prints reuse_percent=80 as an argument default while random_run_phase=1 · 80% 只是參數預設值，不是已執行的重用階段"]];
+ $v("v2SsdList").innerHTML=items.map(([ok,t])=>`<li class="${ok?"yes":"no"}"><i>${ok?"✓":"?"}</i><span>${vEsc(t)}</span></li>`).join("");
+}
 function niceTop(max){const raw=max/4,mag=10**Math.floor(Math.log10(raw)),step=[1,2,2.5,5,10].find(s=>s*mag>=raw)*mag;return {step,top:step*4}}
 function barChart(key,list){
  const def=METRICS[key],n=list.length;
@@ -71,7 +103,7 @@ function renderTable(){
  if(S.sort!=="order")list.sort((a,b)=>(a[`${S.sort}_${k}_improvement_pct`]-b[`${S.sort}_${k}_improvement_pct`])*S.dir);
  else list.sort((a,b)=>(a.input_tokens-b.input_tokens||a.concurrency-b.concurrency)*S.dir);
  $v("tDir").textContent=S.dir>0?"↑ ASC":"↓ DESC";
- $v("tNote").innerHTML=`${def.en}（${def.unit}）· 每格是 3 輪平均 · ${def.formula} · 負值＝比 Baseline 差`;
+ $v("tNote").innerHTML=`${PHASE_NAME[S.phase]} · ${def.en}（${def.unit}）· ${S.phase==="first"?"每格是 R1 單次觀測":"每格是 R2/R3 平均"} · vs 同階段 Baseline · ${def.formula} · 負值＝比 Baseline 差`;
  const avg=m=>list.length?list.reduce((a,s)=>a+s[`${m}_${k}_improvement_pct`],0)/list.length:NaN;
  const body=list.map(s=>`<tr><td>${s.input_tokens}</td><td>C${s.concurrency}</td><td>${num(s[`baseline_${k}`],def.dec)}</td><td>${num(s[`aidaptiv_${k}`],def.dec)}</td><td>${pct(s[`aidaptiv_${k}_improvement_pct`])}</td><td>${num(s[`lmcache_${k}`],def.dec)}</td><td>${pct(s[`lmcache_${k}_improvement_pct`])}</td></tr>`).join("");
  $v("tScenario").innerHTML=`<thead><tr><th>Input</th><th>C</th><th class="b">Baseline<small>GPU ${GPU.baseline}</small></th><th class="a">aiDAPTIV<small>GPU ${GPU.aidaptiv}</small></th><th>vs Baseline</th><th class="l">LMCache<small>GPU ${GPU.lmcache}</small></th><th>vs Baseline</th></tr></thead><tbody>${body||`<tr><td colspan="7" class="v2-empty">沒有符合的情境</td></tr>`}</tbody>${list.length?`<tfoot><tr><td colspan="4">Equal-weight average of ${list.length} scenario${list.length>1?"s":""}</td><td>${pct(avg("aidaptiv"))}</td><td></td><td>${pct(avg("lmcache"))}</td></tr></tfoot>`:""}`;
@@ -81,18 +113,43 @@ function renderRaw(){
  $v("rCount").textContent=`顯示 ${rows.length} / ${D.batchDetail72.length} 筆`;
  $v("tRaw").innerHTML=`<thead><tr><th>Mode</th><th>GPU</th><th>Input</th><th>C</th><th>Run</th><th>TTFT<small>ms</small></th><th>TPOT<small>ms</small></th><th>TPS<small>tok/s</small></th><th>Norm. TPS/C<small>reported</small></th><th>Output tokens</th></tr></thead><tbody>${rows.map(r=>`<tr><td><i class="v2-dot" style="background:${COL[r.mode]}"></i>${vEsc(modeName(r.mode))}</td><td>${r.gpu}</td><td>${r.input_tokens}</td><td>C${r.concurrency}</td><td>R${r.repetition}</td><td>${num(r.ttft_median_ms,2)}</td><td>${num(r.tpot_median_ms,2)}</td><td>${num(r.output_tps,2)}</td><td>${num(r.normalized_tps_per_c_reported,2)}</td><td>${r.total_output_tokens}</td></tr>`).join("")||`<tr><td colspan="10" class="v2-empty">沒有符合的資料</td></tr>`}</tbody>`;
 }
-function renderRR(){
- const k=S.rrMetric,def=METRICS[k];
- seg($v("rrMetric"),Object.entries(METRICS).map(([v,d])=>[v,d.short]),k);
- $v("tRR").innerHTML=`<thead><tr><th>Input</th><th>C</th><th>Phase</th><th class="b">Baseline</th><th class="a">aiDAPTIV</th><th class="l">LMCache</th></tr></thead><tbody>${D.repetitionComparison.map(r=>`<tr><td>${r.input_tokens}</td><td>C${r.concurrency}</td><td>${r.phase.replace("_","/")}</td>${MODES.map(m=>`<td>${num(r[`${m}_${k}`],def.dec)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+const WSRC={tps:{col:"tps_gain_pct",first:"first_tps",rep:"repeated_tps",en:"TPS",unit:"tok/s",higher:true,dec:2},ttft:{col:"ttft_gain_pct",first:"first_ttft_ms",rep:"repeated_ttft_ms",en:"TTFT",unit:"ms",higher:false,dec:2},tpot:{col:"tpot_gain_pct",first:"first_tpot_ms",rep:"repeated_tpot_ms",en:"TPOT",unit:"ms/token",higher:false,dec:2}};
+function gainChart(key,list){
+ const w=WSRC[key],n=list.length,L=62,R=14,T=14,B=58,gw=Math.max(78,Math.min(150,760/n)),W=L+R+gw*n,H=300,ih=H-T-B;
+ const vals=list.flatMap(s=>MODES.map(m=>s[m][w.col])),lo=Math.min(0,...vals),hi=Math.max(0,...vals),bw=Math.min(30,(gw-18)/3);
+ const raw=(hi-lo||1)/4,mag=10**Math.floor(Math.log10(raw)),step=[1,2,2.5,5,10].find(s=>s*mag>=raw)*mag;
+ const bot=Math.floor(lo/step)*step,top=Math.ceil(hi/step)*step,y=v=>T+ih-(v-bot)/(top-bot)*ih;
+ let g="";
+ for(let v=bot;v<=top+step/2;v+=step){const yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${Math.abs(v)<step/2?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
+ g+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">% vs own R1</text>`;
+ list.forEach((s,i)=>{
+  const x0=L+gw*i+(gw-bw*3-4)/2;
+  MODES.forEach((m,k)=>{const v=s[m][w.col],x=x0+k*(bw+2),y0=y(0),y1=y(v);
+   g+=`<rect x="${x}" y="${Math.min(y0,y1)}" width="${bw}" height="${Math.max(1,Math.abs(y1-y0))}" rx="2" fill="${COL[m]}"><title>${vEsc(modeName(m))} · Input ${s.input_tokens} · C${s.concurrency}: ${w.en} first ${num(s[m][w.first],w.dec)} → repeated ${num(s[m][w.rep],w.dec)} ${w.unit} (${v>0?"+":""}${v.toFixed(1)}%)</title></rect>`});
+  g+=`<text x="${L+gw*i+gw/2}" y="${H-30}" text-anchor="middle" class="xl">${s.input_tokens}</text><text x="${L+gw*i+gw/2}" y="${H-14}" text-anchor="middle" class="xl2">C${s.concurrency}</text>`;
+ });
+ return `<div class="v2-chartwrap"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.max(W,360)}px" role="img" aria-label="${w.en} gain of repeated vs own first run">${g}</svg></div>`;
+}
+function renderReuse(){
+ $v("wNote").innerHTML=`每個模式拿自己的 R2/R3 平均去比自己的 R1，所以 <b>Baseline 也會變快</b>：這個加速不能歸因於 SSD。<br>Repeated vs its own first run, per mode. Baseline accelerates too — the speed-up cannot be attributed to SSD. ${vEsc(F.caveat)}`;
+ const hw=F.headline.filter(h=>h.phase==="repeat_vs_own_first");
+ $v("wCards").innerHTML=MODES.map(m=>{const h=hw.find(x=>x.mode===m);return `<article class="v2-wcard" style="--mc:${COL[m]}"><h3>${vEsc(modeName(m))}<small> GPU ${GPU[m]}</small></h3><ul><li><span>TPS gain</span>${pct2(h.tps_vs_baseline_pct)}</li><li><span>TTFT improvement</span>${pct2(h.ttft_vs_baseline_pct)}</li><li><span>TPOT improvement</span>${pct2(h.tpot_vs_baseline_pct)}</li></ul></article>`}).join("");
+ const list=[...new Set(F.within_mode.map(r=>skey(r)))].map(k=>{
+  const rows=F.within_mode.filter(r=>skey(r)===k),o={input_tokens:rows[0].input_tokens,concurrency:rows[0].concurrency};
+  rows.forEach(r=>{o[r.mode]=r});return o;
+ }).sort((a,b)=>a.input_tokens-b.input_tokens||a.concurrency-b.concurrency);
+ $v("wCharts").innerHTML=Object.entries(WSRC).map(([k,w])=>`<article class="v2-chart"><h3>${w.en} · R2/R3 vs own R1<small>% change · ${w.higher?"higher":"lower"} ${w.en} is ${w.higher?"better ↑ (TPS gain)":"better ↓ (shown as improvement: positive = faster)"}</small></h3>${gainChart(k,list)}</article>`).join("");
+ const w=WSRC[S.wMetric];
+ seg($v("wMetric"),Object.entries(WSRC).map(([v,x])=>[v,x.en]),S.wMetric);
+ $v("tWithin").innerHTML=`<thead><tr><th>Input</th><th>C</th><th>Mode</th><th>First R1<small>${w.unit}</small></th><th>Repeated R2/R3<small>${w.unit}</small></th><th>Change</th></tr></thead><tbody>${F.within_mode.map(r=>`<tr><td>${r.input_tokens}</td><td>C${r.concurrency}</td><td><i class="v2-dot" style="background:${COL[r.mode]}"></i>${vEsc(modeName(r.mode))}</td><td>${num(r[w.first],w.dec)}</td><td>${num(r[w.rep],w.dec)}</td><td>${pct(r[w.col])}</td></tr>`).join("")}</tbody>`;
 }
 function renderMethod(){
  const d=D.metricDefinitions;
- $v("v2MethodBody").innerHTML=`<h4>Conclusion<span class="zh-i">結論</span></h4><ul><li>本輪<b>未達成</b> aiDAPTIV、LMCache 優於 Baseline 的效能預期；兩者 8 情境平均皆為負。</li><li>LMCache 整體比 aiDAPTIV 更接近 Baseline；這是「整體服務組態」的觀察，不能直接當成 SSD KV Offload 本身的因果。</li></ul>
+ $v("v2MethodBody").innerHTML=`<h4>Conclusion<span class="zh-i">結論</span></h4><ul><li>本輪<b>未達成</b> aiDAPTIV、LMCache 優於 Baseline 的效能預期；不論 R1 或 R2/R3，兩者跟同階段 Baseline 比的 8 情境平均都是負的。</li><li>R2/R3 比自己的 R1 快（TTFT 約快 73–78%），但 Baseline 也一樣快，不能當成 SSD 快取命中的證據。</li><li>LMCache 整體比 aiDAPTIV 更接近 Baseline；這是「整體服務組態」的觀察，不能直接當成 SSD KV Offload 本身的因果。</li></ul>
  <h4>Metric definitions<span class="zh-i">指標定義</span></h4><ul>${["output_tps","ttft_median_ms","tpot_median_ms","normalized_tps_per_c_reported","improvement_percent","headline_aggregation","rounding_caveat"].map(k=>`<li><code>${k}</code> ${vEsc(d[k])}</li>`).join("")}</ul>
- <h4>Limitations<span class="zh-i">限制</span></h4><ul>${D.limitations.map(x=>`<li>${vEsc(x)}</li>`).join("")}<li>三個模式使用不同實體 GPU（Baseline GPU 7、aiDAPTIV GPU 6、LMCache GPU 4）與不同 vLLM／容器版本。</li><li>Baseline 的 vLLM 原生 Prefix Cache 沒有完全控制；Random Prompt 與固定 seed 可能受益。</li><li>三組測試同時在同一台 Server 執行，可能共用 CPU／RAM／NVMe。</li><li>數值取自終端機顯示的 2 位小數，不代表伺服器原始高精度值。</li></ul>
+ <h4>Limitations<span class="zh-i">限制</span></h4><ul>${D.limitations.map(x=>`<li>${vEsc(x)}</li>`).join("")}<li>三個模式使用不同實體 GPU（Baseline GPU 7、aiDAPTIV GPU 6、LMCache GPU 4）與不同 vLLM／容器版本。</li><li>Baseline 的 vLLM 原生 Prefix Cache 沒有完全控制；Random Prompt 與固定 seed 可能受益。</li><li>三組測試同時在同一台 Server 執行，可能共用 CPU／RAM／NVMe。</li><li>數值取自終端機顯示的 2 位小數，不代表伺服器原始高精度值。</li><li>R1 不保證是真正的冷快取；沒有逐請求的 SSD 讀取／命中遙測；比較時 R1 對 R1、R2/R3 對 R2/R3，另外才看各模式自己的 R2/R3 對 R1。</li><li>下一輪若要宣稱 SSD 快取重用：先查測試期間的廠商 log 與 metrics（store／retrieve／hit／miss），確認有效設定（含 <code>--disable-gpu-reuse</code>）與 GPU 對應，並控制 GPU prefix cache 或 eviction，記錄相同 prompt 前後的外部命中數。</li></ul>
  <h4>QA exclusions<span class="zh-i">排除紀錄（不納入任何圖表、表格或排名）</span></h4><p class="v2-note">Input 15950 / C5 整組排除：Baseline、LMCache 各 3 筆異常，aiDAPTIV 3 筆雖有效，為確保對照一致一併排除。</p><div class="table-wrap"><table class="v2-table"><thead><tr><th>Mode</th><th>GPU</th><th>Input</th><th>C</th><th>Run</th><th>Status</th><th>Reason</th></tr></thead><tbody>${D.excluded.map(r=>`<tr><td>${vEsc(modeName(r.mode))}</td><td>${r.gpu}</td><td>${r.input_tokens}</td><td>C${r.concurrency}</td><td>R${r.repetition}</td><td>${vEsc(r.status)}</td><td>${vEsc(r.reason)}</td></tr>`).join("")}</tbody></table></div>
- <h4>Downloads<span class="zh-i">原始資料</span></h4><ul class="v2-links">${[["AISO_BenchmarkV2_20000.json","Full JSON"],["AISO_Benchmark_Valid72.csv","72 raw runs"],["AISO_Scenario_Comparison_8.csv","8 scenarios"],["AISO_Scenario_Metrics_Long24.csv","24 chart groups"],["AISO_R1_vs_R2R3_16.csv","R1 vs R2/R3"],["AISO_Excluded9.csv","9 exclusions"]].map(([f,t])=>`<li><a href="data/benchmark-v2/${f}" download>${t}</a></li>`).join("")}</ul>`;
+ <h4>Downloads<span class="zh-i">原始資料</span></h4><ul class="v2-links">${[["AISO_BenchmarkV2_First_vs_Repeated.json","First vs Repeated JSON"],["AISO_FvR_phase_comparison_48.csv","Phase comparison (48)"],["AISO_FvR_first_run_R1_24.csv","First run R1 (24)"],["AISO_FvR_repeated_run_R2_R3_24.csv","Repeated R2/R3 (24)"],["AISO_FvR_repeated_vs_own_first_24.csv","Repeated vs own first (24)"],["AISO_FvR_phase_headlines.csv","Phase headlines"],["AISO_Benchmark_Valid72.csv","72 raw runs"],["AISO_BenchmarkV2_20000.json","Earlier blended JSON"],["AISO_Scenario_Comparison_8.csv","Earlier blended 8 scenarios"],["AISO_Excluded9.csv","9 exclusions"]].map(([f,t])=>`<li><a href="data/benchmark-v2/${f}" download>${t}</a></li>`).join("")}</ul>`;
 }
 function renderFilters(){
  const inputs=[...new Set(D.batchDetail72.map(r=>r.input_tokens))].sort((a,b)=>a-b),cs=[...new Set(D.batchDetail72.map(r=>r.concurrency))].sort((a,b)=>a-b);
@@ -105,7 +162,7 @@ function renderFilters(){
  opts($v("rInput"),[["all","All"],...inputs.map(x=>[x,x])],S.rInput);
  opts($v("rRun"),[["all","All"],[1,"R1"],[2,"R2"],[3,"R3"]],S.rRun);
 }
-function renderAll(){renderCharts();renderTable();renderRaw();renderRR()}
+function renderAll(){renderCharts();renderTable();renderRaw()}
 
 function bind(){
  const on=(id,key,after)=>$v(id).addEventListener("change",e=>{S[key]=e.target.value;after()});
@@ -113,13 +170,16 @@ function bind(){
  on("rMode","rMode",renderRaw);on("rC","rC",renderRaw);on("rInput","rInput",renderRaw);on("rRun","rRun",renderRaw);
  $v("tDir").addEventListener("click",()=>{S.dir*=-1;renderTable()});
  $v("tMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.metric=b.dataset.v;renderTable()}});
- $v("rrMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.rrMetric=b.dataset.v;renderRR()}});
+ $v("wMetric").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.wMetric=b.dataset.v;renderReuse()}});
+ $v("phaseSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b){S.phase=b.dataset.v;renderPhase()}});
 }
-fetch("data/benchmark-v2/AISO_BenchmarkV2_20000.json",{cache:"no-store"}).then(r=>r.json()).then(d=>{
- D=d;
+const getJson=u=>fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(u);return r.json()});
+Promise.all([getJson("data/benchmark-v2/AISO_BenchmarkV2_20000.json"),getJson("data/benchmark-v2/AISO_BenchmarkV2_First_vs_Repeated.json")]).then(([d,f])=>{
+ D=d;F=f;
  // Input 15950 / C5 must never reach a chart, table or ranking, even if a future data file contains it.
- const keep=r=>!excluded(r.input_tokens,r.concurrency);
+ const keep=r=>!excluded(+r.input_tokens,+r.concurrency);
  ["batchDetail72","scenarioComparison","scenarioMetricsLong","repetitionComparison"].forEach(k=>{D[k]=D[k].filter(keep)});
+ ["phase_comparison","within_mode","raw_runs"].forEach(k=>{F[k]=F[k].filter(keep)});
  D.modes.forEach(m=>{LABEL[m.key]=m.label;GPU[m.key]=m.gpu});
- renderTop();renderFilters();renderMethod();renderAll();bind();
-}).catch(()=>{$v("v2Count").textContent="載入失敗：data/benchmark-v2/AISO_BenchmarkV2_20000.json"});
+ renderTop();renderFilters();renderMethod();renderSsd();renderReuse();renderPhase();renderRaw();bind();
+}).catch(()=>{$v("v2Count").textContent="載入失敗：data/benchmark-v2/*.json"});

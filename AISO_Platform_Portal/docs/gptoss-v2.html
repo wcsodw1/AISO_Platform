@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=1">
+  <link rel="stylesheet" href="gptoss-v2.css?v=2">
 </head>
 <body>
   <header class="site-header">
@@ -28,11 +28,23 @@
       <h1 id="v2Title">TPI Benchmark V2｜GPU Inference Comparison</h1>
       <p class="v2-sub">Baseline · aiDAPTIV · LMCache<span class="zh-i">三模式同條件比較，一律跟 Baseline 比</span></p>
       <ul class="v2-chips" id="v2Chips" aria-label="Test conditions"></ul>
-      <aside class="v2-verdict" role="note"><b>Performance target not met<span class="zh-i">本輪未達預期</span></b><p>Against Baseline, aiDAPTIV and LMCache are <em>slower</em> on average in Output TPS, TTFT and TPOT across the 8 matched scenarios. Baseline ranks first; LMCache stays closer to Baseline than aiDAPTIV.<span class="zh">與 Baseline 相比，aiDAPTIV 與 LMCache 在 8 個情境的 Output TPS、TTFT、TPOT 平均皆退步；Baseline 整體第一，LMCache 比 aiDAPTIV 更接近 Baseline。</span></p></aside>
+      <aside class="v2-verdict" role="note"><b>Performance target not met<span class="zh-i">本輪未達預期</span></b><p>Against the same-phase Baseline, aiDAPTIV and LMCache are <em>slower</em> on average in Output TPS, TTFT and TPOT, in both the first run (R1) and the repeated runs (R2/R3). Baseline ranks first; LMCache stays closer to Baseline than aiDAPTIV.<span class="zh">不論第一次（R1）或重複請求（R2/R3），與同階段 Baseline 相比，aiDAPTIV 與 LMCache 的 Output TPS、TTFT、TPOT 平均皆退步；Baseline 整體第一，LMCache 比 aiDAPTIV 更接近 Baseline。</span></p></aside>
       <ul class="v2-qa" id="v2Qa" aria-label="Data checks"></ul>
     </section>
 
+    <section class="report-section v2-phase" aria-label="Phase">
+      <header><div><p class="section-label">PHASE</p><h2>First vs Repeated<span class="zh">第一次 vs 重複請求（各自跟同階段 Baseline 比）</span></h2></div>
+        <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="repeated">Repeated Run<small>R2 / R3 · 重複請求</small></button></div></header>
+      <p class="v2-phasecap" id="phaseCap"></p>
+    </section>
+
     <section class="v2-cards" id="v2Cards" aria-label="Summary"></section>
+
+    <section class="v2-ssd" aria-label="SSD verification">
+      <h2>SSD Verification<span class="zh-i">SSD 快取驗證</span></h2>
+      <p class="v2-ssd-line">Offload configured / 250 GB initialized (previous startup); store seen at startup; <b>benchmark SSD retrieval &amp; hit unknown</b></p>
+      <ul id="v2SsdList"></ul>
+    </section>
 
     <section class="report-section">
       <header><div><p class="section-label">FILTER</p><h2>Scenarios<span class="zh">情境篩選</span></h2></div>
@@ -40,7 +52,7 @@
       <p class="v2-count" id="v2Count"></p>
     </section>
 
-    <section class="report-section" id="v2Charts"><header><div><p class="section-label">CHARTS</p><h2>Three-mode Charts<span class="zh">三模式圖表（每組情境三輪平均）</span></h2></div></header><div class="v2-legend" id="v2Legend"></div><p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="v2ChartList"></div></section>
+    <section class="report-section" id="v2Charts"><header><div><p class="section-label">CHARTS</p><h2>Three-mode Charts<span class="zh">三模式圖表（依上方階段）</span></h2></div></header><div class="v2-legend" id="v2Legend"></div><p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="v2ChartList"></div></section>
 
     <section class="report-section">
       <header><div><p class="section-label">SCENARIO TABLE</p><h2>8 Scenario Comparison<span class="zh">8 情境詳細比較</span></h2></div>
@@ -56,15 +68,18 @@
       <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
     </section>
 
-    <section class="report-section">
-      <details class="v2-details"><summary><span>R1 vs R2/R3<span class="zh-i">重複順序觀察（選看）</span></span></summary>
-        <p class="v2-note">R1 與 R2/R3 只是測試順序，不是受控的 Cold／Warm Cache 實驗；差異可能來自暖機、vLLM 原生 Prefix Cache 或相同 seed。<br>Order of repetition only — not a controlled cold/warm cache experiment.</p>
-        <div class="v2-filters"><div class="v2-seg" id="rrMetric" role="group" aria-label="Metric"></div></div>
-        <div class="table-wrap"><table class="v2-table" id="tRR"></table></div></details>
+    <section class="report-section" id="v2Reuse">
+      <header><div><p class="section-label">REPEAT OBSERVATION</p><h2>Repeated vs Its Own First Run<span class="zh">重複請求比自己的第一次快多少（未證實為 SSD 快取命中）</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></header>
+      <p class="v2-note" id="wNote"></p>
+      <div class="v2-wcards" id="wCards"></div>
+      <p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="wCharts"></div>
+      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div></div>
+      <p class="v2-hint">← 左右滑動 · Swipe →</p>
+      <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
     </section>
 
     <section class="report-section">
       <details class="v2-details" id="v2Method"><summary><span>Method &amp; Limitations<span class="zh-i">測試方法／限制</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
-  </main><script src="gptoss-v2.js?v=1"></script>
+  </main><script src="gptoss-v2.js?v=2"></script>
 </body></html>
