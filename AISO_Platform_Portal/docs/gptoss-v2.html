@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=11">
+  <link rel="stylesheet" href="gptoss-v2.css?v=13">
 </head>
 <body>
   <header class="site-header">
@@ -31,7 +31,7 @@
     </section>
 
     <section class="v2-tabs" aria-label="View">
-      <div class="v2-seg v2-seg-lg v2-seg3" id="viewSeg" role="group" aria-label="Compare"><button type="button" data-v="reuse-base">Reuse vs Baseline<small>重複請求 對 無快取</small></button><button type="button" data-v="reuse-own">Reuse vs own Cold<small>重複請求 對 自己第一次</small></button><button type="button" data-v="cold-base">Cold vs Baseline<small>第一次 對 無快取</small></button></div>
+      <div class="v2-seg v2-seg-lg v2-seg3" id="viewSeg" role="group" aria-label="Compare"><button type="button" data-v="reuse-base">KV Warm (Reuse) vs Baseline<small>重複請求 對 無快取</small></button><button type="button" data-v="reuse-own">KV Warm (Reuse) vs KV Cold<small>重複請求 對 第一次</small></button><button type="button" data-v="cold-base">KV Cold vs Baseline<small>第一次 對 無快取</small></button></div>
     </section>
 
     <section class="v2-cards" id="v2Cards" aria-label="Summary"></section>
@@ -55,16 +55,17 @@
     </section>
 
     <section class="report-section" id="secHits">
-      <header><h2>Hit tokens per batch<span class="zh">每批命中 Token（Reuse）</span></h2></header>
+      <header><h2>Cache hit tokens<span class="zh">快取命中 Token（KV Warm）</span></h2></header>
+      <p class="v2-fine">一次測試＝同時送出 C 個請求；命中數是這 C 個請求的合計，括號是佔 Prompt 總 token 的比例。</p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tHits"></table></div>
     </section>
 
     <section class="report-section">
-      <header><h2>All Test Runs<span class="zh">全部測試明細：3 模式 × 8 情境 × 4 次（Cold ＋ Reuse ×3）＝ 96 筆</span></h2><a class="v2-dl" href="data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json" download>JSON ↓</a></header>
+      <header><h2>All Test Runs<span class="zh">全部測試明細：3 模式 × 8 情境 × 4 次（KV Cold ＋ KV Warm ×3）＝ 96 筆</span></h2><a class="v2-dl" href="data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json" download>JSON ↓</a></header>
       <div class="v2-filters v2-rawf"><label>Mode<select id="rMode"></select></label><label>Input<select id="rInput"></select></label><label>C<select id="rC"></select></label><label>Phase<select id="rPhase"></select></label></div>
       <p class="v2-count" id="rCount"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
     </section>
 
-  </main><script src="gptoss-v2.js?v=11"></script>
+  </main><script src="gptoss-v2.js?v=13"></script>
 </body></html>
