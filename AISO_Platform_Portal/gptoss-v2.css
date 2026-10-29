@@ -94,7 +94,7 @@
 .v2-goal+.v2-params{margin-top:16px}#secHits .v2-check{margin:0 0 12px}
 /* deck-order layout: conclusion, per-metric chart + table, KV Cold, hit tokens */
 .v2-sumt{min-width:0;width:100%}.v2-sumt th{vertical-align:bottom}.v2-sumt thead th{font-size:15px;color:var(--ivory)}.v2-sumt tbody th{font-size:18px;color:var(--ivory);letter-spacing:0}.v2-sumt td{padding:16px 12px}.v2-sw{display:inline-block;width:12px;height:12px;margin-right:8px;border-radius:3px}
-.v2-take{margin:16px 0 0;padding:14px 22px;font-size:15px;line-height:1.85}.v2-take b{color:#eafff2}.v2-take .g{color:#5dff9f}
+.v2-take{margin:16px 0 0;padding:14px 22px;font-size:15px;line-height:1.85}.v2-take b{color:#eafff2}.v2-take .ga{color:#ff8a4c}.v2-take .gl{color:#4fd1b0}
 .v2-metric .v2-chart{margin-top:12px}
 .v2-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0;color:#c5ccd6;font-size:15px;line-height:1.6}.v2-line .v2-dir{margin-left:0}
 .v2-legend2{display:flex;flex-wrap:wrap;gap:4px 16px;margin-left:auto;font-size:13px}.v2-legend2 span{display:flex;align-items:center;gap:6px;color:var(--ivory)}.v2-legend2 i{width:12px;height:12px;border-radius:3px}
