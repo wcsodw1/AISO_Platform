@@ -53,17 +53,17 @@ function renderTop(){
  const s=V.scope;
  const nGood=V.batches.filter(valid).length,okAll=nGood===V.batches.length;
  const row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
- $v("v2Setup").innerHTML=`<dl class="v2-params">${row("Model 模型",s.model)}${row("Context 上限",`${tok(s.max_model_len)} tokens`)}${row("Input 輸入長度",`${s.input_tokens.map(tok).join(" / ")} tokens`)}${row("Output 輸出長度",`${s.output_tokens} tokens`)}${row("Concurrency 同時請求數",s.concurrency.join(" / "))}${row("Scenarios 情境",`${SC.length} 個（Input × Concurrency；15950 × C5 不納入）`)}</dl>
- <p class="v2-how"><b>測試方式</b>：每個情境對三個模式送同一組 Prompt，先送 1 次（KV Cold，快取還是空的），再重複送 3 次（KV Warm＝Reuse，快取已有內容），比較首字延遲 TTFT、每個字的間隔 TPOT 與每秒輸出 token 數 TPS。</p>
- <p class="v2-check ${okAll?"ok":"bad"}">${okAll?"✓":"✗"} 資料檢查：${nGood} / ${V.batches.length} 筆符合快取規則（Baseline 沒有任何命中；aiDAPTIV、LMCache 的 KV Warm 都有外部命中）</p>`;
+ $v("v2Setup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">相同模型、相同 Prompt 下，比較 <b>Baseline</b>（關閉 KV 卸載）、<b>aiDAPTIV</b>、<b>LMCache</b>：重複請求（KV Warm）能快多少，第一次請求（KV Cold）要多付多少。</p></section>
+ <section class="v2-pane"><h2>測試方式及參數<span>Method &amp; Parameters</span></h2>
+ <p class="v2-goal">每個情境送<b>同一組 Prompt</b>：<b>KV Cold</b> 1 次（快取空）→ <b>KV Warm</b> 3 次（快取已有）；量 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p>
+ <dl class="v2-params">${row("Model 模型",s.model)}${row("Context 上限",`${tok(s.max_model_len)} tokens`)}${row("Input 輸入",`${s.input_tokens.map(tok).join(" / ")} tokens`)}${row("Output 輸出",`${s.output_tokens} tokens`)}${row("Concurrency 並發",s.concurrency.join(" / "))}${row("Scenarios 情境",`${SC.length} 個（15950 × C5 不納入）`)}</dl></section>`;
+ $v("v2Check").className="v2-check "+(okAll?"ok":"bad");$v("v2Check").textContent=`${okAll?"✓":"✗"} 資料檢查：${nGood} / ${V.batches.length} 筆符合快取規則（Baseline 無任何命中；aiDAPTIV、LMCache 的 KV Warm 都有外部命中）`;
  const R=withView({view:"reuse",basis:"baseline",rphase:"mean"},()=>Object.fromEntries(Object.keys(METRICS).map(k=>[k,CAND.map(m=>average(m,k,SC))])));
  const C=withView({view:"first",basis:"baseline"},()=>CAND.map(m=>average(m,"ttft_ms",SC)));
- const edge=(i,c)=>withView({view:"reuse",basis:"baseline",rphase:"mean"},()=>CAND.map(m=>cell(i,c,m,"ttft_ms").g));
- const sc0=SC[0],sc1=SC[SC.length-1],e0=edge(...sc0),e1=edge(...sc1);
  const hits=m=>V.batches.filter(r=>r.mode===m&&r.phase==="Reuse_1").map(r=>r.external_hit_tokens),lo=Math.min(...hits("aidaptiv"),...hits("lmcache")),hi=Math.max(...hits("aidaptiv"),...hits("lmcache"));
  const f=x=>x.toFixed(1),two=(a,fn)=>`${fn(a[0])} / ${fn(a[1])}`,rg=(a,fn)=>`${fn(Math.min(a[0],a[1]))}–${fn(Math.max(a[0],a[1]))}`;
  const allWin=R.ttft_ms.every(x=>x.wins===x.n)&&R.output_tps.every(x=>x.wins===x.n);
- $v("v2Verdict").innerHTML=`<p class="v2-sum">完整測試（3 模式 × ${SC.length} 情境 × KV Cold ＋ KV Warm ×3 ＝ ${V.batches.length} 筆）：KV Warm（Reuse）${allWin?`在全部 ${SC.length} 個情境`:"整體"}都比沒有快取的 Baseline 更快，TTFT 降低 ${rg([R.ttft_ms[0].avg,R.ttft_ms[1].avg],f)}%、TPS 提高 ${rg([R.output_tps[0].avg,R.output_tps[1].avg],f)}%；KV Cold（第一次）則慢 ${rg([Math.abs(C[0].avg),Math.abs(C[1].avg)],f)}%。</p><ol class="v2-find"><li><b>KV Warm 用讀快取取代 Prefill 運算</b>：每批外部命中 ${tok(lo)}–${tok(hi)} tokens（幾乎等於整個 Prompt），GPU 命中 0；Input 越長省越多（TTFT ${sc0[0]}×C${sc0[1]}：${two(e0,x=>"−"+f(x)+"%")} → ${sc1[0]}×C${sc1[1]}：${two(e1,x=>"−"+f(x)+"%")}）。</li><li><b>KV Cold 比 Baseline 慢</b>：第一次沒有可用的快取，TTFT 多 ${two([Math.abs(C[0].avg),Math.abs(C[1].avg)],x=>f(x)+"%")}，推測是寫入／查詢 KV 的額外成本，重複請求後才回本。</li><li><b>KV 快取加速的是 Prefill，不是逐字生成</b>：TPS +${two([R.output_tps[0].avg,R.output_tps[1].avg],f)}%，但 TPOT 只 +${two([R.tpot_ms[0].avg,R.tpot_ms[1].avg],f)}%；LMCache 的 TPOT 優勢另含 runtime 差異（GPU 記憶體 0.65 vs 0.85）。</li></ol>`;
+ $v("v2Verdict").innerHTML=`<p class="v2-sum">KV Warm（Reuse）${allWin?`${SC.length} 個情境全部`:"整體"}比 Baseline 快：TTFT 降 ${rg([R.ttft_ms[0].avg,R.ttft_ms[1].avg],f)}%、TPS 升 ${rg([R.output_tps[0].avg,R.output_tps[1].avg],f)}%；KV Cold 則慢 ${rg([Math.abs(C[0].avg),Math.abs(C[1].avg)],f)}%。</p><ol class="v2-find"><li><b>KV Warm 靠讀快取省掉 Prefill</b>：每批外部命中 ${tok(lo)}–${tok(hi)} tokens，GPU 命中 0；Input 越長省越多。</li><li><b>KV Cold 本來就會比 Baseline 慢</b>：第一次要把 KV 寫入 DRAM／SSD，TTFT 多 ${two([Math.abs(C[0].avg),Math.abs(C[1].avg)],x=>f(x)+"%")}，屬正常現象。</li><li><b>加速的是 Prefill，不是逐字生成</b>：TPS +${two([R.output_tps[0].avg,R.output_tps[1].avg],f)}%，TPOT 只 +${two([R.tpot_ms[0].avg,R.tpot_ms[1].avg],f)}%（LMCache 另含 runtime 差異）。</li></ol>`;
 }
 function renderCards(){
  const list=scenarios(),own=ownView();
@@ -104,9 +104,9 @@ function chart(k,list,mode){
  const L=64,R=12,T=42,B=62,H=328,ih=H-T-B,W=Math.max(avail,n*108+L+R),gw=(W-L-R)/n,bw=Math.min(40,(gw-10)/3),dec=bw>=34?1:0;
  const val=(i,c,m)=>mode==="gain"?cell(i,c,m,k).g:cell(i,c,m,k).v;
  const vals=list.flatMap(([i,c])=>MODES.map(m=>val(i,c,m)));
- const lo=Math.min(0,...vals),hi=Math.max(0,...vals),step=niceStep(hi-lo),bot=Math.floor(lo/step)*step,top=Math.ceil(hi/step)*step,y=v=>T+ih-(v-bot)/(top-bot)*ih;
+ const lo=Math.min(0,...vals),hi=Math.max(0,...vals),step=niceStep(hi-lo),bot=lo,top=hi,y=v=>T+ih-(v-bot)/(top-bot)*ih;
  let g="";
- for(let v=bot;v<=top+step/2;v+=step){const yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${Math.abs(v)<step/2?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
+ for(let v=Math.ceil(bot/step)*step;v<=top+1e-9;v+=step){const yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${Math.abs(v)<step/2?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
  g+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${mode==="gain"?"% vs KV Cold":d.unit}</text>`;
  list.forEach(([i,c],n0)=>{
   const x0=L+gw*n0+(gw-bw*3-4)/2;
