@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=2">
+  <link rel="stylesheet" href="gptoss-v2.css?v=4">
 </head>
 <body>
   <header class="site-header">
@@ -33,8 +33,8 @@
     </section>
 
     <section class="report-section v2-phase" aria-label="Phase">
-      <header><div><p class="section-label">PHASE</p><h2>First vs Repeated<span class="zh">第一次 vs 重複請求（各自跟同階段 Baseline 比）</span></h2></div>
-        <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="repeated">Repeated Run<small>R2 / R3 · 重複請求</small></button></div></header>
+      <header><div><p class="section-label">PHASE</p><h2>First vs Reuse<span class="zh">第一次、重複請求（Reuse）分開看</span></h2></div>
+        <div class="v2-seg v2-seg-lg" id="phaseSeg" role="group" aria-label="Phase"><button type="button" data-v="first">First Run<small>R1 · 第一次</small></button><button type="button" data-v="repeated">Repeated Run<small>R2 / R3 · 重複請求</small></button><button type="button" data-v="reuse">Reuse<small>跟自己的第一次比</small></button></div></header>
       <p class="v2-phasecap" id="phaseCap"></p>
     </section>
 
@@ -46,7 +46,21 @@
       <ul id="v2SsdList"></ul>
     </section>
 
-    <section class="report-section">
+    <section class="report-section" id="v2Reuse" hidden>
+      <header><div><p class="section-label">REPEAT OBSERVATION</p><h2>Repeated vs Its Own First Run<span class="zh">重複請求比自己的第一次快多少（未證實為 SSD 快取命中）</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></header>
+      <div class="v2-bvs"><h3>Reuse vs Baseline<span class="zh-i">重複請求（R2/R3）跟 Baseline 的速度比較</span></h3><p class="v2-note" id="bNote"></p><div class="v2-filters"><div class="v2-seg" id="bMetric" role="group" aria-label="Metric"></div></div><div class="v2-bsum" id="bSum"></div><p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tBVs"></table></div></div>
+      <h3 class="v2-sub3">Repeated vs its own first run<span class="zh-i">跟自己的第一次比</span></h3>
+      <p class="v2-note" id="wNote"></p>
+      <div class="v2-example" id="wExample"></div>
+      <div class="v2-wcards" id="wCards"></div>
+      <p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="wCharts"></div>
+      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div></div>
+      <p class="v2-hint">← 左右滑動 · Swipe →</p>
+      <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
+    </section>
+
+
+    <section class="report-section" id="secFilter">
       <header><div><p class="section-label">FILTER</p><h2>Scenarios<span class="zh">情境篩選</span></h2></div>
         <div class="v2-filters"><label>Input<select id="fInput"></select></label><label>Concurrency<select id="fC"></select></label></div></header>
       <p class="v2-count" id="v2Count"></p>
@@ -54,7 +68,7 @@
 
     <section class="report-section" id="v2Charts"><header><div><p class="section-label">CHARTS</p><h2>Three-mode Charts<span class="zh">三模式圖表（依上方階段）</span></h2></div></header><div class="v2-legend" id="v2Legend"></div><p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="v2ChartList"></div></section>
 
-    <section class="report-section">
+    <section class="report-section" id="secTable">
       <header><div><p class="section-label">SCENARIO TABLE</p><h2>8 Scenario Comparison<span class="zh">8 情境詳細比較</span></h2></div>
         <div class="v2-filters"><div class="v2-seg" id="tMetric" role="group" aria-label="Metric"></div><label>Sort<select id="tSort"><option value="order">Scenario order · 情境順序</option><option value="aidaptiv">aiDAPTIV vs Baseline</option><option value="lmcache">LMCache vs Baseline</option></select></label><button type="button" id="tDir" aria-label="Sort direction">↑ ASC</button></div></header>
       <p class="v2-note" id="tNote"></p>
@@ -68,18 +82,8 @@
       <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
     </section>
 
-    <section class="report-section" id="v2Reuse">
-      <header><div><p class="section-label">REPEAT OBSERVATION</p><h2>Repeated vs Its Own First Run<span class="zh">重複請求比自己的第一次快多少（未證實為 SSD 快取命中）</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></header>
-      <p class="v2-note" id="wNote"></p>
-      <div class="v2-wcards" id="wCards"></div>
-      <p class="v2-hint">← 左右滑動看全部情境 · Swipe to see all scenarios →</p><div id="wCharts"></div>
-      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div></div>
-      <p class="v2-hint">← 左右滑動 · Swipe →</p>
-      <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
-    </section>
-
     <section class="report-section">
       <details class="v2-details" id="v2Method"><summary><span>Method &amp; Limitations<span class="zh-i">測試方法／限制</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
-  </main><script src="gptoss-v2.js?v=2"></script>
+  </main><script src="gptoss-v2.js?v=4"></script>
 </body></html>
