@@ -63,5 +63,49 @@ class BenchmarkV2ReportTests(unittest.TestCase):
                 self.assertLess(headline[key], 0)  # honest conclusion: every headline regressed
 
 
+
+class FirstVsRepeatedTests(unittest.TestCase):
+    PHASES = {"first_observed_r1": [1], "repeated_observed_r2_r3": [2, 3]}
+    KEYS = {"tps": ("output_tps", True), "ttft_ms": ("ttft_median_ms", False), "tpot_ms": ("tpot_median_ms", False)}
+
+    @classmethod
+    def setUpClass(cls):
+        cls.fr = json.loads((DATA / "AISO_BenchmarkV2_First_vs_Repeated.json").read_text(encoding="utf-8"))
+        cls.raw = json.loads((DATA / "AISO_BenchmarkV2_20000.json").read_text(encoding="utf-8"))["batchDetail72"]
+
+    def test_counts_exclusion_and_no_ssd_claim(self):
+        f = self.fr
+        self.assertEqual((len(f["phase_comparison"]), len(f["within_mode"]), len(f["raw_runs"]), len(f["headline"])), (48, 24, 72, 7))
+        for section in ("phase_comparison", "within_mode", "raw_runs"):
+            self.assertFalse([r for r in f[section] if (int(r["input_tokens"]), int(r["concurrency"])) == (15950, 5)], section)
+        self.assertFalse(any(r["ssd_reuse_verified"] for r in f["phase_comparison"]))
+        self.assertFalse(f["aiDAPTIV_evidence"]["verified_benchmark_retrieve"])
+        self.assertFalse(f["aiDAPTIV_evidence"]["verified_benchmark_external_cache_hit"])
+
+    def test_phase_values_follow_raw_runs(self):
+        for row in self.fr["phase_comparison"]:
+            runs = [r for r in self.raw if r["mode"] == row["mode"] and r["input_tokens"] == row["input_tokens"] and r["concurrency"] == row["concurrency"] and r["repetition"] in self.PHASES[row["phase"]]]
+            self.assertEqual(len(runs), len(self.PHASES[row["phase"]]))
+            for key, (raw_key, higher) in self.KEYS.items():
+                self.assertAlmostEqual(sum(r[raw_key] for r in runs) / len(runs), row[key], delta=0.0051, msg=(row["phase"], row["mode"], key))
+                base = next(b for b in self.fr["phase_comparison"] if b["phase"] == row["phase"] and b["mode"] == "baseline" and b["input_tokens"] == row["input_tokens"] and b["concurrency"] == row["concurrency"])
+                self.assertAlmostEqual(gain(row[key], base[key], higher), row[f"{key.split('_')[0]}_improvement_vs_baseline_pct"], delta=0.01)
+
+    def test_headlines_and_within_mode(self):
+        rows = self.fr["phase_comparison"]
+        for h in self.fr["headline"]:
+            if h["phase"] == "repeat_vs_own_first":
+                items = [w for w in self.fr["within_mode"] if w["mode"] == h["mode"]]
+                for key, col in (("tps", "tps_gain_pct"), ("ttft", "ttft_gain_pct"), ("tpot", "tpot_gain_pct")):
+                    self.assertAlmostEqual(sum(w[col] for w in items) / 8, h[f"{key}_vs_baseline_pct"], delta=0.01)
+                continue
+            items = [r for r in rows if r["phase"] == h["phase"] and r["mode"] == h["mode"]]
+            self.assertEqual(len(items), 8)
+            for key in ("tps", "ttft", "tpot"):
+                avg = sum(r[f"{key}_improvement_vs_baseline_pct"] for r in items) / 8
+                self.assertAlmostEqual(avg, h[f"{key}_vs_baseline_pct"], delta=0.01)
+                self.assertLess(h[f"{key}_vs_baseline_pct"], 0)  # both phases regress against same-phase Baseline
+
+
 if __name__ == "__main__":
     unittest.main()

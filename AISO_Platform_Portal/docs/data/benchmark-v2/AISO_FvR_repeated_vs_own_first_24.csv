@@ -1,0 +1,25 @@
+﻿input_tokens,concurrency,mode,first_tps,repeated_tps,tps_gain_pct,first_ttft_ms,repeated_ttft_ms,ttft_gain_pct,first_tpot_ms,repeated_tpot_ms,tpot_gain_pct,disclaimer
+3950,1,baseline,170.46,170.43,-0.0176,150.43,44.115,70.67407,4.18,4.17,0.23923,Repeated benchmark run; SSD cache hit not verified
+3950,1,aidaptiv,163.05,170.505,4.57222,183.91,56.91,69.05552,5.22,5.23,-0.19157,Repeated benchmark run; SSD cache hit not verified
+3950,1,lmcache,170.3,170.42,0.07046,185.06,60.415,67.35383,4.21,4.2,0.23753,Repeated benchmark run; SSD cache hit not verified
+3950,2,baseline,218.19,236.815,8.53614,145.27,42.53,70.72348,4.55,4.135,9.12088,Repeated benchmark run; SSD cache hit not verified
+3950,2,aidaptiv,185.87,203.005,9.21881,194.71,59.655,69.36213,6.1,5.535,9.2623,Repeated benchmark run; SSD cache hit not verified
+3950,2,lmcache,213.88,230.82,7.92033,172.27,66.92,61.154,4.69,4.29,8.52878,Repeated benchmark run; SSD cache hit not verified
+3950,5,baseline,410.42,446.88,8.88358,156.06,49.81,68.08279,7.46,6.045,18.96783,Repeated benchmark run; SSD cache hit not verified
+3950,5,aidaptiv,348.93,383.48,9.9017,187.47,69.59,62.87939,9.45,8.39,11.21693,Repeated benchmark run; SSD cache hit not verified
+3950,5,lmcache,394.31,411.95,4.47364,175.22,70.07,60.01027,7.91,6.7,15.29709,Repeated benchmark run; SSD cache hit not verified
+7950,1,baseline,164.04,163.945,-0.05791,284.58,57.36,79.84398,4.12,4.16,-0.97087,Repeated benchmark run; SSD cache hit not verified
+7950,1,aidaptiv,130.84,161.46,23.40263,382.76,111.62,70.83812,5.74,5.65,1.56794,Repeated benchmark run; SSD cache hit not verified
+7950,1,lmcache,164.05,163.08,-0.59128,346.62,95.81,72.35878,4.34,4.36,-0.46083,Repeated benchmark run; SSD cache hit not verified
+7950,2,baseline,209.39,245.84,17.40771,278.18,64.43,76.83874,5.26,4.425,15.87452,Repeated benchmark run; SSD cache hit not verified
+7950,2,aidaptiv,167.29,197.52,18.07042,368.95,91.285,75.25817,7.42,6.36,14.28571,Repeated benchmark run; SSD cache hit not verified
+7950,2,lmcache,195.9,232.65,18.75957,333.03,89.975,72.98291,5.77,4.795,16.89775,Repeated benchmark run; SSD cache hit not verified
+7950,5,baseline,381.66,568.43,48.93623,805.54,71.955,91.06748,8.21,7.145,12.97199,Repeated benchmark run; SSD cache hit not verified
+7950,5,aidaptiv,275.86,429.96,55.86167,1198.0,119.185,90.05134,11.33,10.05,11.29744,Repeated benchmark run; SSD cache hit not verified
+7950,5,lmcache,324.56,548.15,68.89019,1252.83,115.29,90.79763,7.6,7.37,3.02632,Repeated benchmark run; SSD cache hit not verified
+15950,1,baseline,98.16,98.165,0.00509,581.46,84.325,85.49771,4.24,4.265,-0.58962,Repeated benchmark run; SSD cache hit not verified
+15950,1,aidaptiv,91.77,98.18,6.98485,878.28,145.05,83.48477,6.51,6.315,2.99539,Repeated benchmark run; SSD cache hit not verified
+15950,1,lmcache,98.2,98.385,0.18839,796.86,142.145,82.16186,4.66,4.655,0.1073,Repeated benchmark run; SSD cache hit not verified
+15950,2,baseline,129.18,153.02,18.45487,600.64,107.585,82.08827,4.32,4.28,0.92593,Repeated benchmark run; SSD cache hit not verified
+15950,2,aidaptiv,103.2,129.68,25.65891,888.64,169.36,80.94166,8.8,6.34,27.95455,Repeated benchmark run; SSD cache hit not verified
+15950,2,lmcache,115.93,139.73,20.52963,822.77,164.18,80.04546,6.77,4.865,28.13885,Repeated benchmark run; SSD cache hit not verified
