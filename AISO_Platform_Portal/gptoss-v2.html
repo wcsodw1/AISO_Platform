@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=12">
+  <link rel="stylesheet" href="gptoss-v2.css?v=13">
 </head>
 <body>
   <header class="site-header">
@@ -55,7 +55,8 @@
     </section>
 
     <section class="report-section" id="secHits">
-      <header><h2>Hit tokens per batch<span class="zh">每批命中 Token（KV Warm）</span></h2></header>
+      <header><h2>Cache hit tokens<span class="zh">快取命中 Token（KV Warm）</span></h2></header>
+      <p class="v2-fine">一次測試＝同時送出 C 個請求；命中數是這 C 個請求的合計，括號是佔 Prompt 總 token 的比例。</p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="tHits"></table></div>
     </section>
 
@@ -66,5 +67,5 @@
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
     </section>
 
-  </main><script src="gptoss-v2.js?v=12"></script>
+  </main><script src="gptoss-v2.js?v=13"></script>
 </body></html>

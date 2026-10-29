@@ -72,7 +72,7 @@ function renderCards(){
   const rows=Object.entries(METRICS).map(([k,d])=>{
    if(!own&&m==="baseline")return `<li><span>${d.short}<small>${d.zh} · ${d.unit}</small></span><b class="v2-big flat">Reference</b></li>`;
    const a=average(m,k,list);
-   return `<li><span>${d.short}<small>${d.zh} · ${d.higher?"越高越好":"越低越好"}</small></span>${Number.isFinite(a.avg)?pct2(a.avg):`<b class="v2-big flat">—</b>`}<small class="v2-win">${a.wins} / ${a.n} better</small></li>`;
+   return `<li><span>${d.short}<small>${d.zh} · <em class="dir">${d.higher?"越高越好 ↑":"越低越好 ↓"}</em></small></span>${Number.isFinite(a.avg)?pct2(a.avg):`<b class="v2-big flat">—</b>`}<small class="v2-win">${a.wins} / ${a.n} better</small></li>`;
   }).join("");
   return `<article class="v2-card" style="--mc:${COL[m]}"><header><h3>${vEsc(info.label)}</h3><span>GPU ${info.gpu} · :${info.port}</span></header><p class="v2-rank">${own?"KV Warm vs KV Cold":S.view==="first"?"KV Cold vs Baseline":"KV Warm vs Baseline"}<small>${vEsc(info.cache)}</small></p><ul>${rows}</ul></article>`;
  }).join("");
@@ -101,7 +101,7 @@ function chart(k,list,mode){
  if(!n)return `<p class="v2-empty">${S.input==="15950"&&S.c==="5"?"Input 15950 / C5 已排除":"無資料"}</p>`;
  // Drawn at 1:1 pixels (no viewBox scaling) so axis and label text stays the same size as the tables.
  const avail=Math.max(0,($v("v2ChartList").clientWidth||900)-48);
- const L=64,R=12,T=14,B=62,H=300,ih=H-T-B,W=Math.max(avail,Math.max(560,n*84+L+R)),gw=(W-L-R)/n,bw=Math.min(34,(gw-14)/3);
+ const L=64,R=12,T=42,B=62,H=328,ih=H-T-B,W=Math.max(avail,n*108+L+R),gw=(W-L-R)/n,bw=Math.min(40,(gw-10)/3),dec=bw>=34?1:0;
  const val=(i,c,m)=>mode==="gain"?cell(i,c,m,k).g:cell(i,c,m,k).v;
  const vals=list.flatMap(([i,c])=>MODES.map(m=>val(i,c,m)));
  const lo=Math.min(0,...vals),hi=Math.max(0,...vals),step=niceStep(hi-lo),bot=Math.floor(lo/step)*step,top=Math.ceil(hi/step)*step,y=v=>T+ih-(v-bot)/(top-bot)*ih;
@@ -111,7 +111,12 @@ function chart(k,list,mode){
  list.forEach(([i,c],n0)=>{
   const x0=L+gw*n0+(gw-bw*3-4)/2;
   MODES.forEach((m,j)=>{const v=val(i,c,m),x=x0+j*(bw+2),y0=y(0),y1=y(v);
-   g+=`<rect x="${x}" y="${Math.min(y0,y1)}" width="${bw}" height="${Math.max(1,Math.abs(y1-y0))}" rx="2" fill="${COL[m]}"><title>${vEsc(label(m))} · ${i} · C${c}: ${mode==="gain"?`${v.toFixed(1)}%`:`${num(v,d.dec)} ${d.unit}`}</title></rect>`});
+   g+=`<rect x="${x}" y="${Math.min(y0,y1)}" width="${bw}" height="${Math.max(1,Math.abs(y1-y0))}" rx="2" fill="${COL[m]}"><title>${vEsc(label(m))} · ${i} · C${c}: ${mode==="gain"?`${v.toFixed(1)}%`:`${num(v,d.dec)} ${d.unit}`}</title></rect>`;
+   // improvement % over each non-Baseline bar (all bars in the own-Cold view): green = better, red = worse
+   const gv=mode==="gain"?v:(m==="baseline"?NaN:cell(i,c,m,k).g);
+   if(Number.isFinite(gv)&&Math.abs(gv)>=0.05){
+    const txt=`${gv>0?"+":"−"}${Math.abs(gv).toFixed(dec)}%`,up=y1<=y0,lift=(j%2===0&&txt.length*7.2>bw+2)?14:0;  // alternate height when neighbouring labels would collide
+    g+=`<text class="bl ${gv>0?"up":"dn"}" x="${x+bw/2}" y="${up?y1-5-lift:y1+14+lift}" text-anchor="middle">${txt}</text>`}});
   g+=`<text x="${L+gw*n0+gw/2}" y="${H-34}" text-anchor="middle" class="xl">${i}${warm(i,c)&&(S.view==="first"||ownView())?"*":""}</text><text x="${L+gw*n0+gw/2}" y="${H-16}" text-anchor="middle" class="xl2">C${c}</text>`;
  });
  return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.short}">${g}</svg></div>`;
@@ -120,7 +125,7 @@ function renderCharts(){
  const list=scenarios(),own=ownView();
  $v("v2Count").textContent=`${list.length} / ${SC.length}`;
  $v("v2Legend").innerHTML=MODES.map(m=>`<span><i style="background:${COL[m]}"></i>${vEsc(label(m))}<small>GPU ${gpu(m)}</small></span>`).join("");
- $v("v2ChartList").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<span class="zh-i">${d.zh}</span><small>${own?"% vs KV Cold · 正數＝改善":`${d.unit} · ${d.higher?"越高越好 ↑":"越低越好 ↓"}`}</small></h3>${chart(k,list,own?"gain":"value")}</article>`).join("");
+ $v("v2ChartList").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<span class="zh-i">${d.zh}</span><span class="v2-dir ${own?"hi":d.higher?"hi":"lo"}">${own?"正數＝改善":d.higher?"↑ 越高越好":"↓ 越低越好"}</span><small>${own?"% vs KV Cold":d.unit}</small></h3>${chart(k,list,own?"gain":"value")}</article>`).join("");
 }
 function renderTable(){
  const d=METRICS[S.metric],k=S.metric,own=ownView();
@@ -141,8 +146,9 @@ function renderTable(){
  $v("tScenario").innerHTML=`<thead>${head}</thead><tbody>${body||`<tr><td colspan="8" class="v2-empty">無資料</td></tr>`}</tbody>${list.length?`<tfoot>${foot}</tfoot>`:""}`;
 }
 function renderHits(){
- const r=(m,i,c)=>batch(m,i,c,"Reuse_1");
- $v("tHits").innerHTML=`<thead><tr><th>Input</th><th>C</th><th class="b">${vEsc(label("baseline"))}<small>GPU / External</small></th><th class="a">aiDAPTIV ON<small>External / batch</small></th><th class="l">LMCache<small>External / batch</small></th><th>Prompt tokens</th></tr></thead><tbody>${SC.map(([i,c])=>`<tr><td>${i}</td><td>C${c}</td><td>${r("baseline",i,c).gpu_hit_tokens} / ${r("baseline",i,c).external_hit_tokens}</td><td><b class="v2-hit">${tok(r("aidaptiv",i,c).external_hit_tokens)}</b></td><td><b class="v2-hit">${tok(r("lmcache",i,c).external_hit_tokens)}</b></td><td>${tok(i*c)}</td></tr>`).join("")}</tbody>`;
+ const r=(m,i,c)=>batch(m,i,c,"Reuse_1"),rate=(n,t)=>`${(n/t*100).toFixed(1)}%`;
+ const cellHit=(m,i,c)=>{const n=r(m,i,c).external_hit_tokens;return `<td><b class="v2-hit">${tok(n)}</b> <span class="v2-rate">${rate(n,i*c)}</span></td>`};
+ $v("tHits").innerHTML=`<thead><tr><th>Input</th><th>C</th><th>Prompt tokens<small>Input × C</small></th><th class="b">${vEsc(label("baseline"))}<small>GPU / External</small></th><th class="a">aiDAPTIV ON<small>External hit</small></th><th class="l">LMCache<small>External hit</small></th></tr></thead><tbody>${SC.map(([i,c])=>`<tr><td>${i}</td><td>C${c}</td><td>${tok(i*c)}</td><td>${r("baseline",i,c).gpu_hit_tokens} / ${r("baseline",i,c).external_hit_tokens}</td>${cellHit("aidaptiv",i,c)}${cellHit("lmcache",i,c)}</tr>`).join("")}</tbody>`;
 }
 function renderRaw(){
  const rows=V.batches.filter(r=>(S.rMode==="all"||r.mode===S.rMode)&&(S.rInput==="all"||r.input_tokens===+S.rInput)&&(S.rC==="all"||r.concurrency===+S.rC)&&(S.rPhase==="all"||r.phase===S.rPhase));
