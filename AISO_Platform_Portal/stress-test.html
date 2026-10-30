@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Stress Test · Intel B70 vs AISO1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-29">
+  <link rel="stylesheet" href="gptoss-v2.css?v=19">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <p class="eyebrow">BENCHMARK / STRESS TEST · 2026-10-30</p>
+      <h1>Stress Test｜Intel B70 vs AISO1</h1>
+      <p class="v2-sub">llama.cpp · GGUF Q4<span class="zh-i">NP 2 / 4 × Input 4K～64K × Output 1024 × Repeat 3</span></p>
+      <div class="v2-setup" id="stSetup" aria-label="Purpose and method"></div>
+      <aside class="v2-verdict" role="note"><b>AISO1 正式測試進行中<span class="zh-i">目前只有 B70 的實測；AISO1 完成後才會計算 Intel vs AMD 的差異，現階段不填倍率</span></b><p id="stNote"></p></aside>
+    </section>
+
+    <section class="report-section" id="secMetrics">
+      <header><h2>TTFT · TPOT · TPS<span class="zh">Intel B70 實測（llama.cpp GGUF）</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
+      <div id="stMetrics"></div>
+    </section>
+
+    <section class="report-section" id="secTable">
+      <header><h2>B70 vs AISO1<span class="zh">逐情境對照</span></h2></header>
+      <p class="v2-fine" id="stTableSub"></p>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
+      <p class="v2-fn">TTFT ≥ 180 秒以紅字標示，仍為 Technical PASS</p>
+    </section>
+
+    <section class="report-section" id="secParity">
+      <header><h2>Model parity<span class="zh">四款模型 GGUF 配對</span></h2></header>
+      <div class="table-wrap"><table class="v2-table v2-sc" id="stParity"></table></div>
+    </section>
+
+    <section class="report-section">
+      <header><h2>Data<span class="zh">B70 已驗證實測 25 筆</span></h2><a class="v2-dl" href="data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json" download>JSON ↓</a></header>
+      <p class="v2-fine" id="stErr"></p>
+    </section>
+
+  </main><script src="stress-test.js?v=1"></script>
+</body>
+</html>

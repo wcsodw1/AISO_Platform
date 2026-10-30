@@ -1,0 +1,363 @@
+{
+ "dataset": "AISO_B70_AISO1_20261030",
+ "evidence_until": "2026-10-27",
+ "generated_on": "2026-10-30",
+ "note": "B70 formal llama.cpp GGUF results only. AISO1 formal results are pending, so no Intel vs AMD speedup is computed.",
+ "profile": {
+  "framework": "llama.cpp",
+  "format": "GGUF",
+  "np": [
+   2,
+   4
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384,
+   32768,
+   65536
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "context_per_request": 69632,
+  "batch": 2048,
+  "ubatch": 512,
+  "kv_type": "f16"
+ },
+ "b70_runs": [
+  {
+   "model": "Gemma26",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 18.058,
+   "tpot_ms": 43.617,
+   "decode_tps": 22.953,
+   "aggregate_tps": 32.693,
+   "e2e_s": 62.68,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 32.022,
+   "tpot_ms": 47.51,
+   "decode_tps": 21.2,
+   "aggregate_tps": 25.397,
+   "e2e_s": 80.623,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 55.193,
+   "tpot_ms": 52.907,
+   "decode_tps": 19.56,
+   "aggregate_tps": 18.747,
+   "e2e_s": 109.318,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 2,
+   "input": 32768,
+   "ttft_s": 106.706,
+   "tpot_ms": 68.383,
+   "decode_tps": 16.463,
+   "aggregate_tps": 11.59,
+   "e2e_s": 176.662,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 2,
+   "input": 65536,
+   "ttft_s": 212.285,
+   "tpot_ms": 99.35,
+   "decode_tps": 13.85,
+   "aggregate_tps": 6.533,
+   "e2e_s": 313.921,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma26",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 35.826,
+   "tpot_ms": 65.187,
+   "decode_tps": 15.497,
+   "aggregate_tps": 40.123,
+   "e2e_s": 102.51,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 60.452,
+   "tpot_ms": 75.69,
+   "decode_tps": 13.657,
+   "aggregate_tps": 29.723,
+   "e2e_s": 137.882,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 109.906,
+   "tpot_ms": 98.013,
+   "decode_tps": 11.147,
+   "aggregate_tps": 19.487,
+   "e2e_s": 210.173,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "np": 4,
+   "input": 32768,
+   "ttft_s": 220.434,
+   "tpot_ms": 152.047,
+   "decode_tps": 8.177,
+   "aggregate_tps": 10.93,
+   "e2e_s": 375.975,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma26",
+   "np": 4,
+   "input": 65536,
+   "ttft_s": 444.043,
+   "tpot_ms": 270.563,
+   "decode_tps": 5.697,
+   "aggregate_tps": 5.72,
+   "e2e_s": 720.828,
+   "run_id": "20261014_181438",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 31.677,
+   "tpot_ms": 46.11,
+   "decode_tps": 21.767,
+   "aggregate_tps": 25.97,
+   "e2e_s": 78.846,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 49.696,
+   "tpot_ms": 52.567,
+   "decode_tps": 19.363,
+   "aggregate_tps": 19.777,
+   "e2e_s": 103.474,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 85.843,
+   "tpot_ms": 65.767,
+   "decode_tps": 16.327,
+   "aggregate_tps": 13.363,
+   "e2e_s": 153.124,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 32768,
+   "ttft_s": 177.449,
+   "tpot_ms": 95.393,
+   "decode_tps": 12.813,
+   "aggregate_tps": 7.457,
+   "e2e_s": 275.038,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 65536,
+   "ttft_s": 371.84,
+   "tpot_ms": 167.803,
+   "decode_tps": 9.223,
+   "aggregate_tps": 3.767,
+   "e2e_s": 543.503,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 54.213,
+   "tpot_ms": 70.237,
+   "decode_tps": 14.693,
+   "aggregate_tps": 32.487,
+   "e2e_s": 126.065,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 82.95,
+   "tpot_ms": 92.907,
+   "decode_tps": 11.55,
+   "aggregate_tps": 22.987,
+   "e2e_s": 177.991,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 139.346,
+   "tpot_ms": 140.737,
+   "decode_tps": 8.19,
+   "aggregate_tps": 14.42,
+   "e2e_s": 283.319,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 4,
+   "input": 32768,
+   "ttft_s": 288.269,
+   "tpot_ms": 248.253,
+   "decode_tps": 5.22,
+   "aggregate_tps": 7.533,
+   "e2e_s": 542.233,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "np": 4,
+   "input": 65536,
+   "ttft_s": 666.911,
+   "tpot_ms": 522.133,
+   "decode_tps": 2.95,
+   "aggregate_tps": 3.403,
+   "e2e_s": 1201.053,
+   "run_id": "20261014_201639",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 19.628,
+   "tpot_ms": 39.557,
+   "decode_tps": 25.337,
+   "aggregate_tps": 34.33,
+   "e2e_s": 60.092,
+   "run_id": "20261014_231739",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 29.481,
+   "tpot_ms": 41.637,
+   "decode_tps": 24.14,
+   "aggregate_tps": 28.467,
+   "e2e_s": 72.076,
+   "run_id": "20261014_231739",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 48.086,
+   "tpot_ms": 46.917,
+   "decode_tps": 21.643,
+   "aggregate_tps": 21.387,
+   "e2e_s": 96.082,
+   "run_id": "20261014_231739",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 32768,
+   "ttft_s": 97.445,
+   "tpot_ms": 55.973,
+   "decode_tps": 18.85,
+   "aggregate_tps": 13.36,
+   "e2e_s": 154.705,
+   "run_id": "20261014_231739",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 65536,
+   "ttft_s": 193.767,
+   "tpot_ms": 83.873,
+   "decode_tps": 14.453,
+   "aggregate_tps": 7.36,
+   "e2e_s": 279.571,
+   "run_id": "20261014_231739",
+   "ttft_over_180s": true
+  }
+ ],
+ "model_parity": [
+  {
+   "model": "Gemma26",
+   "name": "Gemma 4 26B A4B",
+   "repo": "google/gemma-4-26B-A4B-it-qat-q4_0-gguf",
+   "quant": "Q4_0",
+   "b70_sha256": "3eca3b8f6d7baf218a7dd6bba5fb59a56ee25fe2d567b6f5f589b4f697eca51d",
+   "status": "SAME_REPO_PENDING_CROSS_MACHINE_SHA"
+  },
+  {
+   "model": "Gemma31",
+   "name": "Gemma 4 31B",
+   "repo": "google/gemma-4-31B-it-qat-q4_0-gguf",
+   "quant": "Q4_0",
+   "b70_sha256": "179cfb99212709597eae5929112cfca677e1bbf566178b479ae1da0c4772874b",
+   "status": "SAME_REPO_PENDING_CROSS_MACHINE_SHA"
+  },
+  {
+   "model": "Nemotron",
+   "name": "Nemotron 3.5 Lightning 30B-A3B",
+   "repo": "unsloth/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
+   "quant": "UD-Q4_K_M",
+   "b70_sha256": null,
+   "status": "SAME_REPO_PENDING_CROSS_MACHINE_SHA"
+  },
+  {
+   "model": "Laguna",
+   "name": "Laguna XS 2.1",
+   "repo": "poolside/Laguna-XS-2.1-GGUF",
+   "quant": "Q4_K_M",
+   "b70_sha256": "1ac7079101fca5a6df8c5a7523a3c30ea7d1c0e4b1258090e7d6d4039287f6cb",
+   "status": "HISTORIC_SHA_MATCH_BUT_CURRENT_FILES_UNVERIFIED"
+  }
+ ]
+}
