@@ -3268,7 +3268,11 @@ textarea{
 .bh-tagline{margin:clamp(10px,1.4vw,18px) 0 0;color:#c8b875;font-size:clamp(22px,3vw,46px);line-height:1;font-weight:800;letter-spacing:-.01em}
 .bh-lead{margin:clamp(18px,2.4vw,30px) 0 0;max-width:640px;color:rgba(243,239,229,.82);font-size:clamp(17px,1.7vw,24px);line-height:1.45;font-weight:500}
 .bh-lead .copy-zh{margin-top:8px}
-.bh-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:clamp(22px,3vw,36px)}
+.bh-actions{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;margin-top:clamp(22px,3vw,36px)}
+.bh-group{display:grid;gap:10px}.bh-label{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,239,229,.55)}.bh-row{display:flex;gap:14px;flex-wrap:wrap}
+.button.bh-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;width:clamp(236px,22vw,280px);height:84px;padding:12px 14px;text-align:center;text-decoration:none;box-shadow:0 0 0 1px rgba(200,184,117,.4),0 14px 44px rgba(200,184,117,.18)}
+.button.bh-btn b{font-size:16px;font-weight:900;white-space:nowrap}.button.bh-btn small{font-size:12px;font-weight:700;opacity:.75}
+.button.bh-btn:hover{box-shadow:0 0 0 1px rgba(200,184,117,.7),0 18px 60px rgba(200,184,117,.38)}
 .bh-actions p{margin:0;color:rgba(243,239,229,.55);font-size:13px}
 .button.bh-cta{padding:18px 34px;font-size:clamp(16px,1.4vw,20px);text-decoration:none;box-shadow:0 0 0 1px rgba(200,184,117,.4),0 14px 44px rgba(200,184,117,.22)}
 .button.bh-cta:hover{box-shadow:0 0 0 1px rgba(200,184,117,.7),0 18px 60px rgba(200,184,117,.38)}
