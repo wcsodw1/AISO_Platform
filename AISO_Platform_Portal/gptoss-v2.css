@@ -104,3 +104,7 @@
 @media(max-width:620px){.v2-sumt td{padding:12px 6px}.v2-sumt thead th{font-size:13px}.v2-sumt tbody th{font-size:15px}.v2-take{font-size:15px;padding:14px 16px}.v2-legend2{margin-left:0}}
 .v2-fn{margin:10px 2px 0;color:var(--muted);font-size:13px;text-align:right}
 .v2-approx{display:block;margin-top:2px;color:var(--muted);font-size:13px;font-weight:400}
+/* Stress Test page (B70 vs AISO1) */
+.st-tabs{display:flex;gap:8px;margin-left:auto}.st-tabs button{padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ivory);font:inherit;font-weight:800;cursor:pointer}.st-tabs button.on{background:var(--ivory);color:#10141c;border-color:var(--ivory)}
+.st-wait{color:var(--muted);font-style:italic}.st-pending{text-align:center}.st-over{color:#ff8a80;font-weight:800}.st-model{font-weight:800;color:var(--ivory)}.st-sha{font-family:ui-monospace,Menlo,monospace}.st-cap{margin:8px 0 6px}
+.st .v2-chartwrap .bl.up2{fill:var(--ivory)}.st-spec th{text-align:left;color:var(--muted);font-weight:600}.st-spec td{white-space:normal}
