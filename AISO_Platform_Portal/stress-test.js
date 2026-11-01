@@ -16,19 +16,11 @@ const present=np=>MODELS.filter(([m])=>D.b70_runs.some(r=>r.model===m&&r.np===np
 const wait='<span class="st-wait">等待 AISO1 正式測試</span>';
 
 function renderSetup(){
- const p=D.profile,r=(k,a,b)=>`<tr><th>${k}</th><td>${a}</td><td>${b}</td></tr>`;
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">以<b>相同模型、相同 llama.cpp 參數</b>，比較 <b>Intel Arc Pro B70</b> 與 <b>AISO1（AMD Ryzen AI MAX+ 395）</b>在長輸入與多並發下的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p></section>
+ const p=D.profile,row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">在<b>同一組標準參數</b>下（相同模型、相同 Input／並發／Output），比較 <b>Intel Arc Pro B70</b>（Intel SYCL）與 <b>AISO1</b>（AMD Ryzen AI MAX+ 395，Vulkan）的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；框架與硬體不同，測試參數相同。</p></section>
  <section class="v2-pane"><h2>測試方式及參數<span>Method &amp; Parameters</span></h2>
- <div class="table-wrap"><table class="v2-table v2-sc st-spec"><thead><tr><th></th><th>Intel B70</th><th>AISO1 AMD</th></tr></thead><tbody>
- ${r("GPU","2× Intel Arc Pro B70（2×32 GB VRAM）","Ryzen AI MAX+ 395 / Radeon 8060S（共享記憶體）")}
- ${r("llama.cpp Backend","Intel SYCL","AMD Vulkan")}
- ${r("NP 並發數",p.np.join(" / "),p.np.join(" / "))}
- ${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small class="v2-approx">約等於 4K / 8K / 16K / 32K / 64K</small>`,"同左")}
- ${r("Output 輸出",`${p.output_tokens} tokens`,"同左")}
- ${r("Repeat 重複",`${p.repeat} 次取平均`,"同左")}
- ${r("Context / Request",tok(p.context_per_request),"同左")}
- ${r("Batch / UBatch",`${p.batch} / ${p.ubatch}`,"同左")}
- </tbody></table></div><p class="v2-fn">測試參數參照群聯提供之 benchmark 腳本</p></section>`;
+ <p class="v2-goal">每個情境以<b>同一組標準參數</b>各跑 <b>${p.repeat} 次取平均</b>；測試 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p>
+ <dl class="v2-params">${row("Model 模型","Gemma 4 26B / Gemma 4 31B / Laguna XS 2.1<small class=\"v2-approx\">GGUF Q4</small>")}${row("Context 上限",`${tok(p.context_per_request)} tokens / request`)}${row("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small class="v2-approx">約等於 4K / 8K / 16K / 32K / 64K</small>`)}${row("Output 輸出",`${tok(p.output_tokens)} tokens`)}${row("NP 並發",p.np.join(" / "))}${row("Batch / UBatch",`${tok(p.batch)} / ${p.ubatch}`)}</dl><p class="v2-fn">測試參數參照群聯提供之 benchmark 腳本</p></section>`;
  $s("stNote").textContent=`B70 實測截至 ${D.evidence_until}；AISO1 為 v1.6 已規劃的相同規格，尚未取得正式成績。Prompt 生成方式與 GGUF SHA256 完成核對前，不宣稱公平倍率。`;
 }
 
