@@ -19,7 +19,7 @@ function renderSetup(){
  const p=D.profile,row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">在<b>同一組標準參數</b>下（相同模型、相同 Input／並發／Output），比較 <b>Intel Arc Pro B70</b>（Intel SYCL）與 <b>AISO1</b>（AMD Ryzen AI MAX+ 395，Vulkan）的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；框架與硬體不同，測試參數相同。</p></section>
  <section class="v2-pane"><h2>測試方式<span>Method</span></h2><p class="v2-goal">每個情境以<b>同一組標準參數</b>各跑 <b>${p.repeat} 次取平均</b>；測試 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p></section>`;
- $s("stParams").innerHTML=`${row("Model 模型","Gemma 4 26B / Gemma 4 31B / Laguna XS 2.1<small>GGUF Q4</small>")}${row("Context 上限",`${tok(p.context_per_request)} tokens / request`)}${row("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K / 32K / 64K</small>`)}${row("Output 輸出",`${tok(p.output_tokens)} tokens`)}${row("NP 並發",p.np.join(" / "))}${row("Repeat 重複",`${p.repeat} 次取平均`)}${row("Batch / UBatch",`${tok(p.batch)} / ${p.ubatch}`)}${row("KV cache","f16")}`;
+ $s("stParams").innerHTML=`${row("Model 模型","Gemma 4 26B / Gemma 4 31B / Laguna XS 2.1 / Nemotron 3.5<small>GGUF Q4</small>")}${row("Context 上限",`${tok(p.context_per_request)} tokens / request`)}${row("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K / 32K / 64K</small>`)}${row("Output 輸出",`${tok(p.output_tokens)} tokens`)}${row("NP 並發",p.np.join(" / "))}${row("Repeat 重複",`${p.repeat} 次取平均`)}${row("Batch / UBatch",`${tok(p.batch)} / ${p.ubatch}`)}${row("KV cache","f16")}`;
  $s("stNote").textContent=`B70 實測截至 ${D.evidence_until}；AISO1 為 v1.6 已規劃的相同規格，尚未取得正式成績。Prompt 生成方式與 GGUF SHA256 完成核對前，不宣稱公平倍率。`;
 }
 
