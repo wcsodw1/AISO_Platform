@@ -117,3 +117,5 @@
 .st-tier i{width:9px;height:9px;border-radius:50%;background:#8f9bff;flex:none}.st-tier i.amd{background:#ed786f}.st-tier i.intel{background:#4fa3ff}.st-tier i.nvidia{background:#5dff9f}
 .st-params{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 28px;margin:0}.st-params dt{color:var(--muted);font-size:15px;font-weight:700;letter-spacing:.04em}.st-params dd{margin:6px 0 0;color:var(--ivory);font-size:22px;font-weight:800;line-height:1.35}.st-params dd small{display:block;margin-top:4px;color:var(--muted);font-size:15px;font-weight:500}
 @media(max-width:900px){.st-params{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.st-params{grid-template-columns:1fr}.st-params dd{font-size:20px}}
+
+.st-mh{display:flex;align-items:baseline;gap:12px;margin:22px 0 10px;font-size:18px}.st-mh small{color:#c8b875;font-size:13px;font-weight:800;letter-spacing:.1em}

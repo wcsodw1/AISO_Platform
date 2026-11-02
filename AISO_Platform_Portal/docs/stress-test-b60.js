@@ -15,10 +15,10 @@ const present=np=>MODELS.filter(([m])=>D.b60_runs.some(r=>r.model===m&&r.np===np
 
 function renderSetup(){
  const p=D.profile,r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>Intel Arc Pro B60</b> 在 <b>SGLang XPU</b> 框架下，Laguna XS 2.1 與 Gemma 4 31B 的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出，並與 B70 / AISO1 對照。</p></section>
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>4× Intel B60</b> 在 <b>SGLang XPU</b> 框架下，Laguna XS 2.1 與 Gemma 4 31B 的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；B60 與 B70、AISO1 分開呈現，不混合硬體、框架或量化格式。</p></section>
  <section class="v2-pane"><h2>測試方式<span>Method</span></h2><p class="v2-goal">每個情境各跑 <b>${p.repeat} 次取平均</b>；TPS 以<b>每請求（Normalized）</b>呈現，多並發的總吞吐（Aggregate）另列。</p></section>`;
- $s("stParams").innerHTML=`${r("Machine 機器","Intel B60<small>TP = ${p.tp}</small>")}${r("Framework 框架",p.framework)}${r("Model 模型","Laguna XS 2.1<small>safetensors FP8</small>Gemma 4 31B<small>safetensors W4A16</small>")}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${r("Chunked Prefill / Max Running / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.radix_cache}`)}`;
- $s("stNote").textContent=`B60 實測截至 ${D.evidence_until}。Gemma 4 31B 於 NP5 Input 8K 失敗後依規則停止，NP5 8K / 16K 為空白。`;
+ $s("stParams").innerHTML=`${r("Machine 機器","4× Intel B60<small>TP = ${p.tp}</small>")}${r("Framework 框架",p.framework)}${r("Model 模型","Laguna XS 2.1<small>safetensors FP8</small>Gemma 4 31B<small>safetensors W4A16</small>")}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${r("Chunked Prefill / Max Running / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.radix_cache}`)}`;
+ $s("stNote").textContent=`B60 實測截至 ${D.evidence_until}。Gemma 4 31B NP5 / 8K：R1 的 5/5 requests 雖成功，但其中一個 request 的 E2E 超過 1500 秒；R2 發生 Level Zero UR_RESULT_ERROR_OUT_OF_RESOURCES，整組正式測試失敗，R1 的 3.33 TPS 不可當作有效成績。`;
 }
 function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
 function chart(k,width){

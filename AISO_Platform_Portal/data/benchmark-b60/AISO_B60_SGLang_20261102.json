@@ -2,9 +2,9 @@
  "dataset": "AISO_B60_SGLang_20261102",
  "evidence_until": "2026-11-02",
  "generated_on": "2026-11-02",
- "note": "Intel B60 SGLang XPU run B60_SGLang_2Models_NP125_20261102_100733 (Laguna + Gemma 4 31B). 'TPS' in the runner output is the total decode throughput of the NP concurrent requests; decode_tps = that value / NP (per request, Normalized), aggregate_tps = the raw value. Gemma 4 31B NP5 Input 8K failed, escalation stopped, so NP5 8K/16K are missing. Smoke-test rows are excluded.",
+ "note": "Intel B60 SGLang XPU run B60_SGLang_2Models_NP125_20261102_100733 (Laguna + Gemma 4 31B). 'TPS' in the runner output is the total decode throughput of the NP concurrent requests; decode_tps = that value / NP (per request, Normalized), aggregate_tps = the raw value. Gemma 4 31B NP5 Input 8K failed, escalation stopped, so NP5 8K/16K are missing. Smoke-test rows are excluded. Per the 2026-11-02 summary: B60 = 4× Intel B60, TP2; TPS in the summary is Aggregate tokens/s.",
  "profile": {
-  "machine": "Intel B60",
+  "machine": "4× Intel B60",
   "framework": "SGLang XPU",
   "np": [
    1,
@@ -22,7 +22,8 @@
   "chunked_prefill": 4096,
   "max_running": 10,
   "radix_cache": "OFF",
-  "tp": 2
+  "tp": 2,
+  "gpu_count": 4
  },
  "b60_runs": [
   {
@@ -193,7 +194,13 @@
    "model": "Gemma31",
    "np": 5,
    "input": 8192,
-   "reason": "MODEL BLOCKED / FAILED: stop escalation after failure"
+   "reason": "R1 的 5/5 requests 成功，但其中一個 request 的 E2E 超過 1500 秒；R2 發生 Level Zero UR_RESULT_ERROR_OUT_OF_RESOURCES，整組正式測試失敗。R1 的 3.33 TPS 不可當作有效 Full 成績。"
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 16384,
+   "reason": "前一階段失敗，依規則停止，未執行"
   }
  ]
 }

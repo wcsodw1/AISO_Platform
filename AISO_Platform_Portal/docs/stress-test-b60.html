@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=20">
+  <link rel="stylesheet" href="gptoss-v2.css?v=21">
 </head>
 <body>
   <header class="site-header">
@@ -28,13 +28,13 @@
       <h1>Stress Test｜Intel B60 · SGLang</h1>
       <p class="v2-sub">SGLang XPU · Laguna XS 2.1 / Gemma 4 31B<span class="zh-i">NP 1 / 2 / 5 × Input 4K～16K × Output 1024 × Repeat 3</span></p>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and method"></div>
-      <aside class="v2-verdict" role="note"><b>Gemma 4 31B NP5 Input 8K 失敗<span class="zh-i">escalation 依規則停止，NP5 的 8K / 16K 沒有成績；Laguna 全部 9 個情境 PASS</span></b><p id="stNote"></p></aside>
+      <aside class="v2-verdict" role="note"><b>Gemma 4 31B NP5 Input 8K 失敗<span class="zh-i">正式測試失敗，NP5 的 8K 無有效成績、16K 未執行；Laguna 9/9 PASS、Gemma 4 31B 7/9 PASS</span></b><p id="stNote"></p></aside>
     </section>
 
     <section class="report-section st-same" id="secSame">
       <header><h2>測試參數<span class="zh">Test Parameters · B60 SGLang</span></h2></header>
       <dl class="st-params" id="stParams"></dl>
-      <p class="v2-fn">與 B70 / AISO1 的 llama.cpp 頁參數不同（框架、模型格式、NP、Input），對照請見「B60 vs B70 vs AISO1」。</p>
+      <p class="v2-fn">B60、B70、AISO1 固定分開呈現，不混合硬體、Framework 或量化格式；三台機器請見「B60 → B70 → AISO1」。</p>
     </section>
 
     <section class="report-section" id="secMetrics">
