@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Stress Test · B60 vs B70 vs AISO1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-29">
+  <link rel="stylesheet" href="gptoss-v2.css?v=20">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <p class="eyebrow"><a class="st-back" href="stress-test.html">← STRESS TEST</a> / MINI-WORKSTATION · 2026-11-02</p>
+      <h1>Stress Test｜B60 vs B70 vs AISO1</h1>
+      <p class="v2-sub">TTFT · TPOT · TPS<span class="zh-i">重疊情境：NP2 × Input 4K / 8K / 16K × Output 1024 × Repeat 3 · Laguna XS 2.1 / Gemma 4 31B</span></p>
+      <aside class="v2-verdict" role="note"><b>三台機器框架不同，數字僅供參考對照<span class="zh-i">B60 為 SGLang（safetensors），B70 為 llama.cpp（GGUF Q4）；AISO1 尚無正式成績，不計算倍率</span></b><p>只比較三者都有跑的 NP2 與 Input 4K～16K。B60 的 TPS 為每請求（Normalized）= 原始 TPS ÷ NP，與 B70 的每請求 decode TPS 同口徑。</p></aside>
+    </section>
+
+    <section class="report-section st-same" id="secSame">
+      <header><h2>參數對照<span class="zh">Parameters · 相同與不同</span></h2></header>
+      <div class="table-wrap"><table class="v2-table v2-sc" id="stCmp"></table></div>
+      <p class="v2-fn">Output、Repeat 與 NP2 / Input 4K～16K 相同；框架、模型格式、Context 不同，不能視為同標準參數下的公平比較。</p>
+    </section>
+
+    <section class="report-section" id="secMetrics">
+      <header><h2>TTFT · TPOT · TPS<span class="zh">NP2 · B60 vs B70</span></h2></header>
+      <div id="stMetrics"></div>
+    </section>
+
+    <section class="report-section" id="secTable">
+      <header><h2>逐情境對照<span class="zh">B60 vs B70 vs AISO1</span></h2></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
+      <p class="v2-fn">AISO1 取得正式測試後才會填入；各機器的框架不同，現階段不算倍率。</p>
+    </section>
+
+    <section class="report-section">
+      <header><h2>Data<span class="zh">B60 16 筆 + B70 35 筆</span></h2><a class="v2-dl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>B60 JSON ↓</a><a class="v2-dl" href="data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json" download>B70 JSON ↓</a></header>
+      <p class="v2-fine" id="stErr"></p>
+    </section>
+
+  </main><script src="stress-test-b60-b70-aiso1.js?v=1"></script>
+</body>
+</html>

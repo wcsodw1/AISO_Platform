@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Stress Test · Intel B60 SGLang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-29">
+  <link rel="stylesheet" href="gptoss-v2.css?v=20">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <p class="eyebrow"><a class="st-back" href="stress-test.html">← STRESS TEST</a> / MINI-WORKSTATION · 2026-11-02</p>
+      <h1>Stress Test｜Intel B60 · SGLang</h1>
+      <p class="v2-sub">SGLang XPU · Laguna XS 2.1 / Gemma 4 31B<span class="zh-i">NP 1 / 2 / 5 × Input 4K～16K × Output 1024 × Repeat 3</span></p>
+      <div class="v2-setup" id="stSetup" aria-label="Purpose and method"></div>
+      <aside class="v2-verdict" role="note"><b>Gemma 4 31B NP5 Input 8K 失敗<span class="zh-i">escalation 依規則停止，NP5 的 8K / 16K 沒有成績；Laguna 全部 9 個情境 PASS</span></b><p id="stNote"></p></aside>
+    </section>
+
+    <section class="report-section st-same" id="secSame">
+      <header><h2>測試參數<span class="zh">Test Parameters · B60 SGLang</span></h2></header>
+      <dl class="st-params" id="stParams"></dl>
+      <p class="v2-fn">與 B70 / AISO1 的 llama.cpp 頁參數不同（框架、模型格式、NP、Input），對照請見「B60 vs B70 vs AISO1」。</p>
+    </section>
+
+    <section class="report-section" id="secMetrics">
+      <header><h2>TTFT · TPOT · TPS<span class="zh">Intel B60 實測（SGLang）</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
+      <div id="stMetrics"></div>
+    </section>
+
+    <section class="report-section" id="secTable">
+      <header><h2>逐情境數據<span class="zh">TPS 為每請求（Normalized）</span></h2></header>
+      <p class="v2-fine" id="stTableSub"></p>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
+      <p class="v2-fn">TPS (Normalized) = 測試腳本回報的 TPS ÷ NP，即每個請求自己的輸出速度。</p>
+    </section>
+
+    <section class="report-section" id="secAgg">
+      <header><h2>Aggregate TPS<span class="zh">多並發 NP 總吞吐 · 另列</span></h2></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stAgg"></table></div>
+      <p class="v2-fn">Aggregate = NP 個請求合計每秒輸出 token（測試腳本回報之 TPS 原值）。</p>
+    </section>
+
+    <section class="report-section">
+      <header><h2>Data<span class="zh">B60 已驗證實測 16 筆</span></h2><a class="v2-dl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>JSON ↓</a></header>
+      <p class="v2-fine" id="stErr"></p>
+    </section>
+
+  </main><script src="stress-test-b60.js?v=1"></script>
+</body>
+</html>
