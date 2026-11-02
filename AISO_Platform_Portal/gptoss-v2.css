@@ -119,3 +119,4 @@
 @media(max-width:900px){.st-params{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.st-params{grid-template-columns:1fr}.st-params dd{font-size:20px}}
 
 .st-mh{display:flex;align-items:baseline;gap:12px;margin:22px 0 10px;font-size:18px}.st-mh small{color:#c8b875;font-size:13px;font-weight:800;letter-spacing:.1em}
+.st-same-t{color:#5dff9f;font-weight:800}

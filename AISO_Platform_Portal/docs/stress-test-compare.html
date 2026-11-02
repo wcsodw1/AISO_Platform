@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Stress Test · B60 vs B70 vs AISO1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-29">
+  <link rel="stylesheet" href="gptoss-v2.css?v=22">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <p class="eyebrow"><a class="st-back" href="stress-test.html">← STRESS TEST</a> / MINI-WORKSTATION · 2026-11-02</p>
+      <h1>Stress Test｜B60 vs B70 vs AISO1</h1>
+      <p class="v2-sub">同參數比對<span class="zh-i">NP、Input、Output、Repeat 相同的情境，並排比較三台機器的 TTFT · TPOT · TPS</span></p>
+      <aside class="v2-verdict" role="note"><b>只比對參數相同的情境，不推估<span class="zh-i">三台機器的框架與量化格式不同；AISO1 尚無可核對的成績，欄位先保留，不計算倍率</span></b><p id="stNote"></p></aside>
+    </section>
+
+    <section class="report-section st-same" id="secSame">
+      <header><h2>參數對照<span class="zh">Same Parameters · 相同與不同</span></h2></header>
+      <div class="table-wrap"><table class="v2-table v2-sc" id="stCmp"></table></div>
+      <p class="v2-fn" id="stCmpFn"></p>
+    </section>
+
+    <section class="report-section" id="secMetrics">
+      <header><h2>TTFT · TPOT · TPS<span class="zh">同參數 · B60 vs B70</span></h2></header>
+      <div id="stMetrics"></div>
+    </section>
+
+    <section class="report-section" id="secTable">
+      <header><h2>逐情境對照<span class="zh">TPS 以每請求 Normalized 為主，同 NP 另列 Aggregate</span></h2></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
+      <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度，才能跨機器公平比對；Aggregate 為各機器測試腳本回報的總吞吐，只在 NP 相同時並列。</p>
+    </section>
+
+    <section class="report-section" id="secCover">
+      <header><h2>資料覆蓋<span class="zh">尚未能比對的部分</span></h2></header>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCover"></table></div>
+      <p class="v2-fn">某模型只有一台機器有資料、或 NP / Input 沒有重疊時，不放進比對，也不用推估值填入。</p>
+    </section>
+
+    <section class="report-section">
+      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-b60.html">B60 單機 →</a><a class="v2-dl" href="stress-test-b70-aiso1.html">B70 →</a><a class="v2-dl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>B60 JSON ↓</a><a class="v2-dl" href="data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json" download>B70 JSON ↓</a></header>
+      <p class="v2-fine" id="stErr"></p>
+    </section>
+
+  </main><script src="stress-test-compare.js?v=1"></script>
+</body>
+</html>
