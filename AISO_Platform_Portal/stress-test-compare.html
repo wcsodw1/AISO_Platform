@@ -44,7 +44,7 @@
     <section class="report-section" id="secTable">
       <header><h2>逐情境對照<span class="zh">TPS 以每請求 Normalized 為主，同 NP 另列 Aggregate</span></h2></header>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
-      <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度，才能跨機器公平比對；Aggregate 為各機器測試腳本回報的總吞吐，只在 NP 相同時並列。</p>
+      <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度；Aggregate = NP × Output tokens ÷ E2E（含首字等待），兩台機器的 Aggregate 定義相同，且只在 NP 相同時並列。</p>
     </section>
 
     <section class="report-section" id="secCover">
@@ -58,6 +58,6 @@
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="stress-test-compare.js?v=1"></script>
+  </main><script src="stress-test-compare.js?v=2"></script>
 </body>
 </html>

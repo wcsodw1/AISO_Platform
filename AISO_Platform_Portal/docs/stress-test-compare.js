@@ -5,7 +5,7 @@ const MACH=[["b60","Intel B60 · SGLang","#4fd1b0"],["b70","Intel B70 · llama.c
 const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false,dec:1},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false,dec:1},
- decode_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token",unit:"tok/s",higher:true,dec:1}};
+ norm_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token（含首字等待）",unit:"tok/s",higher:true,dec:1}};
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
 const wait='<span class="st-wait">等待 AISO1 正式測試</span>';
@@ -56,7 +56,7 @@ function renderMetrics(){
 function renderTable(){
  const c=(r,k,d)=>`<td>${num(r[k],d)}</td>`;
  const rows=SC.map(([m,np,i])=>{const a=get("b60",m,np,i),b=get("b70",m,np,i);
-  return `<tr><td class="st-model">${NAMES[m]}</td><td>NP${np}</td><td>${kn(i)}</td>${c(a,"ttft_s",1)}${c(a,"tpot_ms",1)}${c(a,"decode_tps",1)}${c(a,"aggregate_tps",1)}${c(b,"ttft_s",1)}${c(b,"tpot_ms",1)}${c(b,"decode_tps",1)}${c(b,"aggregate_tps",1)}<td colspan="3" class="st-pending">${wait}</td></tr>`}).join("");
+  return `<tr><td class="st-model">${NAMES[m]}</td><td>NP${np}</td><td>${kn(i)}</td>${c(a,"ttft_s",1)}${c(a,"tpot_ms",1)}${c(a,"norm_tps",1)}${c(a,"aggregate_tps",1)}${c(b,"ttft_s",1)}${c(b,"tpot_ms",1)}${c(b,"norm_tps",1)}${c(b,"aggregate_tps",1)}<td colspan="3" class="st-pending">${wait}</td></tr>`}).join("");
  const sub=(x)=>`<th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS Norm<small>tok/s/請求</small></th><th class="l">Aggregate<small>tok/s</small></th>`;
  $s("stTable").innerHTML=`<thead><tr><th rowspan="2">Model</th><th rowspan="2">NP</th><th rowspan="2">Input</th><th colspan="4" class="l">Intel B60 · SGLang</th><th colspan="4" class="l">Intel B70 · llama.cpp</th><th colspan="3" class="a">AISO1 AMD</th></tr><tr>${sub()}${sub()}<th class="a">TTFT</th><th class="a">TPOT</th><th class="a">TPS</th></tr></thead><tbody>${rows||'<tr><td colspan="14">目前沒有參數相同的情境。</td></tr>'}</tbody>`;
 }
@@ -67,7 +67,7 @@ function renderCover(){
  $s("stCover").innerHTML=`<thead><tr><th>Model</th><th class="l">B60</th><th class="l">B70</th><th class="a">AISO1</th><th>可比對</th></tr></thead><tbody>${Object.keys(NAMES).map(m=>`<tr><td class="st-model">${NAMES[m]}</td><td>${desc("b60",m)}</td><td>${desc("b70",m)}</td><td class="st-pending"><span class="st-wait">待核</span></td><td>${cmp(m)}</td></tr>`).join("")}</tbody>`;
 }
 Promise.all(["data/benchmark-b60/AISO_B60_SGLang_20261102.json","data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json"].map(u=>fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(u);return r.json()}))).then(([a,b])=>{
- A=a;B=b;SC=scenarios();
+ A=a;B=b;[...A.b60_runs,...B.b70_runs].forEach(r=>r.norm_tps=r.aggregate_tps/r.np);SC=scenarios();
  $s("stNote").textContent=`B60 實測截至 ${A.evidence_until}；B70 實測截至 ${B.evidence_until}。目前 ${SC.length} 個情境兩台都有跑且參數相同。`;
  renderCmp();renderMetrics();renderTable();renderCover();
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderMetrics,150)});

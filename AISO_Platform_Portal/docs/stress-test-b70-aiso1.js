@@ -5,7 +5,7 @@ const MODELS=[["Gemma26","Gemma 4 26B","#4fd1b0"],["Gemma31","Gemma 4 31B","#ff8
 const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false,dec:1},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false,dec:1},
- decode_tps:{short:"TPS",zh:"每秒輸出 token",unit:"tok/s",higher:true,dec:1}};
+ decode_tps:{short:"TPS",zh:"每請求 decode 速度（不含首字等待）",unit:"tok/s",higher:true,dec:1}};
 const kn=n=>`${n/1024}K`;
 const tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";

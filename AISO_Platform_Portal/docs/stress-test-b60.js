@@ -17,8 +17,8 @@ function renderSetup(){
  const p=D.profile,r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>4× Intel B60</b> 在 <b>SGLang XPU</b> 框架下，Laguna XS 2.1 與 Gemma 4 31B 的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；B60 與 B70、AISO1 分開呈現，不混合硬體、框架或量化格式。</p></section>
  <section class="v2-pane"><h2>測試方式<span>Method</span></h2><p class="v2-goal">每個情境各跑 <b>${p.repeat} 次取平均</b>；TPS 以<b>每請求（Normalized）</b>呈現，多並發的總吞吐（Aggregate）另列。</p></section>`;
- $s("stParams").innerHTML=`${r("Machine 機器","4× Intel B60<small>TP = ${p.tp}</small>")}${r("Framework 框架",p.framework)}${r("Model 模型","Laguna XS 2.1<small>safetensors FP8</small>Gemma 4 31B<small>safetensors W4A16</small>")}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${r("Chunked Prefill / Max Running / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.radix_cache}`)}`;
- $s("stNote").textContent=`B60 實測截至 ${D.evidence_until}。Gemma 4 31B NP5 / 8K：R1 的 5/5 requests 雖成功，但其中一個 request 的 E2E 超過 1500 秒；R2 發生 Level Zero UR_RESULT_ERROR_OUT_OF_RESOURCES，整組正式測試失敗，R1 的 3.33 TPS 不可當作有效成績。`;
+ $s("stParams").innerHTML=`${r("Machine 機器","4× Intel B60<small>TP = ${p.tp}</small>")}${r("Framework 框架",`${p.framework}<small>${p.runtime}</small>`)}${r("Model 模型","Laguna XS 2.1<small>poolside/Laguna-XS-2.1-FP8 · FP8</small>Gemma 4 31B<small>google/gemma-4-31B-it-qat-w4a16-ct · W4A16</small>")}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${r("Chunked Prefill / Max Running / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.radix_cache}`)}`;
+ $s("stNote").textContent=`B60 實測截至 ${D.evidence_until}。Gemma 4 26B（nvcc JIT 在 XPU 失敗）與 Nemotron（TP1 XPU OOM）在 B60 無法啟動，沒有成績。memory fraction 未驗證，不標示。`;
 }
 function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
 function chart(k,width){
@@ -54,16 +54,20 @@ function renderTabs(){
 function renderTable(){
  const cell=(r,k,m,i)=>r?`<td>${num(r[k],METRICS[k].dec)}</td>`:`<td class="st-pending">${failed(m,i,NP)?'<span class="st-over">失敗</span>':'<span class="st-wait">未執行</span>'}</td>`;
  const rows=MODELS.flatMap(([m,n])=>D.profile.input_tokens.map((inp,i)=>{const r=row(m,inp,NP);
-  return `<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${n}</td>`:""}<td>${kn(inp)}</td>${cell(r,"ttft_s",m,inp)}${cell(r,"tpot_ms",m,inp)}${cell(r,"decode_tps",m,inp)}</tr>`})).join("");
+  return `<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${n}</td>`:""}<td>${kn(inp)}</td>${cell(r,"ttft_s",m,inp)}${cell(r,"tpot_ms",m,inp)}${cell(r,"decode_tps",m,inp)}<td>${r?(r.retry?"† 重跑":"Full"):"—"}</td></tr>`})).join("");
  $s("stTableSub").textContent=`NP${NP} · 3 次重複平均 · TPS 為每請求（Normalized）。`;
- $s("stTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th><th class="l">B60 TTFT<small>s</small></th><th class="l">B60 TPOT<small>ms</small></th><th class="l">B60 TPS (Normalized)<small>tok/s / 請求</small></th></tr></thead><tbody>${rows}</tbody>`;
+ $s("stTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th><th class="l">B60 TTFT<small>s</small></th><th class="l">B60 TPOT<small>ms</small></th><th class="l">B60 TPS (Normalized)<small>tok/s / 請求</small></th><th>來源</th></tr></thead><tbody>${rows}</tbody>`;
 }
 function renderAgg(){
- const nps=D.profile.np,cell=(m,i,np)=>{const r=row(m,i,np);return r?`<td>${num(r.aggregate_tps,1)}</td>`:`<td class="st-pending">${failed(m,i,np)?'<span class="st-over">失敗</span>':'<span class="st-wait">未執行</span>'}</td>`};
+ const nps=D.profile.np,cell=(m,i,np)=>{const r=row(m,i,np);return r?`<td>${num(r.aggregate_tps,1)}${r.retry?" †":""}</td>`:`<td class="st-pending">${failed(m,i,np)?'<span class="st-over">失敗</span>':'<span class="st-wait">未執行</span>'}</td>`};
  const rows=MODELS.flatMap(([m,n])=>D.profile.input_tokens.map((inp,i)=>`<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${n}</td>`:""}<td>${kn(inp)}</td>${nps.map(np=>cell(m,inp,np)).join("")}</tr>`)).join("");
  $s("stAgg").innerHTML=`<thead><tr><th>Model</th><th>Input</th>${nps.map(n=>`<th class="l">NP${n} Aggregate<small>tok/s</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
+function renderRetry(){
+ const f=D.failures[0],r=D.retry;
+ $s("stRetry").innerHTML=`<b>原始 Full</b>（${f.run_id}）：Gemma 4 31B NP${f.np} / ${kn(f.input)} — ${f.status}。${f.reason}<br><b>重跑</b>（${r.run_id}）：僅重跑 NP5 的 8K / 16K，exit code ${r.exit_code}，failed models ${r.failed_models}，兩個情境均 PASS。${r.note}<br>原始失敗紀錄保留，不被重跑覆蓋；原始 R1 的 3.33 TPS 仍不可當作有效成績。`;
+}
 fetch("data/benchmark-b60/AISO_B60_SGLang_20261102.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
- D=d;renderSetup();renderTabs();renderMetrics();renderTable();renderAgg();
+ D=d;renderSetup();renderTabs();renderMetrics();renderTable();renderAgg();renderRetry();
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderMetrics,150)});
 }).catch(()=>{$s("stErr").textContent="載入失敗：data/benchmark-b60/AISO_B60_SGLang_20261102.json"});
