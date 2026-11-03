@@ -22,7 +22,9 @@
   "context_per_request": 69632,
   "batch": 2048,
   "ubatch": 512,
-  "kv_type": "f16"
+  "kv_type": "f16",
+  "vram_total_gb": 64,
+  "vram_layout": "32 GB x 2"
  },
  "b70_runs": [
   {

@@ -25,7 +25,9 @@
   "tp": 2,
   "gpu_count": 4,
   "runtime": "lmsysorg/sglang:v0.5.22-xpu",
-  "memory_fraction": "UNVERIFIED"
+  "memory_fraction": "UNVERIFIED",
+  "vram_total_gb": 96,
+  "vram_layout": "48 GB x 2"
  },
  "b60_runs": [
   {

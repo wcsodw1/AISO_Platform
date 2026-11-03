@@ -26,7 +26,8 @@ function renderCmp(){
  ${r("Input 輸入",a.input_tokens.map(kn).join(" / "),b.input_tokens.map(kn).join(" / "),`重疊 ${inI.map(kn).join(" / ")} ${same}`)}
  ${r("Output 輸出",tok(a.output_tokens),tok(b.output_tokens),same)}
  ${r("Repeat 重複",`${a.repeat} 次取平均`,`${b.repeat} 次取平均`,same)}
- ${r("Framework 框架","SGLang XPU（4× B60，TP2）","llama.cpp（Intel SYCL）",diff)}
+ ${r("硬體配備",`Intel B60 · ${a.vram_total_gb} GB（${a.vram_layout.replace(" x "," × ")}）<small>4 GPU devices · TP${a.tp}</small>`,`Intel B70 · ${b.vram_total_gb} GB（${b.vram_layout.replace(" x "," × ")}）`,diff)}
+ ${r("Framework 框架","SGLang XPU","llama.cpp（Intel SYCL）",diff)}
  ${r("模型格式","safetensors：Laguna FP8 / Gemma31 W4A16","GGUF Q4",diff)}
  ${r("Context 上限",`${tok(a.context_length)} tokens`,`${tok(b.context_per_request)} tokens / request`,diff)}
  ${r("Batch","Chunked Prefill "+tok(a.chunked_prefill),`${tok(b.batch)} / UBatch ${b.ubatch}`,diff)}</tbody>`;
