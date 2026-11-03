@@ -2,7 +2,7 @@
  "dataset": "AISO_B70_AISO1_20261030",
  "evidence_until": "2026-10-27",
  "generated_on": "2026-10-30",
- "note": "B70 formal llama.cpp GGUF results only. AISO1 formal results are pending, so no Intel vs AMD speedup is computed.",
+ "note": "B70 formal llama.cpp GGUF results only. AISO1 formal results are pending, so no Intel vs AMD speedup is computed. Nemotron 3.5 llama.cpp (run 20261015_010033, SHA256 verified on the B70) added 2026-11-02.",
  "profile": {
   "framework": "llama.cpp",
   "format": "GGUF",
@@ -22,7 +22,9 @@
   "context_per_request": 69632,
   "batch": 2048,
   "ubatch": 512,
-  "kv_type": "f16"
+  "kv_type": "f16",
+  "vram_total_gb": 64,
+  "vram_layout": "32 GB x 2"
  },
  "b70_runs": [
   {
@@ -324,6 +326,126 @@
    "e2e_s": 279.571,
    "run_id": "20261014_231739",
    "ttft_over_180s": true
+  },
+  {
+   "model": "Nemotron",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 5.819,
+   "tpot_ms": 28.815,
+   "decode_tps": 34.706,
+   "aggregate_tps": 57.994,
+   "e2e_s": 35.297,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 10.383,
+   "tpot_ms": 30.459,
+   "decode_tps": 32.901,
+   "aggregate_tps": 49.262,
+   "e2e_s": 41.543,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 19.36,
+   "tpot_ms": 34.666,
+   "decode_tps": 29.274,
+   "aggregate_tps": 37.314,
+   "e2e_s": 54.823,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 2,
+   "input": 32768,
+   "ttft_s": 43.069,
+   "tpot_ms": 42.639,
+   "decode_tps": 24.965,
+   "aggregate_tps": 23.63,
+   "e2e_s": 86.689,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 2,
+   "input": 65536,
+   "ttft_s": 90.923,
+   "tpot_ms": 55.575,
+   "decode_tps": 23.439,
+   "aggregate_tps": 13.839,
+   "e2e_s": 147.776,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 9.836,
+   "tpot_ms": 46.033,
+   "decode_tps": 21.78,
+   "aggregate_tps": 71.859,
+   "e2e_s": 56.928,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 17.174,
+   "tpot_ms": 52.4,
+   "decode_tps": 19.3,
+   "aggregate_tps": 57.749,
+   "e2e_s": 70.779,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 32.81,
+   "tpot_ms": 65.996,
+   "decode_tps": 15.724,
+   "aggregate_tps": 40.692,
+   "e2e_s": 100.324,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 4,
+   "input": 32768,
+   "ttft_s": 68.186,
+   "tpot_ms": 83.144,
+   "decode_tps": 13.849,
+   "aggregate_tps": 26.601,
+   "e2e_s": 153.242,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "np": 4,
+   "input": 65536,
+   "ttft_s": 157.912,
+   "tpot_ms": 153.395,
+   "decode_tps": 9.022,
+   "aggregate_tps": 12.942,
+   "e2e_s": 314.835,
+   "run_id": "20261015_010033",
+   "ttft_over_180s": false
   }
  ],
  "model_parity": [
@@ -348,7 +470,7 @@
    "name": "Nemotron 3.5 Lightning 30B-A3B",
    "repo": "unsloth/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
    "quant": "UD-Q4_K_M",
-   "b70_sha256": null,
+   "b70_sha256": "edcb5d4650796ed2fb412498de6f83b585862312c747ddb74f0ea04b22206181",
    "status": "SAME_REPO_PENDING_CROSS_MACHINE_SHA"
   },
   {

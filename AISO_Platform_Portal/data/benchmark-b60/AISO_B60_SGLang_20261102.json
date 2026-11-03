@@ -1,0 +1,272 @@
+{
+ "dataset": "AISO_B60_SGLang_20261102",
+ "evidence_until": "2026-11-02",
+ "generated_on": "2026-11-02",
+ "note": "Intel B60 SGLang XPU run B60_SGLang_2Models_NP125_20261102_100733 (Laguna + Gemma 4 31B). 'TPS' in the runner output is the total decode throughput of the NP concurrent requests; decode_tps = that value / NP (per request, Normalized), aggregate_tps = the raw value. Gemma 4 31B NP5 Input 8K failed, escalation stopped, so NP5 8K/16K are missing. Smoke-test rows are excluded. Per the 2026-11-02 summary: B60 = 4× Intel B60, TP2; TPS in the summary is Aggregate tokens/s. 2026-11-02 update: Gemma31 NP5 8K/16K re-run (retry run) added; original failed case kept. aggregate_tps = NP x output tokens / E2E (includes prefill wait; verified: Laguna NP1 4K 8.48 = 1024/(2.40+1023*0.11572)); decode_tps field = aggregate/NP.",
+ "profile": {
+  "machine": "4× Intel B60",
+  "framework": "SGLang XPU",
+  "np": [
+   1,
+   2,
+   5
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "context_length": 18432,
+  "chunked_prefill": 4096,
+  "max_running": 10,
+  "radix_cache": "OFF",
+  "tp": 2,
+  "gpu_count": 4,
+  "runtime": "lmsysorg/sglang:v0.5.22-xpu",
+  "memory_fraction": "UNVERIFIED",
+  "vram_total_gb": 96,
+  "vram_layout": "48 GB x 2"
+ },
+ "b60_runs": [
+  {
+   "model": "Laguna",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 2.402,
+   "tpot_ms": 115.718,
+   "decode_tps": 8.48,
+   "aggregate_tps": 8.48,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 4.765,
+   "tpot_ms": 115.527,
+   "decode_tps": 8.333,
+   "aggregate_tps": 8.333,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 9.573,
+   "tpot_ms": 116.788,
+   "decode_tps": 7.937,
+   "aggregate_tps": 7.937,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 3.721,
+   "tpot_ms": 119.001,
+   "decode_tps": 8.164,
+   "aggregate_tps": 16.328,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 7.438,
+   "tpot_ms": 114.645,
+   "decode_tps": 8.229,
+   "aggregate_tps": 16.457,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 14.66,
+   "tpot_ms": 116.755,
+   "decode_tps": 7.64,
+   "aggregate_tps": 15.28,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 7.478,
+   "tpot_ms": 118.776,
+   "decode_tps": 7.937,
+   "aggregate_tps": 39.686,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 15.609,
+   "tpot_ms": 134.438,
+   "decode_tps": 6.679,
+   "aggregate_tps": 33.396,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Laguna",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 29.713,
+   "tpot_ms": 136.467,
+   "decode_tps": 6.038,
+   "aggregate_tps": 30.192,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 4.047,
+   "tpot_ms": 75.377,
+   "decode_tps": 12.622,
+   "aggregate_tps": 12.622,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 8.253,
+   "tpot_ms": 77.013,
+   "decode_tps": 11.766,
+   "aggregate_tps": 11.766,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 17.273,
+   "tpot_ms": 74.483,
+   "decode_tps": 10.965,
+   "aggregate_tps": 10.965,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 6.177,
+   "tpot_ms": 82.278,
+   "decode_tps": 11.335,
+   "aggregate_tps": 22.67,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 12.41,
+   "tpot_ms": 81.768,
+   "decode_tps": 10.669,
+   "aggregate_tps": 21.339,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 25.903,
+   "tpot_ms": 86.584,
+   "decode_tps": 8.953,
+   "aggregate_tps": 17.906,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 12.171,
+   "tpot_ms": 81.547,
+   "decode_tps": 10.722,
+   "aggregate_tps": 53.61,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029"
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 24.98,
+   "tpot_ms": 124.823,
+   "decode_tps": 4.917,
+   "aggregate_tps": 24.583,
+   "run_id": "B60_Gemma31_NP5_Retry_20261102_203122_3471357",
+   "retry": true
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 118.424,
+   "tpot_ms": 88.076,
+   "decode_tps": 3.063,
+   "aggregate_tps": 15.316,
+   "run_id": "B60_Gemma31_NP5_Retry_20261102_203122_3471357",
+   "retry": true
+  }
+ ],
+ "model_parity": [
+  {
+   "model": "Laguna",
+   "name": "Laguna XS 2.1",
+   "format": "safetensors FP8",
+   "repo": "poolside/Laguna-XS-2.1-FP8",
+   "tp": 2,
+   "status": "official"
+  },
+  {
+   "model": "Gemma31",
+   "name": "Gemma 4 31B",
+   "format": "safetensors W4A16",
+   "repo": "google/gemma-4-31B-it-qat-w4a16-ct",
+   "tp": 2,
+   "status": "official"
+  }
+ ],
+ "failures": [
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 8192,
+   "run_id": "B60_SGLang_2Models_NP125_20261102_100733_2642029",
+   "status": "CLIENT_FAILED",
+   "reason": "原始 Full 測試：R1 的 5/5 requests 成功，但其中一個 request 的 E2E 超過 1500 秒；R2 發生 level_zero UR_RESULT_ERROR_OUT_OF_RESOURCES（flash_attn_with_kvcache，HTTP 500），整組失敗。",
+   "retried_by": "B60_Gemma31_NP5_Retry_20261102_203122_3471357"
+  }
+ ],
+ "not_run": [
+  {
+   "model": "Gemma26",
+   "reason": "STARTUP_FAILED：CUDA Marlin JIT 在 XPU 上呼叫 nvcc"
+  },
+  {
+   "model": "Nemotron",
+   "reason": "STARTUP_FAILED：TP1 GPU0 XPU OOM"
+  }
+ ],
+ "retry": {
+  "run_id": "B60_Gemma31_NP5_Retry_20261102_203122_3471357",
+  "log": "/home/sparkle/b60_benchmark/B60_Gemma31_NP5_Retry_20261102_203122.log",
+  "only_cases": [
+   [
+    5,
+    8192
+   ],
+   [
+    5,
+    16384
+   ]
+  ],
+  "exit_code": 0,
+  "failed_models": 0,
+  "note": "僅重跑 NP5 的 8K / 16K；不可推論暫時性 XPU 資源錯誤已永久解決；Retry CSV 未附 request 數與 memory fraction。"
+ }
+}
