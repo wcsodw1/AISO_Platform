@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=26">
+  <link rel="stylesheet" href="gptoss-v2.css?v=27">
 </head>
 <body>
   <header class="site-header">
@@ -32,12 +32,6 @@
       <aside class="v2-verdict" role="note"><b id="stVerdict"></b><p id="stNote"></p></aside>
     </section>
 
-    <section class="report-section st-same" id="secSame">
-      <header><h2>測試參數<span class="zh">Test Parameters · B60</span></h2></header>
-      <dl class="st-params" id="stParams"></dl>
-      <p class="v2-fn">本頁只呈現 B60 自己的數據；與 B70、AISO1 同框架、同模型的並排比對請見「B60 vs B70 vs AISO1 同框架比對」。</p>
-    </section>
-
     <section class="report-section" id="secMetrics">
       <header><h2>TTFT · TPOT · TPS<span class="zh">Intel B60 實測</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
       <div id="stMetrics"></div>
@@ -53,8 +47,7 @@
     <section class="report-section" id="secFwCmp">
       <header><h2>同參數框架比對<span class="zh">SGLang vs vLLM · 同機器、同模型、同 NP / Input</span></h2></header>
       <div id="stFwCmp"></div>
-      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stFwTable"></table></div>
-      <p class="v2-fn">只比兩個框架都有成績的情境（隨上方 NP 分頁切換）；TPS 為每請求（Normalized）。比值 = vLLM ÷ SGLang：TTFT／TPOT 小於 1 表示 vLLM 較快，TPS 大於 1 表示 vLLM 較快。已相同：B60 硬體、TP 2、Context 18,432、Prefill 4,096、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。尚未核實：模型量化格式（SGLang 為 W4A16，vLLM 待核）、memory fraction（SGLang 未驗證）、runtime 映像；量化不同時差異不能全歸因框架。</p>
+      <p class="v2-fn">只比兩個框架都有成績的情境（隨上方 NP 分頁切換）；TPS 為每請求（Normalized）。圖上綠色 + ／紅色 − 為 vLLM 相對 SGLang（基準）的差異，綠色表示較佳、紅色表示較差。已相同：B60 硬體、TP 2、Context 18,432、Prefill 4,096、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。尚未核實：模型量化格式（SGLang 為 W4A16，vLLM 待核）、memory fraction（SGLang 未驗證）、runtime 映像；量化不同時差異不能全歸因框架。</p>
     </section>
 
     <section class="report-section" id="secRetry">
@@ -69,6 +62,6 @@
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="troubleshooting.js?v=3"></script><script src="stress-test-b60.js?v=7"></script>
+  </main><script src="bench-viz.js?v=2"></script><script src="troubleshooting.js?v=3"></script><script src="stress-test-b60.js?v=9"></script>
 </body>
 </html>

@@ -24,12 +24,13 @@ const VERDICT={
 
 function renderSetup(){
  const p=D.profile,r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`,fw=fwLabel(FW);
- const names=MODELS.map(m=>m.name).join(" / ")||"四個模型";
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>Intel B60（96 GB，48 GB × 2）</b> 在 <b>${fw}</b> 框架下，各模型的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出（Normalized 與 Aggregate）；B60 與 B70、AISO1、不同框架分開呈現，不混合硬體、框架或量化格式。</p></section>
- <section class="v2-pane"><h2>測試方式<span>Method</span></h2><p class="v2-goal">每個情境各跑 <b>${p.repeat} 次取平均</b>；TPS Normalized = Aggregate ÷ NP（每請求），Aggregate = 總輸出 token ÷ 同批 E2E 時間（含首字等待）。</p></section>`;
- const par=D.model_parity.length?D.model_parity.map(m=>`${m.name}<small>${m.repo!=="UNVERIFIED"?esc(m.repo)+" · "+esc(m.format):"來源／量化待核"}</small>`).join(""):"尚無已核實的模型來源";
+ const par=D.model_parity.length?D.model_parity.map(m=>`${esc(m.name)}<small>${m.repo!=="UNVERIFIED"?esc(m.repo)+" · "+esc(m.format):"來源／量化待核"}</small>`).join(""):"尚無已核實的模型來源";
  const knob=FW==="vllm"?r("Max Num Seqs / Prefill / Memory / Prefix Cache",`${p.max_num_seqs} / ${tok(p.prefill_tokens)} / ${p.memory_fraction} / ${p.prefix_cache}`):FW==="sglang"?r("Chunked Prefill / Max Running / Memory / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.memory_fraction} / ${p.radix_cache}`):"";
- $s("stParams").innerHTML=`${r("Machine 機器",`Intel B60 · ${p.vram_total_gb} GB<small>${p.vram_layout.replace(" x "," × ")}（2 張）· 4 GPU devices · TP ${p.tp}</small>`)}${r("Framework 框架",`${p.framework}<small>${p.runtime==="UNVERIFIED"?"Runtime 映像待核":esc(p.runtime)}</small>`)}${r("Model 模型",par)}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${knob}`;
+ const params=`<dl class="v2-params">${r("Machine 機器",`Intel B60 · ${p.vram_total_gb} GB<small>${p.vram_layout.replace(" x "," × ")}（2 張）· 4 GPU devices · TP ${p.tp}</small>`)}${r("Framework 框架",`${esc(p.framework)}<small>${p.runtime==="UNVERIFIED"?"Runtime 映像待核":esc(p.runtime)}</small>`)}${r("Model 模型",par)}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small class="v2-approx">約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${knob}</dl>`;
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>Intel B60（96 GB，48 GB × 2）</b> 在 <b>SGLang、vLLM、llama.cpp</b> 三種推論框架下，四個模型的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出（Normalized 與 Aggregate）；B60 與 B70、AISO1、不同框架分開呈現，不混合硬體、框架或量化格式。</p></section>
+ <section class="v2-pane"><h2>測試基準及固定參數<span>Baseline &amp; Fixed Parameters</span></h2>
+ <p class="v2-goal">每個情境各跑 <b>${p.repeat} 次取平均</b>；以下參數在所有模型、所有框架下<b>固定不變</b>。<b>TPS Normalized</b> = Aggregate ÷ NP（每請求），<b>TPS Aggregate</b> = 總輸出 token ÷ 同批 E2E 時間（含首字等待）。<br><b>比對基準 Baseline</b>：「同參數框架比對」以 <b>SGLang</b> 為基準，圖上綠色 + ／紅色 − 為 vLLM 相對 SGLang 的差異（TTFT、TPOT 為減少比例，TPS 為增加比例；差距超過 100% 時以「快／慢 ×倍」表示）。</p>
+ ${params}<p class="v2-fn">下方參數為目前選取的框架（${fw}）；本頁只呈現 B60 自己的數據，與 B70、AISO1 同框架、同模型的並排比對請見「B60 vs B70 vs AISO1」。</p></section>`;
  const nr=(D.not_run||[]).map(x=>`${(REG.models.find(m=>m.key===x.model)||{name:x.model}).name}：${x.reason}`).join("；");
  $s("stNote").textContent=[`B60 ${fw} 實測截至 ${D.evidence_until}。`,nr?"未有成績："+nr+"。":"",...(D.protocol_notes||[])].filter(Boolean).join(" ");
  $s("stVerdict").innerHTML=VERDICT[FW](D);
@@ -45,37 +46,13 @@ function setFw(k){
  $s("stDataTitle").textContent=`B60 ${fwLabel(FW)} 已驗證實測 ${D.b60_runs.length} 筆`+(D.b60_runs.some(r=>r.retry)?`（含 ${D.b60_runs.filter(r=>r.retry).length} 筆重跑）`:"");
  $s("stDl").href=REG.datasets.find(x=>x.machine==="b60"&&x.framework===k).file;
 }
-function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
-function bars(k,groups,series,width,H){
- // groups: [{label,sub}] ; series: [{key,label,color,get:(g)=>row|null}]
- const d=METRICS[k],n=groups.length,L=64,R=12,T=34,B=48,ih=H-T-B,W=Math.max(width,n*130+L+R),gw=(W-L-R)/n,bw=Math.min(44,(gw-12)/series.length);
- const vals=groups.flatMap(g=>series.map(s=>s.get(g)).filter(Boolean).map(r=>r[k])),top=Math.max(...vals),step=niceStep(top),y=v=>T+ih-v/top*ih;
- let s="";
- for(let v=0;v<=top+1e-9;v+=step){const yy=y(v);s+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
- s+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${d.unit}</text>`;
- groups.forEach((g,q)=>{
-  const x0=L+gw*q+(gw-bw*series.length-2*(series.length-1))/2;
-  series.forEach((se,j)=>{const r=se.get(g),x=x0+j*(bw+2);
-   if(!r){s+=`<text class="bl up2" x="${x+bw/2}" y="${y(0)-6}" text-anchor="middle">${se.miss&&se.miss(g)||"—"}</text>`;return}
-   const v=r[k],y1=y(v),red=k==="ttft_s"&&r.ttft_over_180s;
-   s+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1,y(0)-y1)}" rx="2" fill="${se.color}"><title>${esc(se.label)} · ${esc(g.label)}: ${val(k,v)} ${d.unit}</title></rect><text class="bl ${red?"dn":"up2"}" x="${x+bw/2}" y="${y1-5}" text-anchor="middle">${v>=100?num(v,0):val(k,v)}</text>`});
-  s+=`<text x="${L+gw*q+gw/2}" y="${H-24}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${L+gw*q+gw/2}" y="${H-8}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`;
- });
- return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.short}">${s}</svg></div>`;
-}
-const legend=items=>`<div class="v2-legend2">${items.map(([n,c])=>`<span><i style="background:${c}"></i>${esc(n)}</span>`).join("")}</div>`;
-function chart(k,width){
- const groups=D.profile.input_tokens.map(i=>({label:kn(i),sub:tok(i),i})),
-  series=present(NP).map(m=>({label:m.name,color:m.color,get:g=>row(m.key,g.i,NP),miss:g=>failed(m.key,g.i,NP)?"失敗":"—"}));
- return bars(k,groups,series,width,300).replace('aria-label="','aria-label="NP'+NP+' ');
-}
-function caption(k){
- const d=METRICS[k],parts=present(NP).map(m=>{const a=row(m.key,4096,NP),b=row(m.key,16384,NP);return a&&b?`${m.name} ${val(k,a[k])} → ${val(k,b[k])}`:null}).filter(Boolean);
- return `NP${NP}：Input 由 4K 增至 16K（${d.unit}）— ${parts.join("；")||"無完整資料"}`;
-}
+const grp=()=>D.profile.input_tokens.map(i=>({label:kn(i),sub:tok(i),i}));
 function renderMetrics(){
- const w=Math.max(320,($s("stMetrics").clientWidth||860)-100);
- $s("stMetrics").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<small>${d.zh} · ${d.higher?"越高越好 ↑":"越低越好 ↓"}</small></h3><p class="v2-fine st-cap">${caption(k)}</p>${legend(present(NP).map(m=>[m.name,m.color]))}${chart(k,w)}</article>`).join("");
+ const w=Math.max(320,($s("stMetrics").clientWidth||860)-100),ms=present(NP);
+ $s("stMetrics").innerHTML=Object.entries(METRICS).map(([k,d])=>{
+  const parts=ms.map(m=>{const a=row(m.key,4096,NP),b=row(m.key,16384,NP);return a&&b?`${m.name} ${val(k,a[k])} → ${val(k,b[k])}`:null}).filter(Boolean);
+  return BV.block({k,def:d,groups:grp(),series:ms.map(m=>({key:m.key,label:m.name,color:m.color})),get:(mk,g)=>row(mk,g.i,NP),baseline:null,width:w,
+   context:`NP${NP}`,message:`NP${NP}：Input 由 4K 增至 16K（${d.unit}）— ${parts.join("；")||"無完整資料"}`,tableNote:"不同模型之間只作並排參考，不計算差異"})}).join("");
 }
 function renderTabs(){
  $s("stTabs").innerHTML=D.profile.np.map(n=>`<button type="button" role="tab" class="${n===NP?"on":""}" aria-selected="${n===NP}" data-np="${n}">NP${n}</button>`).join("");
@@ -100,19 +77,14 @@ function renderRetry(){
  const f=D.failures[0],r=D.retry;
  $s("stRetry").innerHTML=`<b>原始 Full</b>（${esc(f.run_id)}）：Gemma 4 31B NP${f.np} / ${kn(f.input)} — ${esc(f.status)}。${esc(f.reason)}<br><b>重跑</b>（${esc(r.run_id)}）：僅重跑 NP5 的 8K / 16K，exit code ${r.exit_code}，failed models ${r.failed_models}，兩個情境均 PASS。${esc(r.note)}<br>原始失敗紀錄保留，不被重跑覆蓋；原始 R1 的 3.33 TPS 仍不可當作有效成績。`;
 }
-// ---- 同參數、不同框架比對（同機器、同模型、同 NP / Input）----
+// ---- 同參數、不同框架比對（同機器、同模型、同 NP / Input；以第一個框架為基準）----
 const withData=()=>FWS().filter(f=>hasRuns(f.key));
 const fwModels=()=>REG.models.filter(m=>withData().length>1&&withData().every(f=>DATA[f.key].b60_runs.some(r=>r.model===m.key&&r.np===NP)));
 function renderFw(){
  const ms=fwModels(),el=$s("stFwCmp"),fws=withData();
- if(!ms.length){el.innerHTML=`<p class="v2-fine">NP${NP} 尚無兩個框架皆有的成績。</p>`;$s("stFwTable").innerHTML="";return}
- const w=Math.max(320,(el.clientWidth||860)-100),leg=legend(fws.map(f=>[f.label,FWCOL[f.key]]));
- const groups=D.profile.input_tokens.map(i=>({label:kn(i),sub:tok(i),i}));
- el.innerHTML=ms.map(m=>`<h3 class="st-fwm">${esc(m.name)}<small>NP${NP} · 同機器 B60 · 同 Input／Output／Repeat</small></h3>`+Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<small>${d.zh} · ${d.higher?"越高越好 ↑":"越低越好 ↓"}</small></h3>${leg}${bars(k,groups,fws.map(f=>({label:f.label,color:FWCOL[f.key],get:g=>row(m.key,g.i,NP,f.key)})),w,280)}</article>`).join("")).join("");
- const [a,b]=fws,cell=(r,k)=>r?val(k,r[k]):"—";
- const rows=ms.flatMap(m=>D.profile.input_tokens.map((inp,i)=>{const x=row(m.key,inp,NP,a.key),y=row(m.key,inp,NP,b.key);
-  return `<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${esc(m.name)}</td>`:""}<td>${kn(inp)}</td>`+["ttft_s","tpot_ms","decode_tps"].map(k=>`<td>${cell(x,k)}</td><td>${cell(y,k)}</td><td>${x&&y?(y[k]/x[k]).toFixed(2)+"×":"—"}</td>`).join("")+"</tr>"})).join("");
- $s("stFwTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th>${["TTFT s","TPOT ms","TPS (Norm.)"].map(t=>`<th class="l">${a.label} ${t}</th><th class="l">${b.label} ${t}</th><th>${b.label} ÷ ${a.label}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
+ if(!ms.length){el.innerHTML=`<p class="v2-fine">NP${NP} 尚無兩個框架皆有的成績。</p>`;return}
+ const w=Math.max(320,(el.clientWidth||860)-100),base=fws[0].key;
+ el.innerHTML=ms.map(m=>`<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · 以 ${esc(fws[0].label)} 為基準</span></h3>`+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:base,width:w,context:`${m.name} · NP${NP}`,tableNote:`差異 = ${fws[1].label} 相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`})).join("")+"</div>").join("");
 }
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry");return r.json()})]).then(([reg])=>{
  REG=reg;
