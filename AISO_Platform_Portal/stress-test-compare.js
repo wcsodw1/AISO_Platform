@@ -18,6 +18,7 @@ const inputsNow=()=>{const s=new Set(REG.machines.flatMap(m=>cellRuns(m.key).map
 const npsAll=()=>[...new Set(REG.machines.flatMap(m=>REG.frameworks.flatMap(f=>runsOf(m.key,f.key).map(r=>r.np))))].sort((a,b)=>a-b);
 
 const grpNow=()=>inputsNow().map(i=>({label:kn(i),sub:tok(i),i}));
+const availability=()=>REG.machines.map(m=>{const n=cellRuns(m.key).length;return n?`<span><i style="background:${m.color}"></i>${esc(m.label)}（${n} 筆）</span>`:`<span class="st-wait"><i style="background:${m.color};opacity:.35"></i>${esc(m.label)}：此組合無資料</span>`}).join("");
 function btn(group,items,cur){return items.map(([k,l,has])=>`<button type="button" role="tab" class="${String(k)===String(cur)?"on":""}${has?" has":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
 const anyData=(fw,m,np)=>REG.machines.some(x=>runsOf(x.key,fw).some(r=>(!m||r.model===m)&&(!np||r.np===np)));
 function renderControls(){
