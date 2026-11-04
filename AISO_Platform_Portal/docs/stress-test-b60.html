@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=22">
+  <link rel="stylesheet" href="gptoss-v2.css?v=23">
 </head>
 <body>
   <header class="site-header">
@@ -25,20 +25,21 @@
   <main class="v2 st">
     <section class="v2-hero">
       <p class="eyebrow"><a class="st-back" href="stress-test.html">← STRESS TEST</a> / MINI-WORKSTATION · 2026-11-02</p>
-      <h1>Stress Test｜Intel B60 · SGLang</h1>
-      <p class="v2-sub">SGLang XPU · Laguna XS 2.1 / Gemma 4 31B<span class="zh-i">NP 1 / 2 / 5 × Input 4K～16K × Output 1024 × Repeat 3</span></p>
+      <h1>Stress Test｜Intel B60 · SGLang / vLLM</h1>
+      <p class="v2-sub">SGLang XPU · vLLM XPU<span class="zh-i">NP 1 / 2 / 5 × Input 4K～16K × Output 1024 × Repeat 3</span></p>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and method"></div>
-      <aside class="v2-verdict" role="note"><b>18/18 PASS：Gemma 4 31B NP5 的 8K / 16K 由重跑補齊<span class="zh-i">原始 Full 測試 NP5 / 8K 失敗（保留紀錄）；重跑後 Laguna 9/9、Gemma 4 31B 9/9 PASS</span></b><p id="stNote"></p></aside>
+      <div class="st-tabs st-fw" id="stFw" role="tablist" aria-label="Framework"></div>
+      <aside class="v2-verdict" role="note"><b id="stVerdict"></b><p id="stNote"></p></aside>
     </section>
 
     <section class="report-section st-same" id="secSame">
-      <header><h2>測試參數<span class="zh">Test Parameters · B60 SGLang</span></h2></header>
+      <header><h2>測試參數<span class="zh">Test Parameters · B60</span></h2></header>
       <dl class="st-params" id="stParams"></dl>
       <p class="v2-fn">本頁只呈現 B60 自己的數據；與 B70、AISO1 的同參數並排比對請見「B60 vs B70 vs AISO1 同參數比對」。</p>
     </section>
 
     <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh">Intel B60 實測（SGLang）</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
+      <header><h2>TTFT · TPOT · TPS<span class="zh">Intel B60 實測</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
       <div id="stMetrics"></div>
     </section>
 
@@ -46,7 +47,7 @@
       <header><h2>逐情境數據<span class="zh">TPS 為每請求（Normalized）</span></h2></header>
       <p class="v2-fine" id="stTableSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
-      <p class="v2-fn">TPS (Normalized) = Aggregate ÷ NP，即每個請求自己的輸出速度；Aggregate = NP × Output tokens ÷ E2E，含首字等待時間。† = 重跑結果（見下方說明）。</p>
+      <p class="v2-fn">TPS (Normalized) = Aggregate ÷ NP，即每個請求自己的輸出速度；Aggregate = NP × Output tokens ÷ E2E，含首字等待時間。† = 重跑結果（見下方說明）；‡ = 回報之 Aggregate 與 TTFT／TPOT 推算不符（見 JSON consistency_note）；TTFT ≥ 180 秒以紅字標示，仍為 Technical PASS。</p>
     </section>
 
     <section class="report-section" id="secAgg">
@@ -61,10 +62,10 @@
     </section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">B60 已驗證實測 18 筆（含 2 筆重跑）</span></h2><a class="v2-dl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>JSON ↓</a></header>
+      <header><h2>Data<span class="zh" id="stDataTitle"></span></h2><a class="v2-dl" id="stDl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>JSON ↓</a></header>
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="stress-test-b60.js?v=4"></script>
+  </main><script src="stress-test-b60.js?v=5"></script>
 </body>
 </html>

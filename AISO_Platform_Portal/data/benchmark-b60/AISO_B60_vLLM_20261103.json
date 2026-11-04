@@ -1,0 +1,151 @@
+{
+ "dataset": "AISO_B60_vLLM_20261103",
+ "evidence_until": "2026-11-03",
+ "generated_on": "2026-11-04",
+ "note": "Intel B60 vLLM (XPU) run on host sparkle-To-Be-Filled-By-O-E-M, container b60_vllm_gemma31_by_path, 72/72 requests. aggregate_tps = reported TPS = NP x output tokens / E2E (includes prefill wait); decode_tps field = aggregate/NP. 8 of 9 rows match NP x 1024/(TTFT+1023*TPOT) within 0.1%; NP5 16K is 17.7% lower (kept as reported). A command labelled 'AISO1 AMD' in the same paste still ran on this B60 host, so no AISO1 data is included. Queueing seen (Running 2/Waiting 3, Running 3/Waiting 2); preemption not confirmed. Runtime image tag, model repo/quant and run_id were not in the paste and are left unset.",
+ "profile": {
+  "machine": "4× Intel B60",
+  "framework": "vLLM XPU",
+  "np": [
+   1,
+   2,
+   5
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "context_length": 18432,
+  "prefill_tokens": 4096,
+  "max_num_seqs": 10,
+  "memory_fraction": "0.90",
+  "prefix_cache": "OFF",
+  "tp": 2,
+  "gpu_count": 4,
+  "runtime": "UNVERIFIED",
+  "vram_total_gb": 96,
+  "vram_layout": "48 GB x 2"
+ },
+ "b60_runs": [
+  {
+   "model": "Gemma31",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 11.764,
+   "tpot_ms": 43.252,
+   "decode_tps": 18.282,
+   "aggregate_tps": 18.282,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 38.546,
+   "tpot_ms": 49.616,
+   "decode_tps": 11.467,
+   "aggregate_tps": 11.467,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 140.513,
+   "tpot_ms": 59.117,
+   "decode_tps": 5.095,
+   "aggregate_tps": 5.095,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 17.675,
+   "tpot_ms": 52.801,
+   "decode_tps": 14.274,
+   "aggregate_tps": 28.549,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 57.99,
+   "tpot_ms": 75.156,
+   "decode_tps": 7.588,
+   "aggregate_tps": 15.176,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 211.208,
+   "tpot_ms": 144.054,
+   "decode_tps": 2.854,
+   "aggregate_tps": 5.709,
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 42.456,
+   "tpot_ms": 93.186,
+   "decode_tps": 7.426,
+   "aggregate_tps": 37.128,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 118.601,
+   "tpot_ms": 161.703,
+   "decode_tps": 3.601,
+   "aggregate_tps": 18.006,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 460.358,
+   "tpot_ms": 277.196,
+   "decode_tps": 1.17,
+   "aggregate_tps": 5.849,
+   "ttft_over_180s": true,
+   "consistency_note": "Reported Aggregate 5.849 is 17.7% below NP x 1024/(TTFT+1023 x TPOT)=6.88; kept as reported, cause (queueing / averaging) unverified."
+  }
+ ],
+ "model_parity": [
+  {
+   "model": "Gemma31",
+   "name": "Gemma 4 31B",
+   "format": "UNVERIFIED",
+   "repo": "UNVERIFIED",
+   "tp": 2,
+   "status": "path-loaded (b60_vllm_gemma31_by_path)"
+  }
+ ],
+ "failures": [],
+ "not_run": [
+  {
+   "model": "Gemma26",
+   "reason": "待測"
+  },
+  {
+   "model": "Laguna",
+   "reason": "待測"
+  },
+  {
+   "model": "Nemotron",
+   "reason": "待測"
+  }
+ ],
+ "retry": null
+}
