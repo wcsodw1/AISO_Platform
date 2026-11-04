@@ -4,7 +4,8 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false},
- decode_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token",unit:"tok/s",higher:true}};
+ decode_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token",unit:"tok/s",higher:true},
+ aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};
 const FWCOL={sglang:"#4fd1b0",vllm:"#8f9bff",llamacpp:"#ff8a4c"};
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
@@ -42,7 +43,7 @@ function setFw(k){
  NP=D.profile.np.includes(NP)?NP:D.profile.np[0];
  renderSetup();$s("secMetrics").hidden=!hasRuns(k);
  if(hasRuns(k)){renderTabs();renderMetrics()}
- renderFull();renderRetry();renderFw();
+ renderFull();renderFw();
  $s("stDataTitle").textContent=`B60 ${fwLabel(FW)} 已驗證實測 ${D.b60_runs.length} 筆`+(D.b60_runs.some(r=>r.retry)?`（含 ${D.b60_runs.filter(r=>r.retry).length} 筆重跑）`:"");
  $s("stDl").href=REG.datasets.find(x=>x.machine==="b60"&&x.framework===k).file;
 }
@@ -72,11 +73,6 @@ function renderFull(){
  $s("stFullSub").textContent=`${fwLabel(FW)} · 已完成 ${n} / ${tot} 個情境（${new Set(D.b60_runs.map(r=>r.model)).size} / ${REG.models.length} 個模型）· 每情境 ${p.repeat} 次平均`;
  $s("stFull").innerHTML=`<thead><tr><th>Model</th><th>NP</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS (Normalized)<small>tok/s / 請求</small></th><th class="l">TPS (Aggregate)<small>tok/s</small></th><th>來源</th></tr></thead><tbody>${body}</tbody>`;
 }
-function renderRetry(){
- $s("secRetry").hidden=!D.retry;if(!D.retry)return;
- const f=D.failures[0],r=D.retry;
- $s("stRetry").innerHTML=`<b>原始 Full</b>（${esc(f.run_id)}）：Gemma 4 31B NP${f.np} / ${kn(f.input)} — ${esc(f.status)}。${esc(f.reason)}<br><b>重跑</b>（${esc(r.run_id)}）：僅重跑 NP5 的 8K / 16K，exit code ${r.exit_code}，failed models ${r.failed_models}，兩個情境均 PASS。${esc(r.note)}<br>原始失敗紀錄保留，不被重跑覆蓋；原始 R1 的 3.33 TPS 仍不可當作有效成績。`;
-}
 // ---- 同參數、不同框架比對（同機器、同模型、同 NP / Input；以第一個框架為基準）----
 const withData=()=>FWS().filter(f=>hasRuns(f.key));
 const fwModels=()=>REG.models.filter(m=>withData().length>1&&withData().every(f=>DATA[f.key].b60_runs.some(r=>r.model===m.key&&r.np===NP)));
@@ -84,7 +80,7 @@ function renderFw(){
  const ms=fwModels(),el=$s("stFwCmp"),fws=withData();
  if(!ms.length){el.innerHTML=`<p class="v2-fine">NP${NP} 尚無兩個框架皆有的成績。</p>`;return}
  const w=Math.max(320,(el.clientWidth||860)-100),base=fws[0].key;
- el.innerHTML=ms.map(m=>`<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · 以 ${esc(fws[0].label)} 為基準</span></h3>`+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:base,width:w,context:`${m.name} · NP${NP}`,tableNote:`差異 = ${fws[1].label} 相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`})).join("")+"</div>").join("");
+ el.innerHTML=ms.map(m=>`<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · 以 ${esc(fws[0].label)} 為基準</span></h3>`+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:base,width:w,context:`${m.name} · NP${NP}`,tableNote:`四項指標之一 · 差異 = ${fws[1].label} 相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`})).join("")+"</div>").join("");
 }
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry");return r.json()})]).then(([reg])=>{
  REG=reg;

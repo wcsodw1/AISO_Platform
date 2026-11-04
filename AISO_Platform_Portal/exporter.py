@@ -179,7 +179,7 @@ def export_catalog(base: Path, data_root: Path):
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
-    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "site-glow.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js", "aidaptiv.html", "lmcache.html", "lmcache.js", "gptoss-v2.html", "gptoss-v2.js", "gptoss-v2.css", "gptoss-v2-historical.html", "gptoss-v2-historical.js", "stress-test.html", "stress-test-b70-aiso1.html", "stress-test-b70-aiso1.js", "stress-test-b60.html", "stress-test-b60.js", "stress-test-compare.html", "stress-test-compare.js", "troubleshooting.js", "bench-viz.js"):
+    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "site-glow.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js", "aidaptiv.html", "lmcache.html", "lmcache.js", "gptoss-v2.html", "gptoss-v2.js", "gptoss-v2.css", "gptoss-v2-historical.html", "gptoss-v2-historical.js", "stress-test.html", "stress-test-b70-aiso1.html", "stress-test-b70-aiso1.js", "stress-test-b60.html", "stress-test-b60.js", "stress-test-b60-debug.html", "stress-test-b60-debug.js", "stress-test-compare.html", "stress-test-compare.js", "troubleshooting.js", "bench-viz.js"):
         shutil.copy2(base / asset, temporary / asset)
     if (base / "assets").exists():
         shutil.copytree(base / "assets", temporary / "assets")
