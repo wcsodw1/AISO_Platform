@@ -1,0 +1,180 @@
+{
+  "dataset": "AISO_Troubleshooting_20261104",
+  "received_on": "2026-11-04",
+  "source": "Provided by the benchmark execution session; copied verbatim. Fields marked UNVERIFIED/HYPOTHESIS must not be shown as confirmed root causes.",
+  "workload": "NP 1/2/5 x Input 4096/8192/16384 x Output 1024 x Repeat 3",
+  "summary": [
+    "已有效繞過 1 項：B60 SGLang Gemma31 NP5／8K Level Zero 失敗，經 Retry 通過；根因仍未解決。",
+    "仍 OPEN 4 項：SGLang Gemma26 CUDA JIT、Nemotron OOM；vLLM Scheduler 排隊及 17.7% 指標差異。",
+    "環境待驗 1 項：B60 llama.cpp GGUF 來源與 Runtime 設定，尚無正式失敗證據。",
+    "AISO1 三框架均無已知問題紀錄：意指尚無可驗證日誌，不代表已通過或無法啟動。",
+    "發布前待補：完整原始錯誤行、容器映像版本、Nemotron 執行主機歸屬及相關 run_id。"
+  ],
+  "entries": [
+    {
+      "machine": "Intel B60",
+      "framework": "SGLang",
+      "runtime": "lmsysorg/sglang:v0.5.22-xpu (待以 docker inspect 核對)",
+      "issues": [
+        {
+          "id": "B60-SGL-01",
+          "title": "Gemma 4 26B 啟動失敗：CUDA Marlin MoE JIT 找不到 nvcc",
+          "stage": "model-load",
+          "models": ["Gemma 4 26B"],
+          "symptom": "SGLang 載入 Gemma26 AWQ 4-bit 時，CompressedTensorsWNA16MarlinMoEMethod 進入 gptq_marlin_moe_repack 的 CUDA JIT 編譯路徑，XPU 容器無法完成初始化。",
+          "error": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
+          "root_cause": "實際執行路徑呼叫 CUDA Marlin MoE kernel，而目前使用 Intel XPU Runtime。已確認 CUDA JIT 編譯失敗；模型與 XPU kernel 的完整相容性尚未驗證。",
+          "cause_status": "VERIFIED",
+          "solution": [
+            "Intel B60 Host：docker ps -a --format '{{.Names}} {{.Image}} {{.Status}}'",
+            "Intel B60 Host：docker ps -a --format '{{.Names}}' | grep -i sglang",
+            "Intel B60 Host：docker logs <實際失敗容器名稱> 2>&1 | grep -n -C 8 -E 'gptq_marlin_moe_repack|nvcc: not found|CompressedTensorsWNA16MarlinMoEMethod'",
+            "Intel B60 Host：python3 -m json.tool \"$HOME/b70_benchmark/models/safetensors/int4/Gemma-4-26B-cyankiwi-AWQ-4bit/config.json\" | grep -A 25 -B 3 quantization",
+            "尚無已驗證的 XPU 相容 kernel 或模型替代方案。不得將安裝 tvm_ffi 視為修復成功。"
+          ],
+          "outcome": "OPEN",
+          "evidence": "先前 B60 SGLang Gemma26 啟動日誌；nvcc: not found 已出現。完整容器名稱及日誌檔名待回查。",
+          "notes": "cyankiwi 來源不符合目前僅允許原作者官方／Unsloth 的政策。需先核對合法模型來源及量化 kernel 支援，再重新驗證。不得直接在 XPU 容器安裝 CUDA 並宣稱已修復。"
+        },
+        {
+          "id": "B60-SGL-02",
+          "title": "Nemotron 3.5 啟動 OOM：ParallelLMHead 配置 672 MiB 失敗",
+          "stage": "model-load",
+          "models": ["Nemotron 3.5"],
+          "symptom": "TP1 載入 Nemotron 時，在 ParallelLMHead 初始化的 torch.empty 記憶體配置階段失敗。當時 GPU0 剩餘約 233.42 MiB，無法滿足 672 MiB 配置需求。",
+          "error": "torch.OutOfMemoryError\nUNVERIFIED：完整原始 traceback 尚未取得，不補寫錯誤訊息。",
+          "root_cause": "模型初始化時可用 GPU 記憶體不足。是否由 TP1 分配、模型權重、量化實作、其他 GPU 佔用或記憶體碎片導致，尚未隔離確認。",
+          "cause_status": "HYPOTHESIS",
+          "solution": [
+            "Intel B60 Host：docker ps -a --format '{{.Names}} {{.Status}} {{.Image}}'",
+            "Intel B60 Host：docker logs <實際失敗容器名稱> 2>&1 | grep -n -C 10 -E 'OutOfMemoryError|ParallelLMHead|672.00 MiB|233.42 MiB'",
+            "Intel B60 Host：docker inspect <實際失敗容器名稱> --format '{{json .Args}}'",
+            "Intel B60 Host：xpu-smi discovery",
+            "保留原始失敗紀錄，核對 TP、模型量化與實際記憶體佔用。降低 KV 記憶體比例、改用 TP2 或更換模型均尚未驗證有效。"
+          ],
+          "outcome": "OPEN",
+          "evidence": "先前 Nemotron SGLang 啟動日誌；run_id：B70_SGLang_NP125_20261102_003009_1869939（執行主機歸屬需核對）。",
+          "notes": "run_id 含 B70 字樣，不能單憑名稱認定硬體。此案例依先前 B60 診斷歸類，正式發布前應核對 hostname 與容器裝置。降低 mem_fraction_static 不能保證修復模型權重初始化 OOM。"
+        },
+        {
+          "id": "B60-SGL-03",
+          "title": "Gemma 4 31B NP5／8K：Level Zero 資源不足與 HTTP 500",
+          "stage": "inference",
+          "models": ["Gemma 4 31B"],
+          "symptom": "原始 Full Benchmark 在 NP5、Input 8192 時失敗，flash_attn_with_kvcache 執行路徑出現 Level Zero 資源錯誤，API 回傳 HTTP 500。後續僅針對 NP5／8K 與 NP5／16K 補測並通過。",
+          "error": "UR_RESULT_ERROR_OUT_OF_RESOURCES\nHTTP 500",
+          "root_cause": "Level Zero 執行 flash_attn_with_kvcache 時發生資源不足。確切原因可能涉及瞬時 GPU 資源、kernel 或排程狀態，尚無充分證據隔離。",
+          "cause_status": "HYPOTHESIS",
+          "solution": [
+            "Intel B60 Host：find \"$HOME/b60_benchmark/frameworks/sglang\" -type f \\( -name '*.log' -o -name '*.csv' \\) | grep -E 'Gemma31|NP125|Retry'",
+            "Intel B60 Host：grep -R -n -E 'UR_RESULT_ERROR_OUT_OF_RESOURCES|flash_attn_with_kvcache|HTTP 500' \"$HOME/b60_benchmark/frameworks/sglang/results\" 2>/dev/null | head -60",
+            "Intel B60 Host：find \"$HOME/b60_benchmark/frameworks/sglang\" -type f -iname '*retry*' -print",
+            "原始失敗結果與補測結果分開保存，核對 NP5／8K 及 NP5／16K 各三次 Repeat、成功請求數與輸出 token 數。",
+            "已驗證的處理方式為針對失敗條件單獨 Retry；不得覆蓋原始失敗資料。"
+          ],
+          "outcome": "WORKAROUND",
+          "evidence": "原始 run_id：B60_SGLang_2Models_NP125_20261102_100733_2642029；後續 Gemma31 NP5 Retry 通過，最終 Gemma31 9/9 PASS。",
+          "notes": "Retry 成功僅證明該次補測有效，不代表 Level Zero 問題已永久解決。應保留原始失敗與 Retry 來源關聯。"
+        }
+      ]
+    },
+    {
+      "machine": "Intel B60",
+      "framework": "vLLM",
+      "runtime": "vLLM XPU（精確映像版本 UNVERIFIED）",
+      "issues": [
+        {
+          "id": "B60-VLLM-01",
+          "title": "NP5 並發請求排隊：Running 2／Waiting 3",
+          "stage": "inference",
+          "models": ["Gemma 4 31B"],
+          "symptom": "NP5 負載下，vLLM Scheduler 顯示 Running 2、Waiting 3，五個請求並未同時處於執行狀態。",
+          "error": "Running: 2\nWaiting: 3",
+          "root_cause": "Scheduler 存在排隊現象，但尚無證據證明由 KV Cache 容量、token budget、序列長度限制或 preemption 導致。",
+          "cause_status": "HYPOTHESIS",
+          "solution": [
+            "Intel B60 Host：docker inspect b60_vllm_gemma31_by_path --format '{{json .Args}}'",
+            "Intel B60 Host：docker logs b60_vllm_gemma31_by_path 2>&1 | grep -n -E 'Running:|Waiting:|preempt|Preempt|KV cache' | tail -100",
+            "Intel B60 Host：find \"$HOME/b60_benchmark/frameworks/vllm/results/Gemma31_Full_VRoDJgP9\" -name 'server.log' -print",
+            "檢查 max-num-seqs=10、max-num-batched-tokens=4096、max-model-len=18432 是否為實際生效值，並對照 Scheduler 與 KV Cache 日誌。",
+            "不得為了消除 Waiting 擅自改變固定 NP 負載。"
+          ],
+          "outcome": "OPEN",
+          "evidence": "Gemma31 Full run_id：Gemma31_Full_VRoDJgP9；先前 vLLM Scheduler 輸出。",
+          "notes": "排隊不等於 preemption，也不等於 Benchmark 失敗。Gemma31 9/9 PASS 與 Scheduler 排隊可以同時成立。尚無已驗證的修復方案。"
+        },
+        {
+          "id": "B60-VLLM-02",
+          "title": "NP5／16K：Aggregate TPS 與 TTFT／TPOT 推算差異約 17.7%",
+          "stage": "benchmark-runner",
+          "models": ["Gemma 4 31B"],
+          "symptom": "NP5、Input 16384 的 Aggregate TPS 與使用 TTFT、TPOT 推算的吞吐量存在約 17.7% 差異。",
+          "error": "UNVERIFIED：尚無原始 exception 或錯誤訊息；此為指標一致性問題。",
+          "root_cause": "尚未確認是否因 E2E 量測範圍、請求完成時間分布、TTFT／TPOT 聚合方式、輸出 token 計數或並發排隊造成。",
+          "cause_status": "HYPOTHESIS",
+          "solution": [
+            "Intel B60 Host：find \"$HOME/b60_benchmark/frameworks/vllm/results/Gemma31_Full_VRoDJgP9/np5_input16384\" -maxdepth 2 -type f -print",
+            "Intel B60 Host：grep -n -E 'aggregate|Aggregate|TTFT|TPOT|e2e|E2E|successful_requests' \"$HOME/b60_benchmark/frameworks/vllm/results/Gemma31_Full_VRoDJgP9/np5_input16384/client.log\" | tail -60",
+            "Intel B60 Host：grep -n -E 'aggregate|ttft|tpot|elapsed|duration|output_tokens' \"$HOME/b60_benchmark/frameworks/vllm/results/Gemma31_Full_VRoDJgP9/client_used.py\"",
+            "以原始每請求資料重新計算 Aggregate TPS = 全部成功輸出 token ÷ 同一測試視窗 E2E，並與 TTFT、TPOT 的原始統計口徑分別核對。",
+            "不得直接使用平均 TTFT 與平均 TPOT 反推整組並發 Aggregate TPS，並宣稱兩者必須相等。"
+          ],
+          "outcome": "OPEN",
+          "evidence": "Gemma31_Full_VRoDJgP9；NP5／16K 約 17.7% 差異來自先前分析，完整原始計算表尚待回查。",
+          "notes": "17.7% 為待核對的差異，不等於已證實 Benchmark Runner 計算錯誤。TPS Normalized = Aggregate TPS / NP，不能直接當作單請求 decode TPS。"
+        }
+      ]
+    },
+    {
+      "machine": "Intel B60",
+      "framework": "llama.cpp",
+      "runtime": "UNVERIFIED（AMD launcher 僅為交接參考）",
+      "issues": [
+        {
+          "id": "B60-LLAMA-01",
+          "title": "GGUF 已找到，但來源與 llama.cpp 執行設定尚未核驗",
+          "stage": "other",
+          "models": ["Gemma 4 26B", "Gemma 4 31B", "Laguna XS 2.1", "Nemotron 3.5"],
+          "symptom": "已找到多個 GGUF 檔案，包含 official 目錄中的模型，但尚未取得 B60 llama.cpp 正式啟動、完整 NP125 Benchmark 或模型來源核驗證據。",
+          "error": "無已知 Runtime 錯誤；目前為驗證缺口。",
+          "root_cause": "現有輸出僅能證明檔案存在及大小，無法證明下載來源、模型完整性、binary 後端、slot context 或 batch 設定符合測試要求。",
+          "cause_status": "VERIFIED",
+          "solution": [
+            "Intel B60 Host：find \"$HOME/b70_benchmark/models/gguf/official\" -type f -name '*.gguf' -printf '%p %s bytes\\n'",
+            "Intel B60 Host：find \"$HOME\" -maxdepth 6 -type f -name llama-server -print 2>/dev/null",
+            "Intel B60 Host：python3 -m py_compile \"$HOME/b60_benchmark/frameworks/llamacpp/scripts/B60_llamacpp_np125.py\"",
+            "Intel B60 Host：grep -n -E 'parallel|ctx-size|batch-size|ubatch-size|cache|tensor-split|n-gpu-layers' \"$HOME/b70_benchmark/frameworks/llamacpp/scripts/launch_amd.sh\"",
+            "核對 GGUF 的原始下載 repo、revision、hash 與 llama-server 實際 --help，再建立 B60 專用啟動設定。"
+          ],
+          "outcome": "OPEN",
+          "evidence": "2026-11-04 B60 GGUF 路徑與檔案大小掃描；B60_llamacpp_np125.py 已執行 py_compile；AISO1_benchmark_handoff_20261104.tar.gz 已建立。",
+          "notes": "此項是已確認的驗證缺口，不是已發生的 llama.cpp Runtime crash。尚無正式失敗日誌；若網站只展示 Runtime 故障，應將此項歸入環境待驗，而非失敗事件。"
+        }
+      ]
+    },
+    {
+      "machine": "AISO1",
+      "framework": "SGLang",
+      "runtime": "UNVERIFIED",
+      "issues": [],
+      "status": "無已知問題",
+      "notes": "尚無經 hostname 核對的 AISO1 SGLang 啟動或推論日誌。先前標示 AISO1 的檢查實際出現在 B60 主機，不得移植其錯誤紀錄。尚不能宣稱無法啟動。"
+    },
+    {
+      "machine": "AISO1",
+      "framework": "vLLM",
+      "runtime": "UNVERIFIED",
+      "issues": [],
+      "status": "無已知問題",
+      "notes": "尚無真正 AISO1 的 AMD Runtime、Docker 映像、模型載入或正式 Benchmark 證據。尚不能判定支援狀態或失敗原因。"
+    },
+    {
+      "machine": "AISO1",
+      "framework": "llama.cpp",
+      "runtime": "UNVERIFIED",
+      "issues": [],
+      "status": "無已知問題",
+      "notes": "先前 llama-server 掃描未輸出 binary 路徑，但執行主機未核實為 AISO1。Vulkan／ROCm 後端、GPU offload、GGUF 來源及正式測試狀態均待確認。"
+    }
+  ]
+}

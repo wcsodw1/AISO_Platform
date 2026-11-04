@@ -1,0 +1,79 @@
+"use strict";
+/* Shared Stress Test chart block, same visual language as the LMCache v.s aiDAPTIV page:
+   badge (越低越好/越高越好) + one-sentence conclusion + legend, bar chart with green/red % over each non-baseline bar,
+   then the data table with "vs baseline" columns and an average-differential footer. */
+window.BV=(function(){
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const tok=n=>n.toLocaleString("en-US");
+ const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+ const fmt=(k,v)=>k==="ttft_s"?(v<10?num(v,2):num(v,1)):(v>=100?num(v,0):num(v,1));
+ const gain=(v,b,hi)=>hi?(v/b-1)*100:(1-v/b)*100;          // + = better than baseline
+ const sign=v=>v>0.05?"+":v<-0.05?"−":"",cls=v=>v>0.05?"gain":v<-0.05?"loss":"flat";
+ const pct=v=>Number.isFinite(v)?`<span class="v2-d ${cls(v)}">${sign(v)}${Math.abs(v).toFixed(1)}%</span>`:'<span class="v2-na">—</span>';
+ const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
+ // delta vs baseline: +/-x% (same convention as the LMCache page); once the gap passes 100% show a multiple (慢 8.1× / 快 2.3×) instead
+ function dtext(g,ratio,hi){
+  if(!Number.isFinite(g))return {t:"—",c:"flat"};
+  if(hi&&g>=100)return {t:`快 ${ratio.toFixed(1)}×`,c:"gain"};
+  if(!hi&&g<=-100)return {t:`慢 ${ratio.toFixed(1)}×`,c:"loss"};
+  return {t:`${sign(g)}${Math.abs(g).toFixed(1)}%`,c:cls(g)};
+ }
+ const dd=(v,b,hi)=>dtext(gain(v,b,hi),v/b,hi);
+ const dspan=d=>`<span class="v2-d ${d.c}">${d.t}</span>`;
+ function step(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
+
+ function svg(o){
+  const {k,def,groups,series,get,baseline,width}=o,n=groups.length,ns=series.length;
+  const L=68,R=14,T=58,B=62,H=340,ih=H-T-B,W=Math.max(width||0,n*Math.max(150,ns*62)+L+R),gw=(W-L-R)/n,bw=Math.min(54,(gw-18)/ns);
+  const vals=groups.flatMap(g=>series.map(s=>get(s.key,g)).filter(Boolean).map(r=>r[k]));
+  if(!vals.length)return null;
+  const top=Math.max(...vals),st=step(top),y=v=>T+ih-v/top*ih;
+  let s="";
+  for(let v=0;v<=top+1e-9;v+=st){const yy=y(v);s+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,st<1?1:0)}</text>`}
+  s+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${esc(def.unit)}</text>`;
+  groups.forEach((g,q)=>{
+   const x0=L+gw*q+(gw-bw*ns-3*(ns-1))/2,base=baseline?get(baseline,g):null;
+   series.forEach((se,j)=>{
+    const r=get(se.key,g),x=x0+j*(bw+3);
+    if(!r){s+=`<text class="bl up2" x="${x+bw/2}" y="${y(0)-6}" text-anchor="middle">—</text>`;return}
+    const v=r[k],y1=y(v),red=k==="ttft_s"&&r.ttft_over_180s;
+    s+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1,y(0)-y1)}" rx="3" fill="${se.color}"><title>${esc(se.label)} · ${esc(g.label)}: ${fmt(k,v)} ${esc(def.unit)}</title></rect>`;
+    s+=`<text class="bl ${red?"dn":"up2"}" x="${x+bw/2}" y="${y1-6}" text-anchor="middle">${fmt(k,v)}</text>`;
+    if(baseline&&se.key!==baseline&&base){const d=dd(v,base[k],def.higher);
+     s+=`<text class="bl ${d.c==="gain"?"up":d.c==="loss"?"dn":"up2"}" x="${x+bw/2}" y="${y1-22}" text-anchor="middle">${d.t}</text>`}
+   });
+   s+=`<text x="${L+gw*q+gw/2}" y="${H-34}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${L+gw*q+gw/2}" y="${H-16}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`;
+  });
+  return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(def.short)}">${s}</svg></div>`;
+ }
+ function message(o){
+  const {k,def,groups,series,get,baseline}=o;
+  if(!baseline)return o.message||"";
+  const b=series.find(s=>s.key===baseline),out=[];
+  series.filter(s=>s.key!==baseline).forEach(s=>{
+   const ds=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[g.label,gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);
+   if(!ds.length){out.push(`${s.label} 尚無與 ${b.label} 同條件的資料可比較`);return}
+   const m=mean(ds.map(x=>x[1])),av=dtext(m,mean(ds.map(x=>x[2])),def.higher);
+   out.push(`以 ${b.label} 為基準，${s.label} 平均${m>=0?"優於":"劣於"}（${av.t}）；${ds.map(x=>`${x[0]} ${dtext(x[1],x[2],def.higher).t}`).join("、")}`)});
+  return out.join("；");
+ }
+ function table(o){
+  const {k,def,groups,series,get,baseline}=o,others=baseline?series.filter(s=>s.key!==baseline):[];
+  const b=series.find(s=>s.key===baseline);
+  const cell=(r,s)=>`<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k]):"—"}</td>`;
+  const rows=groups.map(g=>`<tr><td>${esc(g.label)}<small class="bv-sub">${esc(g.sub||"")}</small></td>${series.map(s=>cell(get(s.key,g),s)).join("")}${others.map(s=>{const a=get(s.key,g),c=get(baseline,g);return `<td>${a&&c?dspan(dd(a[k],c[k],def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("")}</tr>`).join("");
+  const avg=others.map(s=>{const v=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);return `<td>${v.length?dspan(dtext(mean(v.map(x=>x[0])),mean(v.map(x=>x[1])),def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("");
+  const foot=others.length?`<tfoot><tr><td>All Scenario average differential<small>全情境平均差異</small></td>${series.map(()=>"<td></td>").join("")}${avg}</tr></tfoot>`:"";
+  return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>${esc(o.rowHead||"Input")}</th>${series.map(s=>`<th class="l"><i class="v2-sw" style="background:${s.color}"></i>${esc(s.label)}<small>${esc(def.unit)}</small></th>`).join("")}${others.map(s=>`<th class="la">${esc(s.label)} vs ${esc(b.label)}<small>差異</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>${foot}</table></div>`;
+ }
+ /* one metric block: title + (badge · conclusion · legend) + chart + table */
+ function block(o){
+  const d=o.def,chart=svg(o);
+  const legend=o.series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
+  const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>
+   <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
+  if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;
+  return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div>`;
+ }
+ return {block,esc,fmt,gain,pct};
+})();

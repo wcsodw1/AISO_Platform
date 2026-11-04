@@ -1,75 +1,81 @@
 "use strict";
 const $s=id=>document.getElementById(id);
-const NAMES={Gemma26:"Gemma 4 26B",Gemma31:"Gemma 4 31B",Laguna:"Laguna XS 2.1",Nemotron:"Nemotron 3.5"};
-const MACH=[["b60","Intel B60 · SGLang","#4fd1b0"],["b70","Intel B70 · llama.cpp","#ff8a4c"]];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const METRICS={
- ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false,dec:1},
- tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false,dec:1},
- norm_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token（含首字等待）",unit:"tok/s",higher:true,dec:1}};
+ ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false},
+ tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false},
+ norm_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token（含首字等待）",unit:"tok/s",higher:true},
+ aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
-const wait='<span class="st-wait">等待 AISO1 正式測試</span>';
-let A,B,SC=[];
-const runs=mach=>mach==="b60"?A.b60_runs:B.b70_runs;
-const get=(mach,m,np,i)=>runs(mach).find(r=>r.model===m&&r.np===np&&r.input===i);
+const val=(k,v)=>k==="ttft_s"&&v<10?num(v,2):num(v,1);
+let REG,DATA={},FW,MODEL,NP;   // DATA[machine][framework] = dataset
+const runsOf=(mach,fw)=>{const ds=DATA[mach]&&DATA[mach][fw];return ds?ds.runs:[]};
+const get=(mach,fw,m,np,i)=>runsOf(mach,fw).find(r=>r.model===m&&r.np===np&&r.input===i);
+const fwLabel=k=>REG.frameworks.find(f=>f.key===k).label;
+const modelName=k=>REG.models.find(m=>m.key===k).name;
+const cellRuns=(mach)=>runsOf(mach,FW).filter(r=>r.model===MODEL&&r.np===NP);
+const inputsNow=()=>{const s=new Set(REG.machines.flatMap(m=>cellRuns(m.key).map(r=>r.input)));return s.size?[...s].sort((a,b)=>a-b):[4096,8192,16384]};
+const npsAll=()=>[...new Set(REG.machines.flatMap(m=>REG.frameworks.flatMap(f=>runsOf(m.key,f.key).map(r=>r.np))))].sort((a,b)=>a-b);
 
-// scenarios where B60 and B70 ran identical NP / Input for the same model
-function scenarios(){
- return Object.keys(NAMES).flatMap(m=>A.profile.np.flatMap(np=>A.profile.input_tokens.map(i=>[m,np,i]))).filter(([m,np,i])=>get("b60",m,np,i)&&get("b70",m,np,i));
+const grpNow=()=>inputsNow().map(i=>({label:kn(i),sub:tok(i),i}));
+const availability=()=>REG.machines.map(m=>{const n=cellRuns(m.key).length;return n?`<span><i style="background:${m.color}"></i>${esc(m.label)}（${n} 筆）</span>`:`<span class="st-wait"><i style="background:${m.color};opacity:.35"></i>${esc(m.label)}：此組合無資料</span>`}).join("");
+function btn(group,items,cur){return items.map(([k,l,has])=>`<button type="button" role="tab" class="${String(k)===String(cur)?"on":""}${has?" has":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
+const anyData=(fw,m,np)=>REG.machines.some(x=>runsOf(x.key,fw).some(r=>(!m||r.model===m)&&(!np||r.np===np)));
+function renderControls(){
+ $s("cmpFw").innerHTML=btn("fw",REG.frameworks.map(f=>[f.key,f.label,anyData(f.key)]),FW);
+ $s("cmpModel").innerHTML=btn("model",REG.models.map(m=>[m.key,m.name,anyData(FW,m.key)]),MODEL);
+ $s("cmpNp").innerHTML=btn("np",npsAll().map(n=>["" +n,"NP"+n,anyData(FW,MODEL,n)]),NP);
+ document.querySelectorAll("#secPick button").forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(g==="fw")FW=b.dataset.k;if(g==="model")MODEL=b.dataset.k;if(g==="np")NP=+b.dataset.k;renderAll()});
 }
-function renderCmp(){
- const a=A.profile,b=B.profile,same='<span class="st-same-t">相同</span>',diff='<span class="st-over">不同</span>',
-  r=(k,x,y,f)=>`<tr><td class="st-model">${k}</td><td>${x}</td><td>${y}</td><td class="st-pending"><span class="st-wait">待核</span></td><td>${f}</td></tr>`;
- const npI=a.np.filter(n=>b.np.includes(n)),inI=a.input_tokens.filter(n=>b.input_tokens.includes(n));
- $s("stCmp").innerHTML=`<thead><tr><th>項目</th><th class="l">Intel B60</th><th class="l">Intel B70</th><th class="a">AISO1 AMD</th><th>比對用</th></tr></thead><tbody>
- ${r("NP 並發",a.np.join(" / "),b.np.join(" / "),`重疊 NP${npI.join(" / ")} ${same}`)}
- ${r("Input 輸入",a.input_tokens.map(kn).join(" / "),b.input_tokens.map(kn).join(" / "),`重疊 ${inI.map(kn).join(" / ")} ${same}`)}
- ${r("Output 輸出",tok(a.output_tokens),tok(b.output_tokens),same)}
- ${r("Repeat 重複",`${a.repeat} 次取平均`,`${b.repeat} 次取平均`,same)}
- ${r("硬體配備",`Intel B60 · ${a.vram_total_gb} GB（${a.vram_layout.replace(" x "," × ")}）<small>4 GPU devices · TP${a.tp}</small>`,`Intel B70 · ${b.vram_total_gb} GB（${b.vram_layout.replace(" x "," × ")}）`,diff)}
- ${r("Framework 框架","SGLang XPU","llama.cpp（Intel SYCL）",diff)}
- ${r("模型格式","safetensors：Laguna FP8 / Gemma31 W4A16","GGUF Q4",diff)}
- ${r("Context 上限",`${tok(a.context_length)} tokens`,`${tok(b.context_per_request)} tokens / request`,diff)}
- ${r("Batch","Chunked Prefill "+tok(a.chunked_prefill),`${tok(b.batch)} / UBatch ${b.ubatch}`,diff)}</tbody>`;
- $s("stCmpFn").textContent="NP、Input、Output、Repeat 相同的情境才進入比對；框架、模型格式、Context、Batch 不同，數字僅反映各自設定下的表現，不代表單純的硬體差異。";
-}
-function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
-function chart(k,width){
- const d=METRICS[k],n=SC.length,L=64,R=12,T=34,B_=62,H=320,ih=H-T-B_,W=Math.max(width,n*84+L+R),gw=(W-L-R)/n,bw=Math.min(30,(gw-12)/2);
- const top=Math.max(...SC.flatMap(([m,np,i])=>MACH.map(([x])=>get(x,m,np,i)[k]))),step=niceStep(top),y=v=>T+ih-v/top*ih;
- let g="";
- for(let v=0;v<=top+1e-9;v+=step){const yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
- g+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${d.unit}</text>`;
- SC.forEach(([m,np,inp],q)=>{
-  const x0=L+gw*q+(gw-bw*2-2)/2;
-  MACH.forEach(([x,mn,col],j)=>{const v=get(x,m,np,inp)[k],xx=x0+j*(bw+2),y1=y(v);
-   g+=`<rect x="${xx}" y="${y1}" width="${bw}" height="${Math.max(1,y(0)-y1)}" rx="2" fill="${col}"><title>${NAMES[m]} · ${mn} · NP${np} · ${tok(inp)}: ${num(v,d.dec)} ${d.unit}</title></rect><text class="bl up2" x="${xx+bw/2}" y="${y1-5}" text-anchor="middle">${num(v,v>=100?0:d.dec)}</text>`});
-  g+=`<text x="${L+gw*q+gw/2}" y="${H-38}" text-anchor="middle" class="xl">${kn(inp)}</text><text x="${L+gw*q+gw/2}" y="${H-22}" text-anchor="middle" class="xl2">NP${np}</text><text x="${L+gw*q+gw/2}" y="${H-6}" text-anchor="middle" class="xl2">${NAMES[m]}</text>`;
- });
- return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.short}">${g}</svg></div>`;
-}
-const legend=()=>`<div class="v2-legend2">${MACH.map(([,n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")}<span class="st-wait">AISO1：等待正式測試</span></div>`;
 function renderMetrics(){
- if(!SC.length){$s("stMetrics").innerHTML='<p class="v2-fine">目前沒有參數相同的情境。</p>';return}
- const w=Math.max(320,($s("stMetrics").clientWidth||860)-100);
- $s("stMetrics").innerHTML=Object.entries(METRICS).map(([k,d])=>`<article class="v2-chart"><h3>${d.short}<small>${d.zh} · ${d.higher?"越高越好 ↑":"越低越好 ↓"}</small></h3>${legend()}${chart(k,w)}</article>`).join("");
+ const w=Math.max(320,($s("stMetrics").clientWidth||860)-100),have=REG.machines.filter(m=>cellRuns(m.key).length),base=have.length?have[0].key:null;
+ $s("stNote").textContent=`目前選擇：${fwLabel(FW)} · ${modelName(MODEL)} · NP${NP}`;
+ const av=`<p class="v2-fine cmp-av">${availability()}</p>`;
+ if(!have.length){$s("stMetrics").innerHTML=av+'<p class="v2-fine st-empty">此框架、模型、NP 三台機器都還沒有資料。</p>';return}
+ $s("stMetrics").innerHTML=av+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grpNow(),series:REG.machines.map(m=>({key:m.key,label:m.label,color:m.color})),get:(mk,g)=>get(mk,FW,MODEL,NP,g.i),
+  baseline:have.length>1?base:null,width:w,context:`${fwLabel(FW)} · ${modelName(MODEL)} · NP${NP}`,
+  message:have.length>1?"":`目前只有 ${have[0].label} 有「${fwLabel(FW)} · ${modelName(MODEL)} · NP${NP}」的資料，另外的機器登錄後會自動並排並計算差異`,
+  tableNote:have.length>1?`差異以 ${have[0].label} 為基準；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二台機器可比較"})).join("");
 }
 function renderTable(){
- const c=(r,k,d)=>`<td>${num(r[k],d)}</td>`;
- const rows=SC.map(([m,np,i])=>{const a=get("b60",m,np,i),b=get("b70",m,np,i);
-  return `<tr><td class="st-model">${NAMES[m]}</td><td>NP${np}</td><td>${kn(i)}</td>${c(a,"ttft_s",1)}${c(a,"tpot_ms",1)}${c(a,"norm_tps",1)}${c(a,"aggregate_tps",1)}${c(b,"ttft_s",1)}${c(b,"tpot_ms",1)}${c(b,"norm_tps",1)}${c(b,"aggregate_tps",1)}<td colspan="3" class="st-pending">${wait}</td></tr>`}).join("");
- const sub=(x)=>`<th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS Norm<small>tok/s/請求</small></th><th class="l">Aggregate<small>tok/s</small></th>`;
- $s("stTable").innerHTML=`<thead><tr><th rowspan="2">Model</th><th rowspan="2">NP</th><th rowspan="2">Input</th><th colspan="4" class="l">Intel B60 · SGLang</th><th colspan="4" class="l">Intel B70 · llama.cpp</th><th colspan="3" class="a">AISO1 AMD</th></tr><tr>${sub()}${sub()}<th class="a">TTFT</th><th class="a">TPOT</th><th class="a">TPS</th></tr></thead><tbody>${rows||'<tr><td colspan="14">目前沒有參數相同的情境。</td></tr>'}</tbody>`;
+ const ins=inputsNow(),c=(r,k)=>`<td>${r?(k==="aggregate_tps"?num(r[k],1):val(k,r[k])):"—"}</td>`;
+ const sub=`<th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS Norm<small>tok/s/請求</small></th><th class="l">Aggregate<small>tok/s</small></th>`;
+ const rows=ins.map(i=>`<tr><td>${kn(i)}</td>${REG.machines.map(m=>{const r=get(m.key,FW,MODEL,NP,i);return ["ttft_s","tpot_ms","norm_tps","aggregate_tps"].map(k=>c(r,k)).join("")}).join("")}</tr>`).join("");
+ $s("stTable").innerHTML=`<thead><tr><th rowspan="2">Input</th>${REG.machines.map(m=>`<th colspan="4" class="l">${esc(m.label)}</th>`).join("")}</tr><tr>${REG.machines.map(()=>sub).join("")}</tr></thead><tbody>${rows}</tbody>`;
+ $s("stTableSub").textContent=`${fwLabel(FW)} · ${modelName(MODEL)} · NP${NP} · 3 次重複平均；「—」= 該機器此組合沒有資料。`;
 }
 function renderCover(){
- const desc=(mach,m)=>{const rs=runs(mach).filter(r=>r.model===m);if(!rs.length)return '<span class="st-wait">無資料</span>';
+ const desc=(mach,fw,m)=>{const rs=runsOf(mach,fw).filter(r=>r.model===m);if(!rs.length)return '<span class="st-wait">無資料</span>';
   const nps=[...new Set(rs.map(r=>r.np))].sort((a,b)=>a-b),ins=rs.map(r=>r.input);return `NP${nps.join("/")} · ${kn(Math.min(...ins))}–${kn(Math.max(...ins))} · ${rs.length} 筆`};
- const cmp=m=>{const n=SC.filter(s=>s[0]===m).length;return n?`${n} 個情境可比對`:"—"};
- $s("stCover").innerHTML=`<thead><tr><th>Model</th><th class="l">B60</th><th class="l">B70</th><th class="a">AISO1</th><th>可比對</th></tr></thead><tbody>${Object.keys(NAMES).map(m=>`<tr><td class="st-model">${NAMES[m]}</td><td>${desc("b60",m)}</td><td>${desc("b70",m)}</td><td class="st-pending"><span class="st-wait">待核</span></td><td>${cmp(m)}</td></tr>`).join("")}</tbody>`;
+ const rows=REG.frameworks.flatMap(f=>REG.models.map((m,i)=>`<tr>${i===0?`<td rowspan="${REG.models.length}" class="st-model">${esc(f.label)}</td>`:""}<td>${esc(m.name)}</td>${REG.machines.map(x=>`<td>${desc(x.key,f.key,m.key)}</td>`).join("")}</tr>`)).join("");
+ $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th>${REG.machines.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
-Promise.all(["data/benchmark-b60/AISO_B60_SGLang_20261102.json","data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json"].map(u=>fetch(u,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(u);return r.json()}))).then(([a,b])=>{
- A=a;B=b;[...A.b60_runs,...B.b70_runs].forEach(r=>r.norm_tps=r.aggregate_tps/r.np);SC=scenarios();
- $s("stNote").textContent=`B60 實測截至 ${A.evidence_until}；B70 實測截至 ${B.evidence_until}。目前 ${SC.length} 個情境兩台都有跑且參數相同。`;
- renderCmp();renderMetrics();renderTable();renderCover();
+function renderSetup(){
+ const b60=DATA.b60&&(DATA.b60.sglang||DATA.b60.vllm),b70=DATA.b70&&DATA.b70.llamacpp,a=b60.profile,b=b70.profile;
+ const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`,order=REG.machines.map(m=>m.label).join(" → ");
+ const fwHas=m=>REG.frameworks.filter(f=>runsOf(m,f.key).length).map(f=>f.label).join(" / ")||"尚無成績";
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">在<b>同一推論框架、同一模型</b>下，並排比較 <b>Intel B60、Intel B70、AISO1</b> 的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；不同框架（例如 SGLang 與 llama.cpp）不放在同一張圖，沒有資料的機器留空，不用推估值填入。</p></section>
+ <section class="v2-pane"><h2>測試基準及固定參數<span>Baseline &amp; Fixed Parameters</span></h2>
+ <p class="v2-goal"><b>比對基準 Baseline</b>：該組合中「有資料的第一台機器」（順序 ${order}）；圖上綠色 + ／紅色 − 為其他機器相對基準的差異（TTFT、TPOT 為減少比例，TPS 為增加比例；差距超過 100% 時以「快／慢 ×倍」表示）。<b>TPS</b> 以每請求 Normalized（Aggregate ÷ NP）比較，Aggregate 另列於完整數值。</p>
+ <dl class="v2-params">${r("Output 輸出（固定）",`${tok(a.output_tokens)} tokens`)}${r("Repeat 重複（固定）",`${a.repeat} 次取平均`)}${r("TPS 定義（固定）","Aggregate = NP × Output ÷ E2E（含首字等待）<small>Normalized = Aggregate ÷ NP</small>")}${r("NP 並發",`B60：${a.np.join(" / ")}<small>B70：${b.np.join(" / ")} · AISO1：待核</small>`)}${r("Input 輸入",`B60：${a.input_tokens.map(kn).join(" / ")}<small>B70：${b.input_tokens.map(kn).join(" / ")} · AISO1：待核</small>`)}${r("硬體配備",`B60：${a.vram_total_gb} GB（${a.vram_layout.replace(" x "," × ")}）· TP${a.tp}<small>B70：${b.vram_total_gb} GB（${b.vram_layout.replace(" x "," × ")}）</small>`)}${r("Context 上限",`B60：${tok(a.context_length)}<small>B70：${tok(b.context_per_request)} tokens / request</small>`)}${r("已有成績的框架",`B60：${fwHas("b60")}<small>B70：${fwHas("b70")} · AISO1：${fwHas("aiso1")}</small>`)}</dl>
+ <p class="v2-fn">只有 NP 與 Input 完全相同的長條才有可比性；模型格式與量化需相同才能直接比較，各機器頁標示 Repo 與量化，未核實者標為待核。</p></section>`;
+}
+function renderAll(){renderControls();renderMetrics();renderTable()}
+Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry "+r.status);return r.json()})]).then(([reg])=>{
+ REG=reg;
+ return Promise.all(reg.datasets.map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{
+  const runs=(d[x.runs_key]||[]).map(r=>({...r,norm_tps:r.aggregate_tps/r.np}));
+  (DATA[x.machine]=DATA[x.machine]||{})[x.framework]={profile:d.profile,runs,evidence_until:d.evidence_until};
+ })));
+}).then(()=>{
+ // default: a combination that at least two machines share, else the first one with any data
+ const combos=REG.frameworks.flatMap(f=>REG.models.flatMap(m=>npsAll().map(n=>[f.key,m.key,n])));
+ const cnt=([f,m,n])=>REG.machines.filter(x=>runsOf(x.key,f).some(r=>r.model===m&&r.np===n)).length;
+ const best=combos.find(c=>cnt(c)>=2)||combos.find(c=>cnt(c)>=1)||combos[0];
+ [FW,MODEL,NP]=best;
+ renderSetup();renderCover();renderAll();
+ const last=Object.values(DATA).flatMap(o=>Object.values(o)).map(d=>d.evidence_until).sort().pop();
+ $s("stFoot").textContent=`資料更新至 ${last}；新增資料集只需在 data/benchmark-registry.json 登錄，本頁自動帶入。`;
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderMetrics,150)});
 }).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});

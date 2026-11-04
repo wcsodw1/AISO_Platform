@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="site-header.css?v=1.28.2">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
-  <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=22">
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=26">
 </head>
 <body>
   <header class="site-header">
@@ -24,7 +24,7 @@
 
   <main class="v2 st">
     <section class="v2-hero">
-      <p class="eyebrow"><a class="st-back" href="stress-test.html">← STRESS TEST</a> / MINI-WORKSTATION · 2026-10-30</p>
+      <a class="pg-back" href="stress-test.html"><span aria-hidden="true">←</span> 返回 Stress Test</a><p class="eyebrow">BENCHMARK / STRESS TEST / MINI-WORKSTATION · 2026-10-30</p>
       <h1>Stress Test｜Intel B70 vs AISO1</h1>
       <p class="v2-sub">llama.cpp · GGUF Q4<span class="zh-i">NP 2 / 4 × Input 4K～64K × Output 1024 × Repeat 3</span></p>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and method"></div>
@@ -54,11 +54,13 @@
       <div class="table-wrap"><table class="v2-table v2-sc" id="stParity"></table></div>
     </section>
 
+    <section class="report-section" id="secTrouble" data-machine="AISO1"></section>
+
     <section class="report-section">
       <header><h2>Data<span class="zh">B70 已驗證實測 35 筆</span></h2><a class="v2-dl" href="data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json" download>JSON ↓</a></header>
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="stress-test-b70-aiso1.js?v=6"></script>
+  </main><script src="troubleshooting.js?v=3"></script><script src="stress-test-b70-aiso1.js?v=6"></script>
 </body>
 </html>
