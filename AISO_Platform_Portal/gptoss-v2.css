@@ -121,3 +121,4 @@
 .st-mh{display:flex;align-items:baseline;gap:12px;margin:22px 0 10px;font-size:18px}.st-mh small{color:#c8b875;font-size:13px;font-weight:800;letter-spacing:.1em}
 .st-same-t{color:#5dff9f;font-weight:800}
 .st-fw{margin:14px 0 6px}
+.st-fwm{margin:18px 0 4px}.st-fwm small{margin-left:10px;color:var(--muted);font-weight:400;font-size:.8em}

@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-29">
-  <link rel="stylesheet" href="gptoss-v2.css?v=23">
+  <link rel="stylesheet" href="gptoss-v2.css?v=24">
 </head>
 <body>
   <header class="site-header">
@@ -56,6 +56,13 @@
       <p class="v2-fn">Aggregate = NP 個請求合計的輸出 token ÷ E2E 時間（含首字等待），即測試腳本回報之 TPS 原值。† = 重跑結果。</p>
     </section>
 
+    <section class="report-section" id="secFwCmp">
+      <header><h2>同參數框架比對<span class="zh">SGLang vs vLLM · 同機器、同模型、同 NP / Input</span></h2></header>
+      <div id="stFwCmp"></div>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stFwTable"></table></div>
+      <p class="v2-fn">只比兩個框架都有成績的情境（隨上方 NP 分頁切換）；TPS 為每請求（Normalized）。比值 = vLLM ÷ SGLang：TTFT／TPOT 小於 1 表示 vLLM 較快，TPS 大於 1 表示 vLLM 較快。已相同：B60 硬體、TP 2、Context 18,432、Prefill 4,096、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。尚未核實：模型量化格式（SGLang 為 W4A16，vLLM 待核）、memory fraction（SGLang 未驗證）、runtime 映像；量化不同時差異不能全歸因框架。</p>
+    </section>
+
     <section class="report-section" id="secRetry">
       <header><h2>失敗與重跑紀錄<span class="zh">Original Full vs Retry</span></h2></header>
       <p class="v2-fine" id="stRetry"></p>
@@ -66,6 +73,6 @@
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="stress-test-b60.js?v=5"></script>
+  </main><script src="stress-test-b60.js?v=6"></script>
 </body>
 </html>
