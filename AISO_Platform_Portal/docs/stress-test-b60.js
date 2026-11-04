@@ -15,7 +15,6 @@ const FWS=()=>REG.frameworks;
 const fwLabel=k=>FWS().find(f=>f.key===k).label;
 const row=(m,i,np,fw=FW)=>(DATA[fw]?DATA[fw].b60_runs:[]).find(r=>r.model===m&&r.input===i&&r.np===np);
 const failed=(m,i,np)=>(D.failures||[]).some(f=>f.model===m&&f.np===np&&f.input===i);
-const present=np=>MODELS.filter(m=>D.b60_runs.some(r=>r.model===m.key&&r.np===np));
 const hasRuns=fw=>DATA[fw]&&DATA[fw].b60_runs.length>0;
 
 const VERDICT={
@@ -40,24 +39,16 @@ function renderSetup(){
 }
 function setFw(k){
  FW=k;D=DATA[k];MODELS=REG.models.filter(m=>D.b60_runs.some(r=>r.model===m.key));
- NP=D.profile.np.includes(NP)?NP:D.profile.np[0];
- renderSetup();$s("secMetrics").hidden=!hasRuns(k);
- if(hasRuns(k)){renderTabs();renderMetrics()}
+  renderSetup();renderTabs();
  renderFull();renderFw();
  $s("stDataTitle").textContent=`B60 ${fwLabel(FW)} 已驗證實測 ${D.b60_runs.length} 筆`+(D.b60_runs.some(r=>r.retry)?`（含 ${D.b60_runs.filter(r=>r.retry).length} 筆重跑）`:"");
  $s("stDl").href=REG.datasets.find(x=>x.machine==="b60"&&x.framework===k).file;
 }
 const grp=()=>D.profile.input_tokens.map(i=>({label:kn(i),sub:tok(i),i}));
-function renderMetrics(){
- const w=Math.max(320,($s("stMetrics").clientWidth||860)-100),ms=present(NP);
- $s("stMetrics").innerHTML=Object.entries(METRICS).map(([k,d])=>{
-  const parts=ms.map(m=>{const a=row(m.key,4096,NP),b=row(m.key,16384,NP);return a&&b?`${m.name} ${val(k,a[k])} → ${val(k,b[k])}`:null}).filter(Boolean);
-  return BV.block({k,def:d,groups:grp(),series:ms.map(m=>({key:m.key,label:m.name,color:m.color})),get:(mk,g)=>row(mk,g.i,NP),baseline:null,width:w,
-   context:`NP${NP}`,message:`NP${NP}：Input 由 4K 增至 16K（${d.unit}）— ${parts.join("；")||"無完整資料"}`,tableNote:"不同模型之間只作並排參考，不計算差異"})}).join("");
-}
 function renderTabs(){
- $s("stTabs").innerHTML=D.profile.np.map(n=>`<button type="button" role="tab" class="${n===NP?"on":""}" aria-selected="${n===NP}" data-np="${n}">NP${n}</button>`).join("");
- $s("stTabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{NP=+b.dataset.np;renderTabs();renderMetrics();renderFw()});
+ const nps=[...new Set(FWS().flatMap(f=>DATA[f.key].profile.np))].sort((a,b)=>a-b);
+ $s("stTabs").innerHTML=nps.map(n=>`<button type="button" role="tab" class="${n===NP?"on":""}" aria-selected="${n===NP}" data-np="${n}">NP${n}</button>`).join("");
+ $s("stTabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{NP=+b.dataset.np;renderTabs();renderFw()});
 }
 // ---- B60 完整測試總表：四個模型 × (NP × Input) × 四個指標 ----
 function renderFull(){
@@ -73,19 +64,26 @@ function renderFull(){
  $s("stFullSub").textContent=`${fwLabel(FW)} · 已完成 ${n} / ${tot} 個情境（${new Set(D.b60_runs.map(r=>r.model)).size} / ${REG.models.length} 個模型）· 每情境 ${p.repeat} 次平均`;
  $s("stFull").innerHTML=`<thead><tr><th>Model</th><th>NP</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS (Normalized)<small>tok/s / 請求</small></th><th class="l">TPS (Aggregate)<small>tok/s</small></th><th>來源</th></tr></thead><tbody>${body}</tbody>`;
 }
-// ---- 同參數、不同框架比對（同機器、同模型、同 NP / Input；以第一個框架為基準）----
-const withData=()=>FWS().filter(f=>hasRuns(f.key));
-const fwModels=()=>REG.models.filter(m=>withData().length>1&&withData().every(f=>DATA[f.key].b60_runs.some(r=>r.model===m.key&&r.np===NP)));
+// ---- 同參數、不同框架比對（同機器、同模型、同 NP / Input）：比的是框架，不是模型 ----
+const fwHas=(fk,mk)=>DATA[fk]&&DATA[fk].b60_runs.some(r=>r.model===mk&&r.np===NP);
 function renderFw(){
- const ms=fwModels(),el=$s("stFwCmp"),fws=withData();
- if(!ms.length){el.innerHTML=`<p class="v2-fine">NP${NP} 尚無兩個框架皆有的成績。</p>`;return}
- const w=Math.max(320,(el.clientWidth||860)-100),base=fws[0].key;
- el.innerHTML=ms.map(m=>`<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · 以 ${esc(fws[0].label)} 為基準</span></h3>`+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:base,width:w,context:`${m.name} · NP${NP}`,tableNote:`四項指標之一 · 差異 = ${fws[1].label} 相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`})).join("")+"</div>").join("");
+ const el=$s("stFwCmp"),w=Math.max(320,(el.clientWidth||860)-100);
+ const ms=REG.models.filter(m=>FWS().some(f=>fwHas(f.key,m.key)));
+ const noData=REG.models.filter(m=>!ms.includes(m)).map(m=>m.name);
+ $s("stFwNote").textContent=`NP${NP}｜三個框架：${FWS().map(f=>`${f.label} ${hasRuns(f.key)?"有成績":"尚無成績"}`).join(" · ")}${noData.length?`｜${noData.join("、")}：三個框架皆無成績`:""}`;
+ if(!ms.length){el.innerHTML=`<p class="v2-fine">NP${NP} 尚無任何框架的成績。</p>`;return}
+ el.innerHTML=ms.map(m=>{
+  const fws=FWS().filter(f=>fwHas(f.key,m.key)),base=fws[0].key,miss=FWS().filter(f=>!fws.includes(f)).map(f=>f.label);
+  const lead=fws.length>1?`以 ${esc(fws[0].label)} 為基準`:`目前只有 ${esc(fws[0].label)} 有成績，其他框架登錄後自動並排`;
+  return `<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · ${lead}${miss.length?`；${esc(miss.join("、"))} 尚無成績`:""}</span></h3>`+
+  Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:fws.length>1?base:null,width:w,context:`${m.name} · NP${NP}`,
+   message:fws.length>1?"":`${fws[0].label} 的數值；第二個框架有同條件成績後才會計算差異`,
+   tableNote:fws.length>1?`差異 = 其他框架相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二個框架可比較"})).join("")+"</div>"}).join("");
 }
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry");return r.json()})]).then(([reg])=>{
  REG=reg;
  return Promise.all(reg.datasets.filter(x=>x.machine==="b60").map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{DATA[x.framework]=d})));
 }).then(()=>{
  setFw("sglang");
- window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{if(hasRuns(FW))renderMetrics();renderFw()},150)});
+ window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderFw,150)});
 }).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});

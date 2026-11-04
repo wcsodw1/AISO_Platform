@@ -33,9 +33,11 @@
       <a class="pg-back pg-debug" href="stress-test-b60-debug.html">Debugging 疑難排解 · 失敗與重跑紀錄 <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh">Intel B60 實測</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
-      <div id="stMetrics"></div>
+    <section class="report-section" id="secFwCmp">
+      <header><h2>同參數框架比對<span class="zh">不同推論框架 · 同機器、同模型、同 NP / Input · TTFT · TPOT · TPS 四項指標</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
+      <p class="v2-fine" id="stFwNote"></p>
+      <div id="stFwCmp"></div>
+      <p class="v2-fn">比較的是「不同推論框架」，不是模型互相比較；每個區塊只放同一個模型，並隨上方 NP 分頁切換。只放該框架已有成績的情境，沒有成績的框架不畫、不補值。圖上綠色 + ／紅色 − 為相對基準框架的差異，綠色表示較佳、紅色表示較差；TPS (Normalized) = Aggregate ÷ NP。已相同：B60 硬體、TP 2、Context 18,432、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。尚未核實：模型量化格式（SGLang 為 W4A16，vLLM 待核）、runtime 映像；量化不同時差異不能全歸因框架。</p>
     </section>
 
     <section class="report-section" id="secFull">
@@ -45,17 +47,11 @@
       <p class="v2-fn">TPS (Normalized) = Aggregate ÷ NP，即每個請求自己的輸出速度；TPS (Aggregate) = 總輸出 token ÷ 同批 E2E 時間，含首字等待。TTFT ≥ 180 秒以紅字標示，仍為 Technical PASS。† = 重跑結果；‡ = 回報之 Aggregate 與 TTFT／TPOT 推算不符（見 JSON consistency_note）。「待測」表示尚未測試，不是失敗也不是通過。</p>
     </section>
 
-    <section class="report-section" id="secFwCmp">
-      <header><h2>同參數框架比對<span class="zh">不同框架 · 同機器、同模型、同 NP / Input · 四項指標</span></h2></header>
-      <div id="stFwCmp"></div>
-      <p class="v2-fn">只比兩個框架都有成績的情境（隨上方 NP 分頁切換）；TPS 為每請求（Normalized）。圖上綠色 + ／紅色 − 為 vLLM 相對 SGLang（基準）的差異，綠色表示較佳、紅色表示較差。已相同：B60 硬體、TP 2、Context 18,432、Prefill 4,096、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。尚未核實：模型量化格式（SGLang 為 W4A16，vLLM 待核）、memory fraction（SGLang 未驗證）、runtime 映像；量化不同時差異不能全歸因框架。</p>
-    </section>
-
     <section class="report-section">
       <header><h2>Data<span class="zh" id="stDataTitle"></span></h2><a class="v2-dl" id="stDl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>JSON ↓</a></header>
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=2"></script><script src="stress-test-b60.js?v=11"></script>
+  </main><script src="bench-viz.js?v=2"></script><script src="stress-test-b60.js?v=12"></script>
 </body>
 </html>
