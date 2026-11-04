@@ -30,7 +30,6 @@
       <div class="v2-setup" id="stSetup" aria-label="Purpose and method"></div>
       <div class="st-tabs st-fw" id="stFw" role="tablist" aria-label="Framework"></div>
       <aside class="v2-verdict" role="note"><b id="stVerdict"></b><p id="stNote"></p></aside>
-      <a class="pg-back pg-debug" href="stress-test-b60-debug.html">Debugging 疑難排解 · 失敗與重跑紀錄 <span aria-hidden="true">→</span></a>
     </section>
 
     <section class="report-section" id="secFwCmp">
@@ -47,11 +46,18 @@
       <p class="v2-fn">TPS (Normalized) = Aggregate ÷ NP，即每個請求自己的輸出速度；TPS (Aggregate) = 總輸出 token ÷ 同批 E2E 時間，含首字等待。TTFT ≥ 180 秒以紅字標示，仍為 Technical PASS。† = 重跑結果；‡ = 回報之 Aggregate 與 TTFT／TPOT 推算不符（見 JSON consistency_note）。「待測」表示尚未測試，不是失敗也不是通過。</p>
     </section>
 
+    <section class="report-section" id="secRetry">
+      <header><h2>失敗與重跑紀錄<span class="zh">Original Full vs Retry</span></h2></header>
+      <p class="v2-fine" id="stRetry"></p>
+    </section>
+
+    <section class="report-section" id="secTrouble" data-machine="Intel B60"></section>
+
     <section class="report-section">
-      <header><h2>Data<span class="zh" id="stDataTitle"></span></h2><a class="v2-dl" id="stDl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>JSON ↓</a></header>
+      <header><h2>Data<span class="zh" id="stDataTitle"></span></h2><a class="v2-dl" id="stDl" href="data/benchmark-b60/AISO_B60_SGLang_20261102.json" download>JSON ↓</a><a class="v2-dl" href="data/benchmark-troubleshooting/AISO_Troubleshooting_20261104.json" download>Troubleshooting JSON ↓</a></header>
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=2"></script><script src="stress-test-b60.js?v=12"></script>
+  </main><script src="bench-viz.js?v=2"></script><script src="troubleshooting.js?v=3"></script><script src="stress-test-b60.js?v=13"></script>
 </body>
 </html>

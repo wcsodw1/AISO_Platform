@@ -80,10 +80,17 @@ function renderFw(){
    message:fws.length>1?"":`${fws[0].label} 的數值；第二個框架有同條件成績後才會計算差異`,
    tableNote:fws.length>1?`差異 = 其他框架相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二個框架可比較"})).join("")+"</div>"}).join("");
 }
+function renderRetry(){
+ const items=Object.values(DATA).filter(d=>d.retry&&(d.failures||[]).length);
+ if(!items.length){$s("secRetry").hidden=true;return}
+ $s("stRetry").innerHTML=items.map(D=>{const f=D.failures[0],r=D.retry;
+  return `<b>原始 Full</b>（${esc(f.run_id)}）：Gemma 4 31B NP${f.np} / ${f.input/1024}K — ${esc(f.status)}。${esc(f.reason)}<br><b>重跑</b>（${esc(r.run_id)}）：僅重跑 NP5 的 8K / 16K，exit code ${r.exit_code}，failed models ${r.failed_models}，兩個情境均 PASS。${esc(r.note)}<br>原始失敗紀錄保留，不被重跑覆蓋；原始 R1 的 3.33 TPS 仍不可當作有效成績。`}).join("<hr>");
+}
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry");return r.json()})]).then(([reg])=>{
  REG=reg;
  return Promise.all(reg.datasets.filter(x=>x.machine==="b60").map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{DATA[x.framework]=d})));
 }).then(()=>{
+ renderRetry();
  setFw("sglang");
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderFw,150)});
 }).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
