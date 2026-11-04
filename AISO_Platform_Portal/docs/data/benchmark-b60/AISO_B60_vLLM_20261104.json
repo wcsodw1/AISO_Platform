@@ -1,0 +1,307 @@
+{
+ "dataset": "AISO_B60_vLLM_20261104",
+ "evidence_until": "2026-11-04",
+ "generated_on": "2026-11-04",
+ "note": "Intel B60 vLLM (XPU) run on host sparkle-To-Be-Filled-By-O-E-M, container b60_vllm_gemma31_by_path, 72/72 requests. aggregate_tps = reported TPS = NP x output tokens / E2E (includes prefill wait); decode_tps field = aggregate/NP. 8 of 9 rows match NP x 1024/(TTFT+1023*TPOT) within 0.1%; NP5 16K is 17.7% lower (kept as reported). A command labelled 'AISO1 AMD' in the same paste still ran on this B60 host, so no AISO1 data is included. Queueing seen (Running 2/Waiting 3, Running 3/Waiting 2); preemption not confirmed. Model repo/quant from the 2026-11-04 completed-results workbook protocol sheet; runtime image tag still unset.",
+ "profile": {
+  "machine": "4× Intel B60",
+  "framework": "vLLM XPU",
+  "np": [
+   1,
+   2,
+   5
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "context_length": 18432,
+  "prefill_tokens": 4096,
+  "max_num_seqs": 10,
+  "memory_fraction": "0.90",
+  "prefix_cache": "OFF",
+  "tp": 2,
+  "gpu_count": 4,
+  "runtime": "UNVERIFIED",
+  "vram_total_gb": 96,
+  "vram_layout": "48 GB x 2",
+  "memory_fraction_note": "B60 vLLM 實際啟動參數已核實（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）。"
+ },
+ "b60_runs": [
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 11.764,
+   "tpot_ms": 43.252,
+   "aggregate_tps": 18.282,
+   "decode_tps": 18.282,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 38.546,
+   "tpot_ms": 49.616,
+   "aggregate_tps": 11.467,
+   "decode_tps": 11.467,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 140.513,
+   "tpot_ms": 59.117,
+   "aggregate_tps": 5.095,
+   "decode_tps": 5.095,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 17.675,
+   "tpot_ms": 52.801,
+   "aggregate_tps": 28.549,
+   "decode_tps": 14.2745,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 57.99,
+   "tpot_ms": 75.156,
+   "aggregate_tps": 15.176,
+   "decode_tps": 7.588,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 211.208,
+   "tpot_ms": 144.054,
+   "aggregate_tps": 5.709,
+   "decode_tps": 2.8545,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 42.456,
+   "tpot_ms": 93.186,
+   "aggregate_tps": 37.128,
+   "decode_tps": 7.4256,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 118.601,
+   "tpot_ms": 161.703,
+   "aggregate_tps": 18.006,
+   "decode_tps": 3.6012,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 460.358,
+   "tpot_ms": 277.196,
+   "aggregate_tps": 5.849,
+   "decode_tps": 1.1698,
+   "status": "PASS (historical)",
+   "run_id": "Gemma31_Full_VRoDJgP9",
+   "ttft_over_180s": true,
+   "consistency_note": "Reported Aggregate 5.849 is 17.7% below NP x 1024/(TTFT+1023 x TPOT)=6.88; kept as reported, cause (queueing / averaging) unverified."
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 0.8971201203530654,
+   "tpot_ms": 16.380604812933047,
+   "aggregate_tps": 58.00175817510508,
+   "decode_tps": 58.00175817510508,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 1.8360096583686147,
+   "tpot_ms": 16.532914234314973,
+   "aggregate_tps": 54.61525571725909,
+   "decode_tps": 54.61525571725909,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 3.8852653296586745,
+   "tpot_ms": 16.832906102962518,
+   "aggregate_tps": 48.518175056986905,
+   "decode_tps": 48.518175056986905,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 1.352670844993554,
+   "tpot_ms": 17.645304940359313,
+   "aggregate_tps": 105.43921250820422,
+   "decode_tps": 52.71960625410211,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 2.7695988266884037,
+   "tpot_ms": 18.344477027686967,
+   "aggregate_tps": 94.98179200259851,
+   "decode_tps": 47.490896001299255,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 5.858201711516206,
+   "tpot_ms": 19.79833023833386,
+   "aggregate_tps": 78.30240248197543,
+   "decode_tps": 39.15120124098772,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 3.231374499108642,
+   "tpot_ms": 21.825764533274942,
+   "aggregate_tps": 199.9887737066492,
+   "decode_tps": 39.99775474132984,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 6.059872847485045,
+   "tpot_ms": 24.25283038441417,
+   "aggregate_tps": 165.441568547313,
+   "decode_tps": 33.088313709462604,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 12.257736229663715,
+   "tpot_ms": 29.28226593612979,
+   "aggregate_tps": 120.85063079178735,
+   "decode_tps": 24.17012615835747,
+   "status": "PASS (historical)",
+   "run_id": "Laguna_FP8_Direct_20261104_171721_141626",
+   "ttft_over_180s": false
+  }
+ ],
+ "model_parity": [
+  {
+   "model": "Gemma31",
+   "name": "Gemma 4 31B",
+   "format": "W4A16",
+   "repo": "google/gemma-4-31B-it-qat-w4a16-ct",
+   "tp": 2,
+   "status": "official"
+  },
+  {
+   "model": "Laguna",
+   "name": "Laguna XS 2.1",
+   "format": "FP8",
+   "repo": "poolside/Laguna-XS-2.1-FP8",
+   "tp": 2,
+   "status": "official"
+  }
+ ],
+ "failures": [],
+ "not_run": [
+  {
+   "model": "Gemma26",
+   "reason": "待測"
+  },
+  {
+   "model": "Nemotron",
+   "reason": "待測"
+  }
+ ],
+ "retry": null,
+ "protocol_notes": [
+  "本頁數值為歷史推論 PASS，不是 V4 協定結果；B60 目前沒有收到任何 V4 成績，不得計入 V4 PASS。",
+  "數值轉錄自終端機 CSV 摘要，B60 原始檔未被獨立重讀。",
+  "舊版 vLLM client 完整原始碼無法稽核。",
+  "vLLM Gemma31 的數值是 3 位小數的摘要值（已四捨五入）。"
+ ],
+ "source_file": "B60_Completed_Benchmark_20261104.xlsx"
+}

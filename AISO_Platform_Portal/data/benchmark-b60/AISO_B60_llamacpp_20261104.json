@@ -1,0 +1,53 @@
+{
+ "dataset": "AISO_B60_llamacpp_20261104",
+ "evidence_until": "2026-11-04",
+ "generated_on": "2026-11-04",
+ "note": "B60 llama.cpp: environment build / debug only; no benchmark result yet. GGUF files found but source and runtime settings are not verified.",
+ "profile": {
+  "machine": "4× Intel B60",
+  "framework": "llama.cpp",
+  "np": [
+   1,
+   2,
+   5
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "tp": 2,
+  "gpu_count": 4,
+  "runtime": "UNVERIFIED",
+  "vram_total_gb": 96,
+  "vram_layout": "48 GB x 2",
+  "context_length": 18432
+ },
+ "b60_runs": [],
+ "model_parity": [],
+ "failures": [],
+ "not_run": [
+  {
+   "model": "Gemma26",
+   "reason": "環境建置／Debug 中，尚未測試"
+  },
+  {
+   "model": "Gemma31",
+   "reason": "環境建置／Debug 中，尚未測試"
+  },
+  {
+   "model": "Laguna",
+   "reason": "環境建置／Debug 中，尚未測試"
+  },
+  {
+   "model": "Nemotron",
+   "reason": "環境建置／Debug 中，尚未測試"
+  }
+ ],
+ "retry": null,
+ "protocol_notes": [
+  "B60 llama.cpp 尚無任何測試結果。"
+ ]
+}

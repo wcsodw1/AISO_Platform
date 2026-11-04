@@ -1,0 +1,84 @@
+{
+ "updated": "2026-11-04",
+ "note": "Single source of truth for which dataset belongs to which machine x framework. Add a row here when a new dataset file exists; Stress Test pages read this list.",
+ "workload": "NP 1/2/5 x Input 4096/8192/16384 x Output 1024 x Repeat 3",
+ "frameworks": [
+  {
+   "key": "sglang",
+   "label": "SGLang"
+  },
+  {
+   "key": "vllm",
+   "label": "vLLM"
+  },
+  {
+   "key": "llamacpp",
+   "label": "llama.cpp"
+  }
+ ],
+ "machines": [
+  {
+   "key": "b60",
+   "label": "Intel B60",
+   "color": "#4fd1b0"
+  },
+  {
+   "key": "b70",
+   "label": "Intel B70",
+   "color": "#ff8a4c"
+  },
+  {
+   "key": "aiso1",
+   "label": "AISO1 AMD",
+   "color": "#8f9bff"
+  }
+ ],
+ "models": [
+  {
+   "key": "Gemma26",
+   "name": "Gemma 4 26B",
+   "color": "#4fd1b0"
+  },
+  {
+   "key": "Gemma31",
+   "name": "Gemma 4 31B",
+   "color": "#ff8a4c"
+  },
+  {
+   "key": "Laguna",
+   "name": "Laguna XS 2.1",
+   "color": "#c9ced6"
+  },
+  {
+   "key": "Nemotron",
+   "name": "Nemotron 3.5",
+   "color": "#8f9bff"
+  }
+ ],
+ "datasets": [
+  {
+   "machine": "b60",
+   "framework": "sglang",
+   "file": "data/benchmark-b60/AISO_B60_SGLang_20261102.json",
+   "runs_key": "b60_runs"
+  },
+  {
+   "machine": "b60",
+   "framework": "vllm",
+   "file": "data/benchmark-b60/AISO_B60_vLLM_20261104.json",
+   "runs_key": "b60_runs"
+  },
+  {
+   "machine": "b60",
+   "framework": "llamacpp",
+   "file": "data/benchmark-b60/AISO_B60_llamacpp_20261104.json",
+   "runs_key": "b60_runs"
+  },
+  {
+   "machine": "b70",
+   "framework": "llamacpp",
+   "file": "data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json",
+   "runs_key": "b70_runs"
+  }
+ ]
+}
