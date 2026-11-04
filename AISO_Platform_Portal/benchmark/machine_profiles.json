@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "machine_id": "intel-b70",
+      "display_name": "SPARKLE Intel Arc Pro B70",
+      "gpu_vendor": "Intel",
+      "gpu_model": "Arc Pro B70",
+      "gpu_count": 2,
+      "vram_gb_each": 32,
+      "ram": "Pending verified hardware snapshot",
+      "operating_system": "Linux (exact release pending log import)",
+      "connection": {
+        "mode": "P0 mock only",
+        "ssh_host": null,
+        "ssh_port": 22,
+        "username": null,
+        "authentication": "SSH key authentication required in P1",
+        "host_key_verification": "Required in P1"
+      },
+      "benchmark_root": "/home/sparkle/b70_benchmark",
+      "model_directory": "Configured on machine; not exposed in P0",
+      "result_directory": "frameworks/vllm/results",
+      "frameworks": [
+        {
+          "id": "vllm",
+          "display_name": "vLLM XPU",
+          "status": "AVAILABLE_P0_MOCK",
+          "container": "vllm/vllm-openai-xpu:latest",
+          "port": 18090,
+          "runner": "frameworks/common/b70_safetensors_q4_4models_np24_benchmark.sh",
+          "adapter": "VllmAdapter"
+        },
+        {
+          "id": "sglang",
+          "display_name": "SGLang XPU",
+          "status": "RUNTIME_UNVERIFIED",
+          "container": null,
+          "port": null,
+          "runner": null,
+          "adapter": "SGLangAdapter"
+        }
+      ],
+      "last_connection_check": null,
+      "profile_status": "P0_MOCK_ONLY"
+    }
+  ]
+}
