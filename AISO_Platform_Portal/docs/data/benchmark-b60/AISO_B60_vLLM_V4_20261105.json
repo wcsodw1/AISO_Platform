@@ -1,0 +1,310 @@
+{
+ "dataset": "AISO_B60_vLLM_V4_20261105",
+ "evidence_until": "2026-11-05",
+ "generated_on": "2026-11-05",
+ "note": "Intel B60 vLLM (XPU), V4 protocol (v4-pdf-e2e), campaign B60_matrix_v4_20261104_201559_715039. Gemma31 + Laguna 9/9 PASS each; Gemma26 SKIP_SOURCE; Nemotron STARTUP_FAIL. Values from the terminal report.md (3 decimals). Supersedes the 2026-11-04 historical values. Earlier note: a command labelled 'AISO1 AMD' ran on this B60 host, no AISO1 data is included.",
+ "profile": {
+  "machine": "4× Intel B60",
+  "framework": "vLLM XPU",
+  "np": [
+   1,
+   2,
+   5
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "context_length": 18432,
+  "prefill_tokens": 4096,
+  "max_num_seqs": 10,
+  "memory_fraction": "0.90",
+  "prefix_cache": "OFF",
+  "tp": 2,
+  "gpu_count": 4,
+  "runtime": "UNVERIFIED",
+  "vram_total_gb": 96,
+  "vram_layout": "48 GB x 2",
+  "memory_fraction_note": "B60 vLLM 實際啟動參數已核實（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）。"
+ },
+ "b60_runs": [
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 11.754,
+   "tpot_ms": 43.298,
+   "aggregate_tps": 18.27,
+   "decode_tps": 18.27,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 38.535,
+   "tpot_ms": 49.616,
+   "aggregate_tps": 11.468,
+   "decode_tps": 11.468,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 140.463,
+   "tpot_ms": 59.125,
+   "aggregate_tps": 5.096,
+   "decode_tps": 5.096,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 17.677,
+   "tpot_ms": 52.764,
+   "aggregate_tps": 28.561,
+   "decode_tps": 14.28,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 57.972,
+   "tpot_ms": 75.136,
+   "aggregate_tps": 15.18,
+   "decode_tps": 7.59,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 211.016,
+   "tpot_ms": 143.948,
+   "aggregate_tps": 5.714,
+   "decode_tps": 2.857,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 42.441,
+   "tpot_ms": 93.205,
+   "aggregate_tps": 37.127,
+   "decode_tps": 7.425,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 118.535,
+   "tpot_ms": 161.666,
+   "aggregate_tps": 18.013,
+   "decode_tps": 3.603,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "W4A16",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 460.486,
+   "tpot_ms": 277.406,
+   "aggregate_tps": 5.847,
+   "decode_tps": 1.169,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": true,
+   "consistency_note": "回報 Aggregate 5.847 與 TTFT/TPOT 推算值 6.879 差 -15.0%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。"
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 0.897,
+   "tpot_ms": 16.392,
+   "aggregate_tps": 57.962,
+   "decode_tps": 57.962,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 1.834,
+   "tpot_ms": 16.535,
+   "aggregate_tps": 54.616,
+   "decode_tps": 54.616,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 3.881,
+   "tpot_ms": 16.842,
+   "aggregate_tps": 48.508,
+   "decode_tps": 48.508,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 1.352,
+   "tpot_ms": 17.644,
+   "aggregate_tps": 105.449,
+   "decode_tps": 52.724,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 2.773,
+   "tpot_ms": 18.338,
+   "aggregate_tps": 95.002,
+   "decode_tps": 47.501,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 5.854,
+   "tpot_ms": 19.796,
+   "aggregate_tps": 78.323,
+   "decode_tps": 39.161,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 3.224,
+   "tpot_ms": 21.83,
+   "aggregate_tps": 200.013,
+   "decode_tps": 40.003,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 5,
+   "input": 8192,
+   "ttft_s": 6.058,
+   "tpot_ms": 24.26,
+   "aggregate_tps": 165.414,
+   "decode_tps": 33.083,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "FP8",
+   "np": 5,
+   "input": 16384,
+   "ttft_s": 12.249,
+   "tpot_ms": 29.292,
+   "aggregate_tps": 120.849,
+   "decode_tps": 24.17,
+   "status": "PASS",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "ttft_over_180s": false
+  }
+ ],
+ "model_parity": [
+  {
+   "model": "Gemma31",
+   "name": "Gemma 4 31B",
+   "format": "W4A16",
+   "repo": "google/gemma-4-31B-it-qat-w4a16-ct",
+   "tp": 2,
+   "status": "official"
+  },
+  {
+   "model": "Laguna",
+   "name": "Laguna XS 2.1",
+   "format": "FP8",
+   "repo": "poolside/Laguna-XS-2.1-FP8",
+   "tp": 2,
+   "status": "official"
+  }
+ ],
+ "failures": [],
+ "not_run": [
+  {
+   "model": "Gemma26",
+   "reason": "SKIP_SOURCE：Gemma26 HTTP 版本在核准的模型來源出現前跳過（不下載）。"
+  },
+  {
+   "model": "Nemotron",
+   "reason": "STARTUP_FAIL：V4 啟動失敗，9 個 case 皆無成績（原因見疑難排解）。"
+  }
+ ],
+ "retry": null,
+ "protocol_notes": [
+  "本頁數值為 V4 協定結果（B60_matrix_v4，結果目錄 B60_matrix_v4_20261104_201559_715039）：PASS 72/108 個正式 case（vLLM 18、SGLang 18、llama.cpp 36）；其餘為 SKIP_SOURCE 或 STARTUP_FAIL，不是通過。",
+  "V4 指標定義：TTFT = 第一個非空文字 SSE 到達時間 − 請求開始（秒）；TPOT = 1000×(stream_done − first_content)/(實際輸出 token − 1)（ms/token）；Aggregate = 總輸出 token ÷（最後 stream_done − 第一個 request_start）；Normalized = Aggregate ÷ NP；取 3 次有效重複的算術平均，失敗 case 的指標留空。",
+  "常駐模型請求（Prefix Cache OFF），不含 Smoke；不是 process-cold 量測。每個模型第一個 case 的終端輸出多出一筆 R=1（已核對 vLLM Gemma31 NP1/4K 的平均值不含該筆），平均值只含 R1–R3。",
+  "數值轉錄自 B60 終端輸出之 report.md（3 位小數），B60 原始 CSV 檔未被獨立重讀。",
+  "vLLM Gemma31 NP5/16K 的 Aggregate 與 TTFT/TPOT 推算值差距 15%（已標 ‡）；先前歷史值同樣偏低。",
+  "vLLM 實際啟動參數（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）；Runtime 映像 tag 仍未設定。"
+ ],
+ "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
+ "metrics_version": "v4-pdf-e2e"
+}

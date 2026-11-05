@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04",
+ "updated": "2026-11-05",
  "note": "Single source of truth for which dataset belongs to which machine x framework. Add a row here when a new dataset file exists; Stress Test pages read this list.",
  "workload": "NP 1/2/5 x Input 4096/8192/16384 x Output 1024 x Repeat 3",
  "frameworks": [
@@ -59,19 +59,19 @@
   {
    "machine": "b60",
    "framework": "sglang",
-   "file": "data/benchmark-b60/AISO_B60_SGLang_20261102.json",
+   "file": "data/benchmark-b60/AISO_B60_SGLang_V4_20261105.json",
    "runs_key": "b60_runs"
   },
   {
    "machine": "b60",
    "framework": "vllm",
-   "file": "data/benchmark-b60/AISO_B60_vLLM_20261104.json",
+   "file": "data/benchmark-b60/AISO_B60_vLLM_V4_20261105.json",
    "runs_key": "b60_runs"
   },
   {
    "machine": "b60",
    "framework": "llamacpp",
-   "file": "data/benchmark-b60/AISO_B60_llamacpp_20261104.json",
+   "file": "data/benchmark-b60/AISO_B60_llamacpp_V4_20261105.json",
    "runs_key": "b60_runs"
   },
   {
