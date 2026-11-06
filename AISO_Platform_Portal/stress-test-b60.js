@@ -92,6 +92,7 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  return Promise.all(reg.datasets.filter(x=>x.machine==="b60").map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{DATA[x.framework]=d})));
 }).then(()=>{
  renderRetry();
+ BD.init({el:$s("secDash"),REG,DATA});
  setFw("sglang");
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderFw,150)});
 }).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
