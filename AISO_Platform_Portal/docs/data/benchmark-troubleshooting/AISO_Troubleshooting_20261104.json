@@ -8,7 +8,8 @@
     "仍 OPEN 4 項：SGLang Gemma26 CUDA JIT、Nemotron OOM；vLLM Scheduler 排隊及 17.7% 指標差異。",
     "環境待驗 1 項：B60 llama.cpp GGUF 來源與 Runtime 設定，尚無正式失敗證據。",
     "AISO1 三框架均無已知問題紀錄：意指尚無可驗證日誌，不代表已通過或無法啟動。",
-    "發布前待補：完整原始錯誤行、容器映像版本、Nemotron 執行主機歸屬及相關 run_id。"
+    "發布前待補：完整原始錯誤行、容器映像版本、Nemotron 執行主機歸屬及相關 run_id。",
+    "2026-11-05 新增：vLLM CLI 預檢誤判（容器未掛 /dev/dri）已確認原因並解決；Gemma 4 26B 與 Nemotron 3.5 實際啟動尚未測試。"
   ],
   "entries": [
     {
@@ -20,7 +21,9 @@
           "id": "B60-SGL-01",
           "title": "Gemma 4 26B 啟動失敗：CUDA Marlin MoE JIT 找不到 nvcc",
           "stage": "model-load",
-          "models": ["Gemma 4 26B"],
+          "models": [
+            "Gemma 4 26B"
+          ],
           "symptom": "SGLang 載入 Gemma26 AWQ 4-bit 時，CompressedTensorsWNA16MarlinMoEMethod 進入 gptq_marlin_moe_repack 的 CUDA JIT 編譯路徑，XPU 容器無法完成初始化。",
           "error": "/bin/sh: 1: /usr/local/cuda/bin/nvcc: not found",
           "root_cause": "實際執行路徑呼叫 CUDA Marlin MoE kernel，而目前使用 Intel XPU Runtime。已確認 CUDA JIT 編譯失敗；模型與 XPU kernel 的完整相容性尚未驗證。",
@@ -40,7 +43,9 @@
           "id": "B60-SGL-02",
           "title": "Nemotron 3.5 啟動 OOM：ParallelLMHead 配置 672 MiB 失敗",
           "stage": "model-load",
-          "models": ["Nemotron 3.5"],
+          "models": [
+            "Nemotron 3.5"
+          ],
           "symptom": "TP1 載入 Nemotron 時，在 ParallelLMHead 初始化的 torch.empty 記憶體配置階段失敗。當時 GPU0 剩餘約 233.42 MiB，無法滿足 672 MiB 配置需求。",
           "error": "torch.OutOfMemoryError\nUNVERIFIED：完整原始 traceback 尚未取得，不補寫錯誤訊息。",
           "root_cause": "模型初始化時可用 GPU 記憶體不足。是否由 TP1 分配、模型權重、量化實作、其他 GPU 佔用或記憶體碎片導致，尚未隔離確認。",
@@ -60,7 +65,9 @@
           "id": "B60-SGL-03",
           "title": "Gemma 4 31B NP5／8K：Level Zero 資源不足與 HTTP 500",
           "stage": "inference",
-          "models": ["Gemma 4 31B"],
+          "models": [
+            "Gemma 4 31B"
+          ],
           "symptom": "原始 Full Benchmark 在 NP5、Input 8192 時失敗，flash_attn_with_kvcache 執行路徑出現 Level Zero 資源錯誤，API 回傳 HTTP 500。後續僅針對 NP5／8K 與 NP5／16K 補測並通過。",
           "error": "UR_RESULT_ERROR_OUT_OF_RESOURCES\nHTTP 500",
           "root_cause": "Level Zero 執行 flash_attn_with_kvcache 時發生資源不足。確切原因可能涉及瞬時 GPU 資源、kernel 或排程狀態，尚無充分證據隔離。",
@@ -87,7 +94,9 @@
           "id": "B60-VLLM-01",
           "title": "NP5 並發請求排隊：Running 2／Waiting 3",
           "stage": "inference",
-          "models": ["Gemma 4 31B"],
+          "models": [
+            "Gemma 4 31B"
+          ],
           "symptom": "NP5 負載下，vLLM Scheduler 顯示 Running 2、Waiting 3，五個請求並未同時處於執行狀態。",
           "error": "Running: 2\nWaiting: 3",
           "root_cause": "Scheduler 存在排隊現象，但尚無證據證明由 KV Cache 容量、token budget、序列長度限制或 preemption 導致。",
@@ -107,7 +116,9 @@
           "id": "B60-VLLM-02",
           "title": "NP5／16K：Aggregate TPS 與 TTFT／TPOT 推算差異約 17.7%",
           "stage": "benchmark-runner",
-          "models": ["Gemma 4 31B"],
+          "models": [
+            "Gemma 4 31B"
+          ],
           "symptom": "NP5、Input 16384 的 Aggregate TPS 與使用 TTFT、TPOT 推算的吞吐量存在約 17.7% 差異。",
           "error": "UNVERIFIED：尚無原始 exception 或錯誤訊息；此為指標一致性問題。",
           "root_cause": "尚未確認是否因 E2E 量測範圍、請求完成時間分布、TTFT／TPOT 聚合方式、輸出 token 計數或並發排隊造成。",
@@ -122,6 +133,26 @@
           "outcome": "OPEN",
           "evidence": "Gemma31_Full_VRoDJgP9；NP5／16K 約 17.7% 差異來自先前分析，完整原始計算表尚待回查。",
           "notes": "17.7% 為待核對的差異，不等於已證實 Benchmark Runner 計算錯誤。TPS Normalized = Aggregate TPS / NP，不能直接當作單請求 decode TPS。"
+        },
+        {
+          "id": "B60-VLLM-03",
+          "title": "vLLM CLI 預檢（--help）失敗：容器內沒有 XPU 裝置時無法推斷 device type",
+          "stage": "startup",
+          "models": [
+            "Gemma 4 26B",
+            "Nemotron 3.5"
+          ],
+          "symptom": "Gemma 4 26B 與 Nemotron 3.5 的 vLLM 啟動計畫卡在 CLI 預檢，權重下載與 Smoke 都沒開始。同一個 vLLM 映像在掛載 /dev/dri 後 --help 正常結束。",
+          "error": "RuntimeError: Failed to infer device type, please set the environment variable `VLLM_LOGGING_LEVEL=DEBUG` to turn on verbose logging to help debug the issue.\nUserWarning: XPU device count is zero!",
+          "root_cause": "預檢用沒有 --device /dev/dri 的容器跑 `python3 -m vllm.entrypoints.openai.api_server --help`；vLLM 在建立 parser 時就會偵測 device，容器看不到 XPU 因而丟出 RuntimeError。這是預檢方式造成的誤判，不是模型或 vLLM 參數本身不支援。",
+          "cause_status": "VERIFIED",
+          "solution": [
+            "Intel B60 Host：預檢改為先跑無 GPU 容器，若失敗再以 `docker run --rm --pull never --network none --device /dev/dri:/dev/dri --ipc host --entrypoint python3 <vllm image> -m vllm.entrypoints.openai.api_server --help` 重跑，並檢查必要旗標是否都在輸出內。",
+            "已由 B60_fix_v5_help.py 套用到 B60_remaining_models_v5（原腳本已備份於 scripts/B60_remaining_models_v5_before_helpfix_*.py）。"
+          ],
+          "outcome": "RESOLVED",
+          "evidence": "HELP_CHECK: vllm cpu EXIT: 1；HELP_CHECK: vllm xpu EXIT: 0；HELP_CHECK: sglang cpu EXIT: 0；PLAN_SAVED 於 ~/b60_benchmark/remaining_v5_plan.json（日誌目錄 ~/b60_benchmark/debug/v5_plan_help_*）。",
+          "notes": "只解決「預檢誤判」。Gemma 4 26B 與 Nemotron 3.5 在 vLLM／SGLang 的實際啟動與 Smoke 尚未執行，沒有成績。計畫來源為 google/gemma-4-26B-A4B-it（約 51.6 GB）與 nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16（約 65.9 GB），皆為 BF16 原始權重，與 Gemma31 W4A16／Laguna FP8 的量化不同，不能直接與它們比較；下載尚未經確認。"
         }
       ]
     },
@@ -134,7 +165,12 @@
           "id": "B60-LLAMA-01",
           "title": "GGUF 已找到，但來源與 llama.cpp 執行設定尚未核驗",
           "stage": "other",
-          "models": ["Gemma 4 26B", "Gemma 4 31B", "Laguna XS 2.1", "Nemotron 3.5"],
+          "models": [
+            "Gemma 4 26B",
+            "Gemma 4 31B",
+            "Laguna XS 2.1",
+            "Nemotron 3.5"
+          ],
           "symptom": "已找到多個 GGUF 檔案，包含 official 目錄中的模型，但尚未取得 B60 llama.cpp 正式啟動、完整 NP125 Benchmark 或模型來源核驗證據。",
           "error": "無已知 Runtime 錯誤；目前為驗證缺口。",
           "root_cause": "現有輸出僅能證明檔案存在及大小，無法證明下載來源、模型完整性、binary 後端、slot context 或 batch 設定符合測試要求。",
@@ -148,7 +184,7 @@
           ],
           "outcome": "OPEN",
           "evidence": "2026-11-04 B60 GGUF 路徑與檔案大小掃描；B60_llamacpp_np125.py 已執行 py_compile；AISO1_benchmark_handoff_20261104.tar.gz 已建立。",
-          "notes": "此項是已確認的驗證缺口，不是已發生的 llama.cpp Runtime crash。尚無正式失敗日誌；若網站只展示 Runtime 故障，應將此項歸入環境待驗，而非失敗事件。"
+          "notes": "此項是已確認的驗證缺口，不是已發生的 llama.cpp Runtime crash。尚無正式失敗日誌；若網站只展示 Runtime 故障，應將此項歸入環境待驗，而非失敗事件。 2026-11-05 更新：V4 已跑完 llama.cpp 四個模型 36/36 PASS（GGUF 檔案啟動前皆列出 VERIFY 並對應 google／poolside／unsloth repo），表示可啟動並完成測試；但 llama-server 版本／build 與後端仍未取得輸出，故本項維持待驗。"
         }
       ]
     },
