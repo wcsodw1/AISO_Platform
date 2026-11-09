@@ -171,3 +171,11 @@
 .rp-red{color:#ff7383}.rp-h3{font-size:15px;margin:22px 0 8px}.rp-h3 small{color:#9aa6b8;font-weight:400}
 @media(max-width:560px){.rp-grid{grid-template-columns:1fr}}
 .st-part td{opacity:.65;font-style:italic}
+
+/* compare page: coverage chips */
+.gap-box{margin:0 0 14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.03)}
+.gap-box h3{margin:0 0 10px;font-size:16px}.gap-box h3 small{color:#9aa6b8;font-weight:400;font-size:13px;margin-left:8px}
+.gap-box.ok{border-color:rgba(79,209,176,.4)}.gap-box.miss{border-color:rgba(255,184,77,.4)}
+.gap-chips{display:flex;flex-wrap:wrap;gap:8px}
+.gap-chip{font:inherit;font-size:14px;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;cursor:pointer}
+.gap-chip:hover{border-color:#d8c27a;background:rgba(216,194,122,.12)}.gap-chip b{color:#d8c27a}

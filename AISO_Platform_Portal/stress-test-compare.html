@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=29">
+  <link rel="stylesheet" href="gptoss-v2.css?v=31">
 </head>
 <body>
   <header class="site-header">
@@ -29,6 +29,11 @@
       <p class="v2-sub">同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較三台機器的 TTFT · TPOT · TPS</span></p>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and baseline"></div>
       <aside class="v2-verdict" role="note"><b>只比對「同框架、同模型」，沒有資料的機器留空</b><p id="stNote"></p></aside>
+    </section>
+
+    <section class="report-section" id="secGap">
+      <header><h2>哪些組合可以比<span class="zh">三機都有 · 只缺 AISO1</span></h2></header>
+      <div id="stGap"></div>
     </section>
 
     <section class="report-section" id="secPick">
@@ -68,6 +73,6 @@
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=2"></script><script src="stress-test-compare.js?v=13"></script>
+  </main><script src="bench-viz.js?v=2"></script><script src="stress-test-compare.js?v=14"></script>
 </body>
 </html>
