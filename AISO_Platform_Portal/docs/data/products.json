@@ -1,6 +1,6 @@
 {
-  "version": 14,
-  "updated_at": "2026-11-09T17:04:47+08:00",
+  "version": 15,
+  "updated_at": "2026-11-09T17:44:21+08:00",
   "access_policy": {
     "tiers": [
       {
@@ -567,6 +567,48 @@
           "E2E",
           "GPU Memory",
           "Power"
+        ],
+        "results": []
+      },
+      "published": {
+        "documents": [],
+        "benchmark": [],
+        "scripts": []
+      }
+    },
+    {
+      "id": "asrock-amd",
+      "category": "workstation",
+      "name": "AMD ASRock",
+      "positioning": "AMD Workstation",
+      "status": "Configuration Pending",
+      "summary": "AMD ASRock 工作站規劃中；整機型號、規格與 Benchmark 待確認，目前尚無 AISO 實測結果。",
+      "image": "",
+      "image_alt": "",
+      "image_note": "",
+      "image_count": "",
+      "preview_3d": {},
+      "model_3d": "",
+      "visual_variant": "",
+      "visual_alt": "",
+      "visual_note": "",
+      "hardware": {
+        "System": "待確認",
+        "CPU / GPU": "待確認",
+        "Memory": "待確認",
+        "OS": "待確認"
+      },
+      "models": [],
+      "benchmark": {
+        "date": "",
+        "comparison": "",
+        "metrics": [
+          "TTFT",
+          "TPOT / ITL",
+          "Prompt TPS",
+          "Decode TPS",
+          "Aggregate TPS",
+          "E2E"
         ],
         "results": []
       },
