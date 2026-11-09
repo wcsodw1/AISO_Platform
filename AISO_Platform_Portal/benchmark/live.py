@@ -18,10 +18,9 @@ from .benchmark_runner import NoRedirect, measure
 
 SWEEP_INPUTS = (4096, 8192, 16384)
 SWEEP_NPS = (1, 2, 4, 5)
-_WORDS = ('river stone window garden engine paper signal harbor forest copper window market lantern violin '
-          'bridge thunder pillow compass meadow anchor ribbon castle orchard saddle velvet whisper canyon '
-          'marble candle island puzzle summit tunnel feather mirror harvest ladder rocket planet button '
-          'blanket silver prairie journal kettle lagoon timber ceramic voyage pebble drizzle compass').split()
+# Same fixed text as B60_Benchmark_matrix_v4_261104.py (UNIT) so token ids match the B60 runs.
+UNIT = ('Mini workstation inference benchmark. Measure latency throughput '
+        'scheduling memory correctness and repeatability.')
 
 
 def _root(endpoint):
@@ -54,25 +53,61 @@ def server_props(target):
             'source': 'llama-server /props (n_ctx may be per-slot or total depending on the build)'}
 
 
-def build_prompt(target, tokens):
-    """Deterministic filler text whose server-side token count (incl. special tokens) is exactly `tokens`."""
-    rng = random.Random(20261109)
-    text = ' '.join(rng.choice(_WORDS) for _ in range(tokens * 2))
-    def count(length):
-        return len(_call(target, '/tokenize', {'content': text[:length], 'add_special': True}, timeout=60)['tokens'])
-    low, high = 1, len(text)
-    if count(high) < tokens:
-        raise ValueError('Filler text too short for the requested token count.')
-    while low < high:
-        mid = (low + high) // 2
-        if count(mid) >= tokens:
-            high = mid
-        else:
-            low = mid + 1
-    for length in [low] + [low + d for d in (-1, 1, -2, 2, -3, 3)]:
-        if 1 <= length <= len(text) and count(length) == tokens:
-            return text[:length]
-    raise ValueError(f'Cannot build an exact {tokens}-token prompt for this tokenizer.')
+def server_slots(target):
+    """llama-server /slots: per-slot id and n_ctx as the server itself reports them."""
+    try:
+        data = _call(target, '/slots', timeout=8)
+    except Exception:
+        return None
+    return sorted(({'id': int(x['id']), 'n_ctx': int(x.get('n_ctx', 0))} for x in data), key=lambda x: x['id']) if isinstance(data, list) else None
+
+
+def build_ids(target, tokens):
+    """B60 V4 prompt: tokenize repeated UNIT text (add_special=True) and keep the first `tokens` ids."""
+    text = UNIT * max(128, tokens // 10)
+    ids = _call(target, '/tokenize', {'content': text, 'add_special': True}, timeout=60).get('tokens')
+    if not isinstance(ids, list) or len(ids) < tokens or any(type(t) is not int for t in ids[:tokens]):
+        raise ValueError('Tokenization insufficient for the requested input length.')
+    return ids[:tokens]
+
+
+def v4_measure(target, ids, slot_id, output_tokens, stop):
+    """One request exactly like the B60 V4 script: native /completion, token-id prompt, pinned slot, cache off."""
+    payload = dict(prompt=ids, id_slot=slot_id, n_predict=output_tokens, stream=True, cache_prompt=False,
+                   ignore_eos=True, temperature=0, seed=42)
+    request = urllib.request.Request(_root(target['endpoint']) + '/completion', json.dumps(payload).encode(), _headers(target))
+    started = time.perf_counter()
+    first = None
+    final = None
+    with urllib.request.build_opener(NoRedirect).open(request, timeout=target.get('timeout_seconds', 600)) as response:
+        for line in response:
+            if stop.is_set():
+                raise ValueError('Cancelled')
+            if not line.startswith(b'data:'):
+                continue
+            data = line[5:].strip()
+            if data == b'[DONE]':
+                break
+            event = json.loads(data)
+            if event.get('error'):
+                raise ValueError('Model service returned an error')
+            if event.get('content') and first is None:
+                first = time.perf_counter()
+            if event.get('stop'):
+                final = event
+    done = time.perf_counter()
+    if final is None or first is None or final.get('truncated'):
+        return {'valid': False, 'stream_complete': final is not None, 'error': 'Missing final event / first content, or prompt truncated.'}
+    timing = final.get('timings') or {}
+    count = int(final.get('tokens_predicted', timing.get('predicted_n', 0)))
+    prompt_n = int(timing.get('prompt_n', 0))
+    cached = int(timing.get('cache_n', 0))
+    ok = prompt_n == len(ids) and count == output_tokens and not cached and started <= first < done
+    return {'valid': ok, 'stream_complete': True, 'input_tokens_actual': prompt_n, 'output_tokens_actual': count, 'cached_tokens': cached,
+            'ttft_ms': (first - started) * 1000, 'tpot_ms': 1000 * (done - first) / (count - 1) if count > 1 else None,
+            'decode_tps': (count - 1) / (done - first) if count > 1 else None, 'e2e_s': done - started,
+            'finish_reason': 'length', 't_start': started, 't_end': done,
+            'error': None if ok else 'Input/output token mismatch or prompt cache reuse.'}
 
 
 def summarize(rows):
@@ -163,12 +198,18 @@ class LiveJobs:
         if config.get('model') not in [m['id'] for m in models]:
             raise ValueError('Select a model returned by this service.')
         target.update(served_model=config['model'], timeout_seconds=600 if sweep else 60)
-        props = None
+        props = slots = None
         if sweep:
             props = server_props(target)
-            slots = (props or {}).get('total_slots')
-            if isinstance(slots, int) and slots < max(config['nps']):
-                raise ValueError(f'Server has {slots} slot(s) but the sweep needs NP up to {max(config["nps"])}; restart llama-server with --parallel {max(config["nps"])} (and a context of at least {max(config["nps"])} x 17408).')
+            slots = server_slots(target)
+            need = max(config['nps'])
+            if not slots:
+                raise ValueError('Cannot read /slots from llama-server; start it with --slots and --parallel >= the largest NP.')
+            if len(slots) < need:
+                raise ValueError(f'Server has {len(slots)} slot(s) but the sweep needs NP up to {need}; restart llama-server with --parallel {need} or more.')
+            required = max(config['inputs']) + config['output_tokens']
+            if min(x['n_ctx'] for x in slots[:need]) < required:
+                raise ValueError(f'Per-slot context is {min(x["n_ctx"] for x in slots[:need])} but {required} is needed (largest input + output).')
         with self.lock:
             if self.active:
                 raise ValueError('A live job is already running.')
@@ -179,13 +220,13 @@ class LiveJobs:
                    'config': {k: v for k, v in config.items() if k != 'prompt'},
                    'prompt_sha256': hashlib.sha256(prompt.encode()).hexdigest(),
                    'status': 'running', 'evidence': 'MEASURED_EXPLORATORY',
-                   'note': ('V4-style sweep over HTTP: input tokens are verified against the server-reported usage; TTFT = first non-empty text chunk minus request start; '
-                            'Aggregate = total output tokens / (last stream end - first request start); prefix cache OFF. Server settings come from llama-server /props where available; '
+                   'note': ('Follows B60_Benchmark_matrix_v4_261104.py: token-id prompt from the same UNIT text, native /completion with one pinned slot per request, cache_prompt false, seed 42; '
+                            'TTFT = first non-empty content minus request start; Aggregate = total output tokens / (last stream end - first request start). Slots and context come from llama-server /slots; '
                             'the model file hash is not checked by the platform. Not a certified formal baseline.' if sweep else
                             'Actual HTTP inference; server settings and exact input-token workload are not certified. Not a formal NP2/NP4 baseline. Timing is client-observed; TPOT is approximate for multi-token chunks.'),
                    'total_requests': sum(np for np, _ in plan) * config['repeat'], 'rows': []}
             if sweep:
-                job['server_props'] = props
+                job['server_props'] = dict(props or {}, slots=slots)
                 job['summary'] = []
             self.active = job_id
             self.stop = threading.Event()
@@ -201,8 +242,8 @@ class LiveJobs:
                     prompts = {}
                     for np, tokens in plan:
                         if tokens and tokens not in prompts and not stop.is_set():
-                            prompts[tokens] = build_prompt(target, tokens)
-                    job['prompt_sha256_by_input'] = {str(t): hashlib.sha256(p.encode()).hexdigest() for t, p in prompts.items()} if sweep else None
+                            prompts[tokens] = build_ids(target, tokens)
+                    job['prompt_sha256_by_input'] = {str(t): hashlib.sha256(json.dumps(p, separators=(',', ':')).encode()).hexdigest() for t, p in prompts.items()} if sweep else None
                     for np, tokens in plan:
                         text = prompts[tokens] if sweep else prompt
                         for repeat in range(1, config['repeat'] + 1):
@@ -212,9 +253,12 @@ class LiveJobs:
                             def one(index):
                                 barrier.wait(timeout=30)
                                 try:
-                                    row = measure(target, {'run': {'framework': framework}, 'workload': {'output_tokens': config['output_tokens'], 'prefix_cache': False}}, text, tokens, stop)
+                                    if sweep:
+                                        row = v4_measure(target, text, slots[index - 1]['id'], config['output_tokens'], stop)
+                                    else:
+                                        row = measure(target, {'run': {'framework': framework}, 'workload': {'output_tokens': config['output_tokens'], 'prefix_cache': False}}, text, tokens, stop)
                                     expected = row.get('input_tokens_actual') == tokens if sweep else (type(row.get('input_tokens_actual')) is int and row['input_tokens_actual'] > 0)
-                                    row['valid'] = bool(row.get('stream_complete') and row.get('ttft_ms') is not None and expected and row.get('output_tokens_actual') == config['output_tokens'] and row.get('finish_reason') == 'length')
+                                    row['valid'] = bool(row.get('stream_complete') and row.get('ttft_ms') is not None and expected and row.get('output_tokens_actual') == config['output_tokens'] and row.get('finish_reason') == 'length' and (row['valid'] if sweep else True))
                                     row['error'] = None if row['valid'] else ('Input tokens differ from the target, or incomplete stream / unexpected output usage.' if sweep else 'Incomplete stream or unexpected token usage.')
                                 except Exception:
                                     row = {'valid': False, 'error': 'Inference request failed or cancelled.'}

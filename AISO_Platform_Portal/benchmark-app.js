@@ -253,6 +253,13 @@ setInterval(()=>{if(state.token&&!document.hidden)refreshJobs()},1500);
   },{passive:true});
 })();
 
+function setView(view){
+  $("parameterPage").dataset.view=view;
+  document.querySelectorAll("#viewTabs button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.view===view)));
+}
+$("viewTabs").onclick=e=>{const b=e.target.closest("[data-view]");if(b)setView(b.dataset.view)};
+$("liveToResults").onclick=()=>{setView("result");$("liveResults").scrollIntoView({behavior:"smooth",block:"start"})};
+setView("run");
 /* Live measurements use configured HTTP targets; prompts and generated text are not persisted. */
 let liveSnapshot={jobs:[],active:null};
 let liveTicket=0;
@@ -404,7 +411,7 @@ function renderWizard(){
   $("unitChoices").innerHTML=choices.map(u=>`<button type="button" class="pc-unit-card" data-unit="${u.id}"><b>${esc(u.name)}</b><span>${esc(u.detail)}</span><em>${esc(u.tier)}</em></button>`).join("");
   if(unit){
     pickedUnit=unit.id;pickedScale=Object.hasOwn(scales,parts[3])?parts[3]:defaultScale(unit);
-    document.querySelectorAll("#parameterPage .report-section:not(#livePanel), #parameterPage .job-section").forEach(section=>{section.hidden=unit.vendor==="nvidia"});
+    document.querySelectorAll("#parameterPage .report-section:not(#livePanel):not(#liveResults), #parameterPage .job-section").forEach(section=>{section.hidden=unit.vendor==="nvidia"});
     renderVendors();$("vendorSelect").value=vendor;renderMachines();$("machineSelect").value=unit.id;renderFrameworks();
     $("selectedUnitTitle").textContent=unit.name;$("unitTier").textContent=scales[pickedScale];
     resetQuickPreset();$("presetDescription").textContent=scalePresets[pickedScale].note;
