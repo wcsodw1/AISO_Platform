@@ -13,14 +13,12 @@ let D,NP=2;
 
 const row=(m,i,np)=>D.b70_runs.find(r=>r.model===m&&r.input===i&&r.np===np);
 const present=np=>MODELS.filter(([m])=>D.b70_runs.some(r=>r.model===m&&r.np===np));
-const wait='<span class="st-wait">等待 AISO1 正式測試</span>';
 
 function renderSetup(){
  const p=D.profile,row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">在<b>同一組標準參數</b>下（相同模型、相同 Input／並發／Output），比較 <b>Intel Arc Pro B70</b>（Intel SYCL）與 <b>AISO1</b>（AMD Ryzen AI MAX+ 395，Vulkan）的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；框架與硬體不同，測試參數相同。</p></section>
- <section class="v2-pane"><h2>測試方式<span>Method</span></h2><p class="v2-goal">每個情境以<b>同一組標準參數</b>各跑 <b>${p.repeat} 次取平均</b>；測試 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p></section>`;
- $s("stParams").innerHTML=`${row("Machine 機器",`Intel B70 · ${p.vram_total_gb} GB<small>${p.vram_layout.replace(" x "," × ")}（2 張）</small>`)}${row("Model 模型","Gemma 4 26B / Gemma 4 31B / Laguna XS 2.1 / Nemotron 3.5<small>GGUF Q4</small>")}${row("Context 上限",`${tok(p.context_per_request)} tokens / request`)}${row("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small>約等於 4K / 8K / 16K / 32K / 64K</small>`)}${row("Output 輸出",`${tok(p.output_tokens)} tokens`)}${row("NP 並發",p.np.join(" / "))}${row("Repeat 重複",`${p.repeat} 次取平均`)}${row("Batch / UBatch",`${tok(p.batch)} / ${p.ubatch}`)}${row("KV cache","f16")}`;
- $s("stNote").textContent=`B70 實測截至 ${D.evidence_until}；AISO1 為 v1.6 已規劃的相同規格，尚未取得正式成績。Prompt 生成方式與 GGUF SHA256 完成核對前，不宣稱公平倍率。`;
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>Intel Arc Pro B70</b> 在標準參數下的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>（llama.cpp · GGUF Q4）。</p></section>`;
+ $s("stParams").innerHTML=`${row("Machine 機器",`Intel B70 · 2 × 32 GB`)}${row("Model 模型","4 款 GGUF Q4")}${row("Input 輸入","4K / 8K / 16K / 32K / 64K")}${row("Output 輸出",`${tok(p.output_tokens)} tokens`)}${row("NP 並發",p.np.join(" / "))}${row("Repeat 重複",`${p.repeat} 次取平均`)}`;
+ $s("stNote").textContent=`B70 實測截至 ${D.evidence_until}（舊版 Runner，Context ${tok(p.context_per_request)}）；Prompt 與 GGUF SHA256 尚未與其他機器核對，不宣稱跨機倍率。`;
 }
 
 function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
@@ -39,7 +37,7 @@ function chart(k,width){
  });
  return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.short}">${g}</svg></div>`;
 }
-const legend=()=>`<div class="v2-legend2">${present(NP).map(([,n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")}<span class="st-wait">AISO1：等待正式測試</span></div>`;
+const legend=()=>`<div class="v2-legend2">${present(NP).map(([,n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")}</div>`;
 function caption(k){
  const d=METRICS[k],parts=present(NP).map(([m,n])=>{const a=row(m,4096,NP),b=row(m,65536,NP);return a&&b?`${n} ${num(a[k],d.dec)} → ${num(b[k],d.dec)}`:null}).filter(Boolean);
  return `NP${NP}：Input 由 4K 增至 64K，${d.short} ${d.higher?"由高降至低":"由低升至高"}（${d.unit}）— ${parts.join("；")}`;
@@ -55,13 +53,13 @@ function renderTabs(){
 function renderTable(){
  const cell=(r,k)=>r?`<td${k==="ttft_s"&&r.ttft_over_180s?' class="st-over"':""}>${num(r[k],METRICS[k].dec)}</td>`:"<td>—</td>";
  const rows=present(NP).flatMap(([m,n])=>D.profile.input_tokens.map((inp,i)=>{const r=row(m,inp,NP);
-  return `<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${n}</td>`:""}<td>${kn(inp)}</td>${cell(r,"ttft_s")}${cell(r,"tpot_ms")}${cell(r,"decode_tps")}<td colspan="3" class="st-pending">${wait}</td><td>—</td></tr>`})).join("");
- $s("stTableSub").textContent=`NP${NP} · B70 為 3 次重複平均；AISO1 取得 v1.6 正式測試後才會填入並計算差異。`;
- $s("stTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th><th class="l">B70 TTFT<small>s</small></th><th class="l">B70 TPOT<small>ms</small></th><th class="l">B70 TPS<small>tok/s</small></th><th colspan="3" class="a">AISO1 AMD<small>TTFT · TPOT · TPS</small></th><th>B70 vs AISO1<small>差異</small></th></tr></thead><tbody>${rows}</tbody>`;
+  return `<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${n}</td>`:""}<td>${kn(inp)}</td>${cell(r,"ttft_s")}${cell(r,"tpot_ms")}${cell(r,"decode_tps")}</tr>`})).join("");
+ $s("stTableSub").textContent=`NP${NP} · 3 次重複平均；TTFT ≥ 180 秒以紅字標示，仍為 Technical PASS。`;
+ $s("stTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS<small>tok/s</small></th></tr></thead><tbody>${rows}</tbody>`;
 }
 function renderParity(){
- const label={SAME_REPO_PENDING_CROSS_MACHINE_SHA:"同 Repo，待兩台 SHA 核對",HISTORIC_SHA_MATCH_BUT_CURRENT_FILES_UNVERIFIED:"歷史 SHA 一致，需重驗本機檔案"};
- $s("stParity").innerHTML=`<thead><tr><th>Model</th><th>GGUF Repo（兩台相同）</th><th>Quant</th><th>B70 SHA256</th><th>狀態</th></tr></thead><tbody>${D.model_parity.map(p=>`<tr><td class="st-model">${sEsc(p.name)}</td><td>${sEsc(p.repo)}</td><td>${sEsc(p.quant)}</td><td class="st-sha">${p.b70_sha256?sEsc(p.b70_sha256.slice(0,12))+"…":"—"}</td><td>${sEsc(label[p.status]||p.status)}</td></tr>`).join("")}</tbody>`;
+ const label={SAME_REPO_PENDING_CROSS_MACHINE_SHA:"同 Repo，待跨機 SHA 核對",HISTORIC_SHA_MATCH_BUT_CURRENT_FILES_UNVERIFIED:"歷史 SHA 一致，需重驗本機檔案"};
+ $s("stParity").innerHTML=`<thead><tr><th>Model</th><th>GGUF Repo</th><th>Quant</th><th>B70 SHA256</th><th>狀態</th></tr></thead><tbody>${D.model_parity.map(p=>`<tr><td class="st-model">${sEsc(p.name)}</td><td>${sEsc(p.repo)}</td><td>${sEsc(p.quant)}</td><td class="st-sha">${p.b70_sha256?sEsc(p.b70_sha256.slice(0,12))+"…":"—"}</td><td>${sEsc(label[p.status]||p.status)}</td></tr>`).join("")}</tbody>`;
 }
 
 fetch("data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{

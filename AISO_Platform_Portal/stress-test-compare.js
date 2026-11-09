@@ -10,7 +10,8 @@ const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
 const val=(k,v)=>k==="ttft_s"&&v<10?num(v,2):num(v,1);
 let REG,DATA={},FW,MODEL,NP;   // DATA[machine][framework] = dataset
-const runsOf=(mach,fw)=>{const ds=DATA[mach]&&DATA[mach][fw];return ds?ds.runs:[]};
+const MAXI=16384;   // compare page: 4K / 8K / 16K only (B70-only 32K / 64K stay on the B70 page)
+const runsOf=(mach,fw)=>{const ds=DATA[mach]&&DATA[mach][fw];return ds?ds.runs.filter(r=>r.input<=MAXI):[]};
 const get=(mach,fw,m,np,i)=>runsOf(mach,fw).find(r=>r.model===m&&r.np===np&&r.input===i);
 const fwLabel=k=>REG.frameworks.find(f=>f.key===k).label;
 const modelName=k=>REG.models.find(m=>m.key===k).name;

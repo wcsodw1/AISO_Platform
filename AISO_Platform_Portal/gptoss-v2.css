@@ -170,3 +170,4 @@
 .rp-bar{height:7px;background:rgba(128,140,160,.2);border-radius:4px;margin-bottom:3px}.rp-bar i{display:block;height:100%;border-radius:4px}
 .rp-red{color:#ff7383}.rp-h3{font-size:15px;margin:22px 0 8px}.rp-h3 small{color:#9aa6b8;font-weight:400}
 @media(max-width:560px){.rp-grid{grid-template-columns:1fr}}
+.st-part td{opacity:.65;font-style:italic}
