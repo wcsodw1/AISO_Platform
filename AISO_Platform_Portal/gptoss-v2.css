@@ -220,3 +220,12 @@
 
 /* compare page: merged Comparison Detail section */
 .gap-sub{margin:22px 0 12px;font-size:22px;color:var(--gold)}.gap-sub small{margin-left:10px;color:var(--muted);font-weight:400;font-size:17px}
+
+/* pairwise compare buttons + pending note */
+.st .pair-nav{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 6px}
+.st .pair-lbl{font-size:16px;font-weight:700;color:#f2f4f8;margin-right:4px}.st .pair-lbl small{font-size:13px;font-weight:500;color:#9aa3b2;margin-left:4px}
+.st .pair-btn{display:inline-flex;align-items:center;min-height:42px;padding:8px 18px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:#e8ebf2;font-size:16px;font-weight:600;text-decoration:none;background:rgba(255,255,255,.04);transition:background .15s,border-color .15s}
+.st .pair-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
+.st .pair-btn.on{background:#d6a84a;border-color:#d6a84a;color:#14161b}
+.st .pair-btn.all{border-style:dashed;color:#d6a84a}
+.st .cmp-pending{color:#ffb86b;font-size:15px}
