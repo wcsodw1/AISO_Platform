@@ -280,7 +280,20 @@ function renderLiveServices(){
   $("liveStart").classList.toggle("is-idle",!!(true));
   $("liveStatus").textContent=!state.token?"請先於上方輸入本機 Bearer Token 並按 Connect。":services.length?"請偵測模型，再開始實機測試。":known?"清單為 B70 已測過的服務與模型；需先在 machines.local.json 設定 B70 位址後才能偵測並執行。":"此機器／Framework 尚未設定可連線的實機服務。";
   tlog($("liveStatus").textContent,"");
+  syncLiveMode();
 }
+function syncLiveMode(){
+  const canSweep=framework()==="llamacpp";
+  $("liveModeRow").style.display=canSweep?"":"none";
+  if(!canSweep)$("liveMode").value="single";
+  const sweep=$("liveMode").value==="sweep";
+  document.querySelectorAll(".sweep-only").forEach(n=>n.style.display=sweep?"":"none");
+  document.querySelectorAll(".single-only").forEach(n=>n.style.display=sweep?"none":"");
+}
+$("liveMode").onchange=()=>{
+  syncLiveMode();
+  if($("liveMode").value==="sweep"){$("liveOutput").value=1024;$("liveRepeat").value=3;termOpen(true);tlog("V4 掃描：Output 1024、Repeat 3、prefix cache OFF；Input token 會依服務實際回報驗證。伺服器需以 --parallel ≥ 最大 NP 啟動。")}
+};
 $("liveService").onchange=()=>{liveTicket++;$("liveModel").innerHTML="";$("liveStart").classList.toggle("is-idle",!!(true));};
 $("liveDiscover").onclick=async()=>{
   if(!liveReady("discover"))return;
@@ -295,6 +308,12 @@ $("liveDiscover").onclick=async()=>{
     $("liveStatus").textContent=`已連接服務，找到 ${result.models.length} 個模型。`;tlog(`discover ${$("liveService").value}: ${result.models.map(m=>m.id).join(", ")||"no models"}`,"ok");
   }catch(error){if(ticket===liveTicket)$("liveStatus").textContent=error.message}
 };
+function sweepTable(job){
+  const f=(v,d=1)=>v==null?"—":Number(v).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});
+  const sp=job.server_props;
+  const props=sp?`<p>伺服器回報：slots ${esc(sp.total_slots??"—")} · n_ctx ${esc(sp.n_ctx_reported??"—")} · ${esc(sp.build_info??"")} · ${esc(sp.model_file??"")}</p>`:"<p>伺服器未回報 /props（無法自動記錄 slots／context）。</p>";
+  return props+`<table class="v2-table"><thead><tr><th>NP</th><th>Input</th><th>狀態</th><th>TTFT s</th><th>TPOT ms</th><th>Aggregate tok/s</th><th>Normalized</th></tr></thead><tbody>${job.summary.map(g=>`<tr><td>${g.np}</td><td>${g.input}</td><td>${g.status}（${g.repeats_done} 次）</td><td>${f(g.ttft_s,2)}</td><td>${f(g.tpot_ms)}</td><td>${f(g.aggregate_tps)}</td><td>${f(g.normalized_tps)}</td></tr>`).join("")}</tbody></table>`;
+}
 async function refreshLive(){
   if(!state.token)return;
   try{
@@ -305,20 +324,28 @@ async function refreshLive(){
     liveSnapshot.jobs.slice().reverse().forEach(job=>{
       const seen=tseen[job.id]||(tseen[job.id]={rows:job.rows.length,status:job.status,fresh:false});
       if(seen.fresh===false&&!seen.init){seen.init=true;seen.rows=job.status==="running"?0:job.rows.length}
-      job.rows.slice(seen.rows).forEach(r=>tlog(`repeat ${r.repeat} req ${r.request}: ${r.valid?"OK":"FAIL"} · in ${r.input_tokens_actual??"-"} · out ${r.output_tokens_actual??"-"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · agg ${num(r.aggregate_tps)} tok/s${r.error?" · "+r.error:""}`,r.valid?"":"err"));
+      job.rows.slice(seen.rows).forEach(r=>tlog(`${r.input_tokens?`NP${r.np} in${r.input_tokens} `:""}repeat ${r.repeat} req ${r.request}: ${r.valid?"OK":"FAIL"} · in ${r.input_tokens_actual??"-"} · out ${r.output_tokens_actual??"-"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · agg ${num(r.aggregate_tps)} tok/s${r.error?" · "+r.error:""}`,r.valid?"":"err"));
       seen.rows=job.rows.length;
       if(job.status!==seen.status){tlog(`job ${job.id.slice(0,8)} ${job.status}`,job.status==="completed"?"ok":job.status==="running"?"":"err");seen.status=job.status}
     });
     $("termState").textContent=liveSnapshot.active?"running":"idle";
-    $("liveJobs").innerHTML=liveSnapshot.jobs.filter(job=>job.machine_id===machine()?.machine_id&&job.framework===framework()).map(job=>`<article class="job-card"><b>${esc(job.machine_id)} · ${esc(job.config.model)} · ${esc(job.status)}</b><p>MEASURED EXPLORATORY · ${job.rows.length}/${job.total_requests} requests</p>${job.rows.map(r=>`<p>Repeat ${r.repeat} / Request ${r.request}: ${r.valid?"Measured":"Failed"} · Input ${r.input_tokens_actual??"—"} · Output ${r.output_tokens_actual??"—"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · Aggregate ${num(r.aggregate_tps)} tok/s${r.error?` · ${esc(r.error)}`:""}</p>`).join("")}</article>`).join("");
+    $("liveJobs").innerHTML=liveSnapshot.jobs.filter(job=>job.machine_id===machine()?.machine_id&&job.framework===framework()).map(job=>`<article class="job-card"><b>${esc(job.machine_id)} · ${esc(job.config.model)} · ${esc(job.status)}</b><p>MEASURED EXPLORATORY · ${job.rows.length}/${job.total_requests} requests${job.error?` · ${esc(job.error)}`:""}</p>${job.summary?sweepTable(job):""}${job.summary?"":job.rows.map(r=>`<p>Repeat ${r.repeat} / Request ${r.request}: ${r.valid?"Measured":"Failed"} · Input ${r.input_tokens_actual??"—"} · Output ${r.output_tokens_actual??"—"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · Aggregate ${num(r.aggregate_tps)} tok/s${r.error?` · ${esc(r.error)}`:""}</p>`).join("")}</article>`).join("");
   }catch(error){$("liveStatus").textContent=error.message}
+}
+function liveConfig(){
+  const base={service:$("liveService").value,model:$("liveModel").value,output_tokens:Number($("liveOutput").value),repeat:Number($("liveRepeat").value)};
+  if($("liveMode").value==="sweep"){
+    const list=id=>$(id).value.split(",").map(v=>Number(v.trim())).filter(v=>v);
+    return {...base,mode:"sweep",inputs:list("liveInputs"),nps:list("liveNps")};
+  }
+  return {...base,prompt:$("livePrompt").value,np:Number($("liveNp").value)};
 }
 $("liveStart").onclick=async()=>{
   if(!liveReady("start"))return;
   $("liveStart").classList.toggle("is-idle",!!(true));
-  termOpen(true);tlog(`$ start  ${machine().machine_id} · ${framework()} · ${$("liveModel").value} · NP${$("liveNp").value} · out ${$("liveOutput").value} · repeat ${$("liveRepeat").value}`);
+  termOpen(true);tlog(`$ start  ${machine().machine_id} · ${framework()} · ${$("liveModel").value} · ${$("liveMode").value==="sweep"?"V4 sweep NP["+$("liveNps").value+"] in["+$("liveInputs").value+"]":"NP"+$("liveNp").value} · out ${$("liveOutput").value} · repeat ${$("liveRepeat").value}`);
   try{
-    const result=await post("/live/start",{machine_id:machine().machine_id,framework:framework(),config:{service:$("liveService").value,model:$("liveModel").value,prompt:$("livePrompt").value,np:Number($("liveNp").value),output_tokens:Number($("liveOutput").value),repeat:Number($("liveRepeat").value)}});
+    const result=await post("/live/start",{machine_id:machine().machine_id,framework:framework(),config:liveConfig()});
     $("liveStatus").textContent=`實機測試 ${result.id} 已啟動。`;termOpen(true);tlog(`job ${result.id.slice(0,8)} started`,"ok");
   }catch(error){$("liveStatus").textContent=error.message;tlog(error.message,"err")}
   await refreshLive();

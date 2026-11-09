@@ -96,10 +96,13 @@
       <div class="form-grid">
         <label>Service<select id="liveService"></select></label>
         <label>Model<select id="liveModel"></select></label>
-        <label>Concurrency (NP)<input id="liveNp" type="number" min="1" max="4" value="1"></label>
+        <label id="liveModeRow">Mode<select id="liveMode"><option value="single">快速單次測試</option><option value="sweep">V4 同參數掃描（Input × NP，llama.cpp）</option></select></label>
+        <label class="sweep-only" style="display:none">Input tokens（4096 / 8192 / 16384，逗號分隔）<input id="liveInputs" value="4096,8192,16384"></label>
+        <label class="sweep-only" style="display:none">NP 清單（1 / 2 / 4 / 5，逗號分隔）<input id="liveNps" value="1,2,4,5"></label>
+        <label class="single-only">Concurrency (NP)<input id="liveNp" type="number" min="1" max="4" value="1"></label>
         <label>Output tokens<input id="liveOutput" type="number" min="1" max="1024" value="128"></label>
         <label>Repeats<input id="liveRepeat" type="number" min="1" max="3" value="1"></label>
-        <label>Prompt<textarea id="livePrompt" maxlength="8192" rows="3">Explain how a local language model processes a prompt, step by step.</textarea></label>
+        <label class="single-only">Prompt<textarea id="livePrompt" maxlength="8192" rows="3">Explain how a local language model processes a prompt, step by step.</textarea></label>
       </div>
       <div class="form-actions"><button id="liveStart" class="primary" type="button">▶ 開始測試</button><button id="liveDiscover" type="button">偵測實機模型</button><button id="liveStop" type="button" disabled>停止</button><button id="liveExport" type="button" disabled>下載實測 JSON</button></div>
       <div class="manual-row"><button id="terminalToggle" type="button" aria-expanded="false">&gt;_ Terminal</button></div>
@@ -130,6 +133,6 @@
     <section class="job-section"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
     </div>
   </main>
-  <script src="benchmark-app.js?v=picker-8"></script>
+  <script src="benchmark-app.js?v=picker-9"></script>
 </body>
 </html>
