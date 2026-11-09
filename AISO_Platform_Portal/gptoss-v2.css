@@ -210,3 +210,4 @@
 .tb-badge{font-size:14px}.tb-issue dt{font-size:15px}.tb-cmd,.tb-err{font-size:14px}.tb-host{font-size:14px}
 .st .v2-approx,.st .v2-table small{font-size:15px}
 .gd-ax{font-size:15px}.tb-issue header>b{font-size:15px}
+.st .v2-pane h2{color:var(--gold)}.st .v2-pane h2 span{color:var(--muted)}
