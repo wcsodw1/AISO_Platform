@@ -24,7 +24,7 @@ function renderSetup(){
 function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
 function chart(k,width){
  const d=METRICS[k],ms=present(NP),inputs=D.profile.input_tokens,n=inputs.length;
- const L=64,R=12,T=34,B=48,H=300,ih=H-T-B,W=Math.max(width,n*104+L+R),gw=(W-L-R)/n,bw=Math.min(34,(gw-12)/ms.length);
+ const L=64,R=12,T=40,B=74,H=344,ih=H-T-B,W=Math.max(width,n*104+L+R),gw=(W-L-R)/n,bw=Math.min(34,(gw-12)/ms.length);
  const vals=D.b70_runs.filter(r=>r.np===NP).map(r=>r[k]),top=Math.max(...vals),step=niceStep(top),y=v=>T+ih-v/top*ih;
  let g="";
  for(let v=0;v<=top+1e-9;v+=step){const yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
@@ -33,7 +33,7 @@ function chart(k,width){
   const x0=L+gw*q+(gw-bw*ms.length-2*(ms.length-1))/2;
   ms.forEach(([m,name,col],j)=>{const r=row(m,inp,NP);if(!r)return;const v=r[k],x=x0+j*(bw+2),y1=y(v),red=k==="ttft_s"&&r.ttft_over_180s;
    g+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1,y(0)-y1)}" rx="2" fill="${col}"><title>${name} · NP${NP} · ${tok(inp)}: ${num(v,d.dec)} ${d.unit}</title></rect><text class="bl ${red?"dn":"up2"}" x="${x+bw/2}" y="${y1-5}" text-anchor="middle">${num(v,v>=100?0:d.dec)}</text>`});
-  g+=`<text x="${L+gw*q+gw/2}" y="${H-24}" text-anchor="middle" class="xl">${kn(inp)}</text><text x="${L+gw*q+gw/2}" y="${H-8}" text-anchor="middle" class="xl2">${tok(inp)}</text>`;
+  g+=`<text x="${L+gw*q+gw/2}" y="${H-40}" text-anchor="middle" class="xl">${kn(inp)}</text><text x="${L+gw*q+gw/2}" y="${H-16}" text-anchor="middle" class="xl2">${tok(inp)}</text>`;
  });
  return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.short}">${g}</svg></div>`;
 }

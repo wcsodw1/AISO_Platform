@@ -179,3 +179,34 @@
 .gap-chips{display:flex;flex-wrap:wrap;gap:8px}
 .gap-chip{font:inherit;font-size:14px;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;cursor:pointer}
 .gap-chip:hover{border-color:#d8c27a;background:rgba(216,194,122,.12)}.gap-chip b{color:#d8c27a}
+
+/* Stress Test pages: larger, easier-to-read type (page title h1 unchanged; body >= 16px, labels >= 15px) */
+.st .eyebrow{font-size:13px}
+.st .v2-sub{font-size:21px}.st .v2-sub .zh-i{font-size:17px}
+.st .v2-pane h2{font-size:26px}.st .v2-pane h2 span{font-size:17px}
+.st .v2-goal{font-size:20px;line-height:1.8}
+.st .v2-params{gap:18px 28px}.st .v2-params dt{font-size:16px}.st .v2-params dd{font-size:21px}
+.st .v2-fn,.st .v2-fine,.st .v2-hint,.st .v2-count{font-size:16px;line-height:1.7}
+.st .v2-verdict b{font-size:23px}.st .v2-verdict p,.st .v2-verdict .zh-i{font-size:18px;line-height:1.7}.st .rp-list{font-size:18px}
+.st .report-section h2{font-size:32px}.st .report-section h2 span{font-size:19px}
+.st .st-tabs button,.st .cmp-pick>span{font-size:18px}
+.st .gap-chip{font-size:18px;padding:8px 16px}.st .gap-box h3{font-size:22px}.st .gap-box h3 small{font-size:17px}
+.st .v2-table th{font-size:16px}.st .v2-table th small,.st .v2-sc th small{font-size:14px}.st .v2-table td,.st .v2-sc td,.st .v2-sc th{font-size:17px}.st .st-model{font-size:17px}
+.st .v2-legend2,.st .v2-legend2 span{font-size:17px}
+.st .bv-h{font-size:28px}.st .bv-h .zh-i{font-size:18px}.st .v2-sub3{font-size:24px}.st .v2-sub3 .zh-i{font-size:17px}
+.st .v2-line,.st .v2-line span{font-size:17px}.st .v2-dir{font-size:16px}
+.st .v2-chartwrap text{font-size:15px}.st .v2-chartwrap .xl{font-size:17px}.st .v2-chartwrap .xl2{font-size:15px}.st .v2-chartwrap .bl{font-size:15px}
+.st .cmp-av,.st .cmp-av span{font-size:17px}.st .cmp-badge{font-size:14px}.st .cmp-caveat ul{font-size:17px}
+.st .rp-m caption{font-size:19px}.st .rp-m caption small{font-size:15px}.st .rp-m th{font-size:15px}.st .rp-m td{font-size:18px}.st .rp-h3{font-size:20px}.st .rp-h3 small{font-size:16px}
+.st .v2-dl{font-size:16px}.st .eyebrow{font-size:14px}.st .cmp-badge{font-size:15px}
+.st .v2-table tfoot td small,.st .bv-sub,.st .v2-table td small{font-size:15px}.st .v2-table th small{font-size:15px}.st .cmp-part{font-size:15px}
+.st .v2-chart h3 small,.st .v2-chart h3 .zh-i{font-size:16px}
+.st .tb-tabs button small,.st .st-tabs button small{font-size:15px}
+
+/* B60 page: dashboard + troubleshooting text sizes */
+.gd-crumb,.gd-vars span,.gd-vars button{font-size:15px}.gd-bl{font-size:15px}.gd-bars b{font-size:17px}.gd-bars b small{font-size:14px}
+.gd-tile b{font-size:16px}.gd-tile span,.gd-tile em{font-size:14px}.gd-info{font-size:16px}.gd-foot{font-size:14px;line-height:1.7}
+.gd-leg th{font-size:14px}.gd-leg td{font-size:15px}.gd-panel h3{font-size:18px}.gd-panel h3 small{font-size:14px}
+.tb-badge{font-size:14px}.tb-issue dt{font-size:15px}.tb-cmd,.tb-err{font-size:14px}.tb-host{font-size:14px}
+.st .v2-approx,.st .v2-table small{font-size:15px}
+.gd-ax{font-size:15px}.tb-issue header>b{font-size:15px}
