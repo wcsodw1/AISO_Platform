@@ -32,7 +32,6 @@ function renderControls(){
 }
 function renderMetrics(){
  const w=Math.max(320,($s("stMetrics").clientWidth||860)-100),have=REG.machines.filter(m=>cellRuns(m.key).length),base=have.length?have[0].key:null;
- $s("stNote").textContent=`目前選擇：${fwLabel(FW)} · ${modelName(MODEL)} · NP${NP}`;
  const cl=REG.machines.filter(m=>cellRuns(m.key).length&&cav(m.key,FW)).map(m=>`<li><b>${esc(m.label)}</b>：${esc(cav(m.key,FW).text)}</li>`).join("");
  const av=`<p class="v2-fine cmp-av">${availability()}</p>`+(cl?`<aside class="v2-verdict cmp-caveat" role="note"><b>歷史數值並排，不是正式效能排名<span class="zh-i">條件未完全對齊，差異不能全部歸因於硬體；詳見下方「測試設定差異」</span></b><ul>${cl}</ul></aside>`:"");
  if(!have.length){$s("stMetrics").innerHTML=av+'<p class="v2-fine st-empty">此框架、模型、NP 三台機器都還沒有資料。</p>';return}
@@ -80,7 +79,7 @@ function renderGap(){
   key.set(k,o)})));
  const chip=(o,nps)=>`<button type="button" class="gap-chip" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(modelName(o.model))} · NP${nps.join(" / NP")}</button>`;
  const all=[...key.values()].filter(o=>o.all.length),miss=[...key.values()].filter(o=>o.miss.length);
- $s("stGap").innerHTML=`<div class="gap-box ok"><h3>三機都有 <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">Input 4K / 8K / 16K 三個都有數值（AISO1 為歷史・未核實）。</p></div>
+ $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 為歷史・未核實）。</p></div>
  <div class="gap-box miss"><h3>只缺 AISO1 <small>B60、B70 都有 · ${miss.length} 組，AISO1 重測後即可三機並排</small></h3><div class="gap-chips">${miss.map(o=>chip(o,o.miss)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60 測 NP1 / 2 / 5、B70 測 NP2 / 4，兩台共同的 NP 只有 2，所以三機比對以 NP2 為準。</p></div>`;
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secPick").scrollIntoView({behavior:"smooth",block:"start"})});
 }
