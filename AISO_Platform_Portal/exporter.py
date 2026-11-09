@@ -189,6 +189,7 @@ def export_catalog(base: Path, data_root: Path):
     shutil.copytree(base / "data" / "benchmark-v2", temporary / "data" / "benchmark-v2")
     shutil.copytree(base / "data" / "benchmark-b70", temporary / "data" / "benchmark-b70")
     shutil.copytree(base / "data" / "benchmark-b60", temporary / "data" / "benchmark-b60")
+    shutil.copytree(base / "data" / "benchmark-aiso1", temporary / "data" / "benchmark-aiso1")
     shutil.copy2(base / "data" / "benchmark-registry.json", temporary / "data" / "benchmark-registry.json")
     shutil.copytree(base / "data" / "benchmark-troubleshooting", temporary / "data" / "benchmark-troubleshooting", ignore=shutil.ignore_patterns("*.md"))
     key = file_key_from_env()
