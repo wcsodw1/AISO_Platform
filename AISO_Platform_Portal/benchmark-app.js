@@ -260,6 +260,9 @@ function setView(view){
 $("viewTabs").onclick=e=>{const b=e.target.closest("[data-view]");if(b)setView(b.dataset.view)};
 $("liveToResults").onclick=()=>{setView("result");$("liveResults").scrollIntoView({behavior:"smooth",block:"start"})};
 setView("run");
+$("connectButton2").onclick=()=>{$("tokenInput").value=$("tokenInput2").value;$("tokenInput2").value="";$("connectButton").click()};
+$("tokenInput2").addEventListener("keydown",e=>{if(e.key==="Enter")$("connectButton2").click()});
+new MutationObserver(()=>{const on=$("accessBadge").textContent.startsWith("LOCAL ADMIN");$("liveConnect").style.display=on?"none":"";$("liveConnectMsg").textContent=$("accessBadge").textContent==="AUTH FAILED"?"Token 不對，請重貼。":"未連線，下面的按鈕要連線後才能用。"}).observe($("accessBadge"),{childList:true,characterData:true,subtree:true});
 /* Live measurements use configured HTTP targets; prompts and generated text are not persisted. */
 let liveSnapshot={jobs:[],active:null};
 let liveTicket=0;

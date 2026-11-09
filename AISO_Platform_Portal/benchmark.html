@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="site-header.css?v=1.28.2">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
-  <link rel="stylesheet" href="benchmark.css?v=family-32">
+  <link rel="stylesheet" href="benchmark.css?v=family-33">
 </head>
 <body>
   <header class="site-header">
@@ -92,6 +92,7 @@
 
     <section class="report-section" id="livePanel" data-v="run">
       <header class="live-head"><div><p class="section-label">LIVE / REAL INFERENCE</p><h2>參數與執行</h2></div><button id="paramHelp" class="info big" type="button" aria-label="參數說明" title="所有參數說明">?</button></header>
+      <div id="liveConnect" class="live-connect"><b>① 先連線</b><input id="tokenInput2" type="password" autocomplete="off" placeholder="貼上本機 Bearer Token（啟動 launcher 時印在終端機）"><button id="connectButton2" type="button" class="primary">Connect</button><span id="liveConnectMsg">未連線，下面的按鈕要連線後才能用。</span></div>
       <div class="preset-bar"><button id="resetLivePreset" class="primary" type="button">Default · 還原預設值</button><span id="presetState">目前使用：規模預設</span></div>
       <p id="presetDescription">Workstation / Server：先驗證模型服務，再調整工作負載。</p>
       <p class="report-notice">TP、Context、Batch 與 GPU 記憶體配置由目前模型服務決定；此處不會修改服務啟動參數。輸入 token 數依服務實際回報。</p>
@@ -141,6 +142,6 @@
     <section class="job-section" data-v="result"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
     </div>
   </main>
-  <script src="benchmark-app.js?v=picker-10"></script>
+  <script src="benchmark-app.js?v=picker-11"></script>
 </body>
 </html>
