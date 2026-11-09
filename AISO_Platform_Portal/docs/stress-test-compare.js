@@ -54,16 +54,12 @@ function renderCover(){
  $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th>${REG.machines.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
 function renderSetup(){
- const b60=DATA.b60&&(DATA.b60.sglang||DATA.b60.vllm),b70=DATA.b70&&DATA.b70.llamacpp,a=b60.profile,b=b70.profile;
- const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`,order=REG.machines.map(m=>m.label).join(" → ");
- const allRuns=m=>REG.frameworks.flatMap(f=>runsOf(m,f.key)),rng=(m,k,f)=>{const v=[...new Set(allRuns(m).map(x=>x[k]))].sort((a,b)=>a-b);return v.length?v.map(f).join(" / "):"待核"};
- const mlab=Object.fromEntries(REG.machines.map(m=>[m.key,m.label]));
- const fwHas=m=>REG.frameworks.filter(f=>runsOf(m,f.key).length).map(f=>f.label).join(" / ")||"尚無成績";
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">在<b>同一推論框架、同一模型</b>下，並排比較 <b>Intel B60、Intel B70、AISO1</b> 的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出；不同框架（例如 SGLang 與 llama.cpp）不放在同一張圖，沒有資料的機器留空，不用推估值填入。</p></section>
- <section class="v2-pane"><h2>測試基準及固定參數<span>Baseline &amp; Fixed Parameters</span></h2>
- <p class="v2-goal"><b>比對基準 Baseline</b>：該組合中「有資料的第一台機器」（順序 ${order}）；圖上綠色 + ／紅色 − 為其他機器相對基準的差異（TTFT、TPOT 為減少比例，TPS 為增加比例；差距超過 100% 時以「快／慢 ×倍」表示）。<b>TPS</b> 以每請求 Normalized（Aggregate ÷ NP）比較，Aggregate 另列於完整數值。</p>
- <dl class="v2-params">${r("Output 輸出（固定）",`${tok(a.output_tokens)} tokens`)}${r("Repeat 重複（固定）",`${a.repeat} 次取平均`)}${r("TPS 定義（固定）","Aggregate = NP × Output ÷ E2E（含首字等待）<small>Normalized = Aggregate ÷ NP</small>")}${r("NP 並發（各機實測範圍）",`B60：${rng("b60","np",x=>x)}<small>B70：${rng("b70","np",x=>x)} · AISO1：${rng("aiso1","np",x=>x)}</small>`)}${r("Input 輸入（各機實測範圍）",`B60：${rng("b60","input",kn)}<small>B70：${rng("b70","input",kn)} · AISO1：${rng("aiso1","input",kn)}</small>`)}${r("硬體配備",`B60：${a.vram_total_gb} GB（${a.vram_layout.replace(" x "," × ")}）· TP${a.tp}<small>B70：${b.vram_total_gb} GB（${b.vram_layout.replace(" x "," × ")}）</small>`)}${r("Context 上限",`B60：${tok(a.context_length)}<small>B70：${tok(b.context_per_request)} tokens / request · AISO1：未核實</small>`)}${r("已有成績的框架",`B60：${fwHas("b60")}<small>B70：${fwHas("b70")} · AISO1：${fwHas("aiso1")}</small>`)}</dl>
- <p class="v2-fn">只有 NP 與 Input 完全相同的長條才有可比性；B60 V4 與 B70／AISO1 舊版 Runner 的 TTFT、Aggregate 計時定義是否一致尚未核實；模型格式與量化需相同才能直接比較，各機器頁標示 Repo 與量化，未核實者標為待核。</p></section>`;
+ const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
+ const rng=(m,k)=>{const v=[...new Set(REG.frameworks.flatMap(f=>runsOf(m,f.key)).map(x=>x[k]))].sort((a,b)=>a-b);return v.length?v.join("/"):"待核"};
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">同一框架、同一模型下，並排比較 <b>B60、B70、AISO1</b> 的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>。</p></section>
+ <section class="v2-pane"><h2>測試參數<span>Key Parameters</span></h2>
+ <dl class="v2-params">${r("Output 輸出","1,024 tokens")}${r("Repeat 重複","3 次取平均")}${r("Input 輸入","4K / 8K / 16K")}${r("NP 並發","1 / 2 / 4 / 5")}${r("TPS (Normalized)","Aggregate ÷ NP")}${r("基準 Baseline","有資料的第一台")}</dl>
+ <p class="v2-fn">各機實測 NP：B60 ${rng("b60","np")}、B70 ${rng("b70","np")}、AISO1 ${rng("aiso1","np")}；NP 與 Input 相同才可比；設定差異與「歷史・未核實」見下方。</p></section>`;
 }
 function renderConfig(){
  const rows=[["來源 Repo","repo"],["格式／量化","format"],["後端","backend"],["TP／切分","tp"],["Max Context","max_context"],["Batch／Chunk","batch"],["Max Seqs／Slots","max_seqs"],["Memory Fraction","mem_fraction"],["Cache","cache"],["Run","run_id"],["測試日期","date"]];

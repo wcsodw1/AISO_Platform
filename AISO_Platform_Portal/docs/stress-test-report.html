@@ -27,29 +27,28 @@
       <a class="pg-back" href="stress-test.html"><span aria-hidden="true">←</span> 返回 Stress Test</a><p class="eyebrow">BENCHMARK / STRESS TEST / REPORT · 2026-11-09</p>
       <h1>Stress Test 報告｜B60 vs B70 vs AISO1</h1>
       <p class="v2-sub">同參數 TTFT · TPOT · TPS<span class="zh-i">B60 為 V4（2026-11-04/05），B70 為 2026-10 歷史，AISO1 為 2026-10-15 歷史診斷</span></p>
-      <aside class="v2-verdict" role="note"><b>歷史數值並排，不是正式效能排名<span class="zh-i">三機的模型版本、Context、Max Seqs、Prompt、計時定義尚未完全對齊；AISO1 的啟動參數完全未核實</span></b>
+      <aside class="v2-verdict" role="note"><b>歷史數值並排，不是正式效能排名<span class="zh-i">條件未完全對齊，不計算跨機倍率</span></b>
         <ul class="rp-list">
-          <li><b>三機真正有交集的只有一組</b>：vLLM · Gemma31 · NP2 · Input 4K／8K／16K（Output 1024、Repeat 3），共 9 筆。其他組合只能雙機（B60 vs B70）比較。</li>
-          <li>這 9 筆：B70 的 TTFT 在 4K／8K／16K 都最低（10.6／38.0／146.6 s）；TPS 則 B60 在 4K、8K 較高、16K 較低；AISO1 在三個 Input 都最慢（TTFT 44.3／102.0／268.4 s）。</li>
-          <li><b>16K 時 B60（211.0 s）與 AISO1（268.4 s）的 TTFT 都超過 180 秒</b>，技術上 PASS，但延遲不達標（紅色標示）。</li>
-          <li>本報告<b>不計算跨機倍率</b>：硬體、Context、Batch、Prompt 不同時，倍率會被誤讀成硬體差距。</li></ul></aside>
+          <li>三機只有一組交集：vLLM · Gemma31 · NP2 · 4K／8K／16K（9 筆）。</li>
+          <li>TTFT：B70 最低；TPS：B60 在 4K／8K 較高；AISO1 三個 Input 都最慢。</li>
+          <li>16K 時 B60 與 AISO1 的 TTFT 都超過 180 秒（紅色）。</li></ul></aside>
     </section>
 
     <section class="report-section">
-      <header><h2>A　三機同參數<span class="zh">vLLM · Gemma 4 31B · NP2 · 4K／8K／16K</span></h2></header>
-      <p class="v2-fine">三台機器唯一都有完整成績的組合。B60 與 B70 都是 Gemma31 QAT W4A16 同一個 Repo，但 Max Context（18,432 vs 69,632）與 Max Seqs（10 vs 4）不同；AISO1 為 ROCm，Repo／量化／TP／Batch／Memory／Cache 皆未核實。</p>
+      <header><h2>A　三機同參數<span class="zh">vLLM · Gemma 4 31B · NP2</span></h2></header>
+      <p class="v2-fine">三機唯一都有完整成績的組合；Max Context、Max Seqs 不同，AISO1 設定未核實。</p>
       <div id="rpA"></div>
     </section>
 
     <section class="report-section">
       <header><h2>B　雙機同框架<span class="zh">SGLang · Gemma 4 31B · NP2（B60 vs B70）</span></h2></header>
-      <p class="v2-fine">AISO1 沒有 SGLang 成績。SGLang 的 chunked prefill 4096 不等於 vLLM 的 max_num_batched_tokens 4096；B60 Memory Fraction 0.90 為協定表記載，未於主機獨立查驗。</p>
+      <p class="v2-fine">AISO1 沒有 SGLang 成績。</p>
       <div id="rpB"></div>
     </section>
 
     <section class="report-section">
       <header><h2>C　雙機同框架<span class="zh">llama.cpp（GGUF）· 四模型 · NP2（B60 vs B70）</span></h2></header>
-      <p class="v2-fine">同 Repo、同量化；跨機 SHA256 尚未核對。AISO1 的 llama.cpp 新版（v1.6）沒有正式成績。B60 為 2 卡 layer split、每 slot 18,432、batch 4,096；B70 為每 request 69,632、batch 2,048；Prompt 生成方式也不同，差距不能全部歸因於硬體。</p>
+      <p class="v2-fine">同 Repo、同量化；Context、Batch、Prompt 不同。AISO1 無正式成績。</p>
       <div id="rpC"></div>
     </section>
 
@@ -70,6 +69,6 @@
       <header><h2>Data<span class="zh">互動版與各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 互動比對 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70-aiso1.html">B70 →</a></header>
       <p class="v2-fine" id="rpFoot"></p><p class="v2-fine" id="rpErr"></p>
     </section>
-  </main><script src="stress-test-report.js?v=1"></script>
+  </main><script src="stress-test-report.js?v=2"></script>
 </body>
 </html>
