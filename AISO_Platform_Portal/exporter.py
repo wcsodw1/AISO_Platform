@@ -179,7 +179,7 @@ def export_catalog(base: Path, data_root: Path):
     if temporary.exists():
         shutil.rmtree(temporary)
     temporary.mkdir(parents=True)
-    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "site-glow.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js", "aidaptiv.html", "lmcache.html", "lmcache.js", "gptoss-v2.html", "gptoss-v2.js", "gptoss-v2.css", "gptoss-v2-historical.html", "gptoss-v2-historical.js", "stress-test.html", "stress-test-b70-aiso1.html", "stress-test-b70-aiso1.js", "stress-test-b60.html", "stress-test-b60.js", "stress-test-b60-debug.html", "stress-test-b60-debug.js", "stress-test-compare.html", "stress-test-compare.js", "troubleshooting.js", "bench-viz.js"):
+    for asset in ("index.html", "style.css", "site-header.css", "access-gate.js", "site-glow.js", "app.js", "benchmark.html", "benchmark.css", "benchmark-app.js", "aidaptiv.html", "lmcache.html", "lmcache.js", "gptoss-v2.html", "gptoss-v2.js", "gptoss-v2.css", "gptoss-v2-historical.html", "gptoss-v2-historical.js", "stress-test.html", "stress-test-b70.html", "stress-test-b70.js", "stress-test-aiso1.html", "stress-test-aiso1.js", "stress-test-b60.html", "stress-test-b60.js", "stress-test-compare.html", "stress-test-compare.js", "stress-test-report.html", "stress-test-report.js", "troubleshooting.js", "bench-viz.js", "bench-dash.js"):
         shutil.copy2(base / asset, temporary / asset)
     if (base / "assets").exists():
         shutil.copytree(base / "assets", temporary / "assets")
@@ -189,6 +189,7 @@ def export_catalog(base: Path, data_root: Path):
     shutil.copytree(base / "data" / "benchmark-v2", temporary / "data" / "benchmark-v2")
     shutil.copytree(base / "data" / "benchmark-b70", temporary / "data" / "benchmark-b70")
     shutil.copytree(base / "data" / "benchmark-b60", temporary / "data" / "benchmark-b60")
+    shutil.copytree(base / "data" / "benchmark-aiso1", temporary / "data" / "benchmark-aiso1")
     shutil.copy2(base / "data" / "benchmark-registry.json", temporary / "data" / "benchmark-registry.json")
     shutil.copytree(base / "data" / "benchmark-troubleshooting", temporary / "data" / "benchmark-troubleshooting", ignore=shutil.ignore_patterns("*.md"))
     key = file_key_from_env()

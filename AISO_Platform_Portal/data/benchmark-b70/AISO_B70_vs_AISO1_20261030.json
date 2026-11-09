@@ -481,5 +481,67 @@
    "b70_sha256": "1ac7079101fca5a6df8c5a7523a3c30ea7d1c0e4b1258090e7d6d4039287f6cb",
    "status": "HISTORIC_SHA_MATCH_BUT_CURRENT_FILES_UNVERIFIED"
   }
- ]
+ ],
+ "comparability": {
+  "level": "historical",
+  "text": "B70 為舊版 Runner 的歷史實測（2026-10）；Context 69632、Batch 2048 與 B60 V4（18432／4096）不同；Prompt 生成方式不同。"
+ },
+ "config_by_model": {
+  "Gemma26": {
+   "repo": "google/gemma-4-26B-A4B-it-qat-q4_0-gguf",
+   "format": "GGUF Q4_0",
+   "backend": "llama.cpp SYCL（版本未核實）",
+   "tp": "2 張 B70",
+   "max_context": "69632 / request",
+   "batch": "batch 2048 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "Prompt Cache off · KV f16",
+   "run_id": "20261014_181438",
+   "date": "2026-10-14 ~ 15",
+   "sha256": "3eca3b8f6d7baf218a7dd6bba5fb59a56ee25fe2d567b6f5f589b4f697eca51d"
+  },
+  "Gemma31": {
+   "repo": "google/gemma-4-31B-it-qat-q4_0-gguf",
+   "format": "GGUF Q4_0",
+   "backend": "llama.cpp SYCL（版本未核實）",
+   "tp": "2 張 B70",
+   "max_context": "69632 / request",
+   "batch": "batch 2048 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "Prompt Cache off · KV f16",
+   "run_id": "20261014_201639",
+   "date": "2026-10-14 ~ 15",
+   "sha256": "179cfb99212709597eae5929112cfca677e1bbf566178b479ae1da0c4772874b"
+  },
+  "Nemotron": {
+   "repo": "unsloth/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
+   "format": "GGUF UD-Q4_K_M",
+   "backend": "llama.cpp SYCL（版本未核實）",
+   "tp": "2 張 B70",
+   "max_context": "69632 / request",
+   "batch": "batch 2048 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "Prompt Cache off · KV f16",
+   "run_id": "20261015_010033",
+   "date": "2026-10-14 ~ 15",
+   "sha256": "edcb5d4650796ed2fb412498de6f83b585862312c747ddb74f0ea04b22206181"
+  },
+  "Laguna": {
+   "repo": "poolside/Laguna-XS-2.1-GGUF",
+   "format": "GGUF Q4_K_M",
+   "backend": "llama.cpp SYCL（版本未核實）",
+   "tp": "2 張 B70",
+   "max_context": "69632 / request",
+   "batch": "batch 2048 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "Prompt Cache off · KV f16",
+   "run_id": "20261014_231739",
+   "date": "2026-10-14 ~ 15",
+   "sha256": "1ac7079101fca5a6df8c5a7523a3c30ea7d1c0e4b1258090e7d6d4039287f6cb"
+  }
+ }
 }

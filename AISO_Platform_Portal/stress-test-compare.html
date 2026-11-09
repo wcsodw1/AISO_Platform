@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=27">
+  <link rel="stylesheet" href="gptoss-v2.css?v=39">
 </head>
 <body>
   <header class="site-header">
@@ -28,7 +28,12 @@
       <h1>Stress Test｜B60 vs B70 vs AISO1</h1>
       <p class="v2-sub">同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較三台機器的 TTFT · TPOT · TPS</span></p>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and baseline"></div>
-      <aside class="v2-verdict" role="note"><b>只比對「同框架、同模型」，沒有資料的機器留空<span class="zh-i">不同框架（例如 SGLang 與 llama.cpp）不會被放在同一張圖；新資料登錄後本頁自動更新</span></b><p id="stNote"></p></aside>
+      <aside class="v2-verdict" role="note"><b>只比對「同框架、同模型」，沒有資料的機器留空</b><p id="stNote"></p></aside>
+    </section>
+
+    <section class="report-section" id="secGap">
+      <header><h2>哪些組合可以比<span class="zh">三機都有 · 只缺 AISO1</span></h2></header>
+      <div id="stGap"></div>
     </section>
 
     <section class="report-section" id="secPick">
@@ -51,6 +56,12 @@
       <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度；Aggregate = NP × Output tokens ÷ E2E（含首字等待）。只有 NP 與 Input 完全相同的長條才有可比性；B70 為 NP 2 / 4、Input 4K–64K，B60 為 NP 1 / 2 / 5、Input 4K–16K。</p>
     </section>
 
+    <section class="report-section" id="secCfg">
+      <header><h2>測試設定差異<span class="zh">同框架 · 同模型 · 三機實際啟動條件</span></h2></header>
+      <p class="v2-fine" id="stCfgSub"></p>
+      <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCfg"></table></div>
+    </section>
+
     <section class="report-section" id="secCover">
       <header><h2>資料覆蓋<span class="zh">框架 × 模型 × 機器</span></h2></header>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCover"></table></div>
@@ -58,10 +69,10 @@
     </section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70-aiso1.html">B70 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>資料登錄 JSON ↓</a></header>
+      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-report.html">壓測報告 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>資料登錄 JSON ↓</a></header>
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=2"></script><script src="stress-test-compare.js?v=8"></script>
+  </main><script src="bench-viz.js?v=3"></script><script src="stress-test-compare.js?v=14"></script>
 </body>
 </html>

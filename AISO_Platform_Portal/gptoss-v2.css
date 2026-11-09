@@ -139,3 +139,75 @@
 .st .v2-chartwrap .bl{font-size:14px}.st .v2-chartwrap .bl.up{fill:#5dff9f}.st .v2-chartwrap .bl.dn{fill:#ff8a80}.st .v2-chartwrap .bl.up2{fill:var(--ivory)}
 .bv-model{margin-top:10px}.bv-mh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:22px 0 4px;padding:12px 16px;border-left:3px solid var(--gold);background:rgba(244,239,228,.04);border-radius:8px;font-size:24px}.bv-mh .zh-i{color:var(--muted);font-size:14px;font-weight:500}
 .pg-debug{margin:22px 0 0}.st-link{color:var(--gold);text-decoration:underline}
+
+/* ---- Grafana-style dashboard (B60) ---- */
+.gd{--gd-bg:#111217;--gd-panel:#181b1f;--gd-line:#2c3235;--gd-text:#ccccdc;--gd-muted:#8e8e9f;padding:14px;border:1px solid var(--gd-line);border-radius:14px;background:var(--gd-bg);color:var(--gd-text)}
+.gd-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;padding:6px 4px 14px}.gd-crumb{font-size:14px;color:var(--gd-muted)}.gd-crumb i{margin:0 6px;font-style:normal}.gd-crumb b{color:#f2f4f8}
+.gd-vars{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.gd-vars span{margin-right:4px;color:var(--gd-muted);font-size:13px}.gd-vars button{min-height:34px;padding:0 12px;border:1px solid var(--gd-line);border-radius:4px;background:#22252b;color:var(--gd-text);font-size:13px;cursor:pointer}.gd-vars button.on{border-color:#6e9fff;background:#1f2f4d;color:#fff}
+.gd-grid2{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1000px){.gd-grid2{grid-template-columns:1fr 1fr}.gd-wide{grid-column:1/-1}}
+.gd-panel{min-width:0;border:1px solid var(--gd-line);border-radius:4px;background:var(--gd-panel)}.gd-panel header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px 4px}.gd-panel h3{margin:0;font-size:15px;font-weight:600;color:#f2f4f8}.gd-panel h3 small{margin-left:8px;color:var(--gd-muted);font-size:12px;font-weight:400}.gd-info{color:var(--gd-muted);font-style:normal;cursor:help;font-size:14px}
+.gd-row{margin:20px 4px 10px;font-size:16px;font-weight:600;color:#f2f4f8}
+.gd-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;padding:10px 14px 14px}.gd-tile{display:flex;flex-direction:column;gap:2px;min-height:64px;padding:8px 10px;border-radius:2px;color:#fff}.gd-tile b{font-size:13px}.gd-tile span{font-size:12px;opacity:.9}.gd-tile em{margin-top:auto;font-style:normal;font-size:12px;font-weight:700}.gd-ok{background:#37872d}.gd-bad{background:#c4162a}.gd-off{background:#464c54}
+.gd-bars{display:grid;gap:7px;padding:10px 14px 14px}.gd-bar{display:grid;grid-template-columns:minmax(120px,38%) 1fr auto;align-items:center;gap:10px}.gd-bl{overflow:hidden;font-size:13px;text-align:right;text-overflow:ellipsis;white-space:nowrap}.gd-bt{height:20px;border-radius:2px;background:#22252b}.gd-bt i{display:block;height:100%;border-radius:2px}.gd-bar b{min-width:84px;font-size:20px;font-weight:500;text-align:right}.gd-bar b small{margin-left:4px;color:var(--gd-muted);font-size:12px}
+.gd-body{display:flex;flex-wrap:wrap;gap:6px 10px;padding:4px 10px 12px}.gd-plotwrap{position:relative;flex:1 1 300px;min-width:0}.gd-plot{display:block;width:100%;height:auto}.gd-grid{stroke:#2c3235;stroke-width:1}.gd-sep{stroke:#2c3235;stroke-dasharray:3 4}.gd-ax{fill:var(--gd-muted);font-size:11px}.gd-np{fill:#aeb3bd;font-weight:700}.gd-cross{stroke:#8e8e9f;stroke-width:1;stroke-dasharray:3 3}
+.gd-leg{flex:0 1 230px;align-self:flex-start;margin-top:8px;border-collapse:collapse;font-size:13px}.gd-leg th{padding:4px 8px;color:#6e9fff;font-weight:600;text-align:right}.gd-leg th:first-child,.gd-leg td:first-child{text-align:left}.gd-leg td{padding:4px 8px;text-align:right;border-top:1px solid #22252b}.gd-sw{display:inline-block;width:14px;height:3px;margin-right:8px;vertical-align:middle;border-radius:2px}
+.gd-tip{position:absolute;z-index:3;min-width:150px;padding:8px 10px;border:1px solid #3a3f46;border-radius:3px;background:#0e1014;font-size:12px;pointer-events:none}.gd-tip b{display:block;margin-bottom:4px;color:#f2f4f8}.gd-tip div{display:flex;align-items:center;gap:4px;line-height:1.7}.gd-tip em{margin-left:auto;padding-left:12px;font-style:normal;color:#f2f4f8}
+.gd-empty{margin:18px 4px;color:var(--gd-muted);font-size:13px}.gd-foot{margin:14px 4px 2px;color:var(--gd-muted);font-size:12px;line-height:1.7}
+
+/* compare page: caveat badge / unverified cells */
+.cmp-badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,184,77,.16);color:#ffb84d;border:1px solid rgba(255,184,77,.4)}
+.cmp-badge.bad{background:rgba(255,99,99,.14);color:#ff8a8a;border-color:rgba(255,99,99,.45)}
+.cmp-caveat ul{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
+.cmp-unv{color:#ffb84d;font-style:italic}
+.cmp-part{display:block;color:#ffb84d;font-size:11px}
+
+/* Stress Test report page */
+.rp-list{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.7}
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;margin:10px 0 6px}
+.rp-m{width:100%;border-collapse:collapse;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.rp-m caption{text-align:left;font-weight:700;padding:10px 10px 4px}.rp-m caption small{color:#9aa6b8;font-weight:400}
+.rp-m th,.rp-m td{padding:6px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.07)}.rp-m thead th{font-size:12px}.rp-m td{width:30%}
+.rp-bar{height:7px;background:rgba(128,140,160,.2);border-radius:4px;margin-bottom:3px}.rp-bar i{display:block;height:100%;border-radius:4px}
+.rp-red{color:#ff7383}.rp-h3{font-size:15px;margin:22px 0 8px}.rp-h3 small{color:#9aa6b8;font-weight:400}
+@media(max-width:560px){.rp-grid{grid-template-columns:1fr}}
+.st-part td{opacity:.65;font-style:italic}
+
+/* compare page: coverage chips */
+.gap-box{margin:0 0 14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.03)}
+.gap-box h3{margin:0 0 10px;font-size:16px}.gap-box h3 small{color:#9aa6b8;font-weight:400;font-size:13px;margin-left:8px}
+.gap-box.ok{border-color:rgba(79,209,176,.4)}.gap-box.miss{border-color:rgba(255,184,77,.4)}
+.gap-chips{display:flex;flex-wrap:wrap;gap:8px}
+.gap-chip{font:inherit;font-size:14px;color:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;cursor:pointer}
+.gap-chip:hover{border-color:#d8c27a;background:rgba(216,194,122,.12)}.gap-chip b{color:#d8c27a}
+
+/* Stress Test pages: larger, easier-to-read type (page title h1 unchanged; body >= 16px, labels >= 15px) */
+.st .eyebrow{font-size:13px}
+.st .v2-sub{font-size:21px}.st .v2-sub .zh-i{font-size:17px}
+.st .v2-pane h2{font-size:26px}.st .v2-pane h2 span{font-size:17px}
+.st .v2-goal{font-size:20px;line-height:1.8}
+.st .v2-params{gap:18px 28px}.st .v2-params dt{font-size:16px}.st .v2-params dd{font-size:21px}
+.st .v2-fn,.st .v2-fine,.st .v2-hint,.st .v2-count{font-size:16px;line-height:1.7}
+.st .v2-verdict b{font-size:23px}.st .v2-verdict p,.st .v2-verdict .zh-i{font-size:18px;line-height:1.7}.st .rp-list{font-size:18px}
+.st .report-section h2{font-size:32px}.st .report-section h2 span{font-size:19px}
+.st .st-tabs button,.st .cmp-pick>span{font-size:18px}
+.st .gap-chip{font-size:18px;padding:8px 16px}.st .gap-box h3{font-size:22px}.st .gap-box h3 small{font-size:17px}
+.st .v2-table th{font-size:16px}.st .v2-table th small,.st .v2-sc th small{font-size:14px}.st .v2-table td,.st .v2-sc td,.st .v2-sc th{font-size:17px}.st .st-model{font-size:17px}
+.st .v2-legend2,.st .v2-legend2 span{font-size:17px}
+.st .bv-h{font-size:28px}.st .bv-h .zh-i{font-size:18px}.st .v2-sub3{font-size:24px}.st .v2-sub3 .zh-i{font-size:17px}
+.st .v2-line,.st .v2-line span{font-size:17px}.st .v2-dir{font-size:16px}
+.st .v2-chartwrap text{font-size:15px}.st .v2-chartwrap .xl{font-size:17px}.st .v2-chartwrap .xl2{font-size:15px}.st .v2-chartwrap .bl{font-size:15px}
+.st .cmp-av,.st .cmp-av span{font-size:17px}.st .cmp-badge{font-size:14px}.st .cmp-caveat ul{font-size:17px}
+.st .rp-m caption{font-size:19px}.st .rp-m caption small{font-size:15px}.st .rp-m th{font-size:15px}.st .rp-m td{font-size:18px}.st .rp-h3{font-size:20px}.st .rp-h3 small{font-size:16px}
+.st .v2-dl{font-size:16px}.st .eyebrow{font-size:14px}.st .cmp-badge{font-size:15px}
+.st .v2-table tfoot td small,.st .bv-sub,.st .v2-table td small{font-size:15px}.st .v2-table th small{font-size:15px}.st .cmp-part{font-size:15px}
+.st .v2-chart h3 small,.st .v2-chart h3 .zh-i{font-size:16px}
+.st .tb-tabs button small,.st .st-tabs button small{font-size:15px}
+
+/* B60 page: dashboard + troubleshooting text sizes */
+.gd-crumb,.gd-vars span,.gd-vars button{font-size:15px}.gd-bl{font-size:15px}.gd-bars b{font-size:17px}.gd-bars b small{font-size:14px}
+.gd-tile b{font-size:16px}.gd-tile span,.gd-tile em{font-size:14px}.gd-info{font-size:16px}.gd-foot{font-size:14px;line-height:1.7}
+.gd-leg th{font-size:14px}.gd-leg td{font-size:15px}.gd-panel h3{font-size:18px}.gd-panel h3 small{font-size:14px}
+.tb-badge{font-size:14px}.tb-issue dt{font-size:15px}.tb-cmd,.tb-err{font-size:14px}.tb-host{font-size:14px}
+.st .v2-approx,.st .v2-table small{font-size:15px}
+.gd-ax{font-size:15px}.tb-issue header>b{font-size:15px}
+.st .v2-pane h2{color:var(--gold)}.st .v2-pane h2 span{color:var(--muted)}

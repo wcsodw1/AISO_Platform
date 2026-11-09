@@ -24,7 +24,7 @@ window.BV=(function(){
 
  function svg(o){
   const {k,def,groups,series,get,baseline,width}=o,n=groups.length,ns=series.length;
-  const L=68,R=14,T=58,B=62,H=340,ih=H-T-B,W=Math.max(width||0,n*Math.max(150,ns*62)+L+R),gw=(W-L-R)/n,bw=Math.min(54,(gw-18)/ns);
+  const L=68,R=14,T=66,B=80,H=364,ih=H-T-B,W=Math.max(width||0,n*Math.max(150,ns*62)+L+R),gw=(W-L-R)/n,bw=Math.min(54,(gw-18)/ns);
   const vals=groups.flatMap(g=>series.map(s=>get(s.key,g)).filter(Boolean).map(r=>r[k]));
   if(!vals.length)return null;
   const top=Math.max(...vals),st=step(top),y=v=>T+ih-v/top*ih;
@@ -40,9 +40,9 @@ window.BV=(function(){
     s+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1,y(0)-y1)}" rx="3" fill="${se.color}"><title>${esc(se.label)} · ${esc(g.label)}: ${fmt(k,v)} ${esc(def.unit)}</title></rect>`;
     s+=`<text class="bl ${red?"dn":"up2"}" x="${x+bw/2}" y="${y1-6}" text-anchor="middle">${fmt(k,v)}</text>`;
     if(baseline&&se.key!==baseline&&base){const d=dd(v,base[k],def.higher);
-     s+=`<text class="bl ${d.c==="gain"?"up":d.c==="loss"?"dn":"up2"}" x="${x+bw/2}" y="${y1-22}" text-anchor="middle">${d.t}</text>`}
+     s+=`<text class="bl ${d.c==="gain"?"up":d.c==="loss"?"dn":"up2"}" x="${x+bw/2}" y="${y1-26}" text-anchor="middle">${d.t}</text>`}
    });
-   s+=`<text x="${L+gw*q+gw/2}" y="${H-34}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${L+gw*q+gw/2}" y="${H-16}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`;
+   s+=`<text x="${L+gw*q+gw/2}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${L+gw*q+gw/2}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`;
   });
   return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(def.short)}">${s}</svg></div>`;
  }

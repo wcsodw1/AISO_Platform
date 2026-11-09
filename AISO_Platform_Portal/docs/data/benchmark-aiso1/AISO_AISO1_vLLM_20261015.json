@@ -1,0 +1,124 @@
+{
+ "dataset": "AISO_AISO1_vLLM_20261015",
+ "evidence_until": "2026-10-15",
+ "generated_on": "2026-11-09",
+ "note": "AISO1 (AMD Ryzen AI MAX+ 395) vLLM ROCm HISTORICAL DIAGNOSTIC run 20261015_160128, Gemma31 NP2 only. 4K/8K/16K each 3/3 repeats, 6/6 requests. Source: AISO_Platform_B70_AISO1_20261030_Handoff.xlsx sheet AISO1_ROCm_History. Model repo/SHA, TP, batch, memory and cache settings are UNVERIFIED. The 32K case has only 1 repeat (GPU reset) and is kept in partial_runs, not in aiso1_runs.",
+ "comparability": {
+  "level": "historical_unverified",
+  "text": "AISO1 為 ROCm 歷史診斷（2026-10-15）；模型 Repo／SHA、TP、Context、Batch、Memory、Cache 皆未核實；32K 只有 1 次重複（GPU reset），64K 無完整 PASS。僅供參考，不能下排名。"
+ },
+ "profile": {
+  "machine": "AMD Ryzen AI MAX+ 395 (Radeon 8060S iGPU)",
+  "framework": "vLLM ROCm",
+  "np": [
+   2
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "tp": null,
+  "runtime": "UNVERIFIED",
+  "memory": "shared system memory"
+ },
+ "aiso1_runs": [
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 44.263225,
+   "tpot_ms": 163.5239053333333,
+   "decode_only_tps": 6.144933,
+   "aggregate_tps": 9.681065,
+   "e2e_s": 211.5481806666667,
+   "prompt_tps": 155.816191,
+   "status": "HISTORICAL_PASS",
+   "successful": "6/6",
+   "run_id": "20261015_160128",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 102.04568,
+   "tpot_ms": 196.1837833333333,
+   "decode_only_tps": 5.248136333333333,
+   "aggregate_tps": 6.762127666666666,
+   "e2e_s": 302.7416906666667,
+   "prompt_tps": 120.2994796666667,
+   "status": "HISTORICAL_PASS",
+   "successful": "6/6",
+   "run_id": "20261015_160128",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 268.3587106666666,
+   "tpot_ms": 271.3164376666667,
+   "decode_only_tps": 4.112936333333334,
+   "aggregate_tps": 3.750069666666667,
+   "e2e_s": 545.9154263333334,
+   "prompt_tps": 91.52685466666667,
+   "status": "HISTORICAL_PASS",
+   "successful": "6/6",
+   "run_id": "20261015_160128",
+   "ttft_over_180s": true
+  }
+ ],
+ "partial_runs": [
+  {
+   "model": "Gemma31",
+   "np": 2,
+   "input": 32768,
+   "repeat_observed": 1,
+   "repeat_target": 3,
+   "ttft_s": 791.167378,
+   "tpot_ms": 478.964708,
+   "aggregate_tps": 1.598073,
+   "status": "PARTIAL_ONLY_1_REPEAT",
+   "note": "GPU reset / 中斷，不能標 PASS"
+  }
+ ],
+ "model_parity": [
+  {
+   "model": "Gemma31",
+   "repo": "UNVERIFIED_IN_ACCESSIBLE_LOGS",
+   "status": "UNVERIFIED"
+  }
+ ],
+ "not_run": [
+  {
+   "model": "Gemma26",
+   "reason": "無資料"
+  },
+  {
+   "model": "Laguna",
+   "reason": "無資料"
+  },
+  {
+   "model": "Nemotron",
+   "reason": "無資料"
+  }
+ ],
+ "config_by_model": {
+  "Gemma31": {
+   "repo": null,
+   "format": null,
+   "backend": "vLLM ROCm",
+   "tp": null,
+   "max_context": null,
+   "batch": null,
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": null,
+   "run_id": "20261015_160128",
+   "date": "2026-10-15"
+  }
+ }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Stress Test 報告 · B60 vs B70 vs AISO1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=39">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <a class="pg-back" href="stress-test.html"><span aria-hidden="true">←</span> 返回 Stress Test</a><p class="eyebrow">BENCHMARK / STRESS TEST / REPORT · 2026-11-09</p>
+      <h1>Stress Test 報告｜B60 vs B70 vs AISO1</h1>
+      <p class="v2-sub">同參數 TTFT · TPOT · TPS<span class="zh-i">B60 為 V4（2026-11-04/05），B70 為 2026-10 歷史，AISO1 為 2026-10-15 歷史診斷</span></p>
+      <aside class="v2-verdict" role="note"><b>歷史數值並排，不是正式效能排名<span class="zh-i">條件未完全對齊，不計算跨機倍率</span></b>
+        <ul class="rp-list">
+          <li>三機只有一組交集：vLLM · Gemma31 · NP2 · 4K／8K／16K（9 筆）。</li>
+          <li>TTFT：B70 最低；TPS：B60 在 4K／8K 較高；AISO1 三個 Input 都最慢。</li>
+          <li>16K 時 B60 與 AISO1 的 TTFT 都超過 180 秒（紅色）。</li></ul></aside>
+    </section>
+
+    <section class="report-section">
+      <header><h2>A　三機同參數<span class="zh">vLLM · Gemma 4 31B · NP2</span></h2></header>
+      <p class="v2-fine">三機唯一都有完整成績的組合；Max Context、Max Seqs 不同，AISO1 設定未核實。</p>
+      <div id="rpA"></div>
+    </section>
+
+    <section class="report-section">
+      <header><h2>B　雙機同框架<span class="zh">SGLang · Gemma 4 31B · NP2（B60 vs B70）</span></h2></header>
+      <p class="v2-fine">AISO1 沒有 SGLang 成績。</p>
+      <div id="rpB"></div>
+    </section>
+
+    <section class="report-section">
+      <header><h2>C　雙機同框架<span class="zh">llama.cpp（GGUF）· 四模型 · NP2（B60 vs B70）</span></h2></header>
+      <p class="v2-fine">同 Repo、同量化；Context、Batch、Prompt 不同。AISO1 無正式成績。</p>
+      <div id="rpC"></div>
+    </section>
+
+    <section class="report-section">
+      <header><h2>D　資料可信度與缺口<span class="zh">Data quality &amp; gaps</span></h2></header>
+      <div class="table-wrap"><table class="v2-table v2-sc rp-c"><thead><tr><th>項目</th><th class="l">狀態</th></tr></thead><tbody>
+        <tr><td class="st-model">B60 V4</td><td>協定 v4-pdf-e2e；SGLang 18／vLLM 18／llama.cpp 36 PASS；Gemma26 無核准來源（SKIP_SOURCE）、Nemotron 在 vLLM／SGLang 啟動失敗。</td></tr>
+        <tr><td class="st-model">B60 11/02 舊版</td><td>與 V4 的 SGLang 18 筆逐筆比對：TTFT 平均差 0.6%（最大 2.3%）、TPOT 平均 2.8%（最大 9.5%）、TPS Aggregate 平均 2.3%（最大 7.6%），重跑一致性良好。僅作交叉驗證，不取代 V4、不混合；Gemma31 NP5 8K／16K 的 Retry 紀錄保留在 B60 頁面。</td></tr>
+        <tr><td class="st-model">B70</td><td>舊版 Runner 歷史實測（vLLM 2026-10-19、SGLang 2026-10-22、llama.cpp 2026-10-14）；vLLM 的 Gemma26（AWQ）與 Nemotron（W4A16）為第三方量化，不列入正式比較。</td></tr>
+        <tr><td class="st-model">AISO1</td><td>只有 vLLM ROCm · Gemma31 · NP2 · 4K／8K／16K 各 3 次（run 20261015_160128，6/6 requests）；32K 僅 1 次重複（GPU reset 中斷），64K 無完整 PASS；模型 Repo／SHA、TP、Context、Batch、Memory、Cache 未核實。2026-07-24 的 llama.cpp NP1 報告（Q4_K_M）量化與量法不同，TTFT 與 Prefill 互相矛盾，不可比。</td></tr>
+        <tr><td class="st-model">計時定義</td><td>B60 V4：TTFT＝第一個非空文字 SSE；Aggregate＝總輸出 token ÷（最後 stream_done − 第一個 request_start）。B70／AISO1 舊版：Aggregate＝NP × Output ÷ E2E。三機是否同一定義尚未核實。</td></tr>
+        <tr><td class="st-model">NP4</td><td>B60 V4 測的是 NP1／2／5，沒有 NP4；NP4 只有 B70（SGLang 4K–64K、vLLM 64K、llama.cpp）。</td></tr>
+        <tr><td class="st-model">要得到可公開排名</td><td>AISO1 以 B60 V4 同協定重跑（同一個 W4A16 模型的 vLLM；llama.cpp 用同一份 Q4_0 GGUF）；三機模型檔 SHA256、Prompt Token ID、Max Context／Max Seqs／Batch 對齊；B70 以 V4 同協定重測。</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="report-section">
+      <header><h2>Data<span class="zh">互動版與各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 互動比對 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a></header>
+      <p class="v2-fine" id="rpFoot"></p><p class="v2-fine" id="rpErr"></p>
+    </section>
+  </main><script src="stress-test-report.js?v=2"></script>
+</body>
+</html>
