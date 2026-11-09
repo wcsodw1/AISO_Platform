@@ -333,5 +333,33 @@
   "2026-11-02 舊版 Full 的 Gemma31 NP5/8K 失敗與重跑紀錄保留於「失敗與重跑紀錄」；V4 重測同一情境 PASS，但不代表該 XPU 資源錯誤已永久解決。"
  ],
  "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
- "metrics_version": "v4-pdf-e2e"
+ "metrics_version": "v4-pdf-e2e",
+ "config_by_model": {
+  "Laguna": {
+   "repo": "poolside/Laguna-XS-2.1-FP8",
+   "format": "safetensors FP8",
+   "backend": "SGLang XPU",
+   "tp": 2,
+   "max_context": 18432,
+   "batch": "Chunked prefill 4096",
+   "max_seqs": 10,
+   "mem_fraction": "0.90",
+   "cache": "Radix Cache OFF",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "date": "2026-11-04 ~ 05"
+  },
+  "Gemma31": {
+   "repo": "google/gemma-4-31B-it-qat-w4a16-ct",
+   "format": "safetensors W4A16",
+   "backend": "SGLang XPU",
+   "tp": 2,
+   "max_context": 18432,
+   "batch": "Chunked prefill 4096",
+   "max_seqs": 10,
+   "mem_fraction": "0.90",
+   "cache": "Radix Cache OFF",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "date": "2026-11-04 ~ 05"
+  }
+ }
 }

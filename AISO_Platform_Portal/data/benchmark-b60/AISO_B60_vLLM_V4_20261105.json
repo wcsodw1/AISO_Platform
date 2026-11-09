@@ -306,5 +306,33 @@
   "vLLM 實際啟動參數（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）；Runtime 映像 tag 仍未設定。"
  ],
  "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
- "metrics_version": "v4-pdf-e2e"
+ "metrics_version": "v4-pdf-e2e",
+ "config_by_model": {
+  "Gemma31": {
+   "repo": "google/gemma-4-31B-it-qat-w4a16-ct",
+   "format": "W4A16",
+   "backend": "vLLM XPU",
+   "tp": 2,
+   "max_context": 18432,
+   "batch": "Prefill 4096",
+   "max_seqs": 10,
+   "mem_fraction": "0.90",
+   "cache": "Prefix Cache OFF",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "date": "2026-11-04 ~ 05"
+  },
+  "Laguna": {
+   "repo": "poolside/Laguna-XS-2.1-FP8",
+   "format": "FP8",
+   "backend": "vLLM XPU",
+   "tp": 2,
+   "max_context": 18432,
+   "batch": "Prefill 4096",
+   "max_seqs": 10,
+   "mem_fraction": "0.90",
+   "cache": "Prefix Cache OFF",
+   "run_id": "B60_matrix_v4_20261104_201559_715039",
+   "date": "2026-11-04 ~ 05"
+  }
+ }
 }

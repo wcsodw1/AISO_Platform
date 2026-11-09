@@ -153,3 +153,10 @@
 .gd-leg{flex:0 1 230px;align-self:flex-start;margin-top:8px;border-collapse:collapse;font-size:13px}.gd-leg th{padding:4px 8px;color:#6e9fff;font-weight:600;text-align:right}.gd-leg th:first-child,.gd-leg td:first-child{text-align:left}.gd-leg td{padding:4px 8px;text-align:right;border-top:1px solid #22252b}.gd-sw{display:inline-block;width:14px;height:3px;margin-right:8px;vertical-align:middle;border-radius:2px}
 .gd-tip{position:absolute;z-index:3;min-width:150px;padding:8px 10px;border:1px solid #3a3f46;border-radius:3px;background:#0e1014;font-size:12px;pointer-events:none}.gd-tip b{display:block;margin-bottom:4px;color:#f2f4f8}.gd-tip div{display:flex;align-items:center;gap:4px;line-height:1.7}.gd-tip em{margin-left:auto;padding-left:12px;font-style:normal;color:#f2f4f8}
 .gd-empty{margin:18px 4px;color:var(--gd-muted);font-size:13px}.gd-foot{margin:14px 4px 2px;color:var(--gd-muted);font-size:12px;line-height:1.7}
+
+/* compare page: caveat badge / unverified cells */
+.cmp-badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,184,77,.16);color:#ffb84d;border:1px solid rgba(255,184,77,.4)}
+.cmp-badge.bad{background:rgba(255,99,99,.14);color:#ff8a8a;border-color:rgba(255,99,99,.45)}
+.cmp-caveat ul{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
+.cmp-unv{color:#ffb84d;font-style:italic}
+.cmp-part{display:block;color:#ffb84d;font-size:11px}
