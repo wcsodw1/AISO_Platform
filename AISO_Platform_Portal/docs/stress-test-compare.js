@@ -91,8 +91,8 @@ function renderGapPair(){
  const list=key=>[...map.values()].filter(o=>o[key].length),box=(cls,h,sub,items,key,fn)=>`<div class="gap-box ${cls}"><h3>${h} <small>${sub}</small></h3><div class="gap-chips">${items.map(o=>chip(o,o[key])).join("")||'<span class="st-wait">無</span>'}</div>${fn?`<p class="v2-fn">${fn}</p>`:""}</div>`;
  const both=list("both"),oa=list("onlyA"),ob=list("onlyB"),ai=REG.machines.some(m=>m.key==="aiso1");
  $s("stGap").innerHTML=box("ok","可直接並排",`${esc(A.label)}、${esc(B.label)} 都有 Input 4K / 8K / 16K · ${both.length} 組`,both,"both","點選任一組合會跳到下方圖表。")+
-  (ob.length?box("miss",`只缺 ${esc(A.label)}`,`${esc(B.label)} 有、${esc(A.label)} 沒有 · ${ob.length} 組`,ob,"onlyB",A.key==="aiso1"?"AISO1 的 NP4 之後會補測，以對應 B70 的 NP2 / NP4。":""):"")+
-  (oa.length?box("miss",`只缺 ${esc(B.label)}`,`${esc(A.label)} 有、${esc(B.label)} 沒有 · ${oa.length} 組`,oa,"onlyA",B.key==="aiso1"?"AISO1 的 NP4 之後會補測，以對應 B70 的 NP2 / NP4。":(B.key==="b70"||A.key==="b70")&&!ai?"B60、B70 需歸還廠商，缺的組合無法補測。":""):"");
+  (ob.length?box("miss",`只缺 ${esc(A.label)}`,`${esc(B.label)} 有、${esc(A.label)} 沒有 · ${ob.length} 組`,ob,"onlyB",""):"")+
+  (oa.length?box("miss",`只缺 ${esc(B.label)}`,`${esc(A.label)} 有、${esc(B.label)} 沒有 · ${oa.length} 組`,oa,"onlyA",(B.key==="b70"||A.key==="b70")&&!ai?"B60、B70 需歸還廠商，缺的組合無法補測。":""):"");
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 function renderGap(){
