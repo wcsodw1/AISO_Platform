@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "updated_at": "2026-10-15T00:00:00+08:00",
   "access_policy": {
     "tiers": [
@@ -600,6 +600,50 @@
       "scripts": {
         "folder": "Workstation-Server/INTEL-ARC-PRO-B70/Scripts",
         "public_folder": "Workstation-Server/INTEL-ARC-PRO-B70/Scripts/Public"
+      }
+    },
+    {
+      "id": "asrock-amd",
+      "category": "workstation",
+      "name": "AMD ASRock",
+      "positioning": "AMD Workstation",
+      "status": "Configuration Pending",
+      "summary": "AMD ASRock 工作站規劃中；整機型號、規格與 Benchmark 待確認，目前尚無 AISO 實測結果。",
+      "folder": "Workstation-Server/ASROCK-AMD",
+      "hardware": {
+        "System": "待確認",
+        "CPU / GPU": "待確認",
+        "Memory": "待確認",
+        "OS": "待確認"
+      },
+      "models": [],
+      "operations": {
+        "ssh": "",
+        "notes": "整機型號、規格、OS 與 Driver 待確認；尚無 AISO formal results。"
+      },
+      "publish": {
+        "enabled": true
+      },
+      "documents": {
+        "folder": "Workstation-Server/ASROCK-AMD/Documents",
+        "public_folder": "Workstation-Server/ASROCK-AMD/Documents/Public"
+      },
+      "benchmark": {
+        "folder": "Workstation-Server/ASROCK-AMD/Benchmark",
+        "public_folder": "Workstation-Server/ASROCK-AMD/Benchmark/Public",
+        "metrics": [
+          "TTFT",
+          "TPOT / ITL",
+          "Prompt TPS",
+          "Decode TPS",
+          "Aggregate TPS",
+          "E2E"
+        ],
+        "note": "尚未取得 AISO VERIFIED 結果。"
+      },
+      "scripts": {
+        "folder": "Workstation-Server/ASROCK-AMD/Scripts",
+        "public_folder": "Workstation-Server/ASROCK-AMD/Scripts/Public"
       }
     },
     {
