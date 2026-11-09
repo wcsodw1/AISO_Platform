@@ -73,7 +73,11 @@ window.BV=(function(){
   const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
   if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;
-  return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div>`;
+  return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div><div class="bv-foot"><button type="button" class="bv-more" aria-expanded="false">完整數值 ▾</button></div><div class="bv-detail" hidden><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div></div>`;
  }
+ // one delegated handler for every chart block on the page: the button (bottom-right of the chart) shows / hides the data table
+ document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;
+  const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
+  const open=det.hidden;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.textContent=open?"收合數值 ▴":"完整數值 ▾"});
  return {block,esc,fmt,gain,pct};
 })();
