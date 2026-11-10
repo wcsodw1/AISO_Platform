@@ -42,7 +42,24 @@
    "decode_tps": 11.878,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     3.96,
+     3.96,
+     3.958
+    ],
+    "tpot_ms": [
+     79.499,
+     80.92,
+     80.789
+    ],
+    "aggregate_tps": [
+     12.007,
+     11.805,
+     11.824
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -55,7 +72,24 @@
    "decode_tps": 11.63,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     8.129,
+     8.129,
+     8.127
+    ],
+    "tpot_ms": [
+     77.492,
+     79.754,
+     77.165
+    ],
+    "aggregate_tps": [
+     11.716,
+     11.414,
+     11.761
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -68,7 +102,24 @@
    "decode_tps": 10.606,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     17.113,
+     17.108,
+     17.109
+    ],
+    "tpot_ms": [
+     79.567,
+     76.325,
+     77.119
+    ],
+    "aggregate_tps": [
+     10.395,
+     10.758,
+     10.666
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -81,7 +132,24 @@
    "decode_tps": 11.194,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     6.031,
+     6.032,
+     6.047
+    ],
+    "tpot_ms": [
+     84.962,
+     83.574,
+     82.067
+    ],
+    "aggregate_tps": [
+     22.034,
+     22.375,
+     22.755
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -94,7 +162,24 @@
    "decode_tps": 10.272,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     12.289,
+     12.28,
+     12.288
+    ],
+    "tpot_ms": [
+     85.887,
+     87.719,
+     82.829
+    ],
+    "aggregate_tps": [
+     20.449,
+     20.075,
+     21.108
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -107,7 +192,24 @@
    "decode_tps": 8.672,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     25.851,
+     25.776,
+     25.774
+    ],
+    "tpot_ms": [
+     90.55,
+     90.195,
+     89.878
+    ],
+    "aggregate_tps": [
+     17.285,
+     17.349,
+     17.397
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -120,7 +222,24 @@
    "decode_tps": 9.909,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     12.052,
+     11.976,
+     11.989
+    ],
+    "tpot_ms": [
+     88.711,
+     88.254,
+     90.926
+    ],
+    "aggregate_tps": [
+     49.803,
+     50.068,
+     48.758
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -134,7 +253,24 @@
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
    "ttft_over_180s": false,
-   "consistency_note": "回報 Aggregate 24.407 與 TTFT/TPOT 推算值 33.256 差 -26.6%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。"
+   "consistency_note": "回報 Aggregate 24.407 與 TTFT/TPOT 推算值 33.256 差 -26.6%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。",
+   "repeats": {
+    "ttft_s": [
+     25.301,
+     24.817,
+     24.839
+    ],
+    "tpot_ms": [
+     125.472,
+     126.443,
+     126.304
+    ],
+    "aggregate_tps": [
+     24.496,
+     24.269,
+     24.456
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -148,7 +284,24 @@
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
    "ttft_over_180s": false,
-   "consistency_note": "回報 Aggregate 15.426 與 TTFT/TPOT 推算值 24.770 差 -37.7%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。"
+   "consistency_note": "回報 Aggregate 15.426 與 TTFT/TPOT 推算值 24.770 差 -37.7%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。",
+   "repeats": {
+    "ttft_s": [
+     119.378,
+     117.92,
+     115.562
+    ],
+    "tpot_ms": [
+     88.698,
+     87.417,
+     85.119
+    ],
+    "aggregate_tps": [
+     15.225,
+     15.357,
+     15.698
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -161,7 +314,24 @@
    "decode_tps": 8.342,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     2.399,
+     2.398,
+     2.4
+    ],
+    "tpot_ms": [
+     118.28,
+     117.657,
+     116.991
+    ],
+    "aggregate_tps": [
+     8.298,
+     8.341,
+     8.388
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -174,7 +344,24 @@
    "decode_tps": 8.291,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     4.757,
+     4.757,
+     4.758
+    ],
+    "tpot_ms": [
+     116.755,
+     117.832,
+     113.743
+    ],
+    "aggregate_tps": [
+     8.245,
+     8.172,
+     8.455
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -187,7 +374,24 @@
    "decode_tps": 8.004,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     9.557,
+     9.562,
+     9.56
+    ],
+    "tpot_ms": [
+     115.21,
+     115.129,
+     116.801
+    ],
+    "aggregate_tps": [
+     8.037,
+     8.042,
+     7.935
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -200,7 +404,24 @@
    "decode_tps": 8.225,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     3.713,
+     3.723,
+     3.71
+    ],
+    "tpot_ms": [
+     116.35,
+     119.839,
+     118.082
+    ],
+    "aggregate_tps": [
+     16.686,
+     16.213,
+     16.449
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -213,7 +434,24 @@
    "decode_tps": 7.844,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     7.448,
+     7.42,
+     7.428
+    ],
+    "tpot_ms": [
+     121.642,
+     120.55,
+     118.696
+    ],
+    "aggregate_tps": [
+     15.522,
+     15.657,
+     15.888
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -226,7 +464,24 @@
    "decode_tps": 7.306,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     14.653,
+     14.621,
+     14.639
+    ],
+    "tpot_ms": [
+     123.144,
+     121.389,
+     123.406
+    ],
+    "aggregate_tps": [
+     14.556,
+     14.748,
+     14.53
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -239,7 +494,24 @@
    "decode_tps": 7.832,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     7.699,
+     7.406,
+     7.426
+    ],
+    "tpot_ms": [
+     120.54,
+     119.542,
+     121.082
+    ],
+    "aggregate_tps": [
+     39.058,
+     39.452,
+     38.967
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -252,7 +524,24 @@
    "decode_tps": 6.681,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     15.973,
+     15.41,
+     15.383
+    ],
+    "tpot_ms": [
+     134.585,
+     134.359,
+     134.275
+    ],
+    "aggregate_tps": [
+     33.286,
+     33.454,
+     33.479
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -265,7 +554,24 @@
    "decode_tps": 6.034,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     29.697,
+     29.701,
+     29.7
+    ],
+    "tpot_ms": [
+     136.587,
+     136.514,
+     136.614
+    ],
+    "aggregate_tps": [
+     30.165,
+     30.177,
+     30.162
+    ]
+   }
   }
  ],
  "model_parity": [

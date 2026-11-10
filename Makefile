@@ -19,6 +19,8 @@ check:
 	node --check AISO_Platform_Portal/sizing-core.js
 	node --check AISO_Platform_Portal/sizing.js
 	node AISO_Platform_Portal/tests/sizing-core.test.js
+	node --check AISO_Platform_Portal/repeat-chart.js
+	node AISO_Platform_Portal/tests/repeat-chart.test.js
 	python3 -m unittest discover -s AISO_Platform_Portal/tests -p "test_*.py"
 
 status:

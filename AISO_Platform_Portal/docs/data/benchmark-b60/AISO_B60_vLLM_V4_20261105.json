@@ -42,7 +42,24 @@
    "decode_tps": 18.27,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     11.759,
+     11.747,
+     11.755
+    ],
+    "tpot_ms": [
+     43.243,
+     43.391,
+     43.259
+    ],
+    "aggregate_tps": [
+     18.287,
+     18.241,
+     18.283
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -55,7 +72,24 @@
    "decode_tps": 11.468,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     38.52,
+     38.536,
+     38.549
+    ],
+    "tpot_ms": [
+     49.647,
+     49.582,
+     49.62
+    ],
+    "aggregate_tps": [
+     11.466,
+     11.472,
+     11.466
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -68,7 +102,24 @@
    "decode_tps": 5.096,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     140.386,
+     140.419,
+     140.584
+    ],
+    "tpot_ms": [
+     59.154,
+     59.048,
+     59.174
+    ],
+    "aggregate_tps": [
+     5.097,
+     5.099,
+     5.092
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -81,7 +132,24 @@
    "decode_tps": 14.28,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     17.688,
+     17.669,
+     17.674
+    ],
+    "tpot_ms": [
+     52.762,
+     52.765,
+     52.766
+    ],
+    "aggregate_tps": [
+     28.552,
+     28.567,
+     28.565
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -94,7 +162,24 @@
    "decode_tps": 7.59,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     57.983,
+     57.976,
+     57.956
+    ],
+    "tpot_ms": [
+     75.123,
+     75.133,
+     75.153
+    ],
+    "aggregate_tps": [
+     15.181,
+     15.18,
+     15.18
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -107,7 +192,24 @@
    "decode_tps": 2.857,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": true
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     210.705,
+     211.302,
+     211.041
+    ],
+    "tpot_ms": [
+     143.638,
+     144.203,
+     144.002
+    ],
+    "aggregate_tps": [
+     5.724,
+     5.705,
+     5.713
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -120,7 +222,24 @@
    "decode_tps": 7.425,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     42.423,
+     42.461,
+     42.438
+    ],
+    "tpot_ms": [
+     93.169,
+     93.21,
+     93.236
+    ],
+    "aggregate_tps": [
+     37.143,
+     37.118,
+     37.12
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -133,7 +252,24 @@
    "decode_tps": 3.603,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     118.545,
+     118.498,
+     118.562
+    ],
+    "tpot_ms": [
+     161.663,
+     161.673,
+     161.661
+    ],
+    "aggregate_tps": [
+     18.012,
+     18.015,
+     18.011
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -147,7 +283,24 @@
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
    "ttft_over_180s": true,
-   "consistency_note": "回報 Aggregate 5.847 與 TTFT/TPOT 推算值 6.879 差 -15.0%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。"
+   "consistency_note": "回報 Aggregate 5.847 與 TTFT/TPOT 推算值 6.879 差 -15.0%。V4 定義 Aggregate = 總輸出 token ÷（最後一個 request 結束 − 第一個 request 開始），TTFT／TPOT 為各請求平均；NP 請求被排隊錯開時兩者本來就不會一致（假設，未由日誌確認）。保留回報值。",
+   "repeats": {
+    "ttft_s": [
+     460.277,
+     460.526,
+     460.656
+    ],
+    "tpot_ms": [
+     277.326,
+     277.474,
+     277.417
+    ],
+    "aggregate_tps": [
+     5.849,
+     5.846,
+     5.846
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -160,7 +313,24 @@
    "decode_tps": 57.962,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     0.897,
+     0.897,
+     0.898
+    ],
+    "tpot_ms": [
+     16.378,
+     16.405,
+     16.394
+    ],
+    "aggregate_tps": [
+     58.011,
+     57.92,
+     57.956
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -173,7 +343,24 @@
    "decode_tps": 54.616,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     1.834,
+     1.834,
+     1.834
+    ],
+    "tpot_ms": [
+     16.531,
+     16.532,
+     16.542
+    ],
+    "aggregate_tps": [
+     54.627,
+     54.625,
+     54.596
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -186,7 +373,24 @@
    "decode_tps": 48.508,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     3.886,
+     3.878,
+     3.878
+    ],
+    "tpot_ms": [
+     16.842,
+     16.854,
+     16.83
+    ],
+    "aggregate_tps": [
+     48.496,
+     48.487,
+     48.541
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -199,7 +403,24 @@
    "decode_tps": 52.724,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     1.349,
+     1.356,
+     1.351
+    ],
+    "tpot_ms": [
+     17.644,
+     17.646,
+     17.643
+    ],
+    "aggregate_tps": [
+     105.48,
+     105.39,
+     105.478
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -212,7 +433,24 @@
    "decode_tps": 47.501,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     2.771,
+     2.776,
+     2.771
+    ],
+    "tpot_ms": [
+     18.339,
+     18.334,
+     18.34
+    ],
+    "aggregate_tps": [
+     95.002,
+     95.003,
+     95.0
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -225,7 +463,24 @@
    "decode_tps": 39.161,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     5.852,
+     5.854,
+     5.855
+    ],
+    "tpot_ms": [
+     19.787,
+     19.811,
+     19.791
+    ],
+    "aggregate_tps": [
+     78.357,
+     78.276,
+     78.336
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -238,7 +493,24 @@
    "decode_tps": 40.003,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     3.218,
+     3.221,
+     3.234
+    ],
+    "tpot_ms": [
+     21.83,
+     21.826,
+     21.835
+    ],
+    "aggregate_tps": [
+     200.066,
+     200.09,
+     199.884
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -251,7 +523,24 @@
    "decode_tps": 33.083,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     6.051,
+     6.06,
+     6.062
+    ],
+    "tpot_ms": [
+     24.258,
+     24.257,
+     24.265
+    ],
+    "aggregate_tps": [
+     165.462,
+     165.418,
+     165.361
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -264,7 +553,24 @@
    "decode_tps": 24.17,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     12.244,
+     12.253,
+     12.249
+    ],
+    "tpot_ms": [
+     29.292,
+     29.292,
+     29.291
+    ],
+    "aggregate_tps": [
+     120.862,
+     120.831,
+     120.854
+    ]
+   }
   }
  ],
  "model_parity": [
