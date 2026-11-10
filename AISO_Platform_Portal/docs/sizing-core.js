@@ -204,13 +204,19 @@
     (r.sym ? `<div class="sz-eq sym">= ${sci(r.sym)}</div>` : "") + `<div class="sz-eq">= ${escH(r.sub)}</div><div class="sz-eq out">= ${escH(typeof r.out === "number" ? memText(r.out) : r.out)}</div>` +
     (r.note ? `<small>${escH(r.note)}</small>` : "") + `</div></div>`;
   const legendHtml = items => `<div class="sz-legend">${items.map(([sym, name, val]) => `<div class="sz-lg"><span class="sy">${sci(sym)}</span><span class="mn">${escH(name)}</span><b>${escH(val)}</b></div>`).join("")}</div>`;
-  /* sections: [{title, rows:[{k,sym,sub,out,note,fin}]}] — everything in ONE box; the row marked fin is the highlighted result */
+  /* 💡 hint: the explanation lives in the bubble, not on the page */
+  const tip = text => `<span class="hint" tabindex="0" role="note">💡<span class="hintbox">${escH(text)}</span></span>`;
+  const tabHtml = (p, title, sub) => `<button type="button" class="sz-hn-tab" role="tab" data-p="${p}" aria-expanded="false"><b>${escH(title)}</b><small>${escH(sub)}</small><span class="car" aria-hidden="true">▾</span></button>`;
+  /* sections: [{title, rows:[{k,sym,sub,out,note,fin}]}]
+     Visible: the formula line and the highlighted result row (fin). Dropdowns (hover): substituted calculation, parameter meanings. */
   function calcBoxHtml(o) {
-    return `<div class="sz-sci">${sci(o.line)}</div>` +
-      `<h4 class="sz-bh">符號說明<small>M 系列為各項顯存；其餘參數意涵收在下方下拉</small></h4>${legendHtml(o.legend.filter(([s]) => /^M_/.test(s)))}` +
-      (o.legend.some(([s]) => !/^M_/.test(s)) ? `<div class="sz-more"><button type="button" class="sz-more-tab" aria-expanded="false"><b>Parameter meaning</b><small>更多參數意涵 · 滑鼠移過來展開</small><span class="car" aria-hidden="true">▾</span></button><div class="sz-more-body">${legendHtml(o.legend.filter(([s]) => !/^M_/.test(s)))}</div></div>` : "") +
-      `<h4 class="sz-bh">代入計算</h4><div class="sz-rows">` +
-      o.sections.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") + `</div>`;
+    const fin = o.sections.flatMap(sec => sec.rows).filter(r => r.fin);
+    const detail = o.sections.map(sec => ({ ...sec, rows: sec.rows.filter(r => !r.fin) })).filter(sec => sec.rows.length);
+    return `<div class="sz-sci">${sci(o.line)}</div><div class="sz-rows sz-final">${fin.map(rowHtml).join("")}</div>` +
+      `<div class="sz-hn sz-hn-calc"><div class="sz-hn-tabs" role="tablist">${tabHtml("calc", "代入計算", "算式與代入數字")}${tabHtml("sym", "Parameter meaning", "參數意涵")}</div>` +
+      `<div class="sz-hn-panels"><div class="sz-hn-panel" data-p="calc"><div class="sz-rows">` +
+      detail.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") +
+      `</div></div><div class="sz-hn-panel" data-p="sym">${legendHtml(o.legend)}</div></div></div>`;
   }
   /* legend of the single-model formula with the current values */
   function legendFor(i, b) {
@@ -243,5 +249,5 @@
     return { layers, kvHeads, headDim, hybrid, notes };
   }
 
-  return { parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  return { tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

@@ -277,3 +277,36 @@ main .need{border-color:var(--gold)!important;box-shadow:0 0 0 2px rgba(216,199,
 .sz-more-tab:hover .car,.sz-more-tab:focus .car{transform:rotate(180deg)}
 .sz-more-tab:hover,.sz-more-tab:focus{border-radius:14px 14px 0 0}
 @media(hover:none){.sz-more{min-height:0}.sz-more-body{position:static;max-height:none;opacity:1;pointer-events:auto;padding:14px 18px 6px;border-color:var(--gold);margin-top:-1px}}
+
+/* ===== Clean layout: 💡 hints, required/optional dropdown tabs, compact calculation box ===== */
+.hint{position:relative;display:inline-flex;align-items:center;margin-left:6px;font-size:15px;font-style:normal;font-weight:400;cursor:help;vertical-align:middle;line-height:1;outline:0;letter-spacing:0;text-transform:none}
+.hintbox{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);z-index:60;width:max-content;max-width:min(340px,80vw);padding:10px 14px;border:1px solid var(--gold);border-radius:12px;background:#2f3b58;color:var(--ivory);font-size:14px;font-weight:400;line-height:1.6;text-align:left;white-space:normal;box-shadow:0 14px 30px rgba(8,12,22,.45);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s ease}
+.hint:hover .hintbox,.hint:focus .hintbox{opacity:1;visibility:visible}
+h2 .hint{font-size:18px}
+.eyebrow .hint{font-size:16px}
+.lbl{display:flex;align-items:center;gap:2px}
+/* below-the-fold tips open upward; the first row in a panel opens downward so it is never cut off */
+.sz-hn-panel .hint .hintbox{bottom:auto;top:calc(100% + 8px)}
+
+/* dropdown panels: no clipping so 💡 bubbles stay visible */
+.sz-hn-panel{display:none!important;max-height:none!important;opacity:1!important;overflow:visible!important}
+.sz-hn-panel.on{display:block!important;animation:szfade .22s ease}
+@keyframes szfade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.sz-hn-params .sz-hn-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sz-hn-tab.warn small{color:#e8a15a!important;font-weight:700}
+.sz-hn-tab.set small{color:var(--green)!important;font-weight:700}
+.sz-opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:end}
+.sz-opt-grid label{margin:0!important}
+.sz-in-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.sz-inputs fieldset{margin:0!important}
+
+/* calculation box: formula line + highlighted result stay visible, details in dropdowns */
+.sz-calcbox{padding:20px 22px}
+.sz-final{margin:14px 0 0;border-top:0!important}
+.sz-final .sz-row{margin-top:0}
+.sz-hn-calc{margin-top:16px}
+.sz-hn-calc .sz-rows{border-top:0}
+.sz-hn-calc .sz-hn-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sz-hn-calc .sz-hn-panel.on{margin-top:12px;padding:18px 22px;border:1px solid var(--gold);border-radius:14px;background:var(--sz-inner,#1f2839)}
+.sz-detail .sz-warnp .hintbox{bottom:calc(100% + 8px);top:auto}
+.sz-note{font-size:15px}

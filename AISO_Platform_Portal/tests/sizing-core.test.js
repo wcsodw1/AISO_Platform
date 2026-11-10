@@ -95,9 +95,13 @@ assert.strictEqual(C.sci("M_weights = P × b ÷ 8"), "<var>M<sub>weights</sub></
 assert.ok(C.sci("2 × L × H_KV × D × (b_KV ÷ 8) × T × C").includes("<var>H<sub>KV</sub></var>"));
 const box = C.calcBoxHtml({ line: "M_required = M_weights + M_KV", legend: C.legendFor(ref, b), sections: [{ rows: C.formula(ref, b) }] });
 assert.strictEqual((box.match(/class="sz-row fin"/g) || []).length, 1, "one highlighted M_required row");
-assert.strictEqual((box.match(/class="sz-legend"/g) || []).length, 2, "M-type legend + dropdown legend");
-assert.ok(/class="sz-more"/.test(box) && box.indexOf('class="sz-more"') < box.indexOf("模型總參數量"), "parameter meanings live inside the hover block");
-assert.ok(box.indexOf("模型權重") < box.indexOf('class="sz-more"'), "M-type symbols stay outside the hover block");
+assert.strictEqual((box.match(/class="sz-legend"/g) || []).length, 1, "all symbol meanings in one dropdown legend");
+assert.ok(box.indexOf('class="sz-hn-panel" data-p="sym"') < box.indexOf("模型總參數量"), "parameter meanings live inside the dropdown");
+assert.ok(box.indexOf("sz-final") < box.indexOf('class="sz-hn sz-hn-calc"'), "the highlighted result stays visible above the dropdowns");
+assert.ok(box.indexOf('class="sz-row fin"') < box.indexOf('class="sz-hn-panel" data-p="calc"'), "result row is not inside the substituted-calculation dropdown");
+const detailPanel = box.slice(box.indexOf('class="sz-hn-panel" data-p="calc"'), box.indexOf('class="sz-hn-panel" data-p="sym"'));
+assert.ok(!detailPanel.includes("row fin") && detailPanel.includes("38.5 GB"), "detail dropdown holds the other rows only");
+assert.ok(C.tip("說明").includes("💡") && C.tip("<b>").includes("&lt;b&gt;"), "tip escapes text");
 assert.ok(box.includes("模型總參數量") && box.includes("70 B"), "legend carries meaning and current value");
 assert.ok(box.includes("= 38.5 GB（0.04 TB）") && box.includes("= 308.5 GB（0.31 TB）"), "numeric results are formatted as GB (TB)");
 assert.ok(!/= \d+\.\d{4,}/.test(box), "no raw floating point numbers");

@@ -1,6 +1,40 @@
 (function () {
   "use strict";
-  const C = window.SizingCore;
+  /* Hover dropdowns (.sz-hn): pointer over a tab shows its panel; leaving hides it unless a field inside has focus;
+     click pins (touch / keyboard). Delegated on document so blocks that are re-rendered keep working. */
+  const tabsOf = box => [...box.querySelectorAll(":scope > .sz-hn-tabs > .sz-hn-tab")];
+  const panelsOf = box => [...box.querySelectorAll(":scope > .sz-hn-panels > .sz-hn-panel")];
+  function hnShow(box, p) {
+    box.dataset.open = p || "";
+    tabsOf(box).forEach(t => { const on = t.dataset.p === p; t.classList.toggle("on", on); t.setAttribute("aria-expanded", on); });
+    panelsOf(box).forEach(x => x.classList.toggle("on", x.dataset.p === p));
+  }
+  const keep = box => { const a = document.activeElement; return !!(a && box.contains(a) && a.matches("input,select,textarea")); };
+  const boxOf = el => el.closest && el.closest(".sz-hn");
+  document.addEventListener("mouseover", e => { const t = e.target.closest && e.target.closest(".sz-hn-tab"); if (t) hnShow(t.closest(".sz-hn"), t.dataset.p); });
+  document.addEventListener("mouseout", e => { const box = boxOf(e.target); if (box && !box.contains(e.relatedTarget) && !keep(box)) hnShow(box, box.dataset.pinned || null); });
+  document.addEventListener("click", e => {
+    const t = e.target.closest && e.target.closest(".sz-hn-tab"); if (!t) return;
+    const box = t.closest(".sz-hn"); box.dataset.pinned = box.dataset.pinned === t.dataset.p ? "" : t.dataset.p; hnShow(box, box.dataset.pinned || null);
+  });
+  document.addEventListener("focusin", e => {
+    const box = boxOf(e.target); if (!box) return;
+    const t = e.target.closest(".sz-hn-tab"), p = e.target.closest(".sz-hn-panel");
+    if (t) hnShow(box, t.dataset.p); else if (p) hnShow(box, p.dataset.p);
+  });
+  document.addEventListener("focusout", e => { const box = boxOf(e.target); if (box && !box.contains(e.relatedTarget)) hnShow(box, box.dataset.pinned || null); });
+  /* re-render a block (calculation box) without closing the dropdown the user is looking at */
+  function setCalc(container, html) {
+    const old = container.querySelector(".sz-hn"), st = old ? { open: old.dataset.open || "", pinned: old.dataset.pinned || "" } : null;
+    container.innerHTML = html;
+    const nb = container.querySelector(".sz-hn");
+    if (nb && st) { nb.dataset.pinned = st.pinned; hnShow(nb, st.open || null); }
+  }
+  window.SizingUI = { hnShow, setCalc };
+})();
+(function () {
+  "use strict";
+  const C = window.SizingCore, UI = window.SizingUI;
   const $ = id => document.getElementById(id);
   const fmt = (n, d = 1) => (Math.round(n * 10 ** d) / 10 ** d).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: d });
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -96,7 +130,7 @@
   function renderFormula(b, usablePct, opts) {
     $("szFTotal").textContent = C.memText(b.total);
     const inp = read();
-    $("szFormula").innerHTML = C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] });
+    UI.setCalc($("szFormula"), C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] }));
     const list = C.options(b.total, gpus, usablePct, opts);
     if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
     $("szOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}">` +
@@ -104,22 +138,23 @@
       `<small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.withHA} 台（${o.size.withHA * o.gpu.perServer} 張）</small></button>`).join("");
     const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s);
     $("szPickDetail").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
-      `<p class="sz-sym">${C.sci(gf.sym)}</p><p class="sz-lgl"><var>V</var>：每卡 VRAM（${g.vram} GB）；<var>u</var>：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}${s.crossNode ? "（超過單台，需跨節點）" : ""}</p>` +
-      (s.crossNode ? `<p class="sz-warnp">⚠ 不建議：單一模型需要 TP ${s.gpusTP} 張，超過這個機型每台 ${g.perServer} 張，必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT），而且要 ${s.withHA} 台機器。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。</p>` : "") +
-      `<p class="sz-final">${C.memText(b.total)} → <b>${g.name.replace(/（.*?）/g, "")} × ${s.gpusMin}</b>（容量下限）／TP 建議 ${s.gpusTP} 張／<b>${s.withHA} 台</b>，實體顯存 ${C.memText(s.physicalVram)}${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
+      `<p class="sz-sym">${C.sci(gf.sym)} ${C.tip(`V：每卡 VRAM（${g.vram} GB）；u：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位。`)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}</p>` +
+      (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：TP ${s.gpusTP} 張 &gt; 每台 ${g.perServer} 張，共 ${s.withHA} 台 ${C.tip("不建議：單一模型必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT）。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "") +
+      `<p class="sz-final">${C.memText(b.total)} → <b>${g.name.replace(/（.*?）/g, "")} × ${s.gpusMin}</b>（容量下限）／TP ${s.gpusTP} 張／<b>${s.withHA} 台</b>，實體顯存 ${C.memText(s.physicalVram)}${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
   }
-  /* optional block lives in a hover "curtain": show on the tab whether it holds values, so hidden settings are never forgotten */
-  function syncCurtain() {
+  /* The tabs carry a one-line summary so collapsed settings are never forgotten */
+  const BITS = { 16: "BF16", 8: "FP8", 4: "4-bit" };
+  function syncSummaries() {
+    const m = C.MODELS.find(x => x.id === el.model.value), inp = read();
+    const complete = inp.params > 0 && inp.layers > 0 && inp.kvHeads > 0 && inp.headDim > 0;
+    $("szReqSum").textContent = complete ? `${m && m.id !== "custom" ? m.name : "自訂模型"} · ${BITS[inp.weightBits] || inp.weightBits + "-bit"} · ${Math.round(inp.context / 1024)}K · ${inp.concurrent} 並行` : "待輸入模型參數";
+    $("szReqTab").classList.toggle("warn", !complete);
     const set = !!(String(el.reqTps.value).trim() || String(el.srvTps.value).trim() || el.ha.checked);
-    $("szCurtain").classList.toggle("set", set);
-    $("szCurtainHint").textContent = set ? "✓ 已設定" : "選填 · 滑鼠移過來展開";
+    $("szOptTab").classList.toggle("set", set);
+    $("szCurtainHint").textContent = set ? "✓ 已設定" : "未設定";
   }
-  $("szCurtainTab").addEventListener("click", () => {
-    const open = $("szCurtain").classList.toggle("open");
-    $("szCurtainTab").setAttribute("aria-expanded", open);
-  });
   function render() {
-    syncCurtain();
+    syncSummaries();
     const inp = read();
     const usablePct = Math.min(100, Math.max(50, C.num(el.usable.value, 90)));
     el.estConc.textContent = C.concurrentFromUsers(C.num(el.users.value, 1), C.num(el.active.value, 0), C.num(el.inflight.value, 0));
@@ -147,23 +182,6 @@
   $("szRows").addEventListener("change", e => {
     const t = e.target; if (!t.dataset || t.dataset.i === undefined) return;
     const v = C.num(t.value, 0); if (v > 0) gpus[+t.dataset.i][t.dataset.k] = v; render();
-  });
-
-  /* notes tabs: pointer over a tab shows its panel under the row; leaving the block hides it; click pins (touch / keyboard) */
-  document.querySelectorAll(".sz-hn").forEach(box => {
-    const tabs = [...box.querySelectorAll(".sz-hn-tab")], panels = [...box.querySelectorAll(".sz-hn-panel")];
-    let pinned = null;
-    const show = p => {
-      tabs.forEach(t => { const on = t.dataset.p === p; t.classList.toggle("on", on); t.setAttribute("aria-expanded", on); });
-      panels.forEach(x => x.classList.toggle("on", x.dataset.p === p));
-    };
-    tabs.forEach(t => {
-      t.addEventListener("mouseenter", () => show(t.dataset.p));
-      t.addEventListener("focus", () => show(t.dataset.p));
-      t.addEventListener("click", () => { pinned = pinned === t.dataset.p ? null : t.dataset.p; show(pinned); });
-    });
-    box.addEventListener("mouseleave", () => show(pinned));
-    box.addEventListener("focusout", e => { if (!box.contains(e.relatedTarget)) show(pinned); });
   });
 
   loadPreset();
