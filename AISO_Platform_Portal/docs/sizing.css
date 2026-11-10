@@ -184,7 +184,7 @@ main .report-section h2 .zh{font-size:17px;margin-top:8px}
 
 /* ---- Lighter, airier theme for this page (still dark-mode, softer blue-grey) + compact hero ---- */
 :root{--sz-page:#1a2232;--sz-panel:#252f43;--sz-inner:#1f2839;--sz-input:#182030;--sz-line:rgba(244,239,228,.2);--muted:#aeb4c0}
-body{background:linear-gradient(180deg,#202a3d 0,#1a2232 45%,#171e2d 100%)!important}
+/* page background stays the site's deep space black; only the information panels below are lighter */
 main{padding-top:20px}
 main .bm-hero{min-height:0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 40px;padding:14px 4px 22px}
 main .bm-hero>div:first-child>p:last-child{min-height:0;margin-bottom:6px}
