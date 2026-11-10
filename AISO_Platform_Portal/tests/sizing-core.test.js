@@ -107,4 +107,12 @@ assert.ok(!refOps[0].size.crossNode, "the suggested option is practical");
 // per-server counts follow the TPI test machines (B60: 4 GPUs = 96 GB, B70: 2 GPUs = 64 GB)
 assert.strictEqual(C.GPUS.find(g => g.id === "b60").perServer * C.GPUS.find(g => g.id === "b60").vram, 96);
 assert.strictEqual(C.GPUS.find(g => g.id === "b70").perServer * C.GPUS.find(g => g.id === "b70").vram, 64);
+// config.json parser: plain GQA model, nested text_config, derived head_dim, hybrid and MoE flags, errors
+const pc = C.parseConfig({ num_hidden_layers: 80, num_attention_heads: 64, num_key_value_heads: 8, hidden_size: 8192 });
+assert.deepStrictEqual([pc.layers, pc.kvHeads, pc.headDim, pc.hybrid], [80, 8, 128, false], "head_dim derived from hidden_size / heads");
+const pn = C.parseConfig(JSON.stringify({ text_config: { num_hidden_layers: 40, num_key_value_heads: 2, head_dim: 256, num_attention_heads: 16, layer_types: ["linear_attention", "full_attention"], num_experts: 256 } }));
+assert.ok(pn.hybrid && pn.notes.length === 2 && pn.headDim === 256, "hybrid + MoE are flagged");
+assert.strictEqual(C.parseConfig({ num_hidden_layers: 32, num_attention_heads: 32, hidden_size: 4096 }).kvHeads, 32, "MHA falls back to attention heads");
+assert.throws(() => C.parseConfig({ foo: 1 }), /找不到/);
+assert.throws(() => C.parseConfig("not json"), /不是有效的 JSON/);
 console.log("sizing-core: all assertions passed");

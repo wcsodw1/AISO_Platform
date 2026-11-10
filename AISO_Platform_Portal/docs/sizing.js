@@ -12,7 +12,7 @@
     kvBits: $("szKvBits"), context: $("szContext"), conc: $("szConc"),
     users: $("szUsers"), active: $("szActive"), inflight: $("szInflight"), estConc: $("szEstConc"), apply: $("szApplyConc"),
     runtime: $("szRuntime"), headroom: $("szHeadroom"), usable: $("szUsable"),
-    reqTps: $("szReqTps"), srvTps: $("szSrvTps"), ha: $("szHA")
+    reqTps: $("szReqTps"), srvTps: $("szSrvTps"), ha: $("szHA"), custom: $("szCustomBox"), cfg: $("szCfg"), cfgMsg: $("szCfgMsg")
   };
 
   el.model.innerHTML = C.MODELS.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join("");
@@ -23,8 +23,38 @@
     if (!m) return;
     if (m.id !== "custom") {
       el.params.value = m.params; el.layers.value = m.layers; el.kvHeads.value = m.kvHeads; el.headDim.value = m.headDim;
+    } else {
+      /* Custom = start from a blank form, not from the previous preset's numbers */
+      ["params", "layers", "kvHeads", "headDim"].forEach(k => { el[k].value = ""; });
+      el.cfg.value = ""; el.cfgMsg.textContent = "";
     }
     el.note.hidden = !m.note; el.note.textContent = m.note || "";
+    syncCustomUI();
+  }
+  const FIELDS = ["params", "layers", "kvHeads", "headDim"];
+  const PH = { params: "例如 70（十億）", layers: "例如 80", kvHeads: "例如 8", headDim: "例如 128" };
+  function syncCustomUI() {
+    const custom = el.model.value === "custom";
+    el.custom.hidden = !custom;
+    FIELDS.forEach(k => { el[k].placeholder = custom ? PH[k] : ""; el[k].classList.toggle("need", custom && !String(el[k].value).trim()); });
+  }
+  function showEmpty() {
+    $("szFTotal").textContent = "—"; $("szTotal").textContent = "—";
+    $("szFormula").innerHTML = '<p class="sz-empty">請先輸入模型參數（總參數量、層數、KV heads、head 維度），輸入完成後才會計算；也可以貼上 config.json 自動帶入。</p>';
+    ["szBars", "szBreak", "szOptions", "szPickDetail", "szRows"].forEach(id => { $(id).innerHTML = ""; });
+    $("szWarn").hidden = true;
+  }
+  function applyConfig() {
+    const txt = el.cfg.value.trim();
+    if (!txt) { el.cfgMsg.textContent = ""; return; }
+    try {
+      const r = C.parseConfig(txt);
+      el.layers.value = r.layers; el.kvHeads.value = r.kvHeads; el.headDim.value = r.headDim;
+      el.cfgMsg.innerHTML = `<span class="sz-cfgok">✓ 已帶入：層數 ${r.layers} · KV heads ${r.kvHeads} · head 維度 ${r.headDim}</span>${r.notes.map(n => `<br>⚠ ${esc(n)}`).join("")}<br>總參數量請手動填。`;
+    } catch (e) {
+      el.cfgMsg.innerHTML = `<span class="sz-cfgerr">✗ ${esc(e.message)}</span>`;
+    }
+    syncCustomUI(); render();
   }
 
   function read() {
@@ -78,10 +108,22 @@
       (s.crossNode ? `<p class="sz-warnp">⚠ 不建議：單一模型需要 TP ${s.gpusTP} 張，超過這個機型每台 ${g.perServer} 張，必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT），而且要 ${s.withHA} 台機器。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。</p>` : "") +
       `<p class="sz-final">${C.memText(b.total)} → <b>${g.name.replace(/（.*?）/g, "")} × ${s.gpusMin}</b>（容量下限）／TP 建議 ${s.gpusTP} 張／<b>${s.withHA} 台</b>，實體顯存 ${C.memText(s.physicalVram)}${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
   }
+  /* optional block lives in a hover "curtain": show on the tab whether it holds values, so hidden settings are never forgotten */
+  function syncCurtain() {
+    const set = !!(String(el.reqTps.value).trim() || String(el.srvTps.value).trim() || el.ha.checked);
+    $("szCurtain").classList.toggle("set", set);
+    $("szCurtainHint").textContent = set ? "✓ 已設定" : "選填 · 滑鼠移過來展開";
+  }
+  $("szCurtainTab").addEventListener("click", () => {
+    const open = $("szCurtain").classList.toggle("open");
+    $("szCurtainTab").setAttribute("aria-expanded", open);
+  });
   function render() {
+    syncCurtain();
     const inp = read();
     const usablePct = Math.min(100, Math.max(50, C.num(el.usable.value, 90)));
     el.estConc.textContent = C.concurrentFromUsers(C.num(el.users.value, 1), C.num(el.active.value, 0), C.num(el.inflight.value, 0));
+    if (!(inp.params > 0 && inp.layers > 0 && inp.kvHeads > 0 && inp.headDim > 0)) { showEmpty(); return; }   // never show a misleading total while the model is incomplete
     const b = C.budget(inp);
     $("szTotal").textContent = fmt(b.total);
     renderBars(b);
@@ -96,10 +138,12 @@
   }
 
   $("szOptions").addEventListener("click", e => { const b = e.target.closest(".sz-opt"); if (b) { picked = b.dataset.id; render(); } });
-  el.model.addEventListener("change", () => { loadPreset(); render(); });
-  ["params", "layers", "kvHeads", "headDim"].forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; render(); }));
+  el.model.addEventListener("change", () => { loadPreset(); render(); if (el.model.value === "custom") el.params.focus(); });
+  FIELDS.forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; syncCustomUI(); render(); }));
+  el.cfg.addEventListener("input", applyConfig);
   el.apply.addEventListener("click", () => { el.conc.value = el.estConc.textContent; render(); });
   document.querySelector(".sz-inputs").addEventListener("input", render);
+  document.querySelector(".sz-inputs").addEventListener("change", render);
   $("szRows").addEventListener("change", e => {
     const t = e.target; if (!t.dataset || t.dataset.i === undefined) return;
     const v = C.num(t.value, 0); if (v > 0) gpus[+t.dataset.i][t.dataset.k] = v; render();

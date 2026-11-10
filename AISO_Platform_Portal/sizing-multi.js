@@ -26,8 +26,8 @@
       <div class="mz-ctl">
         <label>量化<select autocomplete="off" class="mz-q">${opts}</select></label>
         <label>Context / 請求<input autocomplete="off" class="mz-ctx" type="number" min="1024" step="1024" value="32768"></label>
-        <label>流量比例<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1"></label>
-        <label>額外 GB（MTP 檔案，隨量化帶入）<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.01" value="${f1(C.mtpOf(m, "q4km"), 2)}"></label>
+        <label>流量比例<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1"><small class="sz-help">三個模型分攤並行請求的相對比例（1：1：1＝平均）</small></label>
+        <label>額外 GB（MTP 檔案，隨量化帶入）<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.01" value="${f1(C.mtpOf(m, "q4km"), 2)}"><small class="sz-help">推測解碼用的 MTP 草稿頭檔案大小，不用 MTP 填 0</small></label>
       </div>
       </article>`;
   }).join("");
@@ -72,7 +72,7 @@
         { k: "M_i", sym: "(W + KV + R + E) × (1 + h)", sub: `(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra, 2)}) × (1 + ${g.headroomPct}%)`, out: C.memText(b.total) }] });
     });
     sections.push({ title: "合計", rows: [{ k: "M_total", sym: "Σ M_i", sub: sel.length ? budgets.map(b => f1(b.total)).join(" + ") : "0", out: sel.length ? C.memText(total) : "—", fin: true }] });
-    const legend = [["U", "總使用人數", f1(g.users, 0)], ["A", "尖峰活躍比例", `${g.active}%`], ["R", "活躍者正在推論比例", `${g.inflight}%`], ["C", "同時推論請求數", String(conc)],
+    const legend = [["U", "總使用人數", f1(g.users, 0)], ["A", "尖峰活躍比例", `${g.active}%`], ["R", "活躍者等待回應比例", `${g.inflight}%`], ["C", "同時推論請求數", String(conc)],
       ["W", "模型權重（實際檔案）", sel.length ? C.memText(budgets.reduce((a, b) => a + b.weights, 0)) + " 合計" : "—"], ["KV", "KV Cache（每請求 × 請求數）", sel.length ? C.memText(budgets.reduce((a, b) => a + b.kv, 0)) + " 合計" : "—"],
       ["R + E", "Runtime 與 MTP 額外", `${f1(g.runtimeGB)} GB／模型 + MTP`], ["M_i", "單一模型顯存需求", "見各模型小節"], ["M_total", "三模型合計", sel.length ? C.memText(total) : "—"],
       ["h", "安全餘裕比例", `${g.headroomPct}%`], ["T", "每請求 Context", "各模型設定"]];

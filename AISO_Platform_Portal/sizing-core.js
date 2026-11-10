@@ -223,5 +223,24 @@
     ];
   }
 
-  return { sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  /* Read the KV-relevant fields of a Hugging Face config.json (top level or text_config).
+     Plain full-attention models only: hybrid (linear attention / sliding window) is detected and flagged, never guessed. */
+  function parseConfig(input) {
+    let cfg;
+    try { cfg = typeof input === "string" ? JSON.parse(input) : input; } catch (e) { throw new Error("不是有效的 JSON，請貼上完整的 config.json 內容"); }
+    if (!cfg || typeof cfg !== "object") throw new Error("不是有效的 JSON 物件");
+    const t = cfg.text_config && typeof cfg.text_config === "object" ? cfg.text_config : cfg;
+    const layers = t.num_hidden_layers || t.n_layer || t.num_layers, heads = t.num_attention_heads || t.n_head;
+    const kvHeads = t.num_key_value_heads || t.num_kv_heads || heads;
+    const headDim = t.head_dim || (t.hidden_size && heads ? Math.round(t.hidden_size / heads) : 0);
+    const types = Array.isArray(t.layer_types) ? new Set(t.layer_types) : null;
+    const notes = [];
+    const hybrid = !!((types && types.size > 1) || t.sliding_window);
+    if (hybrid) notes.push("偵測到混合架構（linear attention 或 sliding window）：這裡只能當成每層都存完整 KV，會高估；內建的 VIS 模型已分層計算。");
+    if (t.num_experts || t.num_local_experts || t.n_routed_experts) notes.push("MoE 模型：總參數量請填「全部專家」的總數，不是 active 參數。");
+    if (!layers || !kvHeads || !headDim) throw new Error("找不到 num_hidden_layers / num_key_value_heads / head_dim（或 hidden_size）");
+    return { layers, kvHeads, headDim, hybrid, notes };
+  }
+
+  return { parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });
