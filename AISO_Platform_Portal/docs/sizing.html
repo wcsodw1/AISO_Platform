@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=9">
+  <link rel="stylesheet" href="sizing.css?v=11">
 </head>
 <body>
   <header class="site-header">
@@ -28,21 +28,9 @@
     <div class="sz-modes" id="szMode" role="tablist" aria-label="模式"><button type="button" role="tab" class="on" aria-selected="true" data-m="single">單一模型</button><button type="button" role="tab" aria-selected="false" data-m="multi">多模型（VIS 情境）</button></div>
 
     <div id="szSingle">
-    <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
-      <header><div><p class="section-label">FORMULA</p><h2>計算公式<span class="zh">隨左邊參數即時代入數字</span></h2></div>
-        <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b></div></header>
-      <ol id="szFormula" class="sz-flist"></ol>
-      <div class="sz-pick">
-        <h3>建議機器<span class="zh">可選擇其中一種；依「台數最少、GPU 張數最少」排序</span></h3>
-        <div id="szOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
-        <div id="szPickDetail" class="sz-detail"></div>
-      </div>
-    </section>
-
-    <div class="sz-layout">
-      <section class="report-section sz-inputs" aria-label="輸入">
-        <header><div><p class="section-label">INPUT</p><h2>客戶需求<span class="zh">模型、Context、併發</span></h2></div></header>
-
+    <section class="report-section sz-inputs" id="szInputs" aria-label="參數">
+      <header><div><p class="section-label">STEP 1 · PARAMETERS</p><h2>參數<span class="zh">客戶需求：改這裡，下方的計算公式與建議配置會即時連動</span></h2></div></header>
+      <div class="sz-in-grid">
         <fieldset><legend>① 模型</legend>
           <label>模型預設<select autocomplete="off" id="szModel"></select></label>
           <label>總參數量（B）<input autocomplete="off" id="szParams" type="number" min="1" step="1"></label>
@@ -77,23 +65,29 @@
           <label>每台實測 aggregate tokens/sec<input autocomplete="off" id="szSrvTps" type="number" min="0" step="100" placeholder="取自 Benchmark，同模型同 Context"></label>
           <label class="sz-check"><input autocomplete="off" id="szHA" type="checkbox"> 需要 HA（+1 台備援）</label>
         </fieldset>
-      </section>
+      </div>
+    </section>
 
-      <div class="sz-right">
-        <section class="report-section" aria-live="polite">
-          <header><div><p class="section-label">RESULT</p><h2>Memory Budget<span class="zh">預估總 GPU VRAM 需求</span></h2></div><div class="sz-total"><b id="szTotal">—</b><small>GB</small></div></header>
-          <div id="szBars" class="sz-bars"></div>
-          <dl id="szBreak" class="sz-break"></dl>
-          <p id="szWarn" class="report-notice" hidden></p>
-        </section>
+    <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
+      <header><div><p class="section-label">STEP 2 · CALCULATION</p><h2>計算公式<span class="zh">代入上方參數後的算式與結果</span></h2></div>
+        <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b></div></header>
+      <ol id="szFormula" class="sz-flist"></ol>
+      <p class="sz-compose">組成：合計 <b id="szTotal">—</b> GB</p>
+      <div id="szBars" class="sz-bars"></div>
+      <dl id="szBreak" class="sz-break"></dl>
+      <p id="szWarn" class="report-notice" hidden></p>
+    </section>
 
-        <section class="report-section">
-          <header><div><p class="section-label">RECOMMENDATION</p><h2>機器與 GPU 建議<span class="zh">依容量下限，逐型號</span></h2></div></header>
+    <section class="report-section" id="szPickSec">
+      <header><div><p class="section-label">STEP 3 · RECOMMENDATION</p><h2>建議配置<span class="zh">可選擇其中一種機器；依「台數最少、GPU 張數最少」排序</span></h2></div></header>
+      <div id="szOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
+      <div id="szPickDetail" class="sz-detail"></div>
+      <h3 class="sz-sub-h">所有 GPU 型號逐一試算<span class="zh">每卡 VRAM 與每台 GPU 數可直接改</span></h3>
           <div class="table-wrap"><table class="sz-table"><thead><tr><th>GPU</th><th>每卡 VRAM</th><th>每台 GPU 數</th><th>容量下限</th><th>TP 建議</th><th>需要伺服器</th><th>備註</th></tr></thead><tbody id="szRows"></tbody></table></div>
           <p class="sz-note">GPU 數＝⌈總需求 ÷（每卡 VRAM × 可規劃%）⌉；TP 建議為 2 的次方（1/2/4/8/16）。每卡 VRAM 與每台 GPU 數可直接改。<b>橘色標記</b>＝規劃假設，需和實機確認。</p>
-        </section>
+    </section>
 
-        <section class="report-section">
+    <section class="report-section">
           <header><div><p class="section-label">READ ME FIRST</p><h2>使用前提<span class="zh">這個結果代表什麼</span></h2></div></header>
           <ul class="sz-list">
             <li><b>只是容量下限。</b>VRAM 夠，不代表速度夠；TTFT、TPOT、P95 要用 Benchmark 量測，採購台數＝max(容量, 吞吐量)＋備援。</li>
@@ -101,15 +95,12 @@
             <li><b>KV 公式為標準 Transformer／GQA。</b>MLA、Sliding Window、混合 Attention、Prefix Caching、KV 量化都會讓實際值不同；預設模型的層數與 KV Heads 請對照客戶實際 config.json。</li>
             <li><b>多台不會自動合併顯存。</b>需要的 TP 超過單台 GPU 數時，會跨節點，必須另評估網路互連與延遲。</li>
           </ul>
-        </section>
-      </div>
-    </div>
+    </section>
     </div><!-- /szSingle -->
 
     <div id="szMulti" hidden>
-      <section class="report-section sz-formula" aria-live="polite">
-        <header><div><p class="section-label">MULTI-MODEL · VIS</p><h2>多模型智能配置<span class="zh">同時提供三個模型；架構數字取自各模型公開的 config.json</span></h2></div>
-          <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b></div></header>
+      <section class="report-section sz-inputs" aria-label="參數">
+        <header><div><p class="section-label">STEP 1 · PARAMETERS · MULTI-MODEL (VIS)</p><h2>參數<span class="zh">人數、規劃條件與三個模型的量化／Context／流量比例；改這裡，下方計算與建議配置即時連動</span></h2></div></header>
         <div class="mz-global">
           <label>總使用人數<input autocomplete="off" id="mzUsers" type="number" min="1" value="1000"></label>
           <label>尖峰活躍比例（%）<input autocomplete="off" id="mzActive" type="number" min="1" max="100" value="40"></label>
@@ -121,13 +112,19 @@
           <label>配置方式<select autocomplete="off" id="mzPack"><option value="1">共用打包（最省 GPU）</option><option value="0">各模型獨立（好維運）</option></select></label>
           <label class="sz-check"><input autocomplete="off" id="mzHA" type="checkbox"> 需要 HA（+1 台備援）</label>
         </div>
-        <ol id="mzFormula" class="sz-flist"></ol>
         <div id="mzModels" class="mz-models"></div>
+      </section>
+
+      <section class="report-section sz-formula" aria-live="polite">
+        <header><div><p class="section-label">STEP 2 · CALCULATION</p><h2>計算方式<span class="zh">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json</span></h2></div>
+          <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b></div></header>
+        <ol id="mzFormula" class="sz-flist"></ol>
+        <div id="mzCalc" class="mz-calc"></div>
         <p id="mzWarn" class="report-notice" hidden></p>
       </section>
 
       <section class="report-section">
-        <header><div><p class="section-label">RECOMMENDATION</p><h2>建議機器與配置<span class="zh">可選擇；依「台數最少、GPU 張數最少」排序</span></h2></div></header>
+        <header><div><p class="section-label">STEP 3 · RECOMMENDATION</p><h2>建議配置<span class="zh">可選擇；依「台數最少、GPU 張數最少」排序</span></h2></div></header>
         <div id="mzOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
         <div id="mzDetail" class="sz-detail"></div>
       </section>
@@ -153,5 +150,5 @@
   </main>
   <script src="sizing-core.js?v=5"></script>
   <script src="sizing.js?v=2"></script>
-  <script src="sizing-multi.js?v=2"></script>
+  <script src="sizing-multi.js?v=3"></script>
 </body></html>

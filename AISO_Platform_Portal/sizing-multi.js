@@ -29,7 +29,7 @@
         <label>流量比例<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1"></label>
         <label>額外 GB（MTP 檔案，隨量化帶入）<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.01" value="${f1(C.mtpOf(m, "q4km"), 2)}"></label>
       </div>
-      <div class="mz-res"></div></article>`;
+      </article>`;
   }).join("");
 
   const card = id => document.querySelector(`.mz-card[data-id="${id}"]`);
@@ -61,15 +61,16 @@
     $("mzTotal").textContent = sel.length ? C.memText(total) : "—";
 
     // per-model result blocks
-    C.VIS_MODELS.forEach(m => { if (!sel.some(x => x.m === m)) card(m.id).querySelector(".mz-res").innerHTML = '<p class="sz-note">未勾選，不計入。</p>'; });
+    const calc = [];
     sel.forEach((x, i) => {
       const b = budgets[i], m = x.m, groupsTxt = m.groups.map(gr => `${gr.layers}×2×${gr.kvHeads}×${gr.headDim}×${g.kvBits / 8}B×${gr.window ? `min(T,${gr.window})` : "T"}`).join(" + ") + (m.stateMB ? ` + state ${m.stateMB} MiB` : "");
-      card(m.id).querySelector(".mz-res").innerHTML = `<ol class="mz-lines">
+      calc.push(`<article class="mz-card"><h3>${esc(m.name)}<small>${esc(b.quant)} · ${split[i]} 個並行請求</small></h3><ol class="mz-lines">
         <li><span class="sz-fk">W</span><span class="sz-sub">${b.w.real ? `實際檔案 ${C.memText(b.weights)}` : `${m.params}B × ${b.bpw} ÷ 8 = ${C.memText(b.weights)}`}<small>${b.w.real ? `${esc(b.w.repo)} / ${esc(b.w.file)}　` : ""}有效 ${f1(b.bpw, 2)} bit/weight${b.w.vsBf16 ? `；約為 BF16（${f1(m.files.bf16.bytes / 1e9)} GB）的 ${f1(b.w.vsBf16 * 100, 0)}%（÷${f1(1 / b.w.vsBf16, 1)}）` : ""}</small></span></li>
         <li><span class="sz-fk">KV</span><span class="sz-sub">(${esc(groupsTxt)}) → ${f1(b.perReq, 3)} GB/請求 × ${split[i]} 請求 = ${C.memText(b.kv)}<small>T = ${f1(x.cfg.context, 0)} tokens</small></span></li>
         <li><span class="sz-fk">R+E</span><span class="sz-sub">Runtime ${f1(b.runtime)} + 額外（MTP）${f1(b.extra, 2)} = ${f1(b.runtime + b.extra, 2)} GB</span></li>
-        <li class="tot"><span class="sz-fk">M</span><span class="sz-sub">(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra, 2)}) × (1 + ${g.headroomPct}%) = <b class="sz-out">${C.memText(b.total)}</b></span></li></ol>`;
+        <li class="tot"><span class="sz-fk">M</span><span class="sz-sub">(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra, 2)}) × (1 + ${g.headroomPct}%) = <b class="sz-out">${C.memText(b.total)}</b></span></li></ol></article>`);
     });
+    $("mzCalc").innerHTML = calc.join("");
 
     // top formula list
     $("mzFormula").innerHTML = [
