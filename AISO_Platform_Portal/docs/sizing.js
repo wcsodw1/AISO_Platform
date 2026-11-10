@@ -1,0 +1,89 @@
+(function () {
+  "use strict";
+  const C = window.SizingCore;
+  const $ = id => document.getElementById(id);
+  const fmt = (n, d = 1) => (Math.round(n * 10 ** d) / 10 ** d).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: d });
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const gpus = C.GPUS.map(g => ({ ...g })); // editable copies
+
+  const el = {
+    model: $("szModel"), params: $("szParams"), wbits: $("szWBits"), meta: $("szMeta"),
+    layers: $("szLayers"), kvHeads: $("szKvHeads"), headDim: $("szHeadDim"), note: $("szModelNote"),
+    kvBits: $("szKvBits"), context: $("szContext"), conc: $("szConc"),
+    users: $("szUsers"), active: $("szActive"), inflight: $("szInflight"), estConc: $("szEstConc"), apply: $("szApplyConc"),
+    runtime: $("szRuntime"), headroom: $("szHeadroom"), usable: $("szUsable"),
+    reqTps: $("szReqTps"), srvTps: $("szSrvTps"), ha: $("szHA")
+  };
+
+  el.model.innerHTML = C.MODELS.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join("");
+  el.model.value = "llama33-70b";
+
+  function loadPreset() {
+    const m = C.MODELS.find(x => x.id === el.model.value);
+    if (!m) return;
+    if (m.id !== "custom") {
+      el.params.value = m.params; el.layers.value = m.layers; el.kvHeads.value = m.kvHeads; el.headDim.value = m.headDim;
+    }
+    el.note.hidden = !m.note; el.note.textContent = m.note || "";
+  }
+
+  function read() {
+    return {
+      params: C.num(el.params.value, 0), weightBits: C.num(el.wbits.value, 16), metaPct: C.num(el.meta.value, 0),
+      layers: C.num(el.layers.value, 0), kvHeads: C.num(el.kvHeads.value, 0), headDim: C.num(el.headDim.value, 0),
+      kvBits: C.num(el.kvBits.value, 16), context: C.num(el.context.value, 0), concurrent: Math.max(1, C.num(el.conc.value, 1)),
+      runtimeGB: C.num(el.runtime.value, 0), headroomPct: C.num(el.headroom.value, 0)
+    };
+  }
+
+  function renderBars(b) {
+    const parts = [["Weights", b.weights, "w"], ["KV Cache", b.kv, "k"], ["Runtime", b.runtime, "r"], ["Headroom", b.headroom, "h"]];
+    $("szBars").innerHTML = parts.map(([n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${n} ${fmt(v)} GB"></i>`).join("");
+    $("szBreak").innerHTML = parts.map(([n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${n}</dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
+      `<div><dt>KV / token</dt><dd>${fmt(b.kvPerTokenKiB, 0)} KiB</dd></div>`;
+  }
+
+  function renderRows(b, usablePct) {
+    const reqTps = C.num(el.reqTps.value, 0), srvTps = C.num(el.srvTps.value, 0), ha = el.ha.checked;
+    $("szRows").innerHTML = gpus.map((g, i) => {
+      const s = C.sizeFor(b.total, g, usablePct, { requiredTps: reqTps, perServerTps: srvTps, ha });
+      const notes = [];
+      if (s.crossNode) notes.push("TP 超過單台，需跨節點");
+      if (s.serversByTps > s.serversByMem) notes.push("吞吐量決定台數");
+      if (ha) notes.push("已含 +1 備援");
+      if (g.assumed) notes.push("規格為規劃假設");
+      return `<tr class="${s.crossNode ? "warn" : ""}"><th>${esc(g.name)}${g.assumed ? ' <i class="sz-flag" title="規劃假設">假設</i>' : ""}</th>` +
+        `<td><input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}"> GB</td>` +
+        `<td><input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}"></td>` +
+        `<td>${s.gpusMin} 張</td><td><b>${s.gpusTP} 張</b></td>` +
+        `<td><b class="sz-srv">${s.withHA} 台</b><small>${s.withHA * g.perServer} 張 · ${fmt(s.physicalVram, 0)} GB</small></td>` +
+        `<td>${notes.map(esc).join("；") || "—"}</td></tr>`;
+    }).join("");
+  }
+
+  function render() {
+    const inp = read();
+    const usablePct = Math.min(100, Math.max(50, C.num(el.usable.value, 90)));
+    el.estConc.textContent = C.concurrentFromUsers(C.num(el.users.value, 1), C.num(el.active.value, 0), C.num(el.inflight.value, 0));
+    const b = C.budget(inp);
+    $("szTotal").textContent = fmt(b.total);
+    renderBars(b);
+    renderRows(b, usablePct);
+    const warn = $("szWarn"), msgs = [];
+    if (!inp.params || !inp.layers || !inp.kvHeads || !inp.headDim) msgs.push("模型參數、層數、KV Heads、Head Dimension 需大於 0。");
+    if (b.total && b.kv / b.total > 0.6) msgs.push("KV Cache 佔總需求超過 60%：Context 或併發是主因，可評估 KV 量化（FP8）、縮短 Context、Prefix Caching。");
+    warn.hidden = !msgs.length; warn.textContent = msgs.join(" ");
+  }
+
+  el.model.addEventListener("change", () => { loadPreset(); render(); });
+  ["params", "layers", "kvHeads", "headDim"].forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; render(); }));
+  el.apply.addEventListener("click", () => { el.conc.value = el.estConc.textContent; render(); });
+  document.querySelector(".sz-inputs").addEventListener("input", render);
+  $("szRows").addEventListener("change", e => {
+    const t = e.target; if (!t.dataset || t.dataset.i === undefined) return;
+    const v = C.num(t.value, 0); if (v > 0) gpus[+t.dataset.i][t.dataset.k] = v; render();
+  });
+
+  loadPreset();
+  render();
+})();

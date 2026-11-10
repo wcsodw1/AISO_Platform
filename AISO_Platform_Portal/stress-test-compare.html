@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=40">
+  <link rel="stylesheet" href="gptoss-v2.css?v=43">
 </head>
 <body>
   <header class="site-header">
@@ -25,18 +25,16 @@
   <main class="v2 st">
     <section class="v2-hero">
       <a class="pg-back" href="stress-test.html"><span aria-hidden="true">←</span> 返回 Stress Test</a><p class="eyebrow">BENCHMARK / STRESS TEST / MINI-WORKSTATION · 2026-11-04</p>
-      <h1>Stress Test｜B60 vs B70 vs AISO1</h1>
-      <p class="v2-sub">同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較三台機器的 TTFT · TPOT · TPS</span></p>
+      <h1 id="pgTitle">Stress Test｜B60 vs B70 vs AISO1</h1>
+      <p class="v2-sub" id="pgSub">同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較三台機器的 TTFT · TPOT · TPS</span></p>
+      <nav class="pair-nav" id="stPairs" aria-label="兩兩比對"></nav>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and baseline"></div>
     </section>
 
-    <section class="report-section" id="secGap">
+    <section class="report-section" id="secPick">
       <header><h2>Comparison Detail<span class="zh">比對細節</span></h2></header>
       <div id="stGap"></div>
-    </section>
-
-    <section class="report-section" id="secPick">
-      <header><h2>選擇比對條件<span class="zh">Framework · Model · NP</span></h2></header>
+      <h3 class="gap-sub">選擇比對條件<small>Framework · Model · NP</small></h3>
       <div class="cmp-pick"><span>框架</span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
       <div class="cmp-pick"><span>模型</span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
       <div class="cmp-pick"><span>並發</span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
@@ -44,7 +42,7 @@
     </section>
 
     <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh">四項指標 · B60 · B70 · AISO1 長條圖</span></h2></header>
+      <header><h2>TTFT · TPOT · TPS<span class="zh" id="zhMetrics">四項指標 · B60 · B70 · AISO1 長條圖</span></h2></header>
       <div id="stMetrics"></div>
     </section>
 
@@ -56,7 +54,7 @@
     </section>
 
     <section class="report-section" id="secCfg">
-      <header><h2>測試設定差異<span class="zh">同框架 · 同模型 · 三機實際啟動條件</span></h2></header>
+      <header><h2>測試設定差異<span class="zh" id="zhCfg">同框架 · 同模型 · 三機實際啟動條件</span></h2></header>
       <p class="v2-fine" id="stCfgSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCfg"></table></div>
     </section>
@@ -72,6 +70,6 @@
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=4"></script><script src="stress-test-compare.js?v=16"></script>
+  </main><script src="bench-viz.js?v=4"></script><script src="stress-test-compare.js?v=22"></script>
 </body>
 </html>

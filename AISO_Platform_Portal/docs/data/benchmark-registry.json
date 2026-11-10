@@ -51,7 +51,7 @@
   },
   {
    "key": "Nemotron",
-   "name": "Nemotron 3.5",
+   "name": "Nemotron 3.5 30B",
    "color": "#8f9bff"
   }
  ],
@@ -96,6 +96,12 @@
    "machine": "aiso1",
    "framework": "vllm",
    "file": "data/benchmark-aiso1/AISO_AISO1_vLLM_20261015.json",
+   "runs_key": "aiso1_runs"
+  },
+  {
+   "machine": "aiso1",
+   "framework": "llamacpp",
+   "file": "data/benchmark-aiso1/AISO_AISO1_llamacpp_V4retest_20261109.json",
    "runs_key": "aiso1_runs"
   }
  ]

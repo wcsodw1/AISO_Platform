@@ -7,7 +7,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from benchmark.live import LiveJobs, service_target
+from benchmark import live
+from benchmark.live import LiveJobs, service_target, build_ids, summarize
 from benchmark.machines import load_machines, public_profile
 
 
@@ -54,3 +55,79 @@ class LiveBenchmarkTests(unittest.TestCase):
             with self.assertRaises(ValueError), patch('benchmark.live.discover') as network:
                 LiveJobs().start(self.machine, 'vllm', dict(self.config, **{key: value}))
             network.assert_not_called()
+
+
+class SweepTests(unittest.TestCase):
+    def setUp(self):
+        self.machine = load_machines(local_path='/nonexistent')['aiso1-amd']
+        self.machine['live_services'] = {'llamacpp': [{'id': 'g', 'endpoint': 'http://localhost:9999/v1'}]}
+        self.config = {'mode': 'sweep', 'service': 'g', 'model': 'm', 'inputs': [4096, 8192], 'nps': [1, 2], 'repeat': 2, 'output_tokens': 1024}
+
+    def run_sweep(self, config=None, slots=5, tokens_ok=True, slot_ctx=18432):
+        used = []
+        def fake_measure(target, ids, slot_id, output_tokens, stop):
+            used.append(slot_id)
+            return {'valid': tokens_ok, 'stream_complete': True, 'ttft_ms': 2000, 'tpot_ms': 50.0, 'decode_tps': 20.0,
+                    'input_tokens_actual': len(ids) if tokens_ok else len(ids) + 1, 'output_tokens_actual': output_tokens,
+                    'finish_reason': 'length', 't_start': 100.0, 't_end': 120.0}
+        slot_list = [{'id': 10 + i, 'n_ctx': slot_ctx} for i in range(slots)]
+        with tempfile.TemporaryDirectory() as root:
+            manager = LiveJobs(root)
+            with patch('benchmark.live.discover', return_value=[{'id': 'm'}]), patch('benchmark.live.v4_measure', side_effect=fake_measure), \
+                 patch('benchmark.live.server_props', return_value={'build_info': 'b'}), patch('benchmark.live.server_slots', return_value=slot_list), \
+                 patch('benchmark.live.build_ids', side_effect=lambda t, n: list(range(n))):
+                manager.start(self.machine, 'llamacpp', config or self.config)
+                deadline = time.monotonic() + 5
+                while manager.active and time.monotonic() < deadline:
+                    time.sleep(.01)
+                self.assertIsNone(manager.active)
+                self.used_slots = used
+                return manager.snapshot()['jobs'][0]
+
+    def test_sweep_runs_every_np_input_repeat_and_summarizes(self):
+        job = self.run_sweep()
+        self.assertEqual(job['status'], 'completed')
+        self.assertEqual(job['total_requests'], (1 + 2) * 2 * 2)
+        self.assertEqual(len(job['rows']), 12)
+        self.assertEqual([(g['np'], g['input'], g['status']) for g in job['summary']], [(1, 4096, 'PASS'), (1, 8192, 'PASS'), (2, 4096, 'PASS'), (2, 8192, 'PASS')])
+        one, two = job['summary'][0], job['summary'][2]
+        self.assertAlmostEqual(one['aggregate_tps'], 1024 / 20)
+        self.assertAlmostEqual(two['aggregate_tps'], 2048 / 20)
+        self.assertAlmostEqual(two['normalized_tps'], 1024 / 20)
+        self.assertAlmostEqual(one['ttft_s'], 2.0)
+        self.assertEqual(len(job['server_props']['slots']), 5)
+        self.assertEqual(set(self.used_slots), {10, 11})  # request i is pinned to slot i
+        self.assertEqual(set(job['prompt_sha256_by_input']), {'4096', '8192'})
+
+    def test_wrong_input_token_count_fails_the_batch(self):
+        job = self.run_sweep(tokens_ok=False)
+        self.assertEqual(job['status'], 'failed')
+        self.assertEqual(len(job['rows']), 1)
+        self.assertIsNone(job['rows'][0]['aggregate_tps'])
+        self.assertEqual(job['summary'][0]['status'], 'FAIL')
+
+    def test_rejects_too_few_slots_and_bad_lists_before_running(self):
+        with self.assertRaises(ValueError):
+            self.run_sweep(dict(self.config, nps=[1, 5]), slots=4)
+        with self.assertRaises(ValueError):
+            self.run_sweep(dict(self.config, inputs=[16384]), slot_ctx=16000)
+        for key, value in [('inputs', [1000]), ('nps', [3]), ('nps', []), ('inputs', [4096, 4096]), ('repeat', 4)]:
+            with self.assertRaises(ValueError), patch('benchmark.live.discover') as network:
+                LiveJobs().start(self.machine, 'llamacpp', dict(self.config, **{key: value}))
+            network.assert_not_called()
+        with self.assertRaises(ValueError):
+            LiveJobs().start(self.machine, 'vllm', self.config)
+
+    def test_build_ids_matches_b60_v4_prompt(self):
+        seen = {}
+        def tokenize(target, path, payload=None, timeout=30):
+            seen.update(path=path, payload=payload)
+            return {'tokens': list(range(100000))}
+        with patch('benchmark.live._call', side_effect=tokenize):
+            ids = build_ids({'endpoint': 'http://x/v1'}, 4096)
+        self.assertEqual(ids, list(range(4096)))
+        self.assertEqual(seen['path'], '/tokenize')
+        self.assertTrue(seen['payload']['add_special'])
+        self.assertTrue(seen['payload']['content'].startswith('Mini workstation inference benchmark.'))
+        with patch('benchmark.live._call', return_value={'tokens': [1, 2]}), self.assertRaises(ValueError):
+            build_ids({'endpoint': 'http://x/v1'}, 4096)

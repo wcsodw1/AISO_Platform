@@ -1,0 +1,955 @@
+{
+  "dataset": "AISO_AISO1_llamacpp_V4retest_20261109",
+  "evidence_until": "2026-11-09",
+  "generated_on": "2026-11-09",
+  "note": "AISO1 llama.cpp 重測：4 模型 × NP1/2/5 × 4K/8K/16K × 3 次重複，36/36 PASS（288 個請求，原始資料重新驗證 PASS）；另補測 NP4 共 12 組 12/12 PASS（144 個請求）。NP1/2/5 有完整 TTFT／TPOT／Aggregate；NP4 目前只有終端機輸出的 Aggregate（3 次平均），TTFT／TPOT 待該次 summary。",
+  "comparability": {
+    "level": "retest_unverified",
+    "text": "AISO1 llama.cpp 為 2026-11-09 重測（b11561，與 B60 V4 同版本，4 個 GGUF 皆 SHA 驗證通過）。輸出格式、驗證函式與案例矩陣和 B60 V4 腳本一致，且每個 NP 重啟伺服器、36 組原始資料已重新驗證（ORIGINAL_36_RAW_VERIFIED=PASS）；但測試程式原始碼與伺服器啟動參數（Context／Slots／Batch）尚未逐項比對，NP4 的 TTFT／TPOT 尚缺，因此仍標為待核實。"
+  },
+  "profile": {
+    "machine": "AISO1 AMD (Radeon 8060S · RADV GFX1151 · Vulkan0 97 GiB)",
+    "framework": "llama.cpp",
+    "np": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "input_tokens": [
+      4096,
+      8192,
+      16384
+    ],
+    "output_tokens": 1024,
+    "repeat": 3,
+    "runtime": "llama.cpp b11561 e937b17 Vulkan"
+  },
+  "aiso1_runs": [
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 1,
+      "input": 4096,
+      "ttft_s": 2.777,
+      "tpot_ms": 16.921,
+      "aggregate_tps": 50.978,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        51.144,
+        51.027,
+        50.762
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 1,
+      "input": 8192,
+      "ttft_s": 5.816,
+      "tpot_ms": 18.39,
+      "aggregate_tps": 41.578,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        41.501,
+        41.481,
+        41.751
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 1,
+      "input": 16384,
+      "ttft_s": 13.172,
+      "tpot_ms": 19.785,
+      "aggregate_tps": 30.648,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        30.792,
+        30.54,
+        30.61
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 2,
+      "input": 4096,
+      "ttft_s": 5.787,
+      "tpot_ms": 26.007,
+      "aggregate_tps": 63.202,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        63.304,
+        62.993,
+        63.307
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 2,
+      "input": 8192,
+      "ttft_s": 12.123,
+      "tpot_ms": 26.633,
+      "aggregate_tps": 52.006,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        51.611,
+        52.103,
+        52.305
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 2,
+      "input": 16384,
+      "ttft_s": 24.59,
+      "tpot_ms": 30.753,
+      "aggregate_tps": 36.514,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        36.657,
+        36.308,
+        36.577
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 4,
+      "input": 4096,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 75.888,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        77.99,
+        74.522,
+        75.153
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 4,
+      "input": 8192,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 57.027,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        56.725,
+        57.22,
+        57.137
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 4,
+      "input": 16384,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 37.891,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        38.045,
+        37.855,
+        37.772
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 5,
+      "input": 4096,
+      "ttft_s": 15.298,
+      "tpot_ms": 53.727,
+      "aggregate_tps": 72.883,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        75.997,
+        72.902,
+        69.749
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 5,
+      "input": 8192,
+      "ttft_s": 27.737,
+      "tpot_ms": 63.2,
+      "aggregate_tps": 55.338,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        55.313,
+        55.309,
+        55.393
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma26",
+      "format": "GGUF Q4_0",
+      "np": 5,
+      "input": 16384,
+      "ttft_s": 50.872,
+      "tpot_ms": 87.372,
+      "aggregate_tps": 36.447,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        36.963,
+        37.116,
+        35.263
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 1,
+      "input": 4096,
+      "ttft_s": 13.7,
+      "tpot_ms": 93.841,
+      "aggregate_tps": 9.335,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        9.343,
+        9.334,
+        9.327
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 1,
+      "input": 8192,
+      "ttft_s": 29.124,
+      "tpot_ms": 98.831,
+      "aggregate_tps": 7.863,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        7.861,
+        7.871,
+        7.857
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 1,
+      "input": 16384,
+      "ttft_s": 66.79,
+      "tpot_ms": 103.233,
+      "aggregate_tps": 5.94,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        5.949,
+        5.954,
+        5.917
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 2,
+      "input": 4096,
+      "ttft_s": 27.751,
+      "tpot_ms": 110.773,
+      "aggregate_tps": 14.512,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        14.553,
+        14.481,
+        14.501
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 2,
+      "input": 8192,
+      "ttft_s": 57.894,
+      "tpot_ms": 118.417,
+      "aggregate_tps": 11.432,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        11.444,
+        11.396,
+        11.456
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 2,
+      "input": 16384,
+      "ttft_s": 123.759,
+      "tpot_ms": 147.281,
+      "aggregate_tps": 7.457,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        7.419,
+        7.451,
+        7.502
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 4,
+      "input": 4096,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 19.177,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        19.272,
+        19.12,
+        19.139
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 4,
+      "input": 8192,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 13.346,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        13.108,
+        13.286,
+        13.644
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 4,
+      "input": 16384,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 7.428,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        7.318,
+        7.423,
+        7.544
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 5,
+      "input": 4096,
+      "ttft_s": 65.469,
+      "tpot_ms": 191.05,
+      "aggregate_tps": 19.613,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        20.051,
+        19.018,
+        19.77
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 5,
+      "input": 8192,
+      "ttft_s": 125.314,
+      "tpot_ms": 255.301,
+      "aggregate_tps": 13.241,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        12.817,
+        13.08,
+        13.828
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Gemma31",
+      "format": "GGUF Q4_0",
+      "np": 5,
+      "input": 16384,
+      "ttft_s": 272.539,
+      "tpot_ms": 401.518,
+      "aggregate_tps": 7.48,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        7.579,
+        7.325,
+        7.537
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": true
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 1,
+      "input": 4096,
+      "ttft_s": 3.313,
+      "tpot_ms": 12.43,
+      "aggregate_tps": 63.888,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        63.656,
+        63.82,
+        64.188
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 1,
+      "input": 8192,
+      "ttft_s": 7.97,
+      "tpot_ms": 13.386,
+      "aggregate_tps": 47.268,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        47.36,
+        47.149,
+        47.295
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 1,
+      "input": 16384,
+      "ttft_s": 26.78,
+      "tpot_ms": 14.653,
+      "aggregate_tps": 24.517,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        24.288,
+        24.787,
+        24.476
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 2,
+      "input": 4096,
+      "ttft_s": 6.826,
+      "tpot_ms": 18.076,
+      "aggregate_tps": 80.867,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        81.318,
+        80.365,
+        80.919
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 2,
+      "input": 8192,
+      "ttft_s": 16.458,
+      "tpot_ms": 20.456,
+      "aggregate_tps": 54.763,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        55.02,
+        54.508,
+        54.761
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 2,
+      "input": 16384,
+      "ttft_s": 49.737,
+      "tpot_ms": 31.269,
+      "aggregate_tps": 25.051,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        25.064,
+        25.176,
+        24.913
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 4,
+      "input": 4096,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 89.445,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        92.182,
+        87.784,
+        88.37
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 4,
+      "input": 8192,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 55.887,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        54.714,
+        56.287,
+        56.659
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 4,
+      "input": 16384,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 23.503,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        22.734,
+        23.931,
+        23.843
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 5,
+      "input": 4096,
+      "ttft_s": 17.142,
+      "tpot_ms": 37.009,
+      "aggregate_tps": 93.033,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        95.39,
+        92.073,
+        91.635
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 5,
+      "input": 8192,
+      "ttft_s": 42.513,
+      "tpot_ms": 51.698,
+      "aggregate_tps": 53.631,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        52.309,
+        53.819,
+        54.763
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Laguna",
+      "format": "GGUF Q4_K_M",
+      "np": 5,
+      "input": 16384,
+      "ttft_s": 122.581,
+      "tpot_ms": 116.604,
+      "aggregate_tps": 21.152,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        20.791,
+        21.059,
+        21.607
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 1,
+      "input": 4096,
+      "ttft_s": 2.586,
+      "tpot_ms": 16.951,
+      "aggregate_tps": 51.392,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        51.447,
+        51.91,
+        50.818
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 1,
+      "input": 8192,
+      "ttft_s": 5.298,
+      "tpot_ms": 17.213,
+      "aggregate_tps": 44.711,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        43.992,
+        44.728,
+        45.413
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 1,
+      "input": 16384,
+      "ttft_s": 11.104,
+      "tpot_ms": 17.404,
+      "aggregate_tps": 35.423,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        35.424,
+        35.302,
+        35.543
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 2,
+      "input": 4096,
+      "ttft_s": 5.365,
+      "tpot_ms": 23.772,
+      "aggregate_tps": 68.969,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        69.599,
+        68.709,
+        68.6
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 2,
+      "input": 8192,
+      "ttft_s": 10.837,
+      "tpot_ms": 24.136,
+      "aggregate_tps": 57.619,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        57.391,
+        57.687,
+        57.78
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 2,
+      "input": 16384,
+      "ttft_s": 20.148,
+      "tpot_ms": 27.666,
+      "aggregate_tps": 42.236,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        42.13,
+        42.193,
+        42.387
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 4,
+      "input": 4096,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 84.763,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        85.256,
+        84.529,
+        84.504
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 4,
+      "input": 8192,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 66.831,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        66.866,
+        66.643,
+        66.984
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 4,
+      "input": 16384,
+      "ttft_s": null,
+      "tpot_ms": null,
+      "aggregate_tps": 45.934,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        46.123,
+        45.71,
+        45.968
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_NP4_20261109_205433_635931",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 5,
+      "input": 4096,
+      "ttft_s": 12.375,
+      "tpot_ms": 44.469,
+      "aggregate_tps": 88.397,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        89.467,
+        87.801,
+        87.924
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 5,
+      "input": 8192,
+      "ttft_s": 22.422,
+      "tpot_ms": 51.158,
+      "aggregate_tps": 68.39,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        68.248,
+        68.372,
+        68.552
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    },
+    {
+      "model": "Nemotron",
+      "format": "GGUF UD-Q4_K_M",
+      "np": 5,
+      "input": 16384,
+      "ttft_s": 43.265,
+      "tpot_ms": 65.301,
+      "aggregate_tps": 46.428,
+      "decode_tps": null,
+      "repeats_aggregate_tps": [
+        46.51,
+        46.187,
+        46.588
+      ],
+      "status": "PASS",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "ttft_over_180s": false
+    }
+  ],
+  "partial_runs": [],
+  "not_run": [],
+  "config_by_model": {
+    "Gemma26": {
+      "repo": null,
+      "format": "GGUF Q4_0",
+      "backend": "llama.cpp b11561 (e937b17) · Vulkan · RADV GFX1151",
+      "tp": null,
+      "max_context": null,
+      "batch": null,
+      "max_seqs": null,
+      "mem_fraction": null,
+      "cache": null,
+      "model_file": "gemma-4-26B_q4_0-it.gguf（SHA256 MODEL_VERIFIED）",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "date": "2026-11-09"
+    },
+    "Gemma31": {
+      "repo": null,
+      "format": "GGUF Q4_0",
+      "backend": "llama.cpp b11561 (e937b17) · Vulkan · RADV GFX1151",
+      "tp": null,
+      "max_context": null,
+      "batch": null,
+      "max_seqs": null,
+      "mem_fraction": null,
+      "cache": null,
+      "model_file": "gemma-4-31B_q4_0-it.gguf（SHA256 MODEL_VERIFIED）",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "date": "2026-11-09"
+    },
+    "Laguna": {
+      "repo": null,
+      "format": "GGUF Q4_K_M",
+      "backend": "llama.cpp b11561 (e937b17) · Vulkan · RADV GFX1151",
+      "tp": null,
+      "max_context": null,
+      "batch": null,
+      "max_seqs": null,
+      "mem_fraction": null,
+      "cache": null,
+      "model_file": "Laguna-XS-2.1-Q4_K_M.gguf（SHA256 MODEL_VERIFIED）",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "date": "2026-11-09"
+    },
+    "Nemotron": {
+      "repo": null,
+      "format": "GGUF UD-Q4_K_M",
+      "backend": "llama.cpp b11561 (e937b17) · Vulkan · RADV GFX1151",
+      "tp": null,
+      "max_context": null,
+      "batch": null,
+      "max_seqs": null,
+      "mem_fraction": null,
+      "cache": null,
+      "model_file": "NVIDIA-Nemotron-3.5-Lightning-30B-A3B-UD-Q4_K_M.gguf（SHA256 MODEL_VERIFIED）",
+      "run_id": "AISO1_llamacpp_V4_retest_20261109_164706_136489",
+      "date": "2026-11-09"
+    }
+  },
+  "source_file": "AISO1 terminal output (FULL_EXIT=0, NP4_FULL_EXIT=0); campaigns AISO1_llamacpp_V4_retest_20261109_164706_136489 (NP1/2/5) and AISO1_llamacpp_V4_NP4_20261109_205433_635931 (NP4)"
+}
