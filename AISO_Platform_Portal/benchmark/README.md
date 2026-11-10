@@ -70,3 +70,21 @@ These runs are labelled `MEASURED_EXPLORATORY`, not formal PASS: exact long-inpu
 Reference implementation: `B60_Benchmark_matrix_v4_261104.py` (Buffer/Benchmark on the Mac). In the live panel choose **Mode → V4 同參數掃描**. For every NP × Input (4096/8192/16384) × Repeat the platform tokenizes the same UNIT text through the server's `/tokenize` (add_special), keeps the first N token ids, and sends them to native `/completion` with one pinned slot per request, `n_predict` 1024, `ignore_eos`, `cache_prompt` false, seed 42. A request is valid only if the server's `timings.prompt_n` equals N, 1024 tokens were predicted and nothing was served from cache. TTFT = first non-empty content − request start; TPOT = (stream end − first content)/(tokens − 1); Aggregate = total output tokens ÷ (last stream end − first request start). Slot count and per-slot context come from `/slots` (a sweep is refused if slots < max NP or context < largest input + output). Per-(NP, input) means are saved as the job's `summary` with the same field names as `data/benchmark-*/` datasets. Start the server on AISO1 with `benchmark/scripts/aiso1_llama_server.sh <model>` and set the real address in `machines.local.json`. Results remain `MEASURED_EXPLORATORY`: the model file hash is not checked here.
 
 The machine page has two tabs: **執行** (engine, parameters, Terminal) and **結果** (live results, evidence reports, execution history).
+
+## Run manifest: saved every round, resume from the interruption
+
+A V4 sweep job file (`~/.aiso/benchmark-live-results/<job>.json`, atomic write) is the run manifest. It is rewritten after **every finished round** (one repeat of one NP × input, all NP requests) and carries:
+
+- `progress`: `rounds_done`, `rounds_total`, `next_round` (`[np, input, repeat]`), `updated_at`
+- `config`, `server_props` (+ `/slots`), `prompt_sha256_by_input`: what was tested and on which server build
+- `rows`: every request of every finished round
+
+If the process dies (laptop sleep, crash, closed terminal) the job shows as `interrupted`; a failed or cancelled job can be resumed too. Press **從中斷處繼續** on the Results tab (or `POST /api/v1/benchmark/live/start` with `config: {"resume_job": "<id>"}`): the platform reuses the job's own settings, skips finished rounds and runs only the rest.
+
+Safety rules on resume (otherwise it refuses and asks for a new run):
+- same machine and framework; the job must be `interrupted`, `failed` or `cancelled` and nothing else may be running
+- llama-server `model_file`, `build_info` and per-slot `n_ctx` equal to the interrupted run; prompt token hashes equal
+- an unfinished or invalid round is **never** mixed in: its rows move to `discarded_rows`, and the round is run again
+- every resume is logged in `resumes` (time, previous status, rounds kept, rows discarded) and rows measured afterwards carry `resumed: true`
+
+Caveat for reading results: the first repeat after a fresh server start is often slower (warm-up). A resumed round on a restarted server may look like Repeat 1 — check the `resumed` flag before treating a spread as hardware noise.
