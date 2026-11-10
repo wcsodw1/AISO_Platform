@@ -38,12 +38,7 @@
     t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
     setTimeout(() => t.classList.remove("flash"), 1800);
   });
-  /* machine menu: close after a pick, reopen on the next hover */
-  let shut = false;
-  document.addEventListener("click", e => { if (e.target.closest && e.target.closest(".sz-cas .cm")) { shut = true; document.querySelectorAll(".sz-cas").forEach(c => c.classList.add("shut")); } });
-  document.addEventListener("mouseover", e => { if (shut && !(e.target.closest && e.target.closest(".sz-cas"))) { shut = false; document.querySelectorAll(".sz-cas.shut").forEach(c => c.classList.remove("shut")); } });
-  const keepShut = host => { if (shut) { const c = host.querySelector(".sz-cas"); if (c) c.classList.add("shut"); } };
-  window.SizingUI = { hnShow, setCalc, keepShut };
+  window.SizingUI = { hnShow, setCalc };
 })();
 (function () {
   "use strict";
@@ -132,7 +127,7 @@
     }, true);
   }
 
-  let picked = null;
+  let picked = null, browse = {};
   function renderFormula(b, usablePct, opts) {
     $("szFTotal").textContent = C.memText(b.total);
     const inp = read();
@@ -140,7 +135,7 @@
     const list = C.options(b.total, C.variants(gpus), usablePct, opts);
     if (picked && !list.some(o => o.gpu.id === picked)) picked = null;   // default: nothing chosen, the user picks a machine
     const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
-    $("szCasHost").innerHTML = C.pickMenuHtml(items, picked, "sz"); UI.keepShut($("szCasHost"));
+    $("szCasHost").innerHTML = C.pickPanelHtml(items, picked, "sz", browse);
     const label = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`, bestI = items[0];
     $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
     const cur = list.find(o => o.gpu.id === picked);
@@ -187,7 +182,10 @@
     warn.hidden = !msgs.length; warn.textContent = msgs.join(" ");
   }
 
-  $("szCasHost").addEventListener("click", e => { const b = e.target.closest(".cm"); if (b) { picked = b.dataset.id; render(); } });
+  $("szCasHost").addEventListener("click", e => {
+    const v = e.target.closest(".pp-v"), m = e.target.closest(".pp-m"), c = e.target.closest(".pp-c");
+    if (v) { browse = { v: v.dataset.v }; render(); } else if (m) { browse = { ...browse, m: m.dataset.m }; render(); } else if (c) { picked = c.dataset.id; browse = {}; render(); }
+  });
   el.model.addEventListener("change", () => { loadPreset(); render(); if (el.model.value === "custom") el.params.focus(); });
   FIELDS.forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; syncCustomUI(); render(); }));
   el.cfg.addEventListener("input", applyConfig);

@@ -266,36 +266,41 @@
     return { layers, kvHeads, headDim, hybrid, notes };
   }
 
-  /* ---- machine picker: one result line, a menu that opens to the right (vendor -> model) ----
-     items: [{gpu, servers, need, cross, best, key}] ; a server is sold fully populated: servers x gpu.perServer GPUs */
+  /* ---- machine chooser: an always-visible 3-pane panel  Vendor | Model | Server size  (click to browse, click a size to choose)
+     items: [{gpu, servers, need, tp, cross, best}] ranked best-first ; a server is sold fully populated: servers x gpu.perServer GPUs
+     browse: {v, m} = what the user is looking at (not necessarily chosen) ; pickedId = chosen variant id or null */
   const physical = o => o.servers * o.gpu.perServer;
   const resEn = (servers, gpus) => `${servers} server${servers === 1 ? "" : "s"} · ${gpus} GPU${gpus === 1 ? "" : "s"}`;
-  function pickMenuHtml(items, pickedId, ns) {
-    const cur = items.find(o => o.gpu.id === pickedId) || null;   // nothing chosen yet -> placeholder prompt
+  function pickPanelHtml(items, pickedId, ns, browse) {
     const base = o => o.gpu.baseId || o.gpu.id;
-    const fmtRes = o => resEn(o.servers, physical(o));
-    const mark = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
-    const flag = o => (o.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : "");
+    const cur = items.find(o => o.gpu.id === pickedId) || null;
+    const best = items.find(o => o.best) || items[0];
     const per = o => `${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"} / server`;
-    const main = cur ? `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></span>` +
-      `<small>${per(cur)} · ${cur.best ? "★ Recommended · " : ""}Capacity needs ${cur.need} GPU${cur.need === 1 ? "" : "s"}${cur.tp && cur.tp !== cur.need ? ` (TP ${cur.tp})` : ""}${cur.cross ? " · ⚠ Cross-node" : ""}<span class="bz">每台 ${cur.gpu.perServer} 張 · ${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>`
-      : `<button type="button" class="sz-cas-main ask" aria-haspopup="true"><span class="cm-name">Choose a machine<span class="bz">選擇機型</span></span><span class="cm-res">Vendor ▸ Model ▸ Servers</span><small>Hover to choose · ★ marks the recommendation<span class="bz">滑過選擇 · ★ 為建議機型</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>`;
-    const btn = (o, inner) => `<button type="button" class="cm${cur && o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}">${inner}</button>`;
-    return `<div class="sz-cas" id="${ns}Cas">${main}<div class="sz-cas-menu"><ul class="sz-cas-vendors">` +
-      VENDORS.map(v => {
-        const list = items.filter(o => o.gpu.vendor === v);
-        if (!list.length) return "";
-        const models = [...new Set(list.map(base))];
-        return `<li class="${cur && v === cur.gpu.vendor ? "cur" : ""}"><span class="cv-name">${v}<i aria-hidden="true">▸</i></span><ul class="sz-cas-models">` +
-          models.map(m => {
-            const opts = list.filter(o => base(o) === m);   // already ranked: first = best config for this model
-            const top = opts[0];
-            if (opts.length === 1) return `<li>${btn(top, `<b>${escH(top.gpu.model)}</b><span>${per(top)} · ${fmtRes(top)}</span>${mark(top)}${flag(top)}`)}</li>`;
-            const here = cur && base(cur) === m;
-            return `<li class="has-cfg${here ? " cur" : ""}"><span class="cm-group"><b>${escH(top.gpu.model)}</b><span>${opts.length} server options</span>${opts.some(o => o.best) ? '<em class="star">★</em>' : ""}${flag(top)}<i aria-hidden="true">▸</i></span>` +
-              `<ul class="sz-cas-cfgs">${opts.map(o => `<li>${btn(o, `<b>${per(o)}</b><span>${fmtRes(o)}</span>${mark(o)}`)}</li>`).join("")}</ul></li>`;
-          }).join("") + `</ul></li>`;
-      }).join("") + `</ul></div></div>`;
+    const marks = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
+    const vendors = VENDORS.filter(v => items.some(o => o.gpu.vendor === v));
+    let bv = (browse && browse.v) || (cur ? cur.gpu.vendor : best.gpu.vendor);
+    if (!vendors.includes(bv)) bv = vendors[0];
+    const ofV = items.filter(o => o.gpu.vendor === bv);
+    const models = [...new Set(ofV.map(base))];
+    let bm = browse && browse.m;
+    if (!models.includes(bm)) bm = cur && cur.gpu.vendor === bv ? base(cur) : (best.gpu.vendor === bv ? base(best) : models[0]);
+    const cfgs = ofV.filter(o => base(o) === bm);
+    const head = cur
+      ? `<div class="pp-sel"><span class="pp-k">Selected<span class="bz">已選</span></span><b>${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</b><span class="pp-per">${per(cur)}</span><strong>${resEn(cur.servers, physical(cur))}</strong>${marks(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></div>`
+      : `<div class="pp-sel ask"><b>Choose a machine</b><span class="bz">選擇機型</span><span class="pp-hint">Vendor → Model → Server size · ★ = recommended<span class="bz">★ 為建議</span></span></div>`;
+    const colV = vendors.map(v => {
+      const n = new Set(items.filter(o => o.gpu.vendor === v).map(base)).size, hasBest = items.some(o => o.gpu.vendor === v && o.best);
+      return `<button type="button" class="pp-v${v === bv ? " on" : ""}${cur && cur.gpu.vendor === v ? " sel" : ""}" data-v="${v}"><b>${v}</b><span>${n} model${n === 1 ? "" : "s"}${hasBest ? ' <em class="star">★</em>' : ""}</span></button>`;
+    }).join("");
+    const colM = models.map(m => {
+      const opts = ofV.filter(o => base(o) === m), top = opts[0];
+      return `<button type="button" class="pp-m${m === bm ? " on" : ""}${cur && base(cur) === m ? " sel" : ""}" data-m="${m}"><b>${escH(top.gpu.model)}</b>${top.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}<span>${top.gpu.vram} GB · ${opts.length} size${opts.length === 1 ? "" : "s"}${opts.some(o => o.best) ? ' <em class="star">★</em>' : ""}</span></button>`;
+    }).join("");
+    const top = cfgs[0];
+    const colC = `<div class="pp-ch"><b>${escH(top.gpu.model)}</b><span>Server size<span class="bz">每台幾張</span></span></div>` + cfgs.map(o =>
+      `<button type="button" class="pp-c${cur && o.gpu.id === cur.gpu.id ? " sel" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${per(o)}</b><span>${resEn(o.servers, physical(o))}</span>${marks(o)}<small>Needs ${o.need} GPU${o.need === 1 ? "" : "s"}${o.tp && o.tp !== o.need ? ` · TP ${o.tp}` : ""}${o.cross ? " · cross-node 需跨節點" : ""}</small></button>`).join("");
+    return `<div class="pp" id="${ns}Pp">${head}<div class="pp-cols"><div class="pp-col pp-cv"><div class="pp-ch"><span>Vendor<span class="bz">品牌</span></span></div>${colV}</div>` +
+      `<div class="pp-col pp-cm"><div class="pp-ch"><span>Model<span class="bz">機型</span></span></div>${colM}</div><div class="pp-col pp-cc">${colC}</div></div></div>`;
   }
 
   /* GPU reference card (right side of Step 3): grouped by vendor, VRAM as a bar, server sizes as chips.
@@ -317,5 +322,5 @@
     }).join("");
   }
 
-  return { VENDORS, refRowsHtml, physical, resEn, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  return { VENDORS, refRowsHtml, physical, resEn, pickPanelHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

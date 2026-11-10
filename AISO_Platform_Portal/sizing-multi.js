@@ -52,7 +52,7 @@
     return { ...p, servers, gpu: g };
   }
 
-  let picked = null;
+  let picked = null, browse = {};
   function syncSummaries(g, sel) {
     $("mzReqSum").textContent = sel.length ? `${f1(g.users, 0)} users · ${sel.length} models · ${sel.map(x => (Q[x.cfg.quant] || x.cfg.quant)).join("/")}` : "No model selected 未選模型";
     $("mzReqTab").classList.toggle("warn", !sel.length);
@@ -100,9 +100,9 @@
     const list = C.variants(gpus).map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
       .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers * a.gpu.perServer - b.size.servers * b.gpu.perServer || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
     if (picked && !list.some(o => o.gpu.id === picked)) picked = null;
-    const UI = window.SizingUI, nm = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`;
+    const nm = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`;
     const its = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.servers, need: o.size.gpus, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
-    $("mzCasHost").innerHTML = C.pickMenuHtml(its, picked, "mz"); UI.keepShut($("mzCasHost"));
+    $("mzCasHost").innerHTML = C.pickPanelHtml(its, picked, "mz", browse);
     $("mzJumpTxt").textContent = ` · ${nm(its[0])} · ${C.resEn(its[0].servers, C.physical(its[0]))}`;
     $("mzRows").innerHTML = C.refRowsHtml(gpus, gp => {
       const z = sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha);
@@ -138,7 +138,10 @@
     $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>Total memory<span class="bz">合計顯存</span></th><th>of which weights<span class="bz">其中權重（檔案）</span></th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
   }
 
-  $("mzCasHost").addEventListener("click", e => { const b = e.target.closest(".cm"); if (b) { picked = b.dataset.id; render(); } });
+  $("mzCasHost").addEventListener("click", e => {
+    const v = e.target.closest(".pp-v"), mo = e.target.closest(".pp-m"), c = e.target.closest(".pp-c");
+    if (v) { browse = { v: v.dataset.v }; render(); } else if (mo) { browse = { ...browse, m: mo.dataset.m }; render(); } else if (c) { picked = c.dataset.id; browse = {}; render(); }
+  });
   document.querySelectorAll(".mz-q").forEach(sel => sel.addEventListener("change", () => {
     const c = sel.closest(".mz-card"), m = C.VIS_MODELS.find(x => x.id === c.dataset.id);
     c.querySelector(".mz-extra").value = f1(C.mtpOf(m, sel.value), 2);
