@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=2">
+  <link rel="stylesheet" href="sizing.css?v=6">
 </head>
 <body>
   <header class="site-header">
@@ -24,6 +24,17 @@
 
   <main>
     <section class="bm-hero"><div><a class="pg-back" href="./"><span aria-hidden="true">←</span> 返回首頁</a><p class="eyebrow">SIZING / MEMORY BUDGET</p><h1>GPU<br><em>SIZING</em></h1></div><p>先用 Memory Budget 算出「放得下」需要多少 GPU，再用 Throughput 與 HA 決定伺服器台數。結果是容量下限，採購前仍須用實際模型與 workload benchmark 驗證。</p></section>
+
+    <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
+      <header><div><p class="section-label">FORMULA</p><h2>計算公式<span class="zh">隨左邊參數即時代入數字</span></h2></div>
+        <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b></div></header>
+      <ol id="szFormula" class="sz-flist"></ol>
+      <div class="sz-pick">
+        <h3>建議機器<span class="zh">可選擇其中一種；依「台數最少、GPU 張數最少」排序</span></h3>
+        <div id="szOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
+        <div id="szPickDetail" class="sz-detail"></div>
+      </div>
+    </section>
 
     <div class="sz-layout">
       <section class="report-section sz-inputs" aria-label="輸入">
@@ -91,6 +102,6 @@
       </div>
     </div>
   </main>
-  <script src="sizing-core.js?v=1"></script>
-  <script src="sizing.js?v=1"></script>
+  <script src="sizing-core.js?v=2"></script>
+  <script src="sizing.js?v=2"></script>
 </body></html>

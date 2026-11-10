@@ -31,4 +31,20 @@ assert.strictEqual(t.servers, 5);
 assert.strictEqual(t.withHA, 6);
 // Concurrency estimator: 500 users × 40% × 25% = 50.
 assert.strictEqual(C.concurrentFromUsers(500, 40, 25), 50);
+// formula lines carry the substituted numbers and sum to the total
+const fl = C.formula(ref, b);
+assert.strictEqual(fl.length, 5);
+assert.ok(fl[1].sub.includes("2 × 80 × 8 × 128 × (16 ÷ 8) × 32,768 × 20"), fl[1].sub);
+assert.ok(fl[0].sub.startsWith("70B × 4 ÷ 8"));
+near(fl.slice(0, 4).reduce((a, x) => a + x.out, 0), fl[4].out, 1e-6, "formula parts sum to total");
+// memory text: GB with TB, TB first from 1000 GB
+assert.strictEqual(C.memText(308.4), "308.4 GB（0.31 TB）");
+assert.strictEqual(C.memText(1523), "1.52 TB（1,523 GB）");
+// GPU formula + ranked options (suggested = fewest servers, then fewest GPUs)
+const sz = C.sizeFor(b.total, gpu("b300"), 90);
+const gf = C.gpuFormula(b.total, gpu("b300"), 90, sz);
+assert.ok(gf.sub.endsWith("= 2"), gf.sub);
+const ops = C.options(b.total, C.GPUS, 90, {});
+assert.ok(ops[0].size.withHA <= ops[ops.length - 1].size.withHA);
+assert.strictEqual(ops[0].gpu.id, "b300", "B300 x2 is the smallest build for the reference case");
 console.log("sizing-core: all assertions passed");

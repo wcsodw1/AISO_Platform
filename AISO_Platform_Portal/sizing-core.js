@@ -75,5 +75,38 @@
              crossNode, physicalVram: withHA * gpu.perServer * gpu.vram };
   }
 
-  return { MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up };
+  const f1 = (n, d = 1) => Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  /* "154.0 GB（0.15 TB）"; at 1000 GB and above TB leads: "1.52 TB（1,523 GB）" */
+  function memText(gb) {
+    const tb = gb / 1000;
+    return gb >= 1000 ? `${f1(tb, 2)} TB（${f1(gb, 0)} GB）` : `${f1(gb)} GB（${f1(tb, 2)} TB）`;
+  }
+
+  /* the calculation, symbolic and with the current parameters substituted */
+  function formula(i, b) {
+    const w = f1(b.weights), kv = f1(b.kv), r = f1(b.runtime), h = f1(b.headroom);
+    return [
+      { k: "M_weights", sym: "P × b ÷ 8 × (1 + metadata%)", sub: `${i.params}B × ${i.weightBits} ÷ 8 × (1 + ${i.metaPct}%)`, out: b.weights },
+      { k: "M_KV", sym: "2 × L × H_KV × D × (b_KV ÷ 8) × T × C", sub: `2 × ${i.layers} × ${i.kvHeads} × ${i.headDim} × (${i.kvBits} ÷ 8) × ${f1(i.context, 0)} × ${i.concurrent}`, out: b.kv, note: `每 token ${f1(b.kvPerTokenKiB, 0)} KiB；T＝每請求 Context，C＝同時請求數` },
+      { k: "M_runtime", sym: "Runtime overhead", sub: `${r} GB`, out: b.runtime },
+      { k: "M_headroom", sym: "(M_weights + M_KV + M_runtime) × headroom%", sub: `(${w} + ${kv} + ${r}) × ${i.headroomPct}%`, out: b.headroom },
+      { k: "M_required", sym: "M_weights + M_KV + M_runtime + M_headroom", sub: `${w} + ${kv} + ${r} + ${h}`, out: b.total, total: true }
+    ];
+  }
+
+  /* GPU count for one option, with the substituted line */
+  function gpuFormula(totalGB, gpu, usablePct, size) {
+    return { sym: "N_GPU = ⌈ M_required ÷ (VRAM × usable%) ⌉",
+             sub: `⌈ ${f1(totalGB)} ÷ (${gpu.vram} × ${usablePct}%) ⌉ = ⌈ ${f1(totalGB / size.usablePerGpu, 2)} ⌉ = ${size.gpusMin}`,
+             tp: `TP 建議取 2 的次方：${size.gpusMin} → ${size.gpusTP} 張` };
+  }
+
+  /* every GPU option sized and ranked: fewest servers first, then fewest GPUs; first = suggested */
+  function options(totalGB, gpus, usablePct, opts) {
+    return gpus.map(g => ({ gpu: g, size: sizeFor(totalGB, g, usablePct, opts) }))
+      .sort((a, b) => a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
+  }
+
+  return { MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options };
 });

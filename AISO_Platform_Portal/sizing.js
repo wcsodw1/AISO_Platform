@@ -61,6 +61,21 @@
     }).join("");
   }
 
+  let picked = null;
+  function renderFormula(b, usablePct, opts) {
+    $("szFTotal").textContent = C.memText(b.total);
+    $("szFormula").innerHTML = C.formula(read(), b).map(r => `<li class="${r.total ? "tot" : ""}"><div class="sz-fk">${esc(r.k)}</div><div class="sz-fb"><span class="sz-sym">${esc(r.sym)}</span>` +
+      `<span class="sz-sub">= ${esc(r.sub)}</span><span class="sz-out">= ${C.memText(r.out)}</span>${r.note ? `<small>${esc(r.note)}</small>` : ""}</div></li>`).join("");
+    const list = C.options(b.total, gpus, usablePct, opts);
+    if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
+    $("szOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}" data-id="${o.gpu.id}">` +
+      `<b>${esc(o.gpu.name.replace(/（.*?）/g, "").replace("NVIDIA ", "").replace("Intel Arc Pro ", "").replace("AMD ", ""))} × ${o.size.gpusMin}</b>` +
+      `<small>${i === 0 ? "★ 建議 · " : ""}${o.size.withHA} 台（${o.size.withHA * o.gpu.perServer} 張）</small></button>`).join("");
+    const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s);
+    $("szPickDetail").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
+      `<p class="sz-sym">${esc(gf.sym)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}${s.crossNode ? "（超過單台，需跨節點）" : ""}</p>` +
+      `<p class="sz-final">${C.memText(b.total)} → <b>${g.name.replace(/（.*?）/g, "")} × ${s.gpusMin}</b>（容量下限）／TP 建議 ${s.gpusTP} 張／<b>${s.withHA} 台</b>，實體顯存 ${C.memText(s.physicalVram)}${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
+  }
   function render() {
     const inp = read();
     const usablePct = Math.min(100, Math.max(50, C.num(el.usable.value, 90)));
@@ -69,12 +84,14 @@
     $("szTotal").textContent = fmt(b.total);
     renderBars(b);
     renderRows(b, usablePct);
+    renderFormula(b, usablePct, { requiredTps: C.num(el.reqTps.value, 0), perServerTps: C.num(el.srvTps.value, 0), ha: el.ha.checked });
     const warn = $("szWarn"), msgs = [];
     if (!inp.params || !inp.layers || !inp.kvHeads || !inp.headDim) msgs.push("模型參數、層數、KV Heads、Head Dimension 需大於 0。");
     if (b.total && b.kv / b.total > 0.6) msgs.push("KV Cache 佔總需求超過 60%：Context 或併發是主因，可評估 KV 量化（FP8）、縮短 Context、Prefix Caching。");
     warn.hidden = !msgs.length; warn.textContent = msgs.join(" ");
   }
 
+  $("szOptions").addEventListener("click", e => { const b = e.target.closest(".sz-opt"); if (b) { picked = b.dataset.id; render(); } });
   el.model.addEventListener("change", () => { loadPreset(); render(); });
   ["params", "layers", "kvHeads", "headDim"].forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; render(); }));
   el.apply.addEventListener("click", () => { el.conc.value = el.estConc.textContent; render(); });
