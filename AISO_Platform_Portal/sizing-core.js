@@ -294,7 +294,7 @@
     }).join("");
     const colM = models.map(m => {
       const opts = ofV.filter(o => base(o) === m), top = opts[0];
-      return `<button type="button" class="pp-m${m === bm ? " on" : ""}${cur && base(cur) === m ? " sel" : ""}" data-m="${m}"><b>${escH(top.gpu.model)}</b>${top.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}<span>${top.gpu.vram} GB · ${opts.length} size${opts.length === 1 ? "" : "s"}${opts.some(o => o.best) ? ' <em class="star">★</em>' : ""}</span></button>`;
+      return `<button type="button" class="pp-m${m === bm ? " on" : ""}${cur && base(cur) === m ? " sel" : ""}" data-m="${m}"><b>${escH(top.gpu.model)}</b><span>${top.gpu.vram} GB · ${opts.length} size${opts.length === 1 ? "" : "s"}${opts.some(o => o.best) ? ' <em class="star">★</em>' : ""}</span></button>`;
     }).join("");
     const top = cfgs[0];
     const colC = `<div class="pp-ch"><b>${escH(top.gpu.model)}</b><span>Server size<span class="bz">每台幾張</span></span></div>` + cfgs.map(o =>
@@ -333,7 +333,7 @@
       return `<section class="sz-ref-v"><h4>${v}</h4>` + list.map(({ g, i }) => {
         const ks = [...new Set([...(g.configs || []), g.perServer])].sort((a, b) => a - b);
         const inf = info ? info(g) : "";
-        return `<div class="sz-ref-row${inf && inf.warn ? " warn" : ""}${hlId === g.id ? " hl" : ""}" data-base="${g.id}"><div class="rr-top"><b>${escH(g.model)}</b>${g.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}` +
+        return `<div class="sz-ref-row${inf && inf.warn ? " warn" : ""}${hlId === g.id ? " hl" : ""}" data-base="${g.id}"><div class="rr-top"><b>${escH(g.model)}</b>` +
           `<span class="rr-vram">${editable ? `<input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}" aria-label="VRAM GB">` : g.vram} GB</span></div>` +
           `<div class="rr-bar"><i style="width:${(g.vram / maxV * 100).toFixed(1)}%"></i></div>` +
           `<div class="rr-opts">${ks.map(k => `<em>${k}</em>`).join("")}<span>GPUs / server</span>${editable ? `<label class="rr-def">default <input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}" aria-label="GPUs per server"></label>` : ""}</div>` +
