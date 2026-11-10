@@ -125,4 +125,15 @@ assert.ok(pn.hybrid && pn.notes.length === 2 && pn.headDim === 256, "hybrid + Mo
 assert.strictEqual(C.parseConfig({ num_hidden_layers: 32, num_attention_heads: 32, hidden_size: 4096 }).kvHeads, 32, "MHA falls back to attention heads");
 assert.throws(() => C.parseConfig({ foo: 1 }), /找不到/);
 assert.throws(() => C.parseConfig("not json"), /不是有效的 JSON/);
+// machine picker: vendor -> model menu, server x GPUs-per-server wording, flags
+const mk = o => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: false });
+const pk0 = C.options(b.total, C.GPUS, 90, {}).map(mk); pk0[0].best = true;
+const menuHtml = C.pickMenuHtml(pk0, pk0[0].gpu.id, "t");
+assert.ok(menuHtml.indexOf(">NVIDIA<") >= 0 || menuHtml.indexOf("NVIDIA<i") >= 0, "vendor level");
+assert.ok(menuHtml.indexOf("NVIDIA") < menuHtml.indexOf("AMD") && menuHtml.indexOf("AMD") < menuHtml.indexOf("Intel"), "vendors listed NVIDIA, AMD, Intel top to bottom");
+assert.ok(/1 台 · 8 張 GPU/.test(menuHtml), "result wording is servers x GPUs per server (e.g. 1 台 · 8 張 GPU)");
+assert.ok(menuHtml.includes("B300") && menuHtml.includes("MI300X") && menuHtml.includes("Arc Pro B70"), "models of every vendor present");
+assert.ok(menuHtml.includes('class="warn"'), "cross-node models are flagged");
+assert.strictEqual((menuHtml.match(/class="star"/g) || []).length, 1, "exactly one recommended model");
+assert.ok(C.GPUS.every(g => C.VENDORS.includes(g.vendor) && g.model && g.vram > 0 && g.perServer > 0), "catalog entries have vendor, model, vram, perServer");
 console.log("sizing-core: all assertions passed");

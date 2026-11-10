@@ -23,15 +23,21 @@
   /* GPU catalog. vram in GB, perServer = GPUs in one chassis (editable in UI).
      assumed:true → value is a planning assumption, confirm with real hardware. */
   const GPUS = [
-    { id: "rtxpro6000", name: "NVIDIA RTX PRO 6000", vram: 96, perServer: 8 },
-    { id: "b300", name: "NVIDIA B300（HGX）", vram: 288, perServer: 8, assumed: true },
-    { id: "h200", name: "NVIDIA H200", vram: 141, perServer: 8 },
-    { id: "h100", name: "NVIDIA H100", vram: 80, perServer: 8 },
-    { id: "l40s", name: "NVIDIA L40S", vram: 48, perServer: 8 },
-    { id: "b70", name: "Intel Arc Pro B70（AISO 平台）", vram: 32, perServer: 2, basis: "依 TPI B70 測試機：2 張＝64 GB" },
-    { id: "b60", name: "Intel Arc Pro B60（AISO 平台）", vram: 24, perServer: 4, basis: "依 TPI B60 測試機：4 張＝96 GB" },
-    { id: "aiso1", name: "AMD AISO1（統一記憶體）", vram: 96, perServer: 1, assumed: true }
+    { id: "rtxpro6000", vendor: "NVIDIA", model: "RTX PRO 6000", name: "NVIDIA RTX PRO 6000", vram: 96, perServer: 8 },
+    { id: "b300", vendor: "NVIDIA", model: "B300", name: "NVIDIA B300（HGX）", vram: 288, perServer: 8, assumed: true },
+    { id: "h200", vendor: "NVIDIA", model: "H200", name: "NVIDIA H200", vram: 141, perServer: 8 },
+    { id: "h100", vendor: "NVIDIA", model: "H100", name: "NVIDIA H100", vram: 80, perServer: 8 },
+    { id: "l40s", vendor: "NVIDIA", model: "L40S", name: "NVIDIA L40S", vram: 48, perServer: 8 },
+    { id: "b200", vendor: "NVIDIA", model: "B200", name: "NVIDIA B200（HGX）", vram: 180, perServer: 8, assumed: true },
+    { id: "b70", vendor: "Intel", model: "Arc Pro B70", name: "Intel Arc Pro B70（AISO 平台）", vram: 32, perServer: 2, basis: "依 TPI B70 測試機：2 張＝64 GB" },
+    { id: "b60", vendor: "Intel", model: "Arc Pro B60", name: "Intel Arc Pro B60（AISO 平台）", vram: 24, perServer: 4, basis: "依 TPI B60 測試機：4 張＝96 GB" },
+    { id: "gaudi3", vendor: "Intel", model: "Gaudi 3", name: "Intel Gaudi 3", vram: 128, perServer: 8, assumed: true },
+    { id: "aiso1", vendor: "AMD", model: "AISO1", name: "AMD AISO1（統一記憶體）", vram: 96, perServer: 1, assumed: true },
+    { id: "mi300x", vendor: "AMD", model: "Instinct MI300X", name: "AMD Instinct MI300X", vram: 192, perServer: 8 },
+    { id: "mi325x", vendor: "AMD", model: "Instinct MI325X", name: "AMD Instinct MI325X", vram: 256, perServer: 8, assumed: true },
+    { id: "mi355x", vendor: "AMD", model: "Instinct MI355X", name: "AMD Instinct MI355X", vram: 288, perServer: 8, assumed: true }
   ];
+  const VENDORS = ["NVIDIA", "AMD", "Intel"];
 
   const num = (v, d) => (Number.isFinite(+v) && v !== "" && v !== null ? +v : d);
 
@@ -252,5 +258,25 @@
     return { layers, kvHeads, headDim, hybrid, notes };
   }
 
-  return { tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  /* ---- machine picker: one result line, a menu that opens to the right (vendor -> model) ----
+     items: [{gpu, servers, need, cross, best, key}] ; a server is sold fully populated: servers x gpu.perServer GPUs */
+  const physical = o => o.servers * o.gpu.perServer;
+  function pickMenuHtml(items, pickedId, ns) {
+    const cur = items.find(o => o.gpu.id === pickedId) || items[0];
+    const fmtRes = o => `${o.servers} 台 · ${physical(o)} 張 GPU`;
+    const mark = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
+    return `<div class="sz-cas" id="${ns}Cas">` +
+      `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}</span>` +
+      `<small>${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</small><span class="cm-arrow" aria-hidden="true">▸</span></button>` +
+      `<div class="sz-cas-menu"><ul class="sz-cas-vendors">` +
+      VENDORS.map(v => {
+        const list = items.filter(o => o.gpu.vendor === v);
+        if (!list.length) return "";
+        return `<li class="${v === cur.gpu.vendor ? "cur" : ""}"><span class="cv-name">${v}<i aria-hidden="true">▸</i></span><ul class="sz-cas-models">` +
+          list.map(o => `<li><button type="button" class="cm${o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${escH(o.gpu.model)}</b><span>${fmtRes(o)}</span>${mark(o)}${o.gpu.assumed ? '<i class="sz-flag">假設</i>' : ""}</button></li>`).join("") +
+          `</ul></li>`;
+      }).join("") + `</ul></div></div>`;
+  }
+
+  return { VENDORS, physical, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

@@ -38,7 +38,12 @@
     t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
     setTimeout(() => t.classList.remove("flash"), 1800);
   });
-  window.SizingUI = { hnShow, setCalc };
+  /* machine menu: close after a pick, reopen on the next hover */
+  let shut = false;
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest(".sz-cas .cm")) { shut = true; document.querySelectorAll(".sz-cas").forEach(c => c.classList.add("shut")); } });
+  document.addEventListener("mouseover", e => { if (shut && !(e.target.closest && e.target.closest(".sz-cas"))) { shut = false; document.querySelectorAll(".sz-cas.shut").forEach(c => c.classList.remove("shut")); } });
+  const keepShut = host => { if (shut) { const c = host.querySelector(".sz-cas"); if (c) c.classList.add("shut"); } };
+  window.SizingUI = { hnShow, setCalc, keepShut };
 })();
 (function () {
   "use strict";
@@ -83,7 +88,7 @@
   function showEmpty() {
     $("szFTotal").textContent = "—"; $("szTotal").textContent = "—";
     $("szFormula").innerHTML = '<p class="sz-empty">請先輸入模型參數（總參數量、層數、KV heads、head 維度），輸入完成後才會計算；也可以貼上 config.json 自動帶入。</p>';
-    ["szBars", "szBreak", "szOptions", "szPickDetail", "szRows", "szPickHead"].forEach(id => { $(id).innerHTML = ""; });
+    ["szBars", "szBreak", "szCasHost", "szPickDetail", "szPickCalc", "szRows"].forEach(id => { $(id).innerHTML = ""; });
     $("szJumpTxt").textContent = "—";
     $("szWarn").hidden = true;
   }
@@ -142,19 +147,17 @@
     UI.setCalc($("szFormula"), C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] }));
     const list = C.options(b.total, gpus, usablePct, opts);
     if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
-    $("szOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}">` +
-      `<b>${esc(o.gpu.name.replace(/（.*?）/g, "").replace("NVIDIA ", "").replace("Intel Arc Pro ", "").replace("AMD ", ""))} × ${o.size.gpusMin}</b>` +
-      `<small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.withHA} 台（${o.size.withHA * o.gpu.perServer} 張）</small></button>`).join("");
-    const nm = gpu => gpu.name.replace(/（.*?）/g, "");
-    const best = list[0], bg = best.gpu, bs = best.size;
-    $("szPickHead").innerHTML = `<span class="star">★ 建議配置</span><b>${esc(nm(bg))} × ${bs.gpusMin} 張</b><span class="srv">${bs.withHA} 台（每台 ${bg.perServer} 張）</span>` +
-      `<small>依上述 ${C.memText(b.total)}：每卡可規劃 ${fmt(bs.usablePerGpu, 1)} GB，TP ${bs.gpusTP} 張${bs.crossNode ? "；⚠ 沒有單機可行的選項，需跨節點" : ""}</small>`;
-    $("szJumpTxt").textContent = `${nm(bg)} × ${bs.gpusMin}`;
-    const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s);
-    $("szPickDetail").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
-      `<p class="sz-sym">${C.sci(gf.sym)} ${C.tip(`V：每卡 VRAM（${g.vram} GB）；u：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位。`)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}</p>` +
-      (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：TP ${s.gpusTP} 張 &gt; 每台 ${g.perServer} 張，共 ${s.withHA} 台 ${C.tip("不建議：單一模型必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT）。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "") +
-      `<p class="sz-final">${C.memText(b.total)} → <b>${g.name.replace(/（.*?）/g, "")} × ${s.gpusMin}</b>（容量下限）／TP ${s.gpusTP} 張／<b>${s.withHA} 台</b>，實體顯存 ${C.memText(s.physicalVram)}${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
+    const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
+    $("szCasHost").innerHTML = C.pickMenuHtml(items, picked, "sz"); UI.keepShut($("szCasHost"));
+    const label = o => `${o.gpu.vendor} ${o.gpu.model}`, bestI = items[0];
+    $("szJumpTxt").textContent = `${label(bestI)} · ${bestI.servers} 台 · ${C.physical(bestI)} 張`;
+    const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s), ci = items.find(o => o.gpu.id === picked);
+    /* visible: one result line (+ one warning when a cross-node TP would be needed) */
+    $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)} → <b>${esc(label(ci))} × ${s.withHA} 台（${C.physical(ci)} 張 GPU）</b></p>` +
+      `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>` +
+      (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：TP ${s.gpusTP} 張 &gt; 每台 ${g.perServer} 張 ${C.tip("不建議：單一模型必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT）。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "");
+    $("szPickCalc").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
+      `<p class="sz-sym">${C.sci(gf.sym)} ${C.tip(`V：每卡 VRAM（${g.vram} GB）；u：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位。`)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}</p>`;
   }
   /* The tabs carry a one-line summary so collapsed settings are never forgotten */
   const BITS = { 16: "BF16", 8: "FP8", 4: "4-bit" };
@@ -186,7 +189,7 @@
     warn.hidden = !msgs.length; warn.textContent = msgs.join(" ");
   }
 
-  $("szOptions").addEventListener("click", e => { const b = e.target.closest(".sz-opt"); if (b) { picked = b.dataset.id; render(); } });
+  $("szCasHost").addEventListener("click", e => { const b = e.target.closest(".cm"); if (b) { picked = b.dataset.id; render(); } });
   el.model.addEventListener("change", () => { loadPreset(); render(); if (el.model.value === "custom") el.params.focus(); });
   FIELDS.forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; syncCustomUI(); render(); }));
   el.cfg.addEventListener("input", applyConfig);

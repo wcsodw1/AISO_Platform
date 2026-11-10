@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=30">
+  <link rel="stylesheet" href="sizing.css?v=32">
 </head>
 <body>
   <header class="site-header">
@@ -88,12 +88,16 @@
     </section>
 
     <section class="report-section" id="szPickSec">
-      <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與張數。可選擇其中一種機器；依「台數最少、GPU 張數最少」排序，需跨節點的排在最後。</span></span></h2></div></header>
-      <div id="szPickHead" class="sz-pick-head"></div>
-      <div id="szOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
-      <div id="szPickDetail" class="sz-detail"></div>
-      <h3 class="sz-sub-h">所有 GPU 型號逐一試算 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">GPU 數＝⌈總需求 ÷（每卡 VRAM × 可規劃%）⌉；TP 建議為 2 的次方（1/2/4/8/16）。每卡 VRAM 與每台 GPU 數可直接改；橘色「假設」為規劃假設，需和實機確認。</span></span></h3>
-      <div class="table-wrap"><table class="sz-table"><thead><tr><th>GPU</th><th>每卡 VRAM</th><th>每台 GPU 數</th><th>容量下限</th><th>TP 建議</th><th>需要伺服器</th><th>備註</th></tr></thead><tbody id="szRows"></tbody></table></div>
+      <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+      <div id="szCasHost" class="sz-cas-host"></div>
+      <div id="szPickDetail" class="sz-pickline"></div>
+      <div class="sz-hn sz-hn-pick">
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="calc" aria-expanded="false"><b>算式</b><small>N_GPU 如何算出張數</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="spec" aria-expanded="false"><b>機型規格表</b><small>每卡 VRAM、每台張數（可修改）</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-panels">
+          <div class="sz-hn-panel" data-p="calc"><div id="szPickCalc" class="sz-detail"></div></div>
+          <div class="sz-hn-panel" data-p="spec"><div class="table-wrap"><table class="sz-table"><thead><tr><th>GPU</th><th>每卡 VRAM</th><th>每台 GPU 數</th><th>容量下限</th><th>TP 建議</th><th>需要伺服器</th><th>備註</th></tr></thead><tbody id="szRows"></tbody></table></div></div>
+        </div>
+      </div>
     </section>
 
     <section class="report-section">
@@ -163,10 +167,13 @@
       </section>
 
       <section class="report-section" id="mzPickSec">
-        <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與張數。可選擇其中一種機器；依「台數最少、GPU 張數最少」排序，需跨節點的排在最後。</span></span></h2></div></header>
-        <div id="mzPickHead" class="sz-pick-head"></div>
-        <div id="mzOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
-        <div id="mzDetail" class="sz-detail"></div>
+        <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+        <div id="mzCasHost" class="sz-cas-host"></div>
+        <div id="mzPickDetail" class="sz-pickline"></div>
+        <div class="sz-hn sz-hn-pick">
+          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="bins" aria-expanded="false"><b>配置明細</b><small>每張 GPU 放哪些模型</small><span class="car" aria-hidden="true">▾</span></button></div>
+          <div class="sz-hn-panels"><div class="sz-hn-panel" data-p="bins"><div id="mzDetail" class="sz-detail"></div></div></div>
+        </div>
       </section>
 
       <section class="report-section">
@@ -208,7 +215,7 @@
     </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=16"></script>
-  <script src="sizing.js?v=13"></script>
-  <script src="sizing-multi.js?v=10"></script>
+  <script src="sizing-core.js?v=19"></script>
+  <script src="sizing.js?v=15"></script>
+  <script src="sizing-multi.js?v=11"></script>
 </body></html>

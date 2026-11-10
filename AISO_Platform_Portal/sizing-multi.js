@@ -93,26 +93,24 @@
     if (g.runtimeGB <= 0) warn.push("Runtime overhead 為 0 不實際：每個模型程序都要有 CUDA context 與 activation（建議每個模型至少 3～5 GB）。");
     if (g.headroomPct <= 0) warn.push("安全餘裕為 0%，沒有緩衝。");
     $("mzWarn").hidden = !warn.length; $("mzWarn").textContent = warn.join(" ");
-    if (!sel.length) { $("mzOptions").innerHTML = ""; $("mzDetail").innerHTML = ""; $("mzCombos").innerHTML = ""; $("mzPickHead").innerHTML = ""; $("mzJumpTxt").textContent = "—"; return; }
+    if (!sel.length) { ["mzCasHost", "mzPickDetail", "mzDetail", "mzCombos"].forEach(id => { $(id).innerHTML = ""; }); $("mzJumpTxt").textContent = "—"; return; }
 
     // GPU options
     const items = sel.map((x, i) => ({ name: x.m.name, total: budgets[i].total }));
     const list = gpus.map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
       .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
     if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
-    const best = list[0], bn = shortName(best.gpu.name);
-    $("mzPickHead").innerHTML = `<span class="star">★ 建議配置</span><b>${esc(bn)} × ${best.size.gpus} 張</b><span class="srv">${best.size.servers} 台（每台 ${best.gpu.perServer} 張）</span>` +
-      `<small>依上述 ${C.memText(total)}：${g.pack ? "共用打包" : "各模型獨立"}，每卡可規劃 ${f1(best.size.cap)} GB${best.size.crossNode ? "；⚠ 沒有單機可行的選項，需跨節點" : ""}</small>`;
-    $("mzJumpTxt").textContent = `${bn} × ${best.size.gpus}`;
-    $("mzOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}"><b>${esc(shortName(o.gpu.name))} × ${o.size.gpus}</b><small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.servers} 台（${o.size.servers * o.gpu.perServer} 張）</small></button>`).join("");
-    const cur = list.find(o => o.gpu.id === picked), s = cur.size, gp = cur.gpu;
+    const UI = window.SizingUI, nm = o => `${o.gpu.vendor} ${o.gpu.model}`;
+    const its = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.servers, need: o.size.gpus, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
+    $("mzCasHost").innerHTML = C.pickMenuHtml(its, picked, "mz"); UI.keepShut($("mzCasHost"));
+    $("mzJumpTxt").textContent = `${nm(its[0])} · ${its[0].servers} 台 · ${C.physical(its[0])} 張`;
+    const cur = list.find(o => o.gpu.id === picked), s = cur.size, gp = cur.gpu, ci = its.find(o => o.gpu.id === picked);
     const iso = sizeAll(items, { ...gp, usablePct: g.usable }, false, false), pk = sizeAll(items, { ...gp, usablePct: g.usable }, true, false);
-    $("mzDetail").innerHTML = `<p class="sz-gl"><b>${esc(gp.name)}</b>${gp.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${gp.vram} GB（可規劃 ${f1(s.cap)} GB）、每台 ${gp.perServer} 張</p>` +
-      `<p class="sz-sub">TP 分片：${s.tp.map(t => `${esc(t.name)} ${t.k} 張`).join(" · ")} ${C.tip("每個模型的 TP 取 2 的次方張；同一模型的分片一定放在不同 GPU。")}</p>` +
-      `<ol class="mz-bins">${s.bins.map((b, i) => `<li><b>GPU ${i + 1}</b><div class="mz-bar"><i style="width:${Math.min(100, b.used / s.cap * 100)}%"></i></div><span>${f1(b.used)} / ${f1(s.cap)} GB　${b.shards.map(sh => `${esc(sh.name)}${sh.k > 1 ? `（1/${sh.k} 分片）` : ""} ${f1(sh.gb)}`).join(" ＋ ")}</span></li>`).join("")}</ol>` +
-      (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：有模型的 TP 超過每台 ${gp.perServer} 張 ${C.tip("不建議：必須跨節點（需高速互連，會拖慢 TPOT）。這只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "") +
-      `<p class="sz-final">${C.memText(total)} → <b>${esc(shortName(gp.name))} × ${s.gpus}</b>（${g.pack ? "共用打包" : "各模型獨立"}）／<b>${s.servers} 台</b>${g.ha ? "（含 +1 備援）" : ""}，實體顯存 ${C.memText(s.servers * gp.perServer * gp.vram)}<br>` +
-      `<small>比較：共用打包 ${pk.gpus} 張、各模型獨立 ${iso.gpus} 張（${esc(shortName(gp.name))}）</small></p>`;
+    $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)} → <b>${esc(nm(ci))} × ${s.servers} 台（${C.physical(ci)} 張 GPU）</b></p>` +
+      `<p class="sz-sub">${g.pack ? "共用打包" : "各模型獨立"}，容量需要 ${s.gpus} 張；每卡 ${gp.vram} GB（可規劃 ${f1(s.cap)} GB）、每台 ${gp.perServer} 張${g.ha ? "；含 +1 備援" : ""}　<small>共用打包 ${pk.gpus} 張／各模型獨立 ${iso.gpus} 張</small></p>` +
+      (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：有模型的 TP 超過每台 ${gp.perServer} 張 ${C.tip("不建議：必須跨節點（需高速互連，會拖慢 TPOT）。這只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "");
+    $("mzDetail").innerHTML = `<p class="sz-sub">TP 分片：${s.tp.map(t => `${esc(t.name)} ${t.k} 張`).join(" · ")} ${C.tip("每個模型的 TP 取 2 的次方張；同一模型的分片一定放在不同 GPU。")}</p>` +
+      `<ol class="mz-bins">${s.bins.map((b, i) => `<li><b>GPU ${i + 1}</b><div class="mz-bar"><i style="width:${Math.min(100, b.used / s.cap * 100)}%"></i></div><span>${f1(b.used)} / ${f1(s.cap)} GB　${b.shards.map(sh => `${esc(sh.name)}${sh.k > 1 ? `（1/${sh.k} 分片）` : ""} ${f1(sh.gb)}`).join(" ＋ ")}</span></li>`).join("")}</ol>`;
 
     // Q4 / Q8 combinations (only q4km / q8 considered)
     const opts = sel.map(x => x.m.quants.filter(q => Q[q]));
@@ -130,7 +128,7 @@
     $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>合計顯存</th><th>其中權重（檔案）</th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
   }
 
-  $("mzOptions").addEventListener("click", e => { const b = e.target.closest(".sz-opt"); if (b) { picked = b.dataset.id; render(); } });
+  $("mzCasHost").addEventListener("click", e => { const b = e.target.closest(".cm"); if (b) { picked = b.dataset.id; render(); } });
   document.querySelectorAll(".mz-q").forEach(sel => sel.addEventListener("change", () => {
     const c = sel.closest(".mz-card"), m = C.VIS_MODELS.find(x => x.id === c.dataset.id);
     c.querySelector(".mz-extra").value = f1(C.mtpOf(m, sel.value), 2);
