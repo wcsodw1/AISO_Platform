@@ -16,6 +16,9 @@ check:
 	node --check AISO_Platform_Portal/gptoss-v2-historical.js
 	node --check AISO_Platform_Portal/benchmark-app.js
 	node --check AISO_Platform_Portal/manage.js
+	node --check AISO_Platform_Portal/sizing-core.js
+	node --check AISO_Platform_Portal/sizing.js
+	node AISO_Platform_Portal/tests/sizing-core.test.js
 	python3 -m unittest discover -s AISO_Platform_Portal/tests -p "test_*.py"
 
 status:
