@@ -116,13 +116,13 @@
 
   function renderBars(b, inp) {
     /* the four cards are the four terms of M_required — same symbols as the result row, % = term ÷ M_required */
-    const parts = [["M_weights", "模型權重", b.weights, "w"], ["M_KV", "KV Cache", b.kv, "k"], ["M_runtime", "Runtime", b.runtime, "r"], ["M_headroom", "安全餘裕", b.headroom, "h"]].sort((x, y) => y[2] - x[2]);   // largest share first
+    const parts = [["M_weights", "Weights|模型權重", b.weights, "w"], ["M_KV", "KV cache|KV 快取", b.kv, "k"], ["M_runtime", "Runtime|執行時", b.runtime, "r"], ["M_headroom", "Headroom|安全餘裕", b.headroom, "h"]].sort((x, y) => y[2] - x[2]);   // largest share first
     const perReq = b.kvPerTokenKiB * 1024 * inp.context / 1e9;
     /* one request's KV is 1/C of the M_KV segment — drawn as a striped slice inside it (it is part of M_KV, not an extra term) */
-    const slice = c => c === "k" && inp.concurrent > 0 ? `<b class="sz-reqslice" style="width:${(100 / inp.concurrent).toFixed(3)}%" title="KV / 請求 ${fmt(perReq, 1)} GB = M_KV ÷ C（M_KV 的 1/${inp.concurrent}）"></b>` : "";
-    $("szBars").innerHTML = parts.map(([sym, n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${sym} ${n} ${fmt(v)} GB">${slice(c)}</i>`).join("");
-    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n}</small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
-      `<div><dt><i class="sz-dot kr"></i>KV / 請求${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(perReq, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
+    const slice = c => c === "k" && inp.concurrent > 0 ? `<b class="sz-reqslice" style="width:${(100 / inp.concurrent).toFixed(3)}%" title="KV per request 每請求 KV ${fmt(perReq, 1)} GB = M_KV ÷ C（M_KV 的 1/${inp.concurrent}）"></b>` : "";
+    $("szBars").innerHTML = parts.map(([sym, n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${sym} ${n.replace("|", " ")} ${fmt(v)} GB">${slice(c)}</i>`).join("");
+    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n.split("|")[0]}<span class="bz">${n.split("|")[1]}</span></small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
+      `<div><dt><i class="sz-dot kr"></i>KV per request<span class="bz">每請求 KV</span>${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(perReq, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
   }
   function renderRows(b, usablePct) {
     const reqTps = C.num(el.reqTps.value, 0), srvTps = C.num(el.srvTps.value, 0), ha = el.ha.checked;
@@ -153,10 +153,10 @@
     const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("szCasHost").innerHTML = C.pickMenuHtml(items, picked, "sz"); UI.keepShut($("szCasHost"));
     const label = o => `${o.gpu.vendor} ${o.gpu.model}`, bestI = items[0];
-    $("szJumpTxt").textContent = `${label(bestI)} · ${bestI.servers} 台 · ${C.physical(bestI)} 張`;
+    $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
     const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s), ci = items.find(o => o.gpu.id === picked);
     /* visible: one result line (+ one warning when a cross-node TP would be needed) */
-    $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)} → <b>${esc(label(ci))} × ${s.withHA} 台（${C.physical(ci)} 張 GPU）</b></p>` +
+    $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)} → <b>${esc(label(ci))} × ${C.resEn(s.withHA, C.physical(ci))}</b><span class="bz">${s.withHA} 台 · ${C.physical(ci)} 張 GPU</span></p>` +
       `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>` +
       (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：TP ${s.gpusTP} 張 &gt; 每台 ${g.perServer} 張 ${C.tip("不建議：單一模型必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT）。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "");
     $("szPickCalc").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
@@ -167,11 +167,11 @@
   function syncSummaries() {
     const m = C.MODELS.find(x => x.id === el.model.value), inp = read();
     const complete = inp.params > 0 && inp.layers > 0 && inp.kvHeads > 0 && inp.headDim > 0;
-    $("szReqSum").textContent = complete ? `${m && m.id !== "custom" ? m.name : "自訂模型"} · ${BITS[inp.weightBits] || inp.weightBits + "-bit"} · ${Math.round(inp.context / 1024)}K · ${inp.concurrent} 並行` : "待輸入模型參數";
+    $("szReqSum").textContent = complete ? `${m && m.id !== "custom" ? m.name : "Custom model"} · ${BITS[inp.weightBits] || inp.weightBits + "-bit"} · ${Math.round(inp.context / 1024)}K · ${inp.concurrent} concurrent` : "Enter model parameters 待輸入模型參數";
     $("szReqTab").classList.toggle("warn", !complete);
     const set = !!(String(el.reqTps.value).trim() || String(el.srvTps.value).trim() || el.ha.checked);
     $("szOptTab").classList.toggle("set", set);
-    $("szCurtainHint").textContent = set ? "✓ 已設定" : "未設定";
+    $("szCurtainHint").textContent = set ? "✓ Set 已設定" : "Not set 未設定";
   }
   function render() {
     syncSummaries();

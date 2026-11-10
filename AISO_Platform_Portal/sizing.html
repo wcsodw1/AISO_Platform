@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=34">
+  <link rel="stylesheet" href="sizing.css?v=35">
 </head>
 <body>
   <header class="site-header">
@@ -23,87 +23,87 @@
   </header>
 
   <main>
-    <section class="bm-hero"><div><a class="pg-back" href="./"><span aria-hidden="true">←</span> 返回首頁</a><p class="eyebrow">SIZING / MEMORY BUDGET <span class="hint" tabindex="0" role="note">💡<span class="hintbox">先用 Memory Budget 算出「放得下」需要多少 GPU，再用 Throughput 與 HA 決定伺服器台數。結果是容量下限，採購前仍須用實際模型與 workload benchmark 驗證。</span></span></p><h1>GPU<br><em>SIZING</em></h1></div></section>
+    <section class="bm-hero"><div><a class="pg-back" href="./"><span aria-hidden="true">←</span> Back to home<span class="bz">返回首頁</span></a><p class="eyebrow">SIZING / MEMORY BUDGET <span class="hint" tabindex="0" role="note">💡<span class="hintbox">先用 Memory Budget 算出「放得下」需要多少 GPU，再用 Throughput 與 HA 決定伺服器台數。結果是容量下限，採購前仍須用實際模型與 workload benchmark 驗證。</span></span></p><h1>GPU<br><em>SIZING</em></h1></div></section>
 
-    <div class="sz-modes" id="szMode" role="tablist" aria-label="模式"><button type="button" role="tab" class="on" aria-selected="true" data-m="single">單一模型</button><button type="button" role="tab" aria-selected="false" data-m="multi">多模型（VIS 情境）</button></div>
+    <div class="sz-modes" id="szMode" role="tablist" aria-label="模式"><button type="button" role="tab" class="on" aria-selected="true" data-m="single">Single model<span class="bz">單一模型</span></button><button type="button" role="tab" aria-selected="false" data-m="multi">Multi-model (VIS)<span class="bz">多模型（VIS 情境）</span></button></div>
 
     <div id="szSingle">
     <section class="report-section sz-inputs" id="szInputs" aria-label="參數">
-      <header><div><p class="section-label">STEP 1</p><h2>參數 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">客戶需求：改這裡，下方的計算公式與建議配置會即時連動。必填與選填各自收在下拉，滑鼠移到標籤即展開。</span></span></h2></div></header>
+      <header><div><p class="section-label">STEP 1</p><h2>Parameters<span class="bz">參數</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">客戶需求：改這裡，下方的計算公式與建議配置會即時連動。必填與選填各自收在下拉，滑鼠移到標籤即展開。</span></span></h2></div></header>
       <div class="sz-hn sz-hn-params" id="szParamsHn">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="szReqTab"><b>必填參數</b><small id="szReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="szOptTab"><b>選填參數</b><small id="szCurtainHint">未設定</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="szReqTab"><b>Required<span class="bz">必填參數</span></b><small id="szReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="szOptTab"><b>Optional<span class="bz">選填參數</span></b><small id="szCurtainHint">Not set 未設定</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="req"><div class="sz-in-grid">
-            <fieldset><legend>① 模型</legend>
-              <label><span class="lbl">模型預設</span><select autocomplete="off" id="szModel"></select></label>
-              <label><span class="lbl">總參數量（B）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">MoE 請填全部專家的總數，不是 active 參數。</span></span></span><input autocomplete="off" id="szParams" type="number" min="1" step="1"></label>
-              <label><span class="lbl">權重精度</span><select autocomplete="off" id="szWBits"><option value="16">BF16 / FP16（16-bit）</option><option value="8">FP8 / INT8（8-bit）</option><option value="4">4-bit（AWQ/GPTQ/Q4）</option></select></label>
-              <label><span class="lbl">量化 metadata 加成（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">量化的 scale／zero-point 等額外空間，4-bit 約 10%，BF16 填 0。</span></span></span><input autocomplete="off" id="szMeta" type="number" min="0" max="50" step="1" value="10"></label>
-              <label><span class="lbl">Transformer Layers<span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 num_hidden_layers。</span></span></span><input autocomplete="off" id="szLayers" type="number" min="1" step="1"></label>
-              <label><span class="lbl">KV Heads<span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 num_key_value_heads。</span></span></span><input autocomplete="off" id="szKvHeads" type="number" min="1" step="1"></label>
-              <label><span class="lbl">Head Dimension<span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 head_dim（沒有時為 hidden_size ÷ attention heads）。</span></span></span><input autocomplete="off" id="szHeadDim" type="number" min="1" step="1"></label>
+            <fieldset><legend>① Model<span class="bz">模型</span></legend>
+              <label><span class="lbl">Model preset<span class="bz">模型預設</span></span><select autocomplete="off" id="szModel"></select></label>
+              <label><span class="lbl">Total parameters (B)<span class="bz">總參數量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">MoE 請填全部專家的總數，不是 active 參數。</span></span></span><input autocomplete="off" id="szParams" type="number" min="1" step="1"></label>
+              <label><span class="lbl">Weight precision<span class="bz">權重精度</span></span><select autocomplete="off" id="szWBits"><option value="16">BF16 / FP16（16-bit）</option><option value="8">FP8 / INT8（8-bit）</option><option value="4">4-bit（AWQ/GPTQ/Q4）</option></select></label>
+              <label><span class="lbl">Quantization metadata overhead (%)<span class="bz">量化 metadata 加成</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">量化的 scale／zero-point 等額外空間，4-bit 約 10%，BF16 填 0。</span></span></span><input autocomplete="off" id="szMeta" type="number" min="0" max="50" step="1" value="10"></label>
+              <label><span class="lbl">Transformer layers<span class="bz">層數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 num_hidden_layers。</span></span></span><input autocomplete="off" id="szLayers" type="number" min="1" step="1"></label>
+              <label><span class="lbl">KV heads<span class="bz">KV 頭數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 num_key_value_heads。</span></span></span><input autocomplete="off" id="szKvHeads" type="number" min="1" step="1"></label>
+              <label><span class="lbl">Head dimension<span class="bz">頭維度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 head_dim（沒有時為 hidden_size ÷ attention heads）。</span></span></span><input autocomplete="off" id="szHeadDim" type="number" min="1" step="1"></label>
               <p id="szModelNote" class="sz-note" hidden></p>
               <div id="szCustomBox" class="sz-custom" hidden>
-                <label><span class="lbl">貼上 config.json 自動帶入<span class="hint" tabindex="0" role="note">💡<span class="hintbox">手動輸入：請填上方 4 個欄位，或貼上模型的 config.json 自動帶入層數、KV heads、head 維度；總參數量看模型頁的 Model size，MoE 請填全部專家的總數。</span></span></span><textarea autocomplete="off" id="szCfg" rows="5" spellcheck="false" placeholder='{{ "num_hidden_layers": 80, "num_attention_heads": 64, "num_key_value_heads": 8, "head_dim": 128 }}'></textarea></label>
+                <label><span class="lbl">Paste config.json<span class="bz">貼上 config.json 自動帶入</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">手動輸入：請填上方 4 個欄位，或貼上模型的 config.json 自動帶入層數、KV heads、head 維度；總參數量看模型頁的 Model size，MoE 請填全部專家的總數。</span></span></span><textarea autocomplete="off" id="szCfg" rows="5" spellcheck="false" placeholder='{{ "num_hidden_layers": 80, "num_attention_heads": 64, "num_key_value_heads": 8, "head_dim": 128 }}'></textarea></label>
                 <p id="szCfgMsg" class="sz-note" aria-live="polite"></p>
               </div>
             </fieldset>
 
-            <fieldset><legend>② Context 與併發</legend>
-              <label><span class="lbl">KV Cache 精度<span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="szKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
-              <label><span class="lbl">Context / 每個請求（tokens）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">問答 8K、Coding Agent 32K、長文件 128K；KV 約與長度成正比。</span></span></span><input autocomplete="off" id="szContext" type="number" min="256" step="1024" value="32768"></label>
-              <label><span class="lbl">同時推論請求數<span class="hint" tabindex="0" role="note">💡<span class="hintbox">同一瞬間在 GPU 上處理的請求數，不是總人數。</span></span></span><input autocomplete="off" id="szConc" type="number" min="1" step="1" value="20"></label>
-              <div class="sz-est"><b>由人數估算並行請求</b>
-                <label><span class="lbl">總使用人數</span><input autocomplete="off" id="szUsers" type="number" min="1" value="500"></label>
-                <label><span class="lbl">尖峰活躍比例（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">尖峰時段正在使用 AI 的人數比例。</span></span></span><input autocomplete="off" id="szActive" type="number" min="1" max="100" value="40"></label>
-                <label><span class="lbl">活躍者等待回應（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">活躍使用者當下正在等模型回應的比例。</span></span></span><input autocomplete="off" id="szInflight" type="number" min="1" max="100" value="25"></label>
-                <button id="szApplyConc" type="button">帶入「同時推論請求數」→ <span id="szEstConc">50</span></button>
+            <fieldset><legend>② Context &amp; concurrency<span class="bz">Context 與併發</span></legend>
+              <label><span class="lbl">KV cache precision<span class="bz">KV Cache 精度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="szKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
+              <label><span class="lbl">Context per request (tokens)<span class="bz">每個請求</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">問答 8K、Coding Agent 32K、長文件 128K；KV 約與長度成正比。</span></span></span><input autocomplete="off" id="szContext" type="number" min="256" step="1024" value="32768"></label>
+              <label><span class="lbl">Concurrent requests<span class="bz">同時推論請求數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">同一瞬間在 GPU 上處理的請求數，不是總人數。</span></span></span><input autocomplete="off" id="szConc" type="number" min="1" step="1" value="20"></label>
+              <div class="sz-est"><b>Estimate from users<span class="bz">由人數估算並行請求</span></b>
+                <label><span class="lbl">Total users<span class="bz">總使用人數</span></span><input autocomplete="off" id="szUsers" type="number" min="1" value="500"></label>
+                <label><span class="lbl">Peak active users (%)<span class="bz">尖峰活躍比例</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">尖峰時段正在使用 AI 的人數比例。</span></span></span><input autocomplete="off" id="szActive" type="number" min="1" max="100" value="40"></label>
+                <label><span class="lbl">Active users waiting (%)<span class="bz">活躍者等待回應</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">活躍使用者當下正在等模型回應的比例。</span></span></span><input autocomplete="off" id="szInflight" type="number" min="1" max="100" value="25"></label>
+                <button id="szApplyConc" type="button">Apply to concurrent requests<span class="bz">帶入「同時推論請求數」</span> → <span id="szEstConc">50</span></button>
               </div>
             </fieldset>
 
-            <fieldset><legend>③ 餘裕與規劃</legend>
-              <label><span class="lbl">Runtime overhead（GB）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">推論框架本身佔的顯存（CUDA context、暫存、activation），不含權重與 KV；大模型多卡約 10～15 GB。</span></span></span><input autocomplete="off" id="szRuntime" type="number" min="0" step="1" value="15"></label>
-              <label><span class="lbl">安全餘裕（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">給峰值負載與記憶體碎片的緩衝，建議 10～20%。</span></span></span><input autocomplete="off" id="szHeadroom" type="number" min="0" max="100" step="1" value="15"></label>
-              <label><span class="lbl">每卡可規劃容量（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="szUsable" type="number" min="50" max="100" step="1" value="90"></label>
+            <fieldset><legend>③ Headroom &amp; planning<span class="bz">餘裕與規劃</span></legend>
+              <label><span class="lbl">Runtime overhead (GB)<span class="bz">執行時開銷</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">推論框架本身佔的顯存（CUDA context、暫存、activation），不含權重與 KV；大模型多卡約 10～15 GB。</span></span></span><input autocomplete="off" id="szRuntime" type="number" min="0" step="1" value="15"></label>
+              <label><span class="lbl">Safety headroom (%)<span class="bz">安全餘裕</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">給峰值負載與記憶體碎片的緩衝，建議 10～20%。</span></span></span><input autocomplete="off" id="szHeadroom" type="number" min="0" max="100" step="1" value="15"></label>
+              <label><span class="lbl">Usable capacity per GPU (%)<span class="bz">每卡可規劃容量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="szUsable" type="number" min="50" max="100" step="1" value="90"></label>
             </fieldset>
           </div></div>
           <div class="sz-hn-panel" data-p="opt"><div class="sz-opt-grid">
-            <label><span class="lbl">需要的總輸出 tokens/sec<span class="hint" tabindex="0" role="note">💡<span class="hintbox">留空＝只算容量。</span></span></span><input autocomplete="off" id="szReqTps" type="number" min="0" step="100" placeholder="留空＝只算容量"></label>
-            <label><span class="lbl">每台實測 aggregate tokens/sec<span class="hint" tabindex="0" role="note">💡<span class="hintbox">取自 Benchmark，同模型同 Context。</span></span></span><input autocomplete="off" id="szSrvTps" type="number" min="0" step="100" placeholder="取自 Benchmark"></label>
-            <label class="sz-check"><input autocomplete="off" id="szHA" type="checkbox"> <span class="lbl">需要 HA（+1 台備援）</span></label>
+            <label><span class="lbl">Required total tokens/sec<span class="bz">需要的總輸出 tokens/sec</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">留空＝只算容量。</span></span></span><input autocomplete="off" id="szReqTps" type="number" min="0" step="100" placeholder="留空＝只算容量"></label>
+            <label><span class="lbl">Measured aggregate tokens/sec per server<span class="bz">每台實測 aggregate tokens/sec</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">取自 Benchmark，同模型同 Context。</span></span></span><input autocomplete="off" id="szSrvTps" type="number" min="0" step="100" placeholder="取自 Benchmark"></label>
+            <label class="sz-check"><input autocomplete="off" id="szHA" type="checkbox"> <span class="lbl">HA required (+1 server)<span class="bz">需要 HA（+1 台備援）</span></span></label>
           </div></div>
         </div>
       </div>
     </section>
 
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
-      <header><div><p class="section-label">STEP 2</p><h2>計算公式 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
-        <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> 建議配置：<span id="szJumpTxt">—</span></a></div></header>
+      <header><div><p class="section-label">STEP 2</p><h2>Formula<span class="bz">計算公式</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
+        <div class="sz-result"><small>Estimated total GPU memory<span class="bz">預估總 GPU 顯存需求</span></small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="szJumpTxt">—</span></a></div></header>
       <div id="szFormula" class="sz-calcbox"></div>
       <b id="szTotal" hidden></b>
-      <p class="sz-compose"><var>M<sub>required</sub></var>組成占比 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">下方色條與五張卡片對應上方結果框的四個項目：模型權重、KV Cache、Runtime、安全餘裕，四項相加＝ M_required（100%）；百分比＝該項 ÷ M_required。最後一張「KV / 請求」是 M_KV 的拆解。</span></span></p>
+      <p class="sz-compose"><var>M<sub>required</sub></var> composition<span class="bz">組成占比</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">下方色條與五張卡片對應上方結果框的四個項目：模型權重、KV Cache、Runtime、安全餘裕，四項相加＝ M_required（100%）；百分比＝該項 ÷ M_required。最後一張「KV / 請求」是 M_KV 的拆解。</span></span></p>
       <div id="szBars" class="sz-bars"></div>
       <dl id="szBreak" class="sz-break"></dl>
       <p id="szWarn" class="report-notice" hidden></p>
     </section>
 
     <section class="report-section" id="szPickSec">
-      <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+      <header><div><p class="section-label">STEP 3</p><h2>Recommendation<span class="bz">建議配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
       <div id="szCasHost" class="sz-cas-host"></div>
       <div id="szPickDetail" class="sz-pickline"></div>
       <div class="sz-hn sz-hn-pick">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="calc" aria-expanded="false"><b>算式</b><small>N_GPU 如何算出張數</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="spec" aria-expanded="false"><b>機型規格表</b><small>每卡 VRAM、每台張數（可修改）</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="calc" aria-expanded="false"><b>Calculation<span class="bz">算式</span></b><small>N_GPU 如何算出張數</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="spec" aria-expanded="false"><b>GPU specs<span class="bz">機型規格表</span></b><small>每卡 VRAM、每台張數（可修改）</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="calc"><div id="szPickCalc" class="sz-detail"></div></div>
-          <div class="sz-hn-panel" data-p="spec"><div class="table-wrap"><table class="sz-table"><thead><tr><th>GPU</th><th>每卡 VRAM</th><th>每台 GPU 數</th><th>容量下限</th><th>TP 建議</th><th>需要伺服器</th><th>備註</th></tr></thead><tbody id="szRows"></tbody></table></div></div>
+          <div class="sz-hn-panel" data-p="spec"><div class="table-wrap"><table class="sz-table"><thead><tr><th>GPU</th><th>VRAM per GPU<span class="bz">每卡 VRAM</span></th><th>GPUs per server<span class="bz">每台 GPU 數</span></th><th>Min GPUs<span class="bz">容量下限</span></th><th>TP<span class="bz">TP 建議</span></th><th>Servers<span class="bz">需要伺服器</span></th><th>Notes<span class="bz">備註</span></th></tr></thead><tbody id="szRows"></tbody></table></div></div>
         </div>
       </div>
     </section>
 
     <section class="report-section">
-      <header><div><p class="section-label">NOTES</p><h2>考量項目與情境差異 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
+      <header><div><p class="section-label">NOTES</p><h2>Considerations &amp; scenarios<span class="bz">考量項目與情境差異</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
       <div class="sz-hn">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>已納入的考量</b><small>7 項</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>未納入，需實測或另評</b><small>3 項</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>依使用情境而異的參數</b><small>7 項</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included<span class="bz">未納入，需實測或另評</span></b><small>3 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>Scenario-dependent<span class="bz">依使用情境而異的參數</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
             <li>模型權重（依量化／精度）</li>
@@ -121,11 +121,11 @@
           </ul></div>
           <div class="sz-hn-panel" data-p="case"><ul class="sz-nlist case">
             <li><b>Context</b>：問答 8K、Coding Agent 32K、長文件 128K，KV 約與長度成正比（差 4～16 倍）。</li>
-            <li><b>並行請求</b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
-            <li><b>量化</b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
-            <li><b>KV 精度</b>：FP16 改 FP8 可少一半 KV，品質需自行驗證。</li>
-            <li><b>模型架構</b>：Dense、MoE、混合 linear attention、sliding window 的 KV 可差數倍；MoE 全部專家都要常駐。</li>
-            <li><b>推論框架</b>：vLLM 先保留 KV 池、llama.cpp 依 ctx 配置，Runtime 與可用容量略有差別。</li>
+            <li><b>Concurrency<span class="bz">並行請求</span></b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
+            <li><b>Quantization<span class="bz">量化</span></b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
+            <li><b>KV precision<span class="bz">KV 精度</span></b>：FP16 改 FP8 可少一半 KV，品質需自行驗證。</li>
+            <li><b>Architecture<span class="bz">模型架構</span></b>：Dense、MoE、混合 linear attention、sliding window 的 KV 可差數倍；MoE 全部專家都要常駐。</li>
+            <li><b>Framework<span class="bz">推論框架</span></b>：vLLM 先保留 KV 池、llama.cpp 依 ctx 配置，Runtime 與可用容量略有差別。</li>
             <li><b>Prefix cache</b>：多人共用長 system prompt 時 KV 可共用，這裡的估算偏保守。</li>
           </ul></div>
         </div>
@@ -135,56 +135,56 @@
 
     <div id="szMulti" hidden>
       <section class="report-section sz-inputs" aria-label="參數">
-        <header><div><p class="section-label">STEP 1</p><h2>參數 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">人數、規劃條件與三個模型的量化／Context／流量比例；改這裡，下方計算與建議配置即時連動。</span></span></h2></div></header>
+        <header><div><p class="section-label">STEP 1</p><h2>Parameters<span class="bz">參數</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">人數、規劃條件與三個模型的量化／Context／流量比例；改這裡，下方計算與建議配置即時連動。</span></span></h2></div></header>
         <div class="sz-hn sz-hn-params" id="mzParamsHn">
-          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="mzReqTab"><b>必填參數</b><small id="mzReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="mzOptTab"><b>選填參數</b><small id="mzOptSum">預設</small><span class="car" aria-hidden="true">▾</span></button></div>
+          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="mzReqTab"><b>Required<span class="bz">必填參數</span></b><small id="mzReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="mzOptTab"><b>Optional<span class="bz">選填參數</span></b><small id="mzOptSum">Default 預設</small><span class="car" aria-hidden="true">▾</span></button></div>
           <div class="sz-hn-panels">
             <div class="sz-hn-panel" data-p="req">
               <div class="mz-global">
-                <label><span class="lbl">總使用人數<span class="hint" tabindex="0" role="note">💡<span class="hintbox">VIS 先以 1000 人估算。</span></span></span><input autocomplete="off" id="mzUsers" type="number" min="1" value="1000"></label>
-                <label><span class="lbl">尖峰活躍比例（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">尖峰時段正在使用 AI 的人數比例。</span></span></span><input autocomplete="off" id="mzActive" type="number" min="1" max="100" value="40"></label>
-                <label><span class="lbl">活躍者等待回應（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">活躍使用者當下正在等模型回應的比例。</span></span></span><input autocomplete="off" id="mzInflight" type="number" min="1" max="100" value="25"></label>
-                <label><span class="lbl">每個模型 Runtime（GB）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">每個模型程序（server）自己的固定開銷：CUDA context、暫存、activation，不含權重與 KV；約 3～5 GB。</span></span></span><input autocomplete="off" id="mzRuntime" type="number" min="0" value="5"></label>
-                <label><span class="lbl">安全餘裕（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">給峰值負載與記憶體碎片的緩衝，建議 10～20%。</span></span></span><input autocomplete="off" id="mzHeadroom" type="number" min="0" max="100" value="15"></label>
-                <label><span class="lbl">每卡可規劃容量（%）<span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="mzUsable" type="number" min="50" max="100" value="90"></label>
-                <label><span class="lbl">KV Cache 精度<span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="mzKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
+                <label><span class="lbl">Total users<span class="bz">總使用人數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">VIS 先以 1000 人估算。</span></span></span><input autocomplete="off" id="mzUsers" type="number" min="1" value="1000"></label>
+                <label><span class="lbl">Peak active users (%)<span class="bz">尖峰活躍比例</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">尖峰時段正在使用 AI 的人數比例。</span></span></span><input autocomplete="off" id="mzActive" type="number" min="1" max="100" value="40"></label>
+                <label><span class="lbl">Active users waiting (%)<span class="bz">活躍者等待回應</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">活躍使用者當下正在等模型回應的比例。</span></span></span><input autocomplete="off" id="mzInflight" type="number" min="1" max="100" value="25"></label>
+                <label><span class="lbl">Runtime per model (GB)<span class="bz">每個模型 Runtime</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">每個模型程序（server）自己的固定開銷：CUDA context、暫存、activation，不含權重與 KV；約 3～5 GB。</span></span></span><input autocomplete="off" id="mzRuntime" type="number" min="0" value="5"></label>
+                <label><span class="lbl">Safety headroom (%)<span class="bz">安全餘裕</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">給峰值負載與記憶體碎片的緩衝，建議 10～20%。</span></span></span><input autocomplete="off" id="mzHeadroom" type="number" min="0" max="100" value="15"></label>
+                <label><span class="lbl">Usable capacity per GPU (%)<span class="bz">每卡可規劃容量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="mzUsable" type="number" min="50" max="100" value="90"></label>
+                <label><span class="lbl">KV cache precision<span class="bz">KV Cache 精度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="mzKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
               </div>
               <div id="mzModels" class="mz-models"></div>
             </div>
             <div class="sz-hn-panel" data-p="opt"><div class="sz-opt-grid">
-              <label><span class="lbl">配置方式<span class="hint" tabindex="0" role="note">💡<span class="hintbox">共用打包：不同模型的分片共用同一張 GPU，最省卡但維運較複雜；各模型獨立：每個模型有專屬 GPU，好維運。</span></span></span><select autocomplete="off" id="mzPack"><option value="1">共用打包（最省 GPU）</option><option value="0">各模型獨立（好維運）</option></select></label>
-              <label class="sz-check"><input autocomplete="off" id="mzHA" type="checkbox"> <span class="lbl">需要 HA（+1 台備援）</span></label>
+              <label><span class="lbl">Allocation<span class="bz">配置方式</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">共用打包：不同模型的分片共用同一張 GPU，最省卡但維運較複雜；各模型獨立：每個模型有專屬 GPU，好維運。</span></span></span><select autocomplete="off" id="mzPack"><option value="1">Shared packing · 共用打包（最省 GPU）</option><option value="0">Per-model · 各模型獨立（好維運）</option></select></label>
+              <label class="sz-check"><input autocomplete="off" id="mzHA" type="checkbox"> <span class="lbl">HA required (+1 server)<span class="bz">需要 HA（+1 台備援）</span></span></label>
             </div></div>
           </div>
         </div>
       </section>
 
       <section class="report-section sz-formula" aria-live="polite">
-        <header><div><p class="section-label">STEP 2</p><h2>計算方式 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
-          <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b><a class="sz-jump" href="#mzPickSec" data-jump="mzPickSec"><span class="arr" aria-hidden="true">↓</span> 建議配置：<span id="mzJumpTxt">—</span></a></div></header>
+        <header><div><p class="section-label">STEP 2</p><h2>Calculation<span class="bz">計算方式</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
+          <div class="sz-result"><small>Total GPU memory<span class="bz">合計 GPU 顯存需求</span></small><b id="mzTotal">—</b><a class="sz-jump" href="#mzPickSec" data-jump="mzPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="mzJumpTxt">—</span></a></div></header>
         <div id="mzFormula" class="sz-calcbox"></div>
         <p id="mzWarn" class="report-notice" hidden></p>
       </section>
 
       <section class="report-section" id="mzPickSec">
-        <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+        <header><div><p class="section-label">STEP 3</p><h2>Recommendation<span class="bz">建議配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
         <div id="mzCasHost" class="sz-cas-host"></div>
         <div id="mzPickDetail" class="sz-pickline"></div>
         <div class="sz-hn sz-hn-pick">
-          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="bins" aria-expanded="false"><b>配置明細</b><small>每張 GPU 放哪些模型</small><span class="car" aria-hidden="true">▾</span></button></div>
+          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="bins" aria-expanded="false"><b>Placement<span class="bz">配置明細</span></b><small>每張 GPU 放哪些模型</small><span class="car" aria-hidden="true">▾</span></button></div>
           <div class="sz-hn-panels"><div class="sz-hn-panel" data-p="bins"><div id="mzDetail" class="sz-detail"></div></div></div>
         </div>
       </section>
 
       <section class="report-section">
-        <header><div><p class="section-label">Q4 / Q8</p><h2>量化組合比較 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">VIS 三個模型各選 Q4 或 Q8，共 8 種；目前選擇會標示。Q4 指 Q4_K_M、Q8 指 Q8_0，權重取 Hugging Face 上的實際檔案大小；「其中權重」以外是 KV Cache、Runtime 與餘裕。VIS 註明 Q4 必須是 K_M 或 IQ4 以上，不可用傳統 Q4_0。表中數字為該 GPU 型號所需張數（含 TP 分片），下方為台數。</span></span></h2></div></header>
+        <header><div><p class="section-label">Q4 / Q8</p><h2>Quantization combos<span class="bz">量化組合比較</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">VIS 三個模型各選 Q4 或 Q8，共 8 種；目前選擇會標示。Q4 指 Q4_K_M、Q8 指 Q8_0，權重取 Hugging Face 上的實際檔案大小；「其中權重」以外是 KV Cache、Runtime 與餘裕。VIS 註明 Q4 必須是 K_M 或 IQ4 以上，不可用傳統 Q4_0。表中數字為該 GPU 型號所需張數（含 TP 分片），下方為台數。</span></span></h2></div></header>
         <div class="table-wrap"><table class="sz-table" id="mzCombos"></table></div>
       </section>
 
     <section class="report-section">
-      <header><div><p class="section-label">NOTES</p><h2>考量項目與情境差異 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
+      <header><div><p class="section-label">NOTES</p><h2>Considerations &amp; scenarios<span class="bz">考量項目與情境差異</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
       <div class="sz-hn">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>已納入的考量</b><small>7 項</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>未納入，需實測或另評</b><small>3 項</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>依使用情境而異的參數</b><small>8 項</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included<span class="bz">未納入，需實測或另評</span></b><small>3 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>Scenario-dependent<span class="bz">依使用情境而異的參數</span></b><small>8 items</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
             <li>模型權重（依量化／精度）</li>
@@ -202,20 +202,20 @@
           </ul></div>
           <div class="sz-hn-panel" data-p="case"><ul class="sz-nlist case">
             <li><b>Context</b>：問答 8K、Coding Agent 32K、長文件 128K，KV 約與長度成正比（差 4～16 倍）。</li>
-            <li><b>並行請求</b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
-            <li><b>量化</b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
-            <li><b>KV 精度</b>：FP16 改 FP8 可少一半 KV，品質需自行驗證。</li>
-            <li><b>模型架構</b>：Dense、MoE、混合 linear attention、sliding window 的 KV 可差數倍；MoE 全部專家都要常駐。</li>
-            <li><b>推論框架</b>：vLLM 先保留 KV 池、llama.cpp 依 ctx 配置，Runtime 與可用容量略有差別。</li>
+            <li><b>Concurrency<span class="bz">並行請求</span></b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
+            <li><b>Quantization<span class="bz">量化</span></b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
+            <li><b>KV precision<span class="bz">KV 精度</span></b>：FP16 改 FP8 可少一半 KV，品質需自行驗證。</li>
+            <li><b>Architecture<span class="bz">模型架構</span></b>：Dense、MoE、混合 linear attention、sliding window 的 KV 可差數倍；MoE 全部專家都要常駐。</li>
+            <li><b>Framework<span class="bz">推論框架</span></b>：vLLM 先保留 KV 池、llama.cpp 依 ctx 配置，Runtime 與可用容量略有差別。</li>
             <li><b>Prefix cache</b>：多人共用長 system prompt 時 KV 可共用，這裡的估算偏保守。</li>
-            <li><b>配置方式</b>：共用打包最省卡但維運較複雜，各模型獨立好維運、隔離與擴充較容易。</li>
+            <li><b>Allocation<span class="bz">配置方式</span></b>：共用打包最省卡但維運較複雜，各模型獨立好維運、隔離與擴充較容易。</li>
           </ul></div>
         </div>
       </div>
     </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=19"></script>
-  <script src="sizing.js?v=17"></script>
-  <script src="sizing-multi.js?v=11"></script>
+  <script src="sizing-core.js?v=20"></script>
+  <script src="sizing.js?v=19"></script>
+  <script src="sizing-multi.js?v=12"></script>
 </body></html>

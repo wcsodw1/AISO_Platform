@@ -213,14 +213,14 @@
   const legendHtml = items => `<div class="sz-legend">${items.map(([sym, name, val]) => `<div class="sz-lg"><span class="sy">${sci(sym)}</span><span class="mn">${escH(name)}</span><b>${escH(val)}</b></div>`).join("")}</div>`;
   /* 💡 hint: the explanation lives in the bubble, not on the page */
   const tip = text => `<span class="hint" tabindex="0" role="note">💡<span class="hintbox">${escH(text)}</span></span>`;
-  const tabHtml = (p, title, sub) => `<button type="button" class="sz-hn-tab" role="tab" data-p="${p}" aria-expanded="false"><b>${escH(title)}</b><small>${escH(sub)}</small><span class="car" aria-hidden="true">▾</span></button>`;
+  const tabHtml = (p, title, sub, zh) => `<button type="button" class="sz-hn-tab" role="tab" data-p="${p}" aria-expanded="false"><b>${escH(title)}${zh ? `<span class="bz">${escH(zh)}</span>` : ""}</b><small>${escH(sub)}</small><span class="car" aria-hidden="true">▾</span></button>`;
   /* sections: [{title, rows:[{k,sym,sub,out,note,fin}]}]
      Visible: the formula line and the highlighted result row (fin). Dropdowns (hover): substituted calculation, parameter meanings. */
   function calcBoxHtml(o) {
     const fin = o.sections.flatMap(sec => sec.rows).filter(r => r.fin);
     const detail = o.sections.map(sec => ({ ...sec, rows: sec.rows.filter(r => !r.fin) })).filter(sec => sec.rows.length);
     /* order: dropdown tabs on top (left = calculation, right = parameter meaning), then the always-visible result */
-    return `<div class="sz-hn sz-hn-calc"><div class="sz-hn-tabs" role="tablist">${tabHtml("calc", "計算方式", "算式與代入數字")}${tabHtml("sym", "Parameter meaning", "參數意涵")}</div>` +
+    return `<div class="sz-hn sz-hn-calc"><div class="sz-hn-tabs" role="tablist">${tabHtml("calc", "Calculation", "算式與代入數字", "計算方式")}${tabHtml("sym", "Parameter meaning", "各參數代表什麼", "參數意涵")}</div>` +
       `<div class="sz-hn-panels"><div class="sz-hn-panel" data-p="calc"><div class="sz-rows">` +
       detail.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") +
       `</div></div><div class="sz-hn-panel" data-p="sym">${legendHtml(o.legend)}</div></div></div>` +
@@ -261,22 +261,23 @@
   /* ---- machine picker: one result line, a menu that opens to the right (vendor -> model) ----
      items: [{gpu, servers, need, cross, best, key}] ; a server is sold fully populated: servers x gpu.perServer GPUs */
   const physical = o => o.servers * o.gpu.perServer;
+  const resEn = (servers, gpus) => `${servers} server${servers === 1 ? "" : "s"} · ${gpus} GPU${gpus === 1 ? "" : "s"}`;
   function pickMenuHtml(items, pickedId, ns) {
     const cur = items.find(o => o.gpu.id === pickedId) || items[0];
-    const fmtRes = o => `${o.servers} 台 · ${physical(o)} 張 GPU`;
+    const fmtRes = o => resEn(o.servers, physical(o));
     const mark = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
     return `<div class="sz-cas" id="${ns}Cas">` +
-      `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}</span>` +
-      `<small>${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</small><span class="cm-arrow" aria-hidden="true">▸</span></button>` +
+      `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></span>` +
+      `<small>${cur.best ? "★ Recommended · " : ""}Capacity needs ${cur.need} GPU${cur.need === 1 ? "" : "s"}${cur.tp && cur.tp !== cur.need ? ` (TP ${cur.tp})` : ""}${cur.cross ? " · ⚠ Cross-node" : ""}<span class="bz">${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>` +
       `<div class="sz-cas-menu"><ul class="sz-cas-vendors">` +
       VENDORS.map(v => {
         const list = items.filter(o => o.gpu.vendor === v);
         if (!list.length) return "";
         return `<li class="${v === cur.gpu.vendor ? "cur" : ""}"><span class="cv-name">${v}<i aria-hidden="true">▸</i></span><ul class="sz-cas-models">` +
-          list.map(o => `<li><button type="button" class="cm${o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${escH(o.gpu.model)}</b><span>${fmtRes(o)}</span>${mark(o)}${o.gpu.assumed ? '<i class="sz-flag">假設</i>' : ""}</button></li>`).join("") +
+          list.map(o => `<li><button type="button" class="cm${o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${escH(o.gpu.model)}</b><span>${fmtRes(o)}</span>${mark(o)}${o.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}</button></li>`).join("") +
           `</ul></li>`;
       }).join("") + `</ul></div></div>`;
   }
 
-  return { VENDORS, physical, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  return { VENDORS, physical, resEn, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

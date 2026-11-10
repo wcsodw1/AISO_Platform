@@ -131,7 +131,7 @@ const pk0 = C.options(b.total, C.GPUS, 90, {}).map(mk); pk0[0].best = true;
 const menuHtml = C.pickMenuHtml(pk0, pk0[0].gpu.id, "t");
 assert.ok(menuHtml.indexOf(">NVIDIA<") >= 0 || menuHtml.indexOf("NVIDIA<i") >= 0, "vendor level");
 assert.ok(menuHtml.indexOf("NVIDIA") < menuHtml.indexOf("AMD") && menuHtml.indexOf("AMD") < menuHtml.indexOf("Intel"), "vendors listed NVIDIA, AMD, Intel top to bottom");
-assert.ok(/1 台 · 8 張 GPU/.test(menuHtml), "result wording is servers x GPUs per server (e.g. 1 台 · 8 張 GPU)");
+assert.ok(/1 server · 8 GPUs/.test(menuHtml), "result wording is servers x GPUs per server (e.g. 1 server · 8 GPUs)");
 assert.ok(menuHtml.includes("B300") && menuHtml.includes("MI300X") && menuHtml.includes("Arc Pro B70"), "models of every vendor present");
 assert.ok(menuHtml.includes('class="warn"'), "cross-node models are flagged");
 assert.strictEqual((menuHtml.match(/class="star"/g) || []).length, 1, "exactly one recommended model");

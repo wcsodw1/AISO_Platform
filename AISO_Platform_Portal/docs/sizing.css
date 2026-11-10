@@ -401,3 +401,15 @@ html{scroll-behavior:smooth}
 .sz-hn-pick .table-wrap{margin:0}
 /* narrow screens: show the whole menu inline */
 @media(max-width:900px){.sz-cas{width:100%}.sz-cas-menu{position:static;display:block;padding:8px 0 0}.sz-cas-vendors{width:100%}.sz-cas-models{position:static;display:block!important;width:auto;margin:0;border:0;border-top:1px solid rgba(244,239,228,.12);border-radius:0;box-shadow:none}}
+
+/* bilingual labels: English large, Chinese small beside it */
+.bz{margin-left:.6em;color:var(--muted);font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;font-style:normal;white-space:nowrap}
+h2 .bz{font-size:17px}
+.sz-hn-tab b .bz,.sz-modes .bz,.sz-jump .bz,.pg-back .bz{font-size:14px}
+.cm-res .bz{display:inline;margin-left:.6em}
+.sz-cas-main small .bz{display:block;margin:2px 0 0}
+.sz-table th .bz{display:block;margin:2px 0 0}
+.lbl .bz{margin-left:.5em}
+.sz-result small .bz{display:block;margin:2px 0 0}
+.sz-final-line .bz{margin-left:.8em}
+.sz-break .dtn .bz{margin-left:.5em}
