@@ -30,6 +30,14 @@
     const nb = container.querySelector(".sz-hn");
     if (nb && st) { nb.dataset.pinned = st.pinned; hnShow(nb, st.open || null); }
   }
+  document.addEventListener("click", e => {
+    const a = e.target.closest && e.target.closest("[data-jump]"); if (!a) return;
+    e.preventDefault();
+    const t = document.getElementById(a.dataset.jump); if (!t) return;
+    t.scrollIntoView({ behavior: "smooth", block: "start" });
+    t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
+    setTimeout(() => t.classList.remove("flash"), 1800);
+  });
   window.SizingUI = { hnShow, setCalc };
 })();
 (function () {
@@ -75,7 +83,8 @@
   function showEmpty() {
     $("szFTotal").textContent = "—"; $("szTotal").textContent = "—";
     $("szFormula").innerHTML = '<p class="sz-empty">請先輸入模型參數（總參數量、層數、KV heads、head 維度），輸入完成後才會計算；也可以貼上 config.json 自動帶入。</p>';
-    ["szBars", "szBreak", "szOptions", "szPickDetail", "szRows"].forEach(id => { $(id).innerHTML = ""; });
+    ["szBars", "szBreak", "szOptions", "szPickDetail", "szRows", "szPickHead"].forEach(id => { $(id).innerHTML = ""; });
+    $("szJumpTxt").textContent = "—";
     $("szWarn").hidden = true;
   }
   function applyConfig() {
@@ -136,6 +145,11 @@
     $("szOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}">` +
       `<b>${esc(o.gpu.name.replace(/（.*?）/g, "").replace("NVIDIA ", "").replace("Intel Arc Pro ", "").replace("AMD ", ""))} × ${o.size.gpusMin}</b>` +
       `<small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.withHA} 台（${o.size.withHA * o.gpu.perServer} 張）</small></button>`).join("");
+    const nm = gpu => gpu.name.replace(/（.*?）/g, "");
+    const best = list[0], bg = best.gpu, bs = best.size;
+    $("szPickHead").innerHTML = `<span class="star">★ 建議配置</span><b>${esc(nm(bg))} × ${bs.gpusMin} 張</b><span class="srv">${bs.withHA} 台（每台 ${bg.perServer} 張）</span>` +
+      `<small>依上述 ${C.memText(b.total)}：每卡可規劃 ${fmt(bs.usablePerGpu, 1)} GB，TP ${bs.gpusTP} 張${bs.crossNode ? "；⚠ 沒有單機可行的選項，需跨節點" : ""}</small>`;
+    $("szJumpTxt").textContent = `${nm(bg)} × ${bs.gpusMin}`;
     const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s);
     $("szPickDetail").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
       `<p class="sz-sym">${C.sci(gf.sym)} ${C.tip(`V：每卡 VRAM（${g.vram} GB）；u：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位。`)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}</p>` +

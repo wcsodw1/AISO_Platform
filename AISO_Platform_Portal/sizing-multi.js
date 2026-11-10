@@ -93,13 +93,17 @@
     if (g.runtimeGB <= 0) warn.push("Runtime overhead 為 0 不實際：每個模型程序都要有 CUDA context 與 activation（建議每個模型至少 3～5 GB）。");
     if (g.headroomPct <= 0) warn.push("安全餘裕為 0%，沒有緩衝。");
     $("mzWarn").hidden = !warn.length; $("mzWarn").textContent = warn.join(" ");
-    if (!sel.length) { $("mzOptions").innerHTML = ""; $("mzDetail").innerHTML = ""; $("mzCombos").innerHTML = ""; return; }
+    if (!sel.length) { $("mzOptions").innerHTML = ""; $("mzDetail").innerHTML = ""; $("mzCombos").innerHTML = ""; $("mzPickHead").innerHTML = ""; $("mzJumpTxt").textContent = "—"; return; }
 
     // GPU options
     const items = sel.map((x, i) => ({ name: x.m.name, total: budgets[i].total }));
     const list = gpus.map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
       .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
     if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
+    const best = list[0], bn = shortName(best.gpu.name);
+    $("mzPickHead").innerHTML = `<span class="star">★ 建議配置</span><b>${esc(bn)} × ${best.size.gpus} 張</b><span class="srv">${best.size.servers} 台（每台 ${best.gpu.perServer} 張）</span>` +
+      `<small>依上述 ${C.memText(total)}：${g.pack ? "共用打包" : "各模型獨立"}，每卡可規劃 ${f1(best.size.cap)} GB${best.size.crossNode ? "；⚠ 沒有單機可行的選項，需跨節點" : ""}</small>`;
+    $("mzJumpTxt").textContent = `${bn} × ${best.size.gpus}`;
     $("mzOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}"><b>${esc(shortName(o.gpu.name))} × ${o.size.gpus}</b><small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.servers} 台（${o.size.servers * o.gpu.perServer} 張）</small></button>`).join("");
     const cur = list.find(o => o.gpu.id === picked), s = cur.size, gp = cur.gpu;
     const iso = sizeAll(items, { ...gp, usablePct: g.usable }, false, false), pk = sizeAll(items, { ...gp, usablePct: g.usable }, true, false);

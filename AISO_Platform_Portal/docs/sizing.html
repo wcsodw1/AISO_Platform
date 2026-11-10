@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=27">
+  <link rel="stylesheet" href="sizing.css?v=28">
 </head>
 <body>
   <header class="site-header">
@@ -78,7 +78,7 @@
 
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
       <header><div><p class="section-label">STEP 2</p><h2>計算公式 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
-        <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b></div></header>
+        <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> 建議配置：<span id="szJumpTxt">—</span></a></div></header>
       <div id="szFormula" class="sz-calcbox"></div>
       <b id="szTotal" hidden></b>
       <div id="szBars" class="sz-bars"></div>
@@ -87,7 +87,8 @@
     </section>
 
     <section class="report-section" id="szPickSec">
-      <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">可選擇其中一種機器；依「台數最少、GPU 張數最少」排序，需跨節點的排在最後。</span></span></h2></div></header>
+      <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與張數。可選擇其中一種機器；依「台數最少、GPU 張數最少」排序，需跨節點的排在最後。</span></span></h2></div></header>
+      <div id="szPickHead" class="sz-pick-head"></div>
       <div id="szOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
       <div id="szPickDetail" class="sz-detail"></div>
       <h3 class="sz-sub-h">所有 GPU 型號逐一試算 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">GPU 數＝⌈總需求 ÷（每卡 VRAM × 可規劃%）⌉；TP 建議為 2 的次方（1/2/4/8/16）。每卡 VRAM 與每台 GPU 數可直接改；橘色「假設」為規劃假設，需和實機確認。</span></span></h3>
@@ -155,13 +156,14 @@
 
       <section class="report-section sz-formula" aria-live="polite">
         <header><div><p class="section-label">STEP 2</p><h2>計算方式 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
-          <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b></div></header>
+          <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b><a class="sz-jump" href="#mzPickSec" data-jump="mzPickSec"><span class="arr" aria-hidden="true">↓</span> 建議配置：<span id="mzJumpTxt">—</span></a></div></header>
         <div id="mzFormula" class="sz-calcbox"></div>
         <p id="mzWarn" class="report-notice" hidden></p>
       </section>
 
-      <section class="report-section">
-        <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">可選擇其中一種機器；依「台數最少、GPU 張數最少」排序，需跨節點的排在最後。</span></span></h2></div></header>
+      <section class="report-section" id="mzPickSec">
+        <header><div><p class="section-label">STEP 3</p><h2>建議配置 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與張數。可選擇其中一種機器；依「台數最少、GPU 張數最少」排序，需跨節點的排在最後。</span></span></h2></div></header>
+        <div id="mzPickHead" class="sz-pick-head"></div>
         <div id="mzOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
         <div id="mzDetail" class="sz-detail"></div>
       </section>
@@ -206,6 +208,6 @@
     </div>
   </main>
   <script src="sizing-core.js?v=16"></script>
-  <script src="sizing.js?v=11"></script>
-  <script src="sizing-multi.js?v=9"></script>
+  <script src="sizing.js?v=12"></script>
+  <script src="sizing-multi.js?v=10"></script>
 </body></html>
