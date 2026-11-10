@@ -201,10 +201,10 @@
       return ks.map(k => ({ ...g, id: g.id + "@" + k, baseId: g.id, perServer: k, nCfg: ks.length }));
     });
   }
-  /* rank: single-node first, then fewest GPUs to buy (servers x GPUs per server), then fewest servers, then larger VRAM */
+  /* rank: fewest servers first (a model that does not fit one server is simply recommended as N servers), then fewest GPUs to buy, then larger VRAM */
   function options(totalGB, gpus, usablePct, opts) {
     return gpus.map(g => ({ gpu: g, size: sizeFor(totalGB, g, usablePct, opts) }))
-      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || (a.size.withHA * a.gpu.perServer - b.size.withHA * b.gpu.perServer) || a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
+      .sort((a, b) => (a.size.withHA - b.size.withHA) || (a.size.withHA * a.gpu.perServer - b.size.withHA * b.gpu.perServer) || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
   }
 
   /* ---- calculation box (shared by single and multi-model views) ---- */
@@ -276,7 +276,7 @@
     const cur = items.find(o => o.gpu.id === pickedId) || null;
     const best = items.find(o => o.best) || items[0];
     const per = o => `${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"} / server`;
-    const marks = o => (o.best ? '<em class="star" title="Recommended 建議">★</em>' : "") + (o.cross ? '<em class="warn" title="Cross-node 需跨節點：TP 超過單台張數">⚠</em>' : "");
+    const marks = o => (o.best ? '<em class="star" title="Recommended 建議">★</em>' : "");
     const vendors = VENDORS.filter(v => items.some(o => o.gpu.vendor === v));
     let bv = (browse && browse.v) || (cur ? cur.gpu.vendor : best.gpu.vendor);
     if (!vendors.includes(bv)) bv = vendors[0];
@@ -298,10 +298,10 @@
     }).join("");
     const top = cfgs[0];
     const colC = `<div class="pp-ch"><b>${escH(top.gpu.model)}</b><span>Server size<span class="bz">每台幾張</span></span></div>` + cfgs.map(o =>
-      `<button type="button" class="pp-c${cur && o.gpu.id === cur.gpu.id ? " sel" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${per(o)}</b><span>${resEn(o.servers, physical(o))}</span>${marks(o)}<small>Needs ${o.need} GPU${o.need === 1 ? "" : "s"}${o.tp && o.tp !== o.need ? ` · TP ${o.tp}` : ""}${o.cross ? " · cross-node 需跨節點" : ""}</small></button>`).join("");
+      `<button type="button" class="pp-c${cur && o.gpu.id === cur.gpu.id ? " sel" : ""}" data-id="${o.gpu.id}"><b>${per(o)}</b><span>${resEn(o.servers, physical(o))}</span>${marks(o)}<small>Needs ${o.need} GPU${o.need === 1 ? "" : "s"}${o.tp && o.tp !== o.need ? ` · TP ${o.tp}` : ""}</small></button>`).join("");
     return `<div class="pp" id="${ns}Pp" data-bv="${bv}" data-bm="${bm}">${head}<div class="pp-cols"><div class="pp-col pp-cv"><div class="pp-ch"><span>Vendor<span class="bz">品牌</span></span></div>${colV}</div>` +
       `<div class="pp-col pp-cm"><div class="pp-ch"><span>Model<span class="bz">機型</span></span></div>${colM}</div><div class="pp-col pp-cc">${colC}</div></div>` +
-      `<div class="pp-legend"><span><em class="star">★</em> Recommended 建議：買最少張 GPU 且不跨節點</span><span><em class="warn">⚠</em> Cross-node 需跨節點：模型的 TP 超過單台張數，要靠高速網路（InfiniBand／RoCE）串多台，會拖慢速度，不建議</span></div></div>`;
+      `<div class="pp-legend"><span><em class="star">★</em> Recommended 建議：最少台數、最少張 GPU</span></div></div>`;
   }
 
   /* scroll the reference card so the row of `baseId` is near its top (card = the scroll container) */

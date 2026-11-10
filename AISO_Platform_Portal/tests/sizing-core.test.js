@@ -109,11 +109,10 @@ assert.ok(C.tip("說明").includes("💡") && C.tip("<b>").includes("&lt;b&gt;")
 assert.ok(box.includes("模型總參數量") && box.includes("70 B"), "legend carries meaning and current value");
 assert.ok(box.includes("= 38.5 GB（0.04 TB）") && box.includes("= 308.5 GB（0.31 TB）"), "numeric results are formatted as GB (TB)");
 assert.ok(!/= \d+\.\d{4,}/.test(box), "no raw floating point numbers");
-// options that need cross-node TP are never ranked above practical ones
+// options that do not fit in one server are recommended as N servers; ranking = fewest GPUs to buy (servers x GPUs per server)
+const refOpsPhys = o => o.size.withHA * o.gpu.perServer;
 const refOps = C.options(b.total, C.GPUS, 90, {});
-const firstCross = refOps.findIndex(o => o.size.crossNode);
-assert.ok(firstCross > 0 && refOps.slice(firstCross).every(o => o.size.crossNode), "cross-node options come last");
-assert.ok(!refOps[0].size.crossNode, "the suggested option is practical");
+for (let i = 1; i < refOps.length; i++) assert.ok(refOps[i - 1].size.withHA < refOps[i].size.withHA || (refOps[i - 1].size.withHA === refOps[i].size.withHA && refOpsPhys(refOps[i - 1]) <= refOpsPhys(refOps[i])), "ranked by fewest servers, then fewest GPUs");
 // per-server counts follow the TPI test machines (B60: 4 GPUs = 96 GB, B70: 2 GPUs = 64 GB)
 assert.strictEqual(C.GPUS.find(g => g.id === "b60").perServer * C.GPUS.find(g => g.id === "b60").vram, 96);
 assert.strictEqual(C.GPUS.find(g => g.id === "b70").perServer * C.GPUS.find(g => g.id === "b70").vram, 64);
@@ -146,7 +145,7 @@ console.log("sizing-core: all assertions passed");
   const ops = C.options(441.3, vs, 90, {});
   const phys = o => o.size.withHA * o.gpu.perServer;
   for (let i = 1; i < ops.length; i++) {
-    if (ops[i - 1].size.crossNode === ops[i].size.crossNode) assert.ok(phys(ops[i - 1]) <= phys(ops[i]), "ranked by fewest GPUs to buy");
+    assert.ok(ops[i - 1].size.withHA < ops[i].size.withHA || (ops[i - 1].size.withHA === ops[i].size.withHA && phys(ops[i - 1]) <= phys(ops[i])), "ranked by fewest servers, then fewest GPUs");
   }
   const items = ops.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
   const html = C.pickPanelHtml(items, null, "t", { v: "NVIDIA", m: "rtxpro6000" });
