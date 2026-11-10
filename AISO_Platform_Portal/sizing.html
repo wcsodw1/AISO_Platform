@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=7">
+  <link rel="stylesheet" href="sizing.css?v=9">
 </head>
 <body>
   <header class="site-header">
@@ -135,7 +135,7 @@
       <section class="report-section">
         <header><div><p class="section-label">Q4 / Q8</p><h2>量化組合比較<span class="zh">VIS 三個模型各選 Q4 或 Q8，共 8 種；目前選擇會標示</span></h2></div></header>
         <div class="table-wrap"><table class="sz-table" id="mzCombos"></table></div>
-        <p class="sz-note">Q4 指 Q4_K_M（≈ 4.85 bit/weight），Q8 指 Q8_0（≈ 8.5 bit/weight）；VIS 來信註明 Q4 必須是 K_M 或 IQ4 以上，不可用傳統 Q4_0。表中數字為該 GPU 型號所需張數（含 TP 分片），括號為台數。</p>
+        <p class="sz-note">Q4 指 Q4_K_M、Q8 指 Q8_0，權重取 Hugging Face 上的實際檔案大小；「其中權重」以外的部分是 KV Cache、Runtime 與餘裕（並行請求越多、Context 越長，這部分越大）。VIS 來信註明 Q4 必須是 K_M 或 IQ4 以上，不可用傳統 Q4_0。表中數字為該 GPU 型號所需張數（含 TP 分片），括號為台數。</p>
       </section>
 
       <section class="report-section">
@@ -143,14 +143,15 @@
         <ul class="sz-list">
           <li><b>KV 依架構分層計算。</b>Qwen3.6-35B-A3B（40 層只有 10 層 full attention）與 Qwen3.8-27B（64 層只有 16 層）的其餘層是固定大小的 linear-attention state；Gemma 4 31B 有 50 層 sliding window（只存 1024 tokens）。若用「每層都存 KV」的一般公式，KV 會被高估數倍。</li>
           <li><b>MoE 用總參數量。</b>Qwen3.6-35B-A3B 的 256 個專家全部要常駐顯存，只啟用 3B 不會減少顯存。</li>
-          <li><b>MTP / DFlash / QAT / PLE Offload、aiDAPTIV</b>：額外 GB 欄位預設 1 GB（MTP 多 1 層權重的粗估），DFlash 草稿模型、PLE offload、aiDAPTIV 的卸載效果<b>都沒有計入</b>，需實測後調整。</li>
+          <li><b>權重用 Hugging Face 上的實際檔案大小</b>（2026-11-10 查，快照在 data/sizing-model-sizes.json，可用 scripts/check_model_sizes.py 重新查）。Q4_K_M 約為 BF16 的 29～31%（約 ÷3.3），不是剛好 ÷4；同一個量化等級不同發佈者的檔案大小會差幾 %（例：Gemma 4 31B Q4_K_M，bartowski 19.6 GB、unsloth 18.3 GB，這裡取較大者）。</li>
+          <li><b>MTP</b>「額外 GB」是對應量化的 MTP 檔案實際大小（隨量化自動帶入，可改）；<b>DFlash 草稿模型、PLE Offload、aiDAPTIV</b> 的卸載效果<b>都沒有計入</b>，需實測後調整。</li>
           <li><b>共用打包</b>讓不同模型的分片共用同一張 GPU（各自一個伺服器程序），最省卡但維運較複雜；<b>各模型獨立</b>每個模型有專屬 GPU，隔離與擴充較容易。TP 分片取 2 的次方，同一模型的分片一定放在不同 GPU。</li>
           <li><b>這是容量下限。</b>速度（TTFT、TPOT）要靠 Benchmark 量測；並行請求數由「人數 × 活躍比例 × 正在推論比例」估算，三個模型按下方「流量比例」分配。</li>
         </ul>
       </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=3"></script>
+  <script src="sizing-core.js?v=4"></script>
   <script src="sizing.js?v=2"></script>
-  <script src="sizing-multi.js?v=1"></script>
+  <script src="sizing-multi.js?v=2"></script>
 </body></html>

@@ -60,8 +60,19 @@ near((g2 - g1) * 1e9, 10 * 2 * 4 * 512 * 2 * 1024, 1, "Gemma growth comes only f
 near(C.kvGB(ref, 32768, 20, 16), 214.7, 0.1, "legacy KV");
 // weights: Q4_K_M 4.85 bpw, Q8_0 8.5 bpw
 const mb4 = C.modelBudget(vm("gemma4-31b"), { quant: "q4km", context: 32768, concurrent: 34, runtimeGB: 5, extraGB: 1, headroomPct: 15 });
-near(mb4.weights, 31.27 * 4.85 / 8, 1e-9, "Q4 weights");
+near(mb4.weights, 19.598489952, 1e-9, "Q4_K_M weights are the real file size");
+assert.ok(mb4.w.real && mb4.w.repo === "bartowski/google_gemma-4-31B-it-GGUF");
 near(mb4.total, (mb4.weights + mb4.kv + 5 + 1) * 1.15, 1e-9, "model total");
+// every real size must match the dated Hugging Face snapshot, and quant ratios must be plausible vs BF16
+const snap = JSON.parse(require("fs").readFileSync(require("path").join(__dirname, "../data/sizing-model-sizes.json"), "utf8")).repos;
+C.VIS_MODELS.forEach(m => Object.entries(m.files).forEach(([q, f]) => {
+  assert.strictEqual(snap[f.repo][f.file], f.bytes, `${m.id} ${q} differs from snapshot`);
+  const ratio = f.bytes / m.files.bf16.bytes;
+  if (q === "q4km") assert.ok(ratio > 0.25 && ratio < 0.36, `${m.id} Q4 ratio ${ratio}`);
+  if (q === "q8" || q === "fp8") assert.ok(ratio > 0.5 && ratio < 0.56, `${m.id} ${q} ratio ${ratio}`);
+}));
+// MTP head follows the quant
+near(C.mtpOf(C.VIS_MODELS[0], "q4km"), 1.06003872, 1e-9, "Qwen3.6 MTP Q4_0 file");
 // concurrency split keeps the exact total
 assert.deepStrictEqual(C.splitConcurrency(100, [1, 1, 1]), [34, 33, 33]);
 assert.strictEqual(C.splitConcurrency(100, [2, 1, 1]).reduce((a, b) => a + b, 0), 100);

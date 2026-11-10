@@ -20,13 +20,14 @@
   const rows = C.VIS_MODELS.map(m => ({ m, on: true }));
   $("mzModels").innerHTML = C.VIS_MODELS.map(m => {
     const opts = m.quants.map(q => `<option value="${q}"${q === "q4km" ? " selected" : ""}>${C.QUANTS[q].label}</option>`).join("");
+    const sizes = ["bf16", "fp8", "q8", "q4km"].filter(q => m.files[q]).map(q => `${C.QUANTS[q].label} ${f1(m.files[q].bytes / 1e9)} GB`).join(" · ");
     return `<article class="mz-card" data-id="${m.id}">
-      <header><label class="sz-check"><input autocomplete="off" type="checkbox" class="mz-on" checked> <b>${esc(m.name)}</b></label><small>${esc(m.arch)}<br>來源：${esc(m.src)}</small></header>
+      <header><label class="sz-check"><input autocomplete="off" type="checkbox" class="mz-on" checked> <b>${esc(m.name)}</b></label><small>${esc(m.arch)}<br>來源：${esc(m.src)}<br><b class="mz-real">實際檔案大小（Hugging Face，2026-11-10 查）：${esc(sizes)}</b>　DFlash 草稿模型 ${f1(m.dflashGB, 2)} GB（未計入）</small></header>
       <div class="mz-ctl">
         <label>量化<select autocomplete="off" class="mz-q">${opts}</select></label>
         <label>Context / 請求<input autocomplete="off" class="mz-ctx" type="number" min="1024" step="1024" value="32768"></label>
         <label>流量比例<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1"></label>
-        <label>額外 GB（MTP 等）<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.5" value="1"></label>
+        <label>額外 GB（MTP 檔案，隨量化帶入）<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.01" value="${f1(C.mtpOf(m, "q4km"), 2)}"></label>
       </div>
       <div class="mz-res"></div></article>`;
   }).join("");
@@ -64,10 +65,10 @@
     sel.forEach((x, i) => {
       const b = budgets[i], m = x.m, groupsTxt = m.groups.map(gr => `${gr.layers}×2×${gr.kvHeads}×${gr.headDim}×${g.kvBits / 8}B×${gr.window ? `min(T,${gr.window})` : "T"}`).join(" + ") + (m.stateMB ? ` + state ${m.stateMB} MiB` : "");
       card(m.id).querySelector(".mz-res").innerHTML = `<ol class="mz-lines">
-        <li><span class="sz-fk">W</span><span class="sz-sub">${m.params}B × ${b.bpw} ÷ 8 = ${C.memText(b.weights)}<small>${esc(b.quant)} 有效 ${b.bpw} bit/weight</small></span></li>
+        <li><span class="sz-fk">W</span><span class="sz-sub">${b.w.real ? `實際檔案 ${C.memText(b.weights)}` : `${m.params}B × ${b.bpw} ÷ 8 = ${C.memText(b.weights)}`}<small>${b.w.real ? `${esc(b.w.repo)} / ${esc(b.w.file)}　` : ""}有效 ${f1(b.bpw, 2)} bit/weight${b.w.vsBf16 ? `；約為 BF16（${f1(m.files.bf16.bytes / 1e9)} GB）的 ${f1(b.w.vsBf16 * 100, 0)}%（÷${f1(1 / b.w.vsBf16, 1)}）` : ""}</small></span></li>
         <li><span class="sz-fk">KV</span><span class="sz-sub">(${esc(groupsTxt)}) → ${f1(b.perReq, 3)} GB/請求 × ${split[i]} 請求 = ${C.memText(b.kv)}<small>T = ${f1(x.cfg.context, 0)} tokens</small></span></li>
-        <li><span class="sz-fk">R+E</span><span class="sz-sub">Runtime ${f1(b.runtime)} + 額外 ${f1(b.extra)} = ${f1(b.runtime + b.extra)} GB</span></li>
-        <li class="tot"><span class="sz-fk">M</span><span class="sz-sub">(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra)}) × (1 + ${g.headroomPct}%) = <b class="sz-out">${C.memText(b.total)}</b></span></li></ol>`;
+        <li><span class="sz-fk">R+E</span><span class="sz-sub">Runtime ${f1(b.runtime)} + 額外（MTP）${f1(b.extra, 2)} = ${f1(b.runtime + b.extra, 2)} GB</span></li>
+        <li class="tot"><span class="sz-fk">M</span><span class="sz-sub">(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra, 2)}) × (1 + ${g.headroomPct}%) = <b class="sz-out">${C.memText(b.total)}</b></span></li></ol>`;
     });
 
     // top formula list
@@ -104,17 +105,21 @@
     const feat = ["rtxpro6000", "h200", "b300"].map(id => gpus.find(x => x.id === id)).filter(Boolean);
     const curKey = sel.map(x => x.cfg.quant).join("|");
     const rowsHtml = combos.map(c => {
-      const bs = sel.map((x, i) => C.modelBudget(x.m, { ...x.cfg, quant: c[i], concurrent: split[i], runtimeGB: g.runtimeGB, headroomPct: g.headroomPct, kvBits: g.kvBits }));
-      const tot = bs.reduce((a, b) => a + b.total, 0), it = sel.map((x, i) => ({ name: x.m.name, total: bs[i].total }));
+      const bs = sel.map((x, i) => C.modelBudget(x.m, { ...x.cfg, quant: c[i], extraGB: x.cfg.quant === c[i] ? x.cfg.extraGB : C.mtpOf(x.m, c[i]), concurrent: split[i], runtimeGB: g.runtimeGB, headroomPct: g.headroomPct, kvBits: g.kvBits }));
+      const tot = bs.reduce((a, b) => a + b.total, 0), wsum = bs.reduce((a, b) => a + b.weights, 0), it = sel.map((x, i) => ({ name: x.m.name, total: bs[i].total }));
       const res = feat.map(gp => ({ gp, s: sizeAll(it, { ...gp, usablePct: g.usable }, g.pack, g.ha) }));
       const best = res.reduce((a, b) => (b.s.servers < a.s.servers || (b.s.servers === a.s.servers && b.s.gpus < a.s.gpus) ? b : a));
-      return `<tr class="${c.join("|") === curKey ? "cur" : ""}"><th>${c.map(q => Q[q]).join(" · ")}${c.join("|") === curKey ? ' <i class="sz-flag">目前</i>' : ""}</th><td>${C.memText(tot)}</td>` +
+      return `<tr class="${c.join("|") === curKey ? "cur" : ""}"><th>${c.map(q => Q[q]).join(" · ")}${c.join("|") === curKey ? ' <i class="sz-flag">目前</i>' : ""}</th><td>${C.memText(tot)}</td><td>${f1(wsum)} GB<small>${f1(tot - wsum)} GB 為 KV、Runtime 等</small></td>` +
         res.map(r => `<td class="${r === best ? "best" : ""}">${r.s.gpus} 張<small>${r.s.servers} 台${r === best ? " ★" : ""}</small></td>`).join("") + "</tr>";
     }).join("");
-    $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>合計顯存</th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
+    $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>合計顯存</th><th>其中權重（檔案）</th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
   }
 
   $("mzOptions").addEventListener("click", e => { const b = e.target.closest(".sz-opt"); if (b) { picked = b.dataset.id; render(); } });
+  document.querySelectorAll(".mz-q").forEach(sel => sel.addEventListener("change", () => {
+    const c = sel.closest(".mz-card"), m = C.VIS_MODELS.find(x => x.id === c.dataset.id);
+    c.querySelector(".mz-extra").value = f1(C.mtpOf(m, sel.value), 2);
+  }));
   $("szMulti").addEventListener("input", render);
   $("szMulti").addEventListener("change", render);
   window.SizingMulti = { render };

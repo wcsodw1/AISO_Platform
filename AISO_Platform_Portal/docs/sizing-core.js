@@ -93,23 +93,45 @@
     q8: { label: "Q8_0", bpw: 8.5 },
     q4km: { label: "Q4_K_M", bpw: 4.85 }
   };
+  /* Weights = REAL file sizes read from Hugging Face on 2026-11-10 (data/sizing-model-sizes.json, scripts/check_model_sizes.py);
+     the bpw above is only a fallback. mtp = the MTP draft head file that matches the quant; dflash = DFlash draft model (not counted). */
+  const F = (bytes, repo, file) => ({ bytes, repo, file });
+  const ST = "__safetensors_total__";
   const VIS_MODELS = [
-    { id: "qwen36-35b", name: "Qwen3.6-35B-A3B", params: 35.95, quants: ["bf16", "fp8", "q8", "q4km"], mtp: true,
+    { id: "qwen36-35b", name: "Qwen3.6-35B-A3B", params: 35.95, quants: ["bf16", "fp8", "q8", "q4km"],
+      files: { bf16: F(71903776776, "Qwen/Qwen3.6-35B-A3B", ST), fp8: F(37463662160, "Qwen/Qwen3.6-35B-A3B-FP8", ST),
+               q8: F(36903139616, "ggml-org/Qwen3.6-35B-A3B-GGUF", "Qwen3.6-35B-A3B-Q8_0"), q4km: F(20542732576, "ggml-org/Qwen3.6-35B-A3B-GGUF", "Qwen3.6-35B-A3B-Q4_K_M") },
+      mtp: { bf16: 3735545920, fp8: 1990649920, q8: 1990649920, q4km: 1060038720 }, dflashGB: 0.421,
       groups: [{ layers: 10, kvHeads: 2, headDim: 256 }], stateMB: 62,
       arch: "MoE（256 專家，全部常駐）· 40 層：10 層 full attention（2 KV heads × 256）、30 層 linear attention（固定 state）", src: "Qwen/Qwen3.6-35B-A3B config.json" },
-    { id: "qwen38-27b", name: "Qwen3.8-27B", params: 27.78, quants: ["q8", "q4km"], mtp: true,
+    { id: "qwen38-27b", name: "Qwen3.8-27B", params: 27.78, quants: ["q8", "q4km"],
+      files: { bf16: F(55563006776, "Qwen/Qwen3.8-27B", ST), fp8: F(30866866928, "Qwen/Qwen3.8-27B-FP8", ST),
+               q8: F(28595763840, "ggml-org/Qwen3.8-27B-GGUF", "Qwen3.8-27B-Q8_0"), q4km: F(19403684480, "ggml-org/Qwen3.8-27B-GGUF", "Qwen3.8-27B-Q4_K_M") },
+      mtp: { bf16: 5946010176, q8: 3164006976, q4km: 1680271936 }, dflashGB: 2.056,
       groups: [{ layers: 16, kvHeads: 4, headDim: 256 }], stateMB: 147,
       arch: "Dense · 64 層：16 層 full attention（4 KV heads × 256）、48 層 linear attention（固定 state）", src: "Qwen/Qwen3.8-27B config.json" },
-    { id: "gemma4-31b", name: "Gemma 4 31B", params: 31.27, quants: ["q8", "q4km"], mtp: true,
+    { id: "gemma4-31b", name: "Gemma 4 31B", params: 31.27, quants: ["q8", "q4km"],
+      files: { bf16: F(62546338248, "google/gemma-4-31B-it", ST),
+               q8: F(32635677024, "bartowski/google_gemma-4-31B-it-GGUF", "google_gemma-4-31B-it-Q8_0"), q4km: F(19598489952, "bartowski/google_gemma-4-31B-it-GGUF", "google_gemma-4-31B-it-Q4_K_M") },
+      mtp: { q8: 514705920, q4km: 349161984 }, dflashGB: 1.648,
       groups: [{ layers: 50, kvHeads: 16, headDim: 256, window: 1024 }, { layers: 10, kvHeads: 4, headDim: 512 }], stateMB: 0,
       arch: "Dense · 60 層：50 層 sliding window（1024 tokens，16 KV heads × 256）、10 層 global（4 KV heads × 512；K、V 以各自存放保守估算）", src: "google/gemma-4-31B-it config.json" }
   ];
 
+  /* weights in GB: real file size if known, else params × bits-per-weight */
+  function weightsOf(m, quant) {
+    const f = m.files && m.files[quant];
+    if (f) return { gb: f.bytes / 1e9, real: true, repo: f.repo, file: f.file, bpw: f.bytes * 8 / (m.params * 1e9), vsBf16: m.files.bf16 ? f.bytes / m.files.bf16.bytes : null };
+    return { gb: m.params * QUANTS[quant].bpw / 8, real: false, bpw: QUANTS[quant].bpw, vsBf16: null };
+  }
+  /* MTP head that matches the quant (GB), 0 if none listed */
+  const mtpOf = (m, quant) => ((m.mtp && m.mtp[quant]) || 0) / 1e9;
+
   /* one model's budget: M = (W + KV + runtime + extra) × (1 + headroom%) */
   function modelBudget(m, cfg) {
-    const q = QUANTS[cfg.quant], weights = m.params * q.bpw / 8, perReq = kvPerRequestGB(m, cfg.context, cfg.kvBits || 16);
+    const w = weightsOf(m, cfg.quant), weights = w.gb, perReq = kvPerRequestGB(m, cfg.context, cfg.kvBits || 16);
     const kv = perReq * cfg.concurrent, sub = weights + kv + cfg.runtimeGB + (cfg.extraGB || 0), headroom = sub * cfg.headroomPct / 100;
-    return { weights, perReq, kv, runtime: cfg.runtimeGB, extra: cfg.extraGB || 0, headroom, total: sub + headroom, quant: q.label, bpw: q.bpw };
+    return { weights, w, perReq, kv, runtime: cfg.runtimeGB, extra: cfg.extraGB || 0, headroom, total: sub + headroom, quant: QUANTS[cfg.quant].label, bpw: w.bpw };
   }
 
   /* Split `total` concurrent requests by share weights; remainders go to the largest shares, sum stays exact. */
@@ -171,5 +193,5 @@
       .sort((a, b) => a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
   }
 
-  return { MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, modelBudget, splitConcurrency, place };
+  return { MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

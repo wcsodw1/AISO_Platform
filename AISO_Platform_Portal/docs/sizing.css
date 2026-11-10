@@ -118,3 +118,5 @@
 #mzCombos tr.cur{background:rgba(216,199,121,.08)}
 #mzCombos td.best{color:var(--gold);font-weight:700}
 @media(max-width:700px){.mz-bins li{grid-template-columns:1fr}.mz-lines li{grid-template-columns:1fr;gap:4px}.sz-modes button{flex:1;padding:0 10px;font-size:16px}}
+.mz-card>header small .mz-real{color:var(--gold);font-weight:600;font-size:15px}
+#mzCombos td small{white-space:normal}
