@@ -14,7 +14,7 @@
 .sz-total small{color:var(--muted);font-size:14px}
 .sz-bars{display:flex;height:16px;gap:3px;margin:6px 0 18px}
 .sz-seg{display:block;min-width:2px;border-radius:5px;position:relative;overflow:hidden}
-.sz-sub{position:absolute;left:0;top:0;bottom:0;min-width:3px;background:repeating-linear-gradient(135deg,rgba(20,24,34,.55) 0 3px,transparent 3px 6px);border-right:2px solid rgba(20,24,34,.8)}
+.sz-reqslice{position:absolute;left:0;top:0;bottom:0;min-width:3px;background:repeating-linear-gradient(135deg,rgba(20,24,34,.55) 0 3px,transparent 3px 6px);border-right:2px solid rgba(20,24,34,.8)}
 .sz-dot.kr{background:repeating-linear-gradient(135deg,var(--gold) 0 3px,#3a3f4e 3px 6px)}
 .sz-seg.w,.sz-dot.w{background:#7aaee8}.sz-seg.k,.sz-dot.k{background:var(--gold)}
 .sz-seg.r,.sz-dot.r{background:#70d3a2}.sz-seg.h,.sz-dot.h{background:#8a90a0}
