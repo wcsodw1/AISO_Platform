@@ -37,7 +37,7 @@
 
 /* Type scale — nothing on this page is smaller than 14px (13px only for the tiny 假設 flag). */
 main,main p,main li,main td,main th{font-size:16px;line-height:1.65}
-main .section-label{font-size:14px;letter-spacing:.14em}
+main .section-label{font-size:18px;letter-spacing:.14em}
 main .report-section h2{font-size:32px;line-height:1.2}
 main .report-section h2 .zh{font-size:17px;margin-top:8px}
 .sz-inputs legend{font-size:17px}
@@ -403,9 +403,9 @@ html{scroll-behavior:smooth}
 @media(max-width:900px){.sz-cas{width:100%}.sz-cas-menu{position:static;display:block;padding:8px 0 0}.sz-cas-vendors{width:100%}.sz-cas-models{position:static;display:block!important;width:auto;margin:0;border:0;border-top:1px solid rgba(244,239,228,.12);border-radius:0;box-shadow:none}}
 
 /* bilingual labels: English large, Chinese small beside it */
-.bz{margin-left:.6em;color:var(--muted);font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;font-style:normal;white-space:nowrap}
-h2 .bz{font-size:17px}
-.sz-hn-tab b .bz,.sz-modes .bz,.sz-jump .bz,.pg-back .bz{font-size:14px}
+.bz{margin-left:.6em;color:var(--muted);font-size:15px;font-weight:500;letter-spacing:0;text-transform:none;font-style:normal;white-space:nowrap}
+h2 .bz{font-size:22px;font-weight:600}
+.sz-hn-tab b .bz,.sz-modes .bz,.sz-jump .bz,.pg-back .bz{font-size:15px}
 .cm-res .bz{display:inline;margin-left:.6em}
 .sz-cas-main small .bz{display:block;margin:2px 0 0}
 .sz-table th .bz{display:block;margin:2px 0 0}
@@ -428,3 +428,9 @@ h2 .bz{font-size:17px}
 .sz-cas-models li.has-cfg:hover>.sz-cas-cfgs,.sz-cas-models li.has-cfg:focus-within>.sz-cas-cfgs{display:block}
 @media(max-width:900px){.sz-cas-cfgs{position:static;display:block;width:auto;margin:0 0 0 14px;border:0;background:transparent;box-shadow:none}}
 main{overflow-x:clip}
+
+/* minimum sizes on this page: step labels, eyebrow, flags, header tag */
+main .eyebrow{font-size:15px}
+.sz-flag,.bm-auth span{font-size:14px}
+main h2 var{font-family:"STIX Two Math","Cambria Math",Georgia,serif;font-style:italic;font-weight:400;color:#cfe3ff;margin:0 4px 0 2px}
+main h2 var sub{font-style:normal;font-size:.62em}

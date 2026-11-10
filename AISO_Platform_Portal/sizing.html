@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=40">
+  <link rel="stylesheet" href="sizing.css?v=41">
 </head>
 <body>
   <header class="site-header">
@@ -77,7 +77,7 @@
     </section>
 
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
-      <header><div><p class="section-label">STEP 2</p><h2>Formula<span class="bz">計算公式</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
+      <header><div><p class="section-label">STEP 2</p><h2>Calculate total memory <var>M<sub>required</sub></var><span class="bz">計算總容量需求</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
         <div class="sz-result"><small>Estimated total GPU memory<span class="bz">預估總 GPU 顯存需求</span></small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="szJumpTxt">—</span></a></div></header>
       <div id="szFormula" class="sz-calcbox"></div>
       <b id="szTotal" hidden></b>
@@ -160,7 +160,7 @@
       </section>
 
       <section class="report-section sz-formula" aria-live="polite">
-        <header><div><p class="section-label">STEP 2</p><h2>Calculation<span class="bz">計算方式</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
+        <header><div><p class="section-label">STEP 2</p><h2>Calculate total memory <var>M<sub>total</sub></var><span class="bz">計算總容量需求</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
           <div class="sz-result"><small>Total GPU memory<span class="bz">合計 GPU 顯存需求</span></small><b id="mzTotal">—</b><a class="sz-jump" href="#mzPickSec" data-jump="mzPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="mzJumpTxt">—</span></a></div></header>
         <div id="mzFormula" class="sz-calcbox"></div>
         <p id="mzWarn" class="report-notice" hidden></p>
