@@ -118,8 +118,8 @@
     if (hasSlice) segs.push({ v: perReq, c: "kr", t: `KV per request 每請求 KV ${fmt(perReq, 1)} GB = M_KV ÷ C（M_KV 的 1/${inp.concurrent}）` });
     segs.sort((x, y) => y.v - x.v);
     $("szBars").innerHTML = segs.map(g => `<i class="sz-seg ${g.c}" style="flex:${Math.max(g.v, 0.0001)}" title="${g.t}"></i>`).join("");
-    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n.split("|")[0]}<span class="bz">${n.split("|")[1]}</span></small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
-      `<div><dt><i class="sz-dot kr"></i>KV per request<span class="bz">每請求 KV</span>${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(perReq, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
+    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div class="cc-${c}"><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n.split("|")[0]}<span class="bz">${n.split("|")[1]}</span></small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
+      `<div class="cc-kr"><dt><i class="sz-dot kr"></i>KV per request<span class="bz">每請求 KV</span>${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(perReq, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
   }
   function renderRows(b, usablePct) {
     $("szRows").innerHTML = C.refRowsHtml(gpus, g => {

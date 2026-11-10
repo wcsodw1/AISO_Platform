@@ -471,3 +471,14 @@ main h2 var sub{font-style:normal;font-size:.62em}
 .mz-models .mz-card>header b{font-size:22px}
 .sz-rtitle{margin:16px 0 8px;color:#8ee0b5;font-size:17px;font-weight:700;letter-spacing:.04em}.sz-rtitle .bz{color:#8ee0b5;opacity:.85}
 .sz-seg.kr{background:repeating-linear-gradient(135deg,var(--gold) 0 4px,#3a3f4e 4px 8px)}
+
+/* composition: the bar and the cards read as ONE block (bar = top strip, cards = cells under it, divided by hairlines) */
+.sz-compose{margin-bottom:10px}
+.sz-bars{gap:0;height:18px;margin:0;border-radius:14px 14px 0 0;overflow:hidden;box-shadow:0 0 0 1px rgba(244,239,228,.16)}
+.sz-seg{border-radius:0;box-shadow:inset -2px 0 0 rgba(15,20,32,.75)}
+.sz-seg:last-child{box-shadow:none}
+.sz-break{gap:0!important;border:1px solid rgba(244,239,228,.16);border-top:0;border-radius:0 0 18px 18px;overflow:hidden;background:rgba(244,239,228,.035)}
+main .sz-break>div{border:0;border-right:1px solid rgba(244,239,228,.12);border-top:4px solid transparent;border-radius:0;background:transparent;padding:14px 16px 16px}
+.sz-break>div:last-child{border-right:0;background:rgba(8,12,22,.25)}
+.sz-break>.cc-w{border-top-color:#7aaee8}.sz-break>.cc-k{border-top-color:var(--gold)}.sz-break>.cc-r{border-top-color:#70d3a2}.sz-break>.cc-h{border-top-color:#8a90a0}
+.sz-break>.cc-kr{border-top-color:transparent;border-image:repeating-linear-gradient(135deg,var(--gold) 0 4px,#3a3f4e 4px 8px) 4 0 0 0}
