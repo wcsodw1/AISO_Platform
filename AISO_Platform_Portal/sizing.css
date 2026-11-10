@@ -310,3 +310,5 @@ h2 .hint{font-size:18px}
 .sz-hn-calc .sz-hn-panel.on{margin-top:12px;padding:18px 22px;border:1px solid var(--gold);border-radius:14px;background:var(--sz-inner,#1f2839)}
 .sz-detail .sz-warnp .hintbox{bottom:calc(100% + 8px);top:auto}
 .sz-note{font-size:15px}
+
+.sz-break dd small.kvsub{display:block;white-space:normal;margin:4px 0 0;font-size:14px;line-height:1.45;color:#bcc2ce}

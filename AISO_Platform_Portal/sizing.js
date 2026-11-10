@@ -100,11 +100,11 @@
     };
   }
 
-  function renderBars(b) {
+  function renderBars(b, inp) {
     const parts = [["Weights", b.weights, "w"], ["KV Cache", b.kv, "k"], ["Runtime", b.runtime, "r"], ["Headroom", b.headroom, "h"]];
     $("szBars").innerHTML = parts.map(([n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${n} ${fmt(v)} GB"></i>`).join("");
     $("szBreak").innerHTML = parts.map(([n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${n}</dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
-      `<div><dt>KV / token</dt><dd>${fmt(b.kvPerTokenKiB, 0)} KiB</dd></div>`;
+      `<div><dt>KV / 請求${C.tip("每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數就是 KV Cache 總量。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(b.kvPerTokenKiB * 1024 * inp.context / 1e9, 1)} GB<small class="kvsub">${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens；共 ${inp.concurrent} 個請求</small></dd></div>`;
   }
 
   function renderRows(b, usablePct) {
@@ -161,7 +161,7 @@
     if (!(inp.params > 0 && inp.layers > 0 && inp.kvHeads > 0 && inp.headDim > 0)) { showEmpty(); return; }   // never show a misleading total while the model is incomplete
     const b = C.budget(inp);
     $("szTotal").textContent = fmt(b.total);
-    renderBars(b);
+    renderBars(b, inp);
     renderRows(b, usablePct);
     renderFormula(b, usablePct, { requiredTps: C.num(el.reqTps.value, 0), perServerTps: C.num(el.srvTps.value, 0), ha: el.ha.checked });
     const warn = $("szWarn"), msgs = [];
