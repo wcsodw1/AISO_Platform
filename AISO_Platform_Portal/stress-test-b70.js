@@ -18,7 +18,7 @@ function renderSetup(){
  const p=D.profile,row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">量測 <b>Intel Arc Pro B70</b> 在標準參數下的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>（llama.cpp · GGUF Q4）。</p></section>`;
  $s("stParams").innerHTML=`${row("Machine 機器",`Intel B70 · 2 × 32 GB`)}${row("Model 模型","4 款 GGUF Q4")}${row("Input 輸入","4K / 8K / 16K / 32K / 64K")}${row("Output 輸出",`${tok(p.output_tokens)} tokens`)}${row("NP 並發",p.np.join(" / "))}${row("Repeat 重複",`${p.repeat} 次取平均`)}`;
- $s("stNote").textContent=`B70 實測截至 ${D.evidence_until}（舊版 Runner，Context ${tok(p.context_per_request)}）；Prompt 與 GGUF SHA256 尚未與其他機器核對，不宣稱跨機倍率。`;
+ $s("stNote").innerHTML=`B70 實測截至 ${D.evidence_until}（舊版 Runner，Context ${tok(p.context_per_request)}）；Prompt 與 GGUF SHA256 尚未與其他機器核對，不宣稱跨機倍率。<br>2026-11-10 起 B70 llama.cpp 另有 V4 協定（batch 1024）新資料：4 模型 × NP1/2/4/5，目前只有 TPS（Aggregate），請至「B60 vs B70 vs AISO1 比對」頁查看；本頁圖表仍為舊版資料。`;
 }
 
 function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
