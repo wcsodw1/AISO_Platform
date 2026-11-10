@@ -143,7 +143,7 @@
         <ul class="sz-list">
           <li><b>KV 依架構分層計算。</b>Qwen3.6-35B-A3B（40 層只有 10 層 full attention）與 Qwen3.8-27B（64 層只有 16 層）的其餘層是固定大小的 linear-attention state；Gemma 4 31B 有 50 層 sliding window（只存 1024 tokens）。若用「每層都存 KV」的一般公式，KV 會被高估數倍。</li>
           <li><b>MoE 用總參數量。</b>Qwen3.6-35B-A3B 的 256 個專家全部要常駐顯存，只啟用 3B 不會減少顯存。</li>
-          <li><b>權重用 Hugging Face 上的實際檔案大小</b>（2026-11-10 查，快照在 data/sizing-model-sizes.json，可用 scripts/check_model_sizes.py 重新查）。Q4_K_M 約為 BF16 的 29～31%（約 ÷3.3），不是剛好 ÷4；同一個量化等級不同發佈者的檔案大小會差幾 %（例：Gemma 4 31B Q4_K_M，bartowski 19.6 GB、unsloth 18.3 GB，這裡取較大者）。</li>
+          <li><b>權重用 Hugging Face 上的實際檔案大小</b>（2026-11-10 查，快照在 data/sizing-model-sizes.json，可用 scripts/check_model_sizes.py 重新查）。三個模型的 GGUF 統一採用 bartowski，避免混用不同發佈者（同一量化等級在不同發佈者會差 5～15%）；FP8 取 Qwen 官方 repo。Q4_K_M 約為 BF16 的 31～32%（約 ÷3.2），不是剛好 ÷4（純 4-bit 理論值再加上量化 scale 與部分高精度層）。</li>
           <li><b>MTP</b>「額外 GB」是對應量化的 MTP 檔案實際大小（隨量化自動帶入，可改）；<b>DFlash 草稿模型、PLE Offload、aiDAPTIV</b> 的卸載效果<b>都沒有計入</b>，需實測後調整。</li>
           <li><b>共用打包</b>讓不同模型的分片共用同一張 GPU（各自一個伺服器程序），最省卡但維運較複雜；<b>各模型獨立</b>每個模型有專屬 GPU，隔離與擴充較容易。TP 分片取 2 的次方，同一模型的分片一定放在不同 GPU。</li>
           <li><b>這是容量下限。</b>速度（TTFT、TPOT）要靠 Benchmark 量測；並行請求數由「人數 × 活躍比例 × 正在推論比例」估算，三個模型按下方「流量比例」分配。</li>
@@ -151,7 +151,7 @@
       </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=4"></script>
+  <script src="sizing-core.js?v=5"></script>
   <script src="sizing.js?v=2"></script>
   <script src="sizing-multi.js?v=2"></script>
 </body></html>

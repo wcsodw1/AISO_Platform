@@ -14,6 +14,7 @@ REPOS = [
     "Qwen/Qwen3.6-35B-A3B", "Qwen/Qwen3.6-35B-A3B-FP8", "ggml-org/Qwen3.6-35B-A3B-GGUF", "unsloth/Qwen3.6-35B-A3B-GGUF",
     "Qwen/Qwen3.8-27B", "Qwen/Qwen3.8-27B-FP8", "ggml-org/Qwen3.8-27B-GGUF", "unsloth/Qwen3.8-27B-GGUF",
     "google/gemma-4-31B-it", "ggml-org/gemma-4-31B-it-GGUF", "unsloth/gemma-4-31B-it-GGUF", "bartowski/google_gemma-4-31B-it-GGUF",
+    "bartowski/Qwen_Qwen3.6-35B-A3B-GGUF", "bartowski/Qwen3.8-27B-GGUF",
 ]
 
 

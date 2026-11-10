@@ -69,10 +69,13 @@ C.VIS_MODELS.forEach(m => Object.entries(m.files).forEach(([q, f]) => {
   assert.strictEqual(snap[f.repo][f.file], f.bytes, `${m.id} ${q} differs from snapshot`);
   const ratio = f.bytes / m.files.bf16.bytes;
   if (q === "q4km") assert.ok(ratio > 0.25 && ratio < 0.36, `${m.id} Q4 ratio ${ratio}`);
-  if (q === "q8" || q === "fp8") assert.ok(ratio > 0.5 && ratio < 0.56, `${m.id} ${q} ratio ${ratio}`);
+  if (q === "q8") assert.ok(ratio > 0.5 && ratio < 0.56, `${m.id} ${q} ratio ${ratio}`);
+  if (q === "fp8") assert.ok(ratio > 0.5 && ratio < 0.6, `${m.id} ${q} ratio ${ratio} (official FP8 keeps some layers in BF16)`);
 }));
 // MTP head follows the quant
-near(C.mtpOf(C.VIS_MODELS[0], "q4km"), 1.06003872, 1e-9, "Qwen3.6 MTP Q4_0 file");
+near(C.mtpOf(C.VIS_MODELS[0], "q4km"), 1.190098816, 1e-9, "Qwen3.6 MTP Q4_0 file");
+// one publisher for every GGUF size
+C.VIS_MODELS.forEach(m => Object.entries(m.files).forEach(([q, f]) => { if (!/safetensors/.test(f.file) && !/^Qwen\//.test(f.repo)) assert.ok(f.repo.startsWith("bartowski/"), `${m.id} ${q} not from bartowski`); }));
 // concurrency split keeps the exact total
 assert.deepStrictEqual(C.splitConcurrency(100, [1, 1, 1]), [34, 33, 33]);
 assert.strictEqual(C.splitConcurrency(100, [2, 1, 1]).reduce((a, b) => a + b, 0), 100);
