@@ -87,3 +87,34 @@
 .sz-final{margin-top:10px!important;padding-top:10px;border-top:1px dashed rgba(244,239,228,.18);font-size:17px;line-height:1.7}
 .sz-final b{color:var(--gold)}
 @media(max-width:700px){.sz-flist li{grid-template-columns:1fr;gap:6px}.sz-result b{font-size:32px}}
+
+/* Mode switch + multi-model */
+.sz-modes{display:flex;gap:10px;margin:0 0 18px}
+.sz-modes button{min-height:52px;padding:0 24px;border:1px solid rgba(244,239,228,.2);border-radius:14px;background:#0b0f16;color:var(--ivory);font-size:18px;font-weight:700}
+.sz-modes button.on{border-color:var(--gold);background:rgba(216,199,121,.12);color:var(--gold)}
+.mz-global{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:0 0 20px}
+.mz-global label,.mz-ctl label{display:grid;gap:6px;color:var(--muted);font-size:16px;font-weight:600}
+.mz-global input,.mz-global select,.mz-ctl input,.mz-ctl select{width:100%;min-height:48px;font-size:17px}
+.mz-global .sz-check{display:flex;align-items:center;gap:8px}
+.mz-global .sz-check input{width:auto;min-height:auto}
+.mz-models{display:grid;gap:16px;margin-top:22px}
+.mz-card{padding:18px;border:1px solid rgba(244,239,228,.12);border-radius:16px;background:#0a0e15}
+.mz-card>header{display:grid;gap:6px;margin-bottom:14px}
+.mz-card>header b{font-size:21px}
+.mz-card>header small{color:#a4a9b4;font-size:14px;line-height:1.6}
+.mz-card .sz-check{display:flex;align-items:center;gap:10px;font-size:20px}
+.mz-card .sz-check input{width:20px;height:20px;min-height:auto}
+.mz-ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.mz-lines{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.mz-lines li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(244,239,228,.03)}
+.mz-lines li.tot{border:1px solid var(--gold);background:rgba(216,199,121,.07)}
+.mz-lines .sz-sub small{display:block;color:#a4a9b4;font-size:14px;font-family:inherit}
+.mz-bins{margin:12px 0 4px;padding:0;list-style:none;display:grid;gap:8px}
+.mz-bins li{display:grid;grid-template-columns:70px minmax(120px,220px) 1fr;gap:12px;align-items:center;font-size:16px}
+.mz-bar{height:12px;border-radius:6px;background:rgba(244,239,228,.1);overflow:hidden}
+.mz-bar i{display:block;height:100%;background:var(--gold)}
+#mzCombos th,#mzCombos td{white-space:nowrap;font-size:16px}
+#mzCombos td small{display:block;color:var(--muted);font-size:14px}
+#mzCombos tr.cur{background:rgba(216,199,121,.08)}
+#mzCombos td.best{color:var(--gold);font-weight:700}
+@media(max-width:700px){.mz-bins li{grid-template-columns:1fr}.mz-lines li{grid-template-columns:1fr;gap:4px}.sz-modes button{flex:1;padding:0 10px;font-size:16px}}

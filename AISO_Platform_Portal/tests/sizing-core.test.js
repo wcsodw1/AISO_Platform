@@ -47,4 +47,32 @@ assert.ok(gf.sub.endsWith("= 2"), gf.sub);
 const ops = C.options(b.total, C.GPUS, 90, {});
 assert.ok(ops[0].size.withHA <= ops[ops.length - 1].size.withHA);
 assert.strictEqual(ops[0].gpu.id, "b300", "B300 x2 is the smallest build for the reference case");
+// ---- multi-model: hybrid KV, quantised weights, placement ----
+const vm = id => C.VIS_MODELS.find(m => m.id === id);
+// Qwen3.6-35B-A3B: 10 full-attn layers x 2 x 2 kv heads x 256 x 2 B = 20 KiB/token (+62 MiB fixed state)
+near(C.kvPerRequestGB(vm("qwen36-35b"), 32768, 16) * 1e9, 20480 * 32768 + 62 * 1048576, 1, "Qwen3.6 KV/request");
+// Qwen3.8-27B: 16 x 2 x 4 x 256 x 2 B = 64 KiB/token
+near(C.kvPerRequestGB(vm("qwen38-27b"), 1000, 16) * 1e9 - 147 * 1048576, 65536 * 1000, 1, "Qwen3.8 KV");
+// Gemma 4 31B: sliding layers stop growing at the 1024-token window; global layers keep growing
+const g1 = C.kvPerRequestGB(vm("gemma4-31b"), 1024, 16), g2 = C.kvPerRequestGB(vm("gemma4-31b"), 2048, 16);
+near((g2 - g1) * 1e9, 10 * 2 * 4 * 512 * 2 * 1024, 1, "Gemma growth comes only from global layers");
+// the dense single-model path is unchanged (reference case still 214.7 GB)
+near(C.kvGB(ref, 32768, 20, 16), 214.7, 0.1, "legacy KV");
+// weights: Q4_K_M 4.85 bpw, Q8_0 8.5 bpw
+const mb4 = C.modelBudget(vm("gemma4-31b"), { quant: "q4km", context: 32768, concurrent: 34, runtimeGB: 5, extraGB: 1, headroomPct: 15 });
+near(mb4.weights, 31.27 * 4.85 / 8, 1e-9, "Q4 weights");
+near(mb4.total, (mb4.weights + mb4.kv + 5 + 1) * 1.15, 1e-9, "model total");
+// concurrency split keeps the exact total
+assert.deepStrictEqual(C.splitConcurrency(100, [1, 1, 1]), [34, 33, 33]);
+assert.strictEqual(C.splitConcurrency(100, [2, 1, 1]).reduce((a, b) => a + b, 0), 100);
+// placement: a 170 GB model needs 2 shards of 85 GB on 96 GB cards (86.4 usable); small ones can share a GPU when packed
+const P6 = gpu("rtxpro6000");
+const iso = C.place([{ name: "A", total: 170 }, { name: "B", total: 40 }, { name: "C", total: 40 }], P6, 90, false);
+const pk = C.place([{ name: "A", total: 170 }, { name: "B", total: 40 }, { name: "C", total: 40 }], P6, 90, true);
+assert.strictEqual(iso.gpus, 4);                 // 2 + 1 + 1
+assert.strictEqual(pk.gpus, 3);                  // B and C share one GPU? 40+40=80 <= 86.4
+assert.ok(pk.bins.every(b => b.used <= pk.cap + 1e-9), "no bin over capacity");
+// shards of one model never share a GPU
+const tp = C.place([{ name: "A", total: 200 }], P6, 90, true);
+assert.strictEqual(tp.gpus, 4); assert.ok(tp.bins.every(b => b.shards.length === 1));
 console.log("sizing-core: all assertions passed");

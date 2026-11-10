@@ -18,6 +18,7 @@ check:
 	node --check AISO_Platform_Portal/manage.js
 	node --check AISO_Platform_Portal/sizing-core.js
 	node --check AISO_Platform_Portal/sizing.js
+	node --check AISO_Platform_Portal/sizing-multi.js
 	node AISO_Platform_Portal/tests/sizing-core.test.js
 	node --check AISO_Platform_Portal/repeat-chart.js
 	node AISO_Platform_Portal/tests/repeat-chart.test.js

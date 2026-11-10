@@ -1,0 +1,121 @@
+(function () {
+  "use strict";
+  const C = window.SizingCore;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const f1 = (n, d = 1) => Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const gpus = C.GPUS.map(g => ({ ...g }));
+  const shortName = n => n.replace(/（.*?）/g, "").replace("NVIDIA ", "").replace("Intel Arc Pro ", "").replace("AMD ", "");
+  const Q = { q4km: "Q4", q8: "Q8" };
+
+  /* ---------- mode switch ---------- */
+  document.querySelectorAll("#szMode button").forEach(b => b.addEventListener("click", () => {
+    const multi = b.dataset.m === "multi";
+    document.querySelectorAll("#szMode button").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); });
+    $("szSingle").hidden = multi; $("szMulti").hidden = !multi;
+    if (multi) render();
+  }));
+
+  /* ---------- per-model controls (built once so typing never loses focus) ---------- */
+  const rows = C.VIS_MODELS.map(m => ({ m, on: true }));
+  $("mzModels").innerHTML = C.VIS_MODELS.map(m => {
+    const opts = m.quants.map(q => `<option value="${q}"${q === "q4km" ? " selected" : ""}>${C.QUANTS[q].label}</option>`).join("");
+    return `<article class="mz-card" data-id="${m.id}">
+      <header><label class="sz-check"><input autocomplete="off" type="checkbox" class="mz-on" checked> <b>${esc(m.name)}</b></label><small>${esc(m.arch)}<br>來源：${esc(m.src)}</small></header>
+      <div class="mz-ctl">
+        <label>量化<select autocomplete="off" class="mz-q">${opts}</select></label>
+        <label>Context / 請求<input autocomplete="off" class="mz-ctx" type="number" min="1024" step="1024" value="32768"></label>
+        <label>流量比例<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1"></label>
+        <label>額外 GB（MTP 等）<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.5" value="1"></label>
+      </div>
+      <div class="mz-res"></div></article>`;
+  }).join("");
+
+  const card = id => document.querySelector(`.mz-card[data-id="${id}"]`);
+  function readGlobal() {
+    return { users: C.num($("mzUsers").value, 1000), active: C.num($("mzActive").value, 40), inflight: C.num($("mzInflight").value, 25),
+      runtimeGB: Math.max(0, C.num($("mzRuntime").value, 5)), headroomPct: Math.max(0, C.num($("mzHeadroom").value, 15)),
+      usable: Math.min(100, Math.max(50, C.num($("mzUsable").value, 90))), kvBits: C.num($("mzKvBits").value, 16),
+      pack: $("mzPack").value === "1", ha: $("mzHA").checked };
+  }
+  function readModel(m) {
+    const c = card(m.id);
+    return { on: c.querySelector(".mz-on").checked, quant: c.querySelector(".mz-q").value, context: Math.max(1024, C.num(c.querySelector(".mz-ctx").value, 32768)),
+      share: Math.max(0, C.num(c.querySelector(".mz-share").value, 1)), extraGB: Math.max(0, C.num(c.querySelector(".mz-extra").value, 1)) };
+  }
+
+  function sizeAll(items, g, pack, ha) {
+    const p = C.place(items, g, g.usablePct, pack), servers = p.servers + (ha ? 1 : 0);
+    return { ...p, servers, gpu: g };
+  }
+
+  let picked = null;
+  function render() {
+    if ($("szMulti").hidden) return;
+    const g = readGlobal(), conc = C.concurrentFromUsers(g.users, g.active, g.inflight);
+    const sel = C.VIS_MODELS.map(m => ({ m, cfg: readModel(m) })).filter(x => x.cfg.on);
+    const shares = sel.map(x => x.cfg.share), split = C.splitConcurrency(conc, shares.some(v => v > 0) ? shares : shares.map(() => 1));
+    const budgets = sel.map((x, i) => C.modelBudget(x.m, { ...x.cfg, concurrent: split[i], runtimeGB: g.runtimeGB, headroomPct: g.headroomPct, kvBits: g.kvBits }));
+    const total = budgets.reduce((a, b) => a + b.total, 0);
+    $("mzTotal").textContent = sel.length ? C.memText(total) : "—";
+
+    // per-model result blocks
+    C.VIS_MODELS.forEach(m => { if (!sel.some(x => x.m === m)) card(m.id).querySelector(".mz-res").innerHTML = '<p class="sz-note">未勾選，不計入。</p>'; });
+    sel.forEach((x, i) => {
+      const b = budgets[i], m = x.m, groupsTxt = m.groups.map(gr => `${gr.layers}×2×${gr.kvHeads}×${gr.headDim}×${g.kvBits / 8}B×${gr.window ? `min(T,${gr.window})` : "T"}`).join(" + ") + (m.stateMB ? ` + state ${m.stateMB} MiB` : "");
+      card(m.id).querySelector(".mz-res").innerHTML = `<ol class="mz-lines">
+        <li><span class="sz-fk">W</span><span class="sz-sub">${m.params}B × ${b.bpw} ÷ 8 = ${C.memText(b.weights)}<small>${esc(b.quant)} 有效 ${b.bpw} bit/weight</small></span></li>
+        <li><span class="sz-fk">KV</span><span class="sz-sub">(${esc(groupsTxt)}) → ${f1(b.perReq, 3)} GB/請求 × ${split[i]} 請求 = ${C.memText(b.kv)}<small>T = ${f1(x.cfg.context, 0)} tokens</small></span></li>
+        <li><span class="sz-fk">R+E</span><span class="sz-sub">Runtime ${f1(b.runtime)} + 額外 ${f1(b.extra)} = ${f1(b.runtime + b.extra)} GB</span></li>
+        <li class="tot"><span class="sz-fk">M</span><span class="sz-sub">(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra)}) × (1 + ${g.headroomPct}%) = <b class="sz-out">${C.memText(b.total)}</b></span></li></ol>`;
+    });
+
+    // top formula list
+    $("mzFormula").innerHTML = [
+      { k: "C", sym: "C = U × A × R（人數 × 尖峰活躍 × 正在推論）", sub: `${f1(g.users, 0)} × ${g.active}% × ${g.inflight}%`, out: `${conc} 個同時推論請求`, note: sel.length ? "按流量比例分配：" + sel.map((x, i) => `${x.m.name} ${split[i]}`).join(" · ") : "" },
+      { k: "M_total", sym: "M_total = Σ M_i，M_i = (W_i + KV_i + R_i + E_i) × (1 + headroom%)", sub: sel.length ? budgets.map(b => f1(b.total)).join(" + ") : "0", out: sel.length ? C.memText(total) : "—", tot: true }
+    ].map(r => `<li class="${r.tot ? "tot" : ""}"><div class="sz-fk">${esc(r.k)}</div><div class="sz-fb"><span class="sz-sym">${esc(r.sym)}</span><span class="sz-sub">= ${esc(r.sub)}</span><span class="sz-out">= ${esc(r.out)}</span>${r.note ? `<small>${esc(r.note)}</small>` : ""}</div></li>`).join("");
+
+    // warnings
+    const warn = [];
+    if (!sel.length) warn.push("請至少勾選一個模型。");
+    if (g.runtimeGB <= 0) warn.push("Runtime overhead 為 0 不實際：每個模型程序都要有 CUDA context 與 activation（建議每個模型至少 3～5 GB）。");
+    if (g.headroomPct <= 0) warn.push("安全餘裕為 0%，沒有緩衝。");
+    $("mzWarn").hidden = !warn.length; $("mzWarn").textContent = warn.join(" ");
+    if (!sel.length) { $("mzOptions").innerHTML = ""; $("mzDetail").innerHTML = ""; $("mzCombos").innerHTML = ""; return; }
+
+    // GPU options
+    const items = sel.map((x, i) => ({ name: x.m.name, total: budgets[i].total }));
+    const list = gpus.map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
+      .sort((a, b) => a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
+    if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
+    $("mzOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}" data-id="${o.gpu.id}"><b>${esc(shortName(o.gpu.name))} × ${o.size.gpus}</b><small>${i === 0 ? "★ 建議 · " : ""}${o.size.servers} 台（${o.size.servers * o.gpu.perServer} 張）</small></button>`).join("");
+    const cur = list.find(o => o.gpu.id === picked), s = cur.size, gp = cur.gpu;
+    const iso = sizeAll(items, { ...gp, usablePct: g.usable }, false, false), pk = sizeAll(items, { ...gp, usablePct: g.usable }, true, false);
+    $("mzDetail").innerHTML = `<p class="sz-gl"><b>${esc(gp.name)}</b>${gp.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${gp.vram} GB（可規劃 ${f1(s.cap)} GB）、每台 ${gp.perServer} 張</p>` +
+      `<p class="sz-sub">TP 分片：${s.tp.map(t => `${esc(t.name)} ${t.k} 張`).join(" · ")}（每個模型取 2 的次方張）</p>` +
+      `<ol class="mz-bins">${s.bins.map((b, i) => `<li><b>GPU ${i + 1}</b><div class="mz-bar"><i style="width:${Math.min(100, b.used / s.cap * 100)}%"></i></div><span>${f1(b.used)} / ${f1(s.cap)} GB　${b.shards.map(sh => `${esc(sh.name)}${sh.k > 1 ? `（1/${sh.k} 分片）` : ""} ${f1(sh.gb)}`).join(" ＋ ")}</span></li>`).join("")}</ol>` +
+      `<p class="sz-final">${C.memText(total)} → <b>${esc(shortName(gp.name))} × ${s.gpus}</b>（${g.pack ? "共用打包" : "各模型獨立"}）／<b>${s.servers} 台</b>${g.ha ? "（含 +1 備援）" : ""}，實體顯存 ${C.memText(s.servers * gp.perServer * gp.vram)}${s.crossNode ? "；有模型的 TP 超過單台，需跨節點" : ""}<br>` +
+      `<small>比較：共用打包 ${pk.gpus} 張、各模型獨立 ${iso.gpus} 張（${esc(shortName(gp.name))}）</small></p>`;
+
+    // Q4 / Q8 combinations (only q4km / q8 considered)
+    const opts = sel.map(x => x.m.quants.filter(q => Q[q]));
+    const combos = opts.reduce((acc, qs) => acc.flatMap(c => qs.map(q => [...c, q])), [[]]);
+    const feat = ["rtxpro6000", "h200", "b300"].map(id => gpus.find(x => x.id === id)).filter(Boolean);
+    const curKey = sel.map(x => x.cfg.quant).join("|");
+    const rowsHtml = combos.map(c => {
+      const bs = sel.map((x, i) => C.modelBudget(x.m, { ...x.cfg, quant: c[i], concurrent: split[i], runtimeGB: g.runtimeGB, headroomPct: g.headroomPct, kvBits: g.kvBits }));
+      const tot = bs.reduce((a, b) => a + b.total, 0), it = sel.map((x, i) => ({ name: x.m.name, total: bs[i].total }));
+      const res = feat.map(gp => ({ gp, s: sizeAll(it, { ...gp, usablePct: g.usable }, g.pack, g.ha) }));
+      const best = res.reduce((a, b) => (b.s.servers < a.s.servers || (b.s.servers === a.s.servers && b.s.gpus < a.s.gpus) ? b : a));
+      return `<tr class="${c.join("|") === curKey ? "cur" : ""}"><th>${c.map(q => Q[q]).join(" · ")}${c.join("|") === curKey ? ' <i class="sz-flag">目前</i>' : ""}</th><td>${C.memText(tot)}</td>` +
+        res.map(r => `<td class="${r === best ? "best" : ""}">${r.s.gpus} 張<small>${r.s.servers} 台${r === best ? " ★" : ""}</small></td>`).join("") + "</tr>";
+    }).join("");
+    $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>合計顯存</th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
+  }
+
+  $("mzOptions").addEventListener("click", e => { const b = e.target.closest(".sz-opt"); if (b) { picked = b.dataset.id; render(); } });
+  $("szMulti").addEventListener("input", render);
+  $("szMulti").addEventListener("change", render);
+  window.SizingMulti = { render };
+})();

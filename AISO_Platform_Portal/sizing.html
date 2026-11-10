@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=6">
+  <link rel="stylesheet" href="sizing.css?v=7">
 </head>
 <body>
   <header class="site-header">
@@ -25,6 +25,9 @@
   <main>
     <section class="bm-hero"><div><a class="pg-back" href="./"><span aria-hidden="true">←</span> 返回首頁</a><p class="eyebrow">SIZING / MEMORY BUDGET</p><h1>GPU<br><em>SIZING</em></h1></div><p>先用 Memory Budget 算出「放得下」需要多少 GPU，再用 Throughput 與 HA 決定伺服器台數。結果是容量下限，採購前仍須用實際模型與 workload benchmark 驗證。</p></section>
 
+    <div class="sz-modes" id="szMode" role="tablist" aria-label="模式"><button type="button" role="tab" class="on" aria-selected="true" data-m="single">單一模型</button><button type="button" role="tab" aria-selected="false" data-m="multi">多模型（VIS 情境）</button></div>
+
+    <div id="szSingle">
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
       <header><div><p class="section-label">FORMULA</p><h2>計算公式<span class="zh">隨左邊參數即時代入數字</span></h2></div>
         <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b></div></header>
@@ -41,38 +44,38 @@
         <header><div><p class="section-label">INPUT</p><h2>客戶需求<span class="zh">模型、Context、併發</span></h2></div></header>
 
         <fieldset><legend>① 模型</legend>
-          <label>模型預設<select id="szModel"></select></label>
-          <label>總參數量（B）<input id="szParams" type="number" min="1" step="1"></label>
-          <label>權重精度<select id="szWBits"><option value="16">BF16 / FP16（16-bit）</option><option value="8">FP8 / INT8（8-bit）</option><option value="4">4-bit（AWQ/GPTQ/Q4）</option></select></label>
-          <label>量化 metadata 加成（%）<input id="szMeta" type="number" min="0" max="50" step="1" value="10"></label>
-          <label>Transformer Layers<input id="szLayers" type="number" min="1" step="1"></label>
-          <label>KV Heads<input id="szKvHeads" type="number" min="1" step="1"></label>
-          <label>Head Dimension<input id="szHeadDim" type="number" min="1" step="1"></label>
+          <label>模型預設<select autocomplete="off" id="szModel"></select></label>
+          <label>總參數量（B）<input autocomplete="off" id="szParams" type="number" min="1" step="1"></label>
+          <label>權重精度<select autocomplete="off" id="szWBits"><option value="16">BF16 / FP16（16-bit）</option><option value="8">FP8 / INT8（8-bit）</option><option value="4">4-bit（AWQ/GPTQ/Q4）</option></select></label>
+          <label>量化 metadata 加成（%）<input autocomplete="off" id="szMeta" type="number" min="0" max="50" step="1" value="10"></label>
+          <label>Transformer Layers<input autocomplete="off" id="szLayers" type="number" min="1" step="1"></label>
+          <label>KV Heads<input autocomplete="off" id="szKvHeads" type="number" min="1" step="1"></label>
+          <label>Head Dimension<input autocomplete="off" id="szHeadDim" type="number" min="1" step="1"></label>
           <p id="szModelNote" class="sz-note" hidden></p>
         </fieldset>
 
         <fieldset><legend>② Context 與併發</legend>
-          <label>KV Cache 精度<select id="szKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
-          <label>Context / 每個請求（tokens）<input id="szContext" type="number" min="256" step="1024" value="32768"></label>
-          <label>同時推論請求數<input id="szConc" type="number" min="1" step="1" value="20"></label>
+          <label>KV Cache 精度<select autocomplete="off" id="szKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
+          <label>Context / 每個請求（tokens）<input autocomplete="off" id="szContext" type="number" min="256" step="1024" value="32768"></label>
+          <label>同時推論請求數<input autocomplete="off" id="szConc" type="number" min="1" step="1" value="20"></label>
           <div class="sz-est"><b>由人數估算並行請求</b>
-            <label>總使用人數<input id="szUsers" type="number" min="1" value="500"></label>
-            <label>尖峰活躍比例（%）<input id="szActive" type="number" min="1" max="100" value="40"></label>
-            <label>活躍者正在推論（%）<input id="szInflight" type="number" min="1" max="100" value="25"></label>
+            <label>總使用人數<input autocomplete="off" id="szUsers" type="number" min="1" value="500"></label>
+            <label>尖峰活躍比例（%）<input autocomplete="off" id="szActive" type="number" min="1" max="100" value="40"></label>
+            <label>活躍者正在推論（%）<input autocomplete="off" id="szInflight" type="number" min="1" max="100" value="25"></label>
             <button id="szApplyConc" type="button">帶入「同時推論請求數」→ <span id="szEstConc">50</span></button>
           </div>
         </fieldset>
 
         <fieldset><legend>③ 餘裕與規劃</legend>
-          <label>Runtime overhead（GB）<input id="szRuntime" type="number" min="0" step="1" value="15"></label>
-          <label>安全餘裕（%）<input id="szHeadroom" type="number" min="0" max="100" step="1" value="15"></label>
-          <label>每卡可規劃容量（%）<input id="szUsable" type="number" min="50" max="100" step="1" value="90"></label>
+          <label>Runtime overhead（GB）<input autocomplete="off" id="szRuntime" type="number" min="0" step="1" value="15"></label>
+          <label>安全餘裕（%）<input autocomplete="off" id="szHeadroom" type="number" min="0" max="100" step="1" value="15"></label>
+          <label>每卡可規劃容量（%）<input autocomplete="off" id="szUsable" type="number" min="50" max="100" step="1" value="90"></label>
         </fieldset>
 
         <fieldset><legend>④ 吞吐量與 HA（選填）</legend>
-          <label>需要的總輸出 tokens/sec<input id="szReqTps" type="number" min="0" step="100" placeholder="留空＝只算容量"></label>
-          <label>每台實測 aggregate tokens/sec<input id="szSrvTps" type="number" min="0" step="100" placeholder="取自 Benchmark，同模型同 Context"></label>
-          <label class="sz-check"><input id="szHA" type="checkbox"> 需要 HA（+1 台備援）</label>
+          <label>需要的總輸出 tokens/sec<input autocomplete="off" id="szReqTps" type="number" min="0" step="100" placeholder="留空＝只算容量"></label>
+          <label>每台實測 aggregate tokens/sec<input autocomplete="off" id="szSrvTps" type="number" min="0" step="100" placeholder="取自 Benchmark，同模型同 Context"></label>
+          <label class="sz-check"><input autocomplete="off" id="szHA" type="checkbox"> 需要 HA（+1 台備援）</label>
         </fieldset>
       </section>
 
@@ -101,7 +104,53 @@
         </section>
       </div>
     </div>
+    </div><!-- /szSingle -->
+
+    <div id="szMulti" hidden>
+      <section class="report-section sz-formula" aria-live="polite">
+        <header><div><p class="section-label">MULTI-MODEL · VIS</p><h2>多模型智能配置<span class="zh">同時提供三個模型；架構數字取自各模型公開的 config.json</span></h2></div>
+          <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b></div></header>
+        <div class="mz-global">
+          <label>總使用人數<input autocomplete="off" id="mzUsers" type="number" min="1" value="1000"></label>
+          <label>尖峰活躍比例（%）<input autocomplete="off" id="mzActive" type="number" min="1" max="100" value="40"></label>
+          <label>活躍者正在推論（%）<input autocomplete="off" id="mzInflight" type="number" min="1" max="100" value="25"></label>
+          <label>每個模型 Runtime（GB）<input autocomplete="off" id="mzRuntime" type="number" min="0" value="5"></label>
+          <label>安全餘裕（%）<input autocomplete="off" id="mzHeadroom" type="number" min="0" max="100" value="15"></label>
+          <label>每卡可規劃容量（%）<input autocomplete="off" id="mzUsable" type="number" min="50" max="100" value="90"></label>
+          <label>KV Cache 精度<select autocomplete="off" id="mzKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
+          <label>配置方式<select autocomplete="off" id="mzPack"><option value="1">共用打包（最省 GPU）</option><option value="0">各模型獨立（好維運）</option></select></label>
+          <label class="sz-check"><input autocomplete="off" id="mzHA" type="checkbox"> 需要 HA（+1 台備援）</label>
+        </div>
+        <ol id="mzFormula" class="sz-flist"></ol>
+        <div id="mzModels" class="mz-models"></div>
+        <p id="mzWarn" class="report-notice" hidden></p>
+      </section>
+
+      <section class="report-section">
+        <header><div><p class="section-label">RECOMMENDATION</p><h2>建議機器與配置<span class="zh">可選擇；依「台數最少、GPU 張數最少」排序</span></h2></div></header>
+        <div id="mzOptions" class="sz-opts" role="radiogroup" aria-label="建議機器"></div>
+        <div id="mzDetail" class="sz-detail"></div>
+      </section>
+
+      <section class="report-section">
+        <header><div><p class="section-label">Q4 / Q8</p><h2>量化組合比較<span class="zh">VIS 三個模型各選 Q4 或 Q8，共 8 種；目前選擇會標示</span></h2></div></header>
+        <div class="table-wrap"><table class="sz-table" id="mzCombos"></table></div>
+        <p class="sz-note">Q4 指 Q4_K_M（≈ 4.85 bit/weight），Q8 指 Q8_0（≈ 8.5 bit/weight）；VIS 來信註明 Q4 必須是 K_M 或 IQ4 以上，不可用傳統 Q4_0。表中數字為該 GPU 型號所需張數（含 TP 分片），括號為台數。</p>
+      </section>
+
+      <section class="report-section">
+        <header><div><p class="section-label">READ ME FIRST</p><h2>這個估算怎麼來、沒算進什麼</h2></div></header>
+        <ul class="sz-list">
+          <li><b>KV 依架構分層計算。</b>Qwen3.6-35B-A3B（40 層只有 10 層 full attention）與 Qwen3.8-27B（64 層只有 16 層）的其餘層是固定大小的 linear-attention state；Gemma 4 31B 有 50 層 sliding window（只存 1024 tokens）。若用「每層都存 KV」的一般公式，KV 會被高估數倍。</li>
+          <li><b>MoE 用總參數量。</b>Qwen3.6-35B-A3B 的 256 個專家全部要常駐顯存，只啟用 3B 不會減少顯存。</li>
+          <li><b>MTP / DFlash / QAT / PLE Offload、aiDAPTIV</b>：額外 GB 欄位預設 1 GB（MTP 多 1 層權重的粗估），DFlash 草稿模型、PLE offload、aiDAPTIV 的卸載效果<b>都沒有計入</b>，需實測後調整。</li>
+          <li><b>共用打包</b>讓不同模型的分片共用同一張 GPU（各自一個伺服器程序），最省卡但維運較複雜；<b>各模型獨立</b>每個模型有專屬 GPU，隔離與擴充較容易。TP 分片取 2 的次方，同一模型的分片一定放在不同 GPU。</li>
+          <li><b>這是容量下限。</b>速度（TTFT、TPOT）要靠 Benchmark 量測；並行請求數由「人數 × 活躍比例 × 正在推論比例」估算，三個模型按下方「流量比例」分配。</li>
+        </ul>
+      </section>
+    </div>
   </main>
-  <script src="sizing-core.js?v=2"></script>
+  <script src="sizing-core.js?v=3"></script>
   <script src="sizing.js?v=2"></script>
+  <script src="sizing-multi.js?v=1"></script>
 </body></html>

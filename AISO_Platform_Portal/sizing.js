@@ -29,10 +29,10 @@
 
   function read() {
     return {
-      params: C.num(el.params.value, 0), weightBits: C.num(el.wbits.value, 16), metaPct: C.num(el.meta.value, 0),
+      params: C.num(el.params.value, 0), weightBits: C.num(el.wbits.value, 16), metaPct: C.num(el.meta.value, 10),
       layers: C.num(el.layers.value, 0), kvHeads: C.num(el.kvHeads.value, 0), headDim: C.num(el.headDim.value, 0),
       kvBits: C.num(el.kvBits.value, 16), context: C.num(el.context.value, 0), concurrent: Math.max(1, C.num(el.conc.value, 1)),
-      runtimeGB: C.num(el.runtime.value, 0), headroomPct: C.num(el.headroom.value, 0)
+      runtimeGB: Math.max(0, C.num(el.runtime.value, 15)), headroomPct: Math.max(0, C.num(el.headroom.value, 15))
     };
   }
 
@@ -87,6 +87,8 @@
     renderFormula(b, usablePct, { requiredTps: C.num(el.reqTps.value, 0), perServerTps: C.num(el.srvTps.value, 0), ha: el.ha.checked });
     const warn = $("szWarn"), msgs = [];
     if (!inp.params || !inp.layers || !inp.kvHeads || !inp.headDim) msgs.push("模型參數、層數、KV Heads、Head Dimension 需大於 0。");
+    if (inp.runtimeGB <= 0) msgs.push("Runtime overhead 為 0 不實際：CUDA context、activation、推論框架一定會佔顯存（建議至少 5 GB，單一大模型通常 10～15 GB）。");
+    if (inp.headroomPct <= 0) msgs.push("安全餘裕為 0%：峰值負載與碎片化沒有緩衝，建議 10～20%。");
     if (b.total && b.kv / b.total > 0.6) msgs.push("KV Cache 佔總需求超過 60%：Context 或併發是主因，可評估 KV 量化（FP8）、縮短 Context、Prefix Caching。");
     warn.hidden = !msgs.length; warn.textContent = msgs.join(" ");
   }
