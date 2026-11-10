@@ -104,6 +104,10 @@
     const its = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.servers, need: o.size.gpus, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("mzCasHost").innerHTML = C.pickMenuHtml(its, picked, "mz"); UI.keepShut($("mzCasHost"));
     $("mzJumpTxt").textContent = ` · ${nm(its[0])} · ${C.resEn(its[0].servers, C.physical(its[0]))}`;
+    $("mzRows").innerHTML = C.refRowsHtml(gpus, gp => {
+      const z = sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha);
+      return { warn: z.crossNode, html: `Needs <b>${z.gpus}</b> GPU${z.gpus === 1 ? "" : "s"} → <b>${C.resEn(z.servers, z.servers * gp.perServer)}</b>${z.crossNode ? ' <em class="warn">⚠ cross-node 需跨節點</em>' : ""}` };
+    }, false);
     const cur = list.find(o => o.gpu.id === picked);
     if (!cur) {
       $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)}<span class="bz">合計顯存 · 請從上方選擇機型</span></p>`;

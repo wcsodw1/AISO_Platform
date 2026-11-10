@@ -298,5 +298,24 @@
       }).join("") + `</ul></div></div>`;
   }
 
-  return { VENDORS, physical, resEn, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  /* GPU reference card (right side of Step 3): grouped by vendor, VRAM as a bar, server sizes as chips.
+     info(g) -> html line for the current scenario (or "" / null); editable adds VRAM and default GPUs-per-server inputs (data-i = index in `gpus`). */
+  function refRowsHtml(gpus, info, editable) {
+    const maxV = Math.max(...gpus.map(g => g.vram), 1);
+    return VENDORS.map(v => {
+      const list = gpus.map((g, i) => ({ g, i })).filter(x => x.g.vendor === v);
+      if (!list.length) return "";
+      return `<section class="sz-ref-v"><h4>${v}</h4>` + list.map(({ g, i }) => {
+        const ks = [...new Set([...(g.configs || []), g.perServer])].sort((a, b) => a - b);
+        const inf = info ? info(g) : "";
+        return `<div class="sz-ref-row${inf && inf.warn ? " warn" : ""}"><div class="rr-top"><b>${escH(g.model)}</b>${g.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}` +
+          `<span class="rr-vram">${editable ? `<input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}" aria-label="VRAM GB">` : g.vram} GB</span></div>` +
+          `<div class="rr-bar"><i style="width:${(g.vram / maxV * 100).toFixed(1)}%"></i></div>` +
+          `<div class="rr-opts">${ks.map(k => `<em>${k}</em>`).join("")}<span>GPUs / server</span>${editable ? `<label class="rr-def">default <input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}" aria-label="GPUs per server"></label>` : ""}</div>` +
+          (inf ? `<div class="rr-need">${inf.html || inf}</div>` : "") + (g.basis ? `<div class="rr-note">${escH(g.basis)}</div>` : "") + `</div>`;
+      }).join("") + `</section>`;
+    }).join("");
+  }
+
+  return { VENDORS, refRowsHtml, physical, resEn, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

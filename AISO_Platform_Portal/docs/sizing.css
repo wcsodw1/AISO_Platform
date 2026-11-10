@@ -438,3 +438,28 @@ main h2 var sub{font-style:normal;font-size:.62em}
 /* not enough width to open a 4th column to the right: unfold the options under the model row instead (never overlap) */
 @media(max-width:1560px){.sz-cas-cfgs{position:static;width:auto;margin:0;border:0;border-top:1px solid rgba(244,239,228,.14);border-radius:0;background:rgba(8,12,22,.28);box-shadow:none}.sz-cas-cfgs .cm{padding-left:32px}}
 .sz-cas-cfgs .cm b{white-space:nowrap}
+
+/* Step 3 layout: picker on the left, GPU reference card on the right */
+.sz-s3{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,460px);gap:26px;align-items:start}
+.sz-s3-main{min-width:0}
+.sz-ref{padding:18px 18px 8px;border:1px solid var(--sz-line);border-radius:22px 22px 22px 6px;background:linear-gradient(160deg,rgba(122,174,232,.1),rgba(244,239,228,.03));max-height:640px;overflow:auto}
+.sz-ref h3{margin:0 0 4px;color:var(--ivory);font-size:22px}
+.sz-ref-sub{margin:0 0 12px;color:var(--muted);font-size:14px}
+.sz-ref-v h4{margin:14px 0 8px;color:var(--gold);font-size:15px;letter-spacing:.1em;text-transform:uppercase}
+.sz-ref-row{margin:0 0 8px;padding:10px 12px;border:1px solid rgba(244,239,228,.14);border-radius:14px;background:rgba(8,12,22,.25)}
+.sz-ref-row.warn{border-color:rgba(232,161,90,.5)}
+.rr-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rr-top b{color:var(--ivory);font-size:17px}
+.rr-vram{margin-left:auto;color:#cfe3ff;font-size:16px;font-weight:700;white-space:nowrap}
+.rr-vram .sz-mini{width:76px}
+.rr-bar{height:8px;margin:7px 0;border-radius:6px;background:rgba(244,239,228,.1);overflow:hidden}
+.rr-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#7aaee8,#70d3a2)}
+.rr-opts{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.rr-opts em{font-style:normal;min-width:30px;padding:2px 9px;border-radius:999px;background:rgba(216,199,121,.18);color:var(--gold);font-weight:700;text-align:center;font-size:15px}
+.rr-def{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:14px}
+.rr-def .sz-mini{width:58px}
+.rr-need{margin-top:6px;color:#c4c9d4;font-size:15px;line-height:1.5}
+.rr-need b{color:var(--ivory)}.rr-need em.warn{font-style:normal;color:#e8a15a}
+.rr-note{margin-top:4px;color:var(--muted);font-size:14px}
+@media(max-width:1180px){.sz-s3{grid-template-columns:minmax(0,1fr)}.sz-ref{max-height:none}}
+.sz-nh{margin:14px 0 8px;color:var(--gold);font-size:18px}.sz-nh:first-child{margin-top:2px}

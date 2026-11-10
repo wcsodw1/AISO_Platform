@@ -126,21 +126,10 @@
   }
   function renderRows(b, usablePct) {
     const reqTps = C.num(el.reqTps.value, 0), srvTps = C.num(el.srvTps.value, 0), ha = el.ha.checked;
-    $("szRows").innerHTML = gpus.map((g, i) => {
+    $("szRows").innerHTML = C.refRowsHtml(gpus, g => {
       const s = C.sizeFor(b.total, g, usablePct, { requiredTps: reqTps, perServerTps: srvTps, ha });
-      const notes = [];
-      if (s.crossNode) notes.push("TP 超過單台，需跨節點");
-      if (s.serversByTps > s.serversByMem) notes.push("吞吐量決定台數");
-      if (ha) notes.push("已含 +1 備援");
-      if (g.assumed) notes.push("規格為規劃假設");
-      if (g.basis) notes.push(g.basis);
-      return `<tr class="${s.crossNode ? "warn" : ""}"><th>${esc(g.name)}${g.assumed ? ' <i class="sz-flag" title="規劃假設">假設</i>' : ""}</th>` +
-        `<td><input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}"> GB</td>` +
-        `<td><input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}"></td>` +
-        `<td>${s.gpusMin} 張</td><td><b>${s.gpusTP} 張</b></td>` +
-        `<td><b class="sz-srv">${s.withHA} 台</b><small>${s.withHA * g.perServer} 張 · ${fmt(s.physicalVram, 0)} GB</small></td>` +
-        `<td>${notes.map(esc).join("；") || "—"}</td></tr>`;
-    }).join("");
+      return { warn: s.crossNode, html: `Needs <b>${s.gpusMin}</b> GPU${s.gpusMin === 1 ? "" : "s"} · TP <b>${s.gpusTP}</b> → <b>${C.resEn(s.withHA, s.withHA * g.perServer)}</b>${s.crossNode ? ' <em class="warn">⚠ cross-node 需跨節點</em>' : ""}${s.serversByTps > s.serversByMem ? " · 吞吐量決定台數" : ""}` };
+    }, true);
   }
 
   let picked = null;
