@@ -26,10 +26,10 @@
     return `<article class="mz-card" data-id="${m.id}">
       <header><label class="sz-check"><input autocomplete="off" type="checkbox" class="mz-on" checked> <b>${esc(m.name)}</b>${C.tip(hint)}</label></header>
       <div class="mz-ctl">
-        ${L("量化", "", `<select autocomplete="off" class="mz-q">${opts}</select>`)}
-        ${L("Context / 請求", "每個請求的上下文長度（tokens）。", '<input autocomplete="off" class="mz-ctx" type="number" min="1024" step="1024" value="32768">')}
-        ${L("流量比例", "三個模型分攤並行請求的相對比例（1：1：1＝平均）。", '<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1">')}
-        ${L("額外 GB（MTP）", "推測解碼用的 MTP 草稿頭檔案大小，隨量化自動帶入；不用 MTP 填 0。", `<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.01" value="${f1(C.mtpOf(m, "q4km"), 2)}">`)}
+        ${L("Quantization<span class=\"bz\">量化</span>", "", `<select autocomplete="off" class="mz-q">${opts}</select>`)}
+        ${L("Context / request<span class=\"bz\">每個請求</span>", "每個請求的上下文長度（tokens）。", '<input autocomplete="off" class="mz-ctx" type="number" min="1024" step="1024" value="32768">')}
+        ${L("Traffic share<span class=\"bz\">流量比例</span>", "三個模型分攤並行請求的相對比例（1：1：1＝平均）。", '<input autocomplete="off" class="mz-share" type="number" min="0" step="1" value="1">')}
+        ${L("Extra GB (MTP)<span class=\"bz\">額外容量</span>", "推測解碼用的 MTP 草稿頭檔案大小，隨量化自動帶入；不用 MTP 填 0。", `<input autocomplete="off" class="mz-extra" type="number" min="0" step="0.01" value="${f1(C.mtpOf(m, "q4km"), 2)}">`)}
       </div>
       </article>`;
   }).join("");
@@ -54,9 +54,9 @@
 
   let picked = null;
   function syncSummaries(g, sel) {
-    $("mzReqSum").textContent = sel.length ? `${f1(g.users, 0)} 人 · ${sel.length} 個模型 · ${sel.map(x => (Q[x.cfg.quant] || x.cfg.quant)).join("/")}` : "未選模型";
+    $("mzReqSum").textContent = sel.length ? `${f1(g.users, 0)} users · ${sel.length} models · ${sel.map(x => (Q[x.cfg.quant] || x.cfg.quant)).join("/")}` : "No model selected 未選模型";
     $("mzReqTab").classList.toggle("warn", !sel.length);
-    $("mzOptSum").textContent = `${g.pack ? "共用打包" : "各模型獨立"}${g.ha ? " · HA" : ""}`;
+    $("mzOptSum").textContent = `${g.pack ? "Shared packing" : "Per-model"}${g.ha ? " · HA" : ""}`;
     $("mzOptTab").classList.toggle("set", g.ha);
   }
   function render() {
@@ -97,20 +97,26 @@
 
     // GPU options
     const items = sel.map((x, i) => ({ name: x.m.name, total: budgets[i].total }));
-    const list = gpus.map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
-      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
-    if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
-    const UI = window.SizingUI, nm = o => `${o.gpu.vendor} ${o.gpu.model}`;
+    const list = C.variants(gpus).map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
+      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers * a.gpu.perServer - b.size.servers * b.gpu.perServer || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
+    if (picked && !list.some(o => o.gpu.id === picked)) picked = null;
+    const UI = window.SizingUI, nm = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`;
     const its = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.servers, need: o.size.gpus, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("mzCasHost").innerHTML = C.pickMenuHtml(its, picked, "mz"); UI.keepShut($("mzCasHost"));
-    $("mzJumpTxt").textContent = `${nm(its[0])} · ${its[0].servers} 台 · ${C.physical(its[0])} 張`;
-    const cur = list.find(o => o.gpu.id === picked), s = cur.size, gp = cur.gpu, ci = its.find(o => o.gpu.id === picked);
+    $("mzJumpTxt").textContent = ` · ${nm(its[0])} · ${C.resEn(its[0].servers, C.physical(its[0]))}`;
+    const cur = list.find(o => o.gpu.id === picked);
+    if (!cur) {
+      $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)}<span class="bz">合計顯存 · 請從上方選擇機型</span></p>`;
+      $("mzDetail").innerHTML = `<p class="sz-sub">Choose a machine first<span class="bz">先選擇機型</span></p>`;
+    } else {
+    const s = cur.size, gp = cur.gpu, ci = its.find(o => o.gpu.id === picked);
     const iso = sizeAll(items, { ...gp, usablePct: g.usable }, false, false), pk = sizeAll(items, { ...gp, usablePct: g.usable }, true, false);
-    $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)} → <b>${esc(nm(ci))} × ${s.servers} 台（${C.physical(ci)} 張 GPU）</b></p>` +
+    $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)} → <b>${esc(nm(ci))} × ${C.resEn(s.servers, C.physical(ci))}</b><span class="bz">${s.servers} 台 · ${C.physical(ci)} 張 GPU</span></p>` +
       `<p class="sz-sub">${g.pack ? "共用打包" : "各模型獨立"}，容量需要 ${s.gpus} 張；每卡 ${gp.vram} GB（可規劃 ${f1(s.cap)} GB）、每台 ${gp.perServer} 張${g.ha ? "；含 +1 備援" : ""}　<small>共用打包 ${pk.gpus} 張／各模型獨立 ${iso.gpus} 張</small></p>` +
       (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：有模型的 TP 超過每台 ${gp.perServer} 張 ${C.tip("不建議：必須跨節點（需高速互連，會拖慢 TPOT）。這只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "");
     $("mzDetail").innerHTML = `<p class="sz-sub">TP 分片：${s.tp.map(t => `${esc(t.name)} ${t.k} 張`).join(" · ")} ${C.tip("每個模型的 TP 取 2 的次方張；同一模型的分片一定放在不同 GPU。")}</p>` +
       `<ol class="mz-bins">${s.bins.map((b, i) => `<li><b>GPU ${i + 1}</b><div class="mz-bar"><i style="width:${Math.min(100, b.used / s.cap * 100)}%"></i></div><span>${f1(b.used)} / ${f1(s.cap)} GB　${b.shards.map(sh => `${esc(sh.name)}${sh.k > 1 ? `（1/${sh.k} 分片）` : ""} ${f1(sh.gb)}`).join(" ＋ ")}</span></li>`).join("")}</ol>`;
+    }
 
     // Q4 / Q8 combinations (only q4km / q8 considered)
     const opts = sel.map(x => x.m.quants.filter(q => Q[q]));
@@ -122,10 +128,10 @@
       const tot = bs.reduce((a, b) => a + b.total, 0), wsum = bs.reduce((a, b) => a + b.weights, 0), it = sel.map((x, i) => ({ name: x.m.name, total: bs[i].total }));
       const res = feat.map(gp => ({ gp, s: sizeAll(it, { ...gp, usablePct: g.usable }, g.pack, g.ha) }));
       const best = res.reduce((a, b) => (b.s.servers < a.s.servers || (b.s.servers === a.s.servers && b.s.gpus < a.s.gpus) ? b : a));
-      return `<tr class="${c.join("|") === curKey ? "cur" : ""}"><th>${c.map(q => Q[q]).join(" · ")}${c.join("|") === curKey ? ' <i class="sz-flag">目前</i>' : ""}</th><td>${C.memText(tot)}</td><td>${f1(wsum)} GB<small>${f1(tot - wsum)} GB 為 KV、Runtime 等</small></td>` +
-        res.map(r => `<td class="${r === best ? "best" : ""}">${r.s.gpus} 張<small>${r.s.servers} 台${r === best ? " ★" : ""}</small></td>`).join("") + "</tr>";
+      return `<tr class="${c.join("|") === curKey ? "cur" : ""}"><th>${c.map(q => Q[q]).join(" · ")}${c.join("|") === curKey ? ' <i class="sz-flag">Current 目前</i>' : ""}</th><td>${C.memText(tot)}</td><td>${f1(wsum)} GB<small>${f1(tot - wsum)} GB 為 KV、Runtime 等</small></td>` +
+        res.map(r => `<td class="${r === best ? "best" : ""}">${r.s.gpus} GPUs<small>${r.s.servers} server${r.s.servers === 1 ? "" : "s"}${r === best ? " ★" : ""}</small></td>`).join("") + "</tr>";
     }).join("");
-    $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>合計顯存</th><th>其中權重（檔案）</th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
+    $("mzCombos").innerHTML = `<thead><tr><th>${sel.map(x => esc(x.m.name)).join(" · ")}</th><th>Total memory<span class="bz">合計顯存</span></th><th>of which weights<span class="bz">其中權重（檔案）</span></th>${feat.map(gp => `<th>${esc(shortName(gp.name))}</th>`).join("")}</tr></thead><tbody>${rowsHtml}</tbody>`;
   }
 
   $("mzCasHost").addEventListener("click", e => { const b = e.target.closest(".cm"); if (b) { picked = b.dataset.id; render(); } });
