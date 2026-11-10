@@ -35,3 +35,27 @@
 .sz-list b{color:var(--ivory)}
 @media(max-width:1000px){.sz-layout{grid-template-columns:1fr}}
 @media(max-width:620px){.sz-total b{font-size:40px}}
+
+/* Type scale — nothing on this page is smaller than 14px (13px only for the tiny 假設 flag). */
+.sz-layout,.sz-layout p,.sz-layout li,.sz-layout td,.sz-layout th{font-size:16px;line-height:1.65}
+.sz-layout .section-label{font-size:14px;letter-spacing:.14em}
+.sz-layout .report-section h2{font-size:32px;line-height:1.2}
+.sz-layout .report-section h2 .zh{font-size:17px;margin-top:8px}
+.sz-inputs legend{font-size:17px}
+.sz-inputs label{font-size:16px;line-height:1.4}
+.sz-inputs input,.sz-inputs select,.sz-inputs button{font-size:17px;min-height:48px}
+.sz-est>b{font-size:16px}
+.sz-note{font-size:15px}
+.sz-table thead th{font-size:14px;letter-spacing:.04em}
+.sz-table td small,.sz-break dd small{font-size:14px}
+.sz-break dt{font-size:15px}
+.sz-break dd{font-size:24px}
+.sz-total b{font-size:64px}
+.sz-total small{font-size:18px}
+.sz-srv{font-size:19px}
+.sz-mini{font-size:16px;min-height:40px;width:84px}
+.sz-flag{font-size:13px;padding:2px 8px}
+.sz-list{font-size:16px}
+.bm-hero p:last-child{font-size:18px}
+.bm-auth span{font-size:13px}
+@media(max-width:620px){.sz-layout .report-section h2{font-size:28px}.sz-total b{font-size:46px}.sz-inputs input,.sz-inputs select,.sz-inputs button{font-size:16px}}
