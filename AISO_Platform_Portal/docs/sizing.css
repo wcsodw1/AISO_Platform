@@ -455,3 +455,19 @@ main h2 var sub{font-style:normal;font-size:.62em}
 .sz-ref-row.hl{border-color:var(--gold);background:rgba(216,199,121,.12);box-shadow:0 0 0 1px rgba(216,199,121,.4)}
 .sz-ref-row{transition:background .25s,border-color .25s}
 .pp-legend{display:flex;flex-wrap:wrap;gap:6px 22px;padding:12px 20px;border-top:1px solid rgba(244,239,228,.1);color:#c4c9d4;font-size:15px;line-height:1.5}.pp-legend em{font-style:normal;font-weight:700;font-size:18px}.pp-legend em.star{color:var(--gold)}.pp-legend em.warn{color:#e8a15a}
+
+/* ===== Step 1: parameters are always visible; each box gets its own shape and accent ===== */
+.sz-params{margin-top:4px}
+.sz-in-grid fieldset,.mz-models .mz-card{position:relative;padding:18px 20px 8px!important}
+.sz-in-grid legend{float:left;width:100%;padding:0 0 14px!important;font-size:18px!important;letter-spacing:0!important;color:var(--ivory)!important}
+.sz-in-grid fieldset legend+*{clear:both}
+.sz-in-grid fieldset:nth-child(1),.mz-models .mz-card:nth-child(1){border:0!important;border-left:5px solid #7aaee8!important;border-radius:8px 26px 26px 8px!important;background:linear-gradient(115deg,rgba(122,174,232,.16),var(--sz-inner) 60%)!important}
+.sz-in-grid fieldset:nth-child(2),.mz-models .mz-card:nth-child(2){border:0!important;border-top:5px solid var(--gold)!important;border-radius:26px 8px 26px 8px!important;background:linear-gradient(180deg,rgba(216,199,121,.15),var(--sz-inner) 55%)!important}
+.sz-in-grid fieldset:nth-child(3),.mz-models .mz-card:nth-child(3){border:2px dashed rgba(112,211,162,.6)!important;border-radius:30px!important;background:linear-gradient(140deg,rgba(112,211,162,.12),var(--sz-inner) 60%)!important}
+.sz-in-grid fieldset:nth-child(1) legend{color:#9cc4f2!important}
+.sz-in-grid fieldset:nth-child(2) legend{color:var(--gold)!important}
+.sz-in-grid fieldset:nth-child(3) legend{color:#8ee0b5!important}
+.mz-global{padding:20px 22px;margin-bottom:18px;border:0;border-bottom:4px solid rgba(244,239,228,.22);border-radius:26px 26px 8px 8px;background:linear-gradient(180deg,rgba(244,239,228,.07),var(--sz-inner) 70%)}
+.mz-models .mz-card>header b{font-size:22px}
+.sz-rtitle{margin:16px 0 8px;color:#8ee0b5;font-size:17px;font-weight:700;letter-spacing:.04em}.sz-rtitle .bz{color:#8ee0b5;opacity:.85}
+.sz-seg.kr{background:repeating-linear-gradient(135deg,var(--gold) 0 4px,#3a3f4e 4px 8px)}

@@ -232,7 +232,7 @@
       `<div class="sz-hn-panels"><div class="sz-hn-panel" data-p="calc"><div class="sz-rows">` +
       detail.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") +
       `</div></div><div class="sz-hn-panel" data-p="sym">${legendHtml(o.legend)}</div></div></div>` +
-      `<div class="sz-rows sz-final">${fin.map(rowHtml).join("")}</div>`;
+      `<div class="sz-rtitle">Arithmetic Result<span class="bz">總計算結果</span></div><div class="sz-rows sz-final">${fin.map(rowHtml).join("")}</div>`;
   }
 
   /* legend of the single-model formula with the current values */
