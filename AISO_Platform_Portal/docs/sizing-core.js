@@ -207,7 +207,8 @@
   /* sections: [{title, rows:[{k,sym,sub,out,note,fin}]}] — everything in ONE box; the row marked fin is the highlighted result */
   function calcBoxHtml(o) {
     return `<div class="sz-sci">${sci(o.line)}</div>` +
-      `<h4 class="sz-bh">符號說明<small>括號內為目前參數值</small></h4>${legendHtml(o.legend)}` +
+      `<h4 class="sz-bh">符號說明<small>M 系列為各項顯存；其餘參數意涵收在下方下拉</small></h4>${legendHtml(o.legend.filter(([s]) => /^M_/.test(s)))}` +
+      (o.legend.some(([s]) => !/^M_/.test(s)) ? `<details class="sz-more"><summary><b>Parameter meaning</b><small>更多參數意涵</small><span class="car" aria-hidden="true">▾</span></summary>${legendHtml(o.legend.filter(([s]) => !/^M_/.test(s)))}</details>` : "") +
       `<h4 class="sz-bh">代入計算</h4><div class="sz-rows">` +
       o.sections.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") + `</div>`;
   }
