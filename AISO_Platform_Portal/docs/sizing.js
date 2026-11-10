@@ -149,6 +149,23 @@
     const v = C.num(t.value, 0); if (v > 0) gpus[+t.dataset.i][t.dataset.k] = v; render();
   });
 
+  /* notes tabs: pointer over a tab shows its panel under the row; leaving the block hides it; click pins (touch / keyboard) */
+  document.querySelectorAll(".sz-hn").forEach(box => {
+    const tabs = [...box.querySelectorAll(".sz-hn-tab")], panels = [...box.querySelectorAll(".sz-hn-panel")];
+    let pinned = null;
+    const show = p => {
+      tabs.forEach(t => { const on = t.dataset.p === p; t.classList.toggle("on", on); t.setAttribute("aria-expanded", on); });
+      panels.forEach(x => x.classList.toggle("on", x.dataset.p === p));
+    };
+    tabs.forEach(t => {
+      t.addEventListener("mouseenter", () => show(t.dataset.p));
+      t.addEventListener("focus", () => show(t.dataset.p));
+      t.addEventListener("click", () => { pinned = pinned === t.dataset.p ? null : t.dataset.p; show(pinned); });
+    });
+    box.addEventListener("mouseleave", () => show(pinned));
+    box.addEventListener("focusout", e => { if (!box.contains(e.relatedTarget)) show(pinned); });
+  });
+
   loadPreset();
   render();
 })();

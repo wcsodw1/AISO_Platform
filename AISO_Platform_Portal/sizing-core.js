@@ -208,7 +208,7 @@
   function calcBoxHtml(o) {
     return `<div class="sz-sci">${sci(o.line)}</div>` +
       `<h4 class="sz-bh">符號說明<small>M 系列為各項顯存；其餘參數意涵收在下方下拉</small></h4>${legendHtml(o.legend.filter(([s]) => /^M_/.test(s)))}` +
-      (o.legend.some(([s]) => !/^M_/.test(s)) ? `<details class="sz-more"><summary><b>Parameter meaning</b><small>更多參數意涵</small><span class="car" aria-hidden="true">▾</span></summary>${legendHtml(o.legend.filter(([s]) => !/^M_/.test(s)))}</details>` : "") +
+      (o.legend.some(([s]) => !/^M_/.test(s)) ? `<div class="sz-more"><button type="button" class="sz-more-tab" aria-expanded="false"><b>Parameter meaning</b><small>更多參數意涵 · 滑鼠移過來展開</small><span class="car" aria-hidden="true">▾</span></button><div class="sz-more-body">${legendHtml(o.legend.filter(([s]) => !/^M_/.test(s)))}</div></div>` : "") +
       `<h4 class="sz-bh">代入計算</h4><div class="sz-rows">` +
       o.sections.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") + `</div>`;
   }

@@ -96,8 +96,8 @@ assert.ok(C.sci("2 × L × H_KV × D × (b_KV ÷ 8) × T × C").includes("<var>H
 const box = C.calcBoxHtml({ line: "M_required = M_weights + M_KV", legend: C.legendFor(ref, b), sections: [{ rows: C.formula(ref, b) }] });
 assert.strictEqual((box.match(/class="sz-row fin"/g) || []).length, 1, "one highlighted M_required row");
 assert.strictEqual((box.match(/class="sz-legend"/g) || []).length, 2, "M-type legend + dropdown legend");
-assert.ok(/<details class="sz-more">/.test(box) && box.indexOf("<details") < box.indexOf("模型總參數量"), "parameter meanings live inside the dropdown");
-assert.ok(box.indexOf("模型權重") < box.indexOf("<details"), "M-type symbols stay outside the dropdown");
+assert.ok(/class="sz-more"/.test(box) && box.indexOf('class="sz-more"') < box.indexOf("模型總參數量"), "parameter meanings live inside the hover block");
+assert.ok(box.indexOf("模型權重") < box.indexOf('class="sz-more"'), "M-type symbols stay outside the hover block");
 assert.ok(box.includes("模型總參數量") && box.includes("70 B"), "legend carries meaning and current value");
 assert.ok(box.includes("= 38.5 GB（0.04 TB）") && box.includes("= 308.5 GB（0.31 TB）"), "numeric results are formatted as GB (TB)");
 assert.ok(!/= \d+\.\d{4,}/.test(box), "no raw floating point numbers");

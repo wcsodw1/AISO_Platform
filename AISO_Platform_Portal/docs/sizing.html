@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=20">
+  <link rel="stylesheet" href="sizing.css?v=21">
 </head>
 <body>
   <header class="site-header">
@@ -96,11 +96,15 @@
     </section>
 
     <section class="report-section">
-      <header><div><p class="section-label">NOTES</p><h2>考量項目與情境差異<span class="zh">估算納入什麼、沒納入什麼，以及哪些參數要依使用情境調整</span></h2></div></header>
-      <div class="sz-notes">
-        <article class="sz-ncard">
-          <h3>已納入的考量</h3>
-          <ul class="sz-nlist yes">
+      <header><div><p class="section-label">NOTES</p><h2>考量項目與情境差異<span class="zh">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></h2></div></header>
+      <div class="sz-hn">
+        <div class="sz-hn-tabs" role="tablist">
+          <button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>已納入的考量</b><small>7 項</small><span class="car" aria-hidden="true">▾</span></button>
+          <button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>未納入，需實測或另評</b><small>3 項</small><span class="car" aria-hidden="true">▾</span></button>
+          <button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>依使用情境而異的參數</b><small>7 項</small><span class="car" aria-hidden="true">▾</span></button>
+        </div>
+        <div class="sz-hn-panels">
+          <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
             <li>模型權重（依量化／精度）</li>
             <li>KV Cache（層數、KV heads、Context、並行數；混合架構分層算）</li>
             <li>Runtime 固定開銷與安全餘裕</li>
@@ -108,17 +112,13 @@
             <li>TP 分片（2 的次方）與是否需跨節點</li>
             <li>並行請求數（人數 × 活躍比例 × 等待回應比例）</li>
             <li>HA 備援台數與吞吐量需求（選填）</li>
-          </ul>
-          <h3>未納入，需實測或另評</h3>
-          <ul class="sz-nlist no">
+          </ul></div>
+          <div class="sz-hn-panel" data-p="no"><ul class="sz-nlist no">
             <li>實際速度：TTFT、TPOT、P95</li>
             <li>DFlash 草稿模型、PLE Offload、aiDAPTIV 卸載</li>
             <li>Prefix cache 命中、網路互連與跨節點延遲</li>
-          </ul>
-        </article>
-        <article class="sz-ncard">
-          <h3>依使用情境而異的參數</h3>
-          <ul class="sz-nlist case">
+          </ul></div>
+          <div class="sz-hn-panel" data-p="case"><ul class="sz-nlist case">
             <li><b>Context</b>：問答 8K、Coding Agent 32K、長文件 128K，KV 約與長度成正比（差 4～16 倍）。</li>
             <li><b>並行請求</b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
             <li><b>量化</b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
@@ -126,8 +126,8 @@
             <li><b>模型架構</b>：Dense、MoE、混合 linear attention、sliding window 的 KV 可差數倍；MoE 全部專家都要常駐。</li>
             <li><b>推論框架</b>：vLLM 先保留 KV 池、llama.cpp 依 ctx 配置，Runtime 與可用容量略有差別。</li>
             <li><b>Prefix cache</b>：多人共用長 system prompt 時 KV 可共用，這裡的估算偏保守。</li>
-          </ul>
-        </article>
+          </ul></div>
+        </div>
       </div>
     </section>
     </div><!-- /szSingle -->
@@ -169,11 +169,15 @@
       </section>
 
       <section class="report-section">
-      <header><div><p class="section-label">NOTES</p><h2>考量項目與情境差異<span class="zh">估算納入什麼、沒納入什麼，以及哪些參數要依使用情境調整</span></h2></div></header>
-      <div class="sz-notes">
-        <article class="sz-ncard">
-          <h3>已納入的考量</h3>
-          <ul class="sz-nlist yes">
+      <header><div><p class="section-label">NOTES</p><h2>考量項目與情境差異<span class="zh">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></h2></div></header>
+      <div class="sz-hn">
+        <div class="sz-hn-tabs" role="tablist">
+          <button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>已納入的考量</b><small>7 項</small><span class="car" aria-hidden="true">▾</span></button>
+          <button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>未納入，需實測或另評</b><small>3 項</small><span class="car" aria-hidden="true">▾</span></button>
+          <button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>依使用情境而異的參數</b><small>8 項</small><span class="car" aria-hidden="true">▾</span></button>
+        </div>
+        <div class="sz-hn-panels">
+          <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
             <li>模型權重（依量化／精度）</li>
             <li>KV Cache（層數、KV heads、Context、並行數；混合架構分層算）</li>
             <li>Runtime 固定開銷與安全餘裕</li>
@@ -181,17 +185,13 @@
             <li>TP 分片（2 的次方）與是否需跨節點</li>
             <li>並行請求數（人數 × 活躍比例 × 等待回應比例）</li>
             <li>HA 備援台數與吞吐量需求（選填）</li>
-          </ul>
-          <h3>未納入，需實測或另評</h3>
-          <ul class="sz-nlist no">
+          </ul></div>
+          <div class="sz-hn-panel" data-p="no"><ul class="sz-nlist no">
             <li>實際速度：TTFT、TPOT、P95</li>
             <li>DFlash 草稿模型、PLE Offload、aiDAPTIV 卸載</li>
             <li>Prefix cache 命中、網路互連與跨節點延遲</li>
-          </ul>
-        </article>
-        <article class="sz-ncard">
-          <h3>依使用情境而異的參數</h3>
-          <ul class="sz-nlist case">
+          </ul></div>
+          <div class="sz-hn-panel" data-p="case"><ul class="sz-nlist case">
             <li><b>Context</b>：問答 8K、Coding Agent 32K、長文件 128K，KV 約與長度成正比（差 4～16 倍）。</li>
             <li><b>並行請求</b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
             <li><b>量化</b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
@@ -200,13 +200,13 @@
             <li><b>推論框架</b>：vLLM 先保留 KV 池、llama.cpp 依 ctx 配置，Runtime 與可用容量略有差別。</li>
             <li><b>Prefix cache</b>：多人共用長 system prompt 時 KV 可共用，這裡的估算偏保守。</li>
           <li><b>配置方式</b>：共用打包最省卡但維運較複雜，各模型獨立好維運、隔離與擴充較容易。</li>
-          </ul>
-        </article>
+          </ul></div>
+        </div>
       </div>
       </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=12"></script>
-  <script src="sizing.js?v=7"></script>
-  <script src="sizing-multi.js?v=7"></script>
+  <script src="sizing-core.js?v=13"></script>
+  <script src="sizing.js?v=8"></script>
+  <script src="sizing-multi.js?v=8"></script>
 </body></html>
