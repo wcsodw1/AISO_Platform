@@ -80,7 +80,7 @@ function renderConfig(){
 function renderPairs(){
  const el=$s("stPairs");if(!el)return;
  const link=(k,t)=>`<a class="pair-btn${PAIR===k?" on":""}" href="stress-test-pair.html?pair=${k}"${PAIR===k?' aria-current="page"':""}>${t}</a>`;
- el.innerHTML=`<span class="pair-lbl">兩兩比對 <small>獨立頁面</small></span>${link("aiso1-b70","AISO1 vs B70")}${link("aiso1-b60","AISO1 vs B60")}${link("b60-b70","B60 vs B70")}${PAIR?'<a class="pair-btn all" href="stress-test-compare.html">三機並排 →</a>':""}`;
+ el.innerHTML=`${link("aiso1-b70","AISO1 vs B70")}${link("aiso1-b60","AISO1 vs B60")}${link("b60-b70","B60 vs B70")}${PAIR?'<a class="pair-btn all" href="stress-test-compare.html">三機並排 →</a>':""}`;
 }
 function renderGapPair(){
  const IN3=[4096,8192,16384],has=(m,fw,mod,np)=>IN3.every(i=>get(m,fw,mod,np,i)),[A,B]=REG.machines,map=new Map();
