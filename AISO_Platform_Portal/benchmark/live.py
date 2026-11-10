@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import copy
+import datetime
 import hashlib
 import json
 import os
 import random
+import re
 import threading
 import time
 import urllib.request
@@ -130,6 +132,22 @@ def summarize(rows):
     return out
 
 
+def done_rounds(rows):
+    """Rounds (NP, input, repeat) whose NP requests all finished valid. Only whole rounds count as done."""
+    groups = {}
+    for row in rows:
+        groups.setdefault((row.get('np'), row.get('input_tokens'), row.get('repeat')), []).append(row)
+    return {key for key, batch in groups.items() if len(batch) == key[0] and all(r.get('valid') for r in batch)}
+
+
+def progress_of(rows, plan, repeats):
+    """Run manifest progress: which rounds are finished and which one runs next (written after every round)."""
+    done = done_rounds(rows)
+    nxt = next(([np, tokens, rep] for np, tokens in plan for rep in range(1, repeats + 1) if (np, tokens, rep) not in done), None)
+    return {'rounds_done': len(done), 'rounds_total': len(plan) * repeats, 'next_round': nxt,
+            'updated_at': datetime.datetime.now().astimezone().isoformat(timespec='seconds')}
+
+
 def service_target(machine, framework, service_id):
     services = machine.get('live_services', {}).get(framework, [])
     service = next((s for s in services if s['id'] == service_id), None)
@@ -176,6 +194,10 @@ class LiveJobs:
         if framework not in ('vllm', 'llamacpp', 'sglang'):
             raise ValueError('Unsupported live framework.')
         config = copy.deepcopy(config)
+        prior = None
+        if config.get('resume_job') is not None:
+            prior = self._resumable(config['resume_job'], machine, framework)
+            config = copy.deepcopy(prior['config'])  # the interrupted run's own settings are authoritative
         sweep = config.get('mode') == 'sweep'
         if sweep and framework != 'llamacpp':
             raise ValueError('V4 sweep currently supports llama.cpp services only.')
@@ -210,11 +232,19 @@ class LiveJobs:
             required = max(config['inputs']) + config['output_tokens']
             if min(x['n_ctx'] for x in slots[:need]) < required:
                 raise ValueError(f'Per-slot context is {min(x["n_ctx"] for x in slots[:need])} but {required} is needed (largest input + output).')
+        if prior:
+            old = prior.get('server_props') or {}
+            for key in ('model_file', 'build_info'):
+                if old.get(key) != (props or {}).get(key):
+                    raise ValueError(f'Server {key} differs from the interrupted run ({old.get(key)!r} vs {(props or {}).get(key)!r}); start a new run instead of resuming.')
+            need = max(config['nps'])
+            if [x.get('n_ctx') for x in (old.get('slots') or [])[:need]] != [x['n_ctx'] for x in slots[:need]]:
+                raise ValueError('Per-slot context differs from the interrupted run; start a new run instead of resuming.')
         with self.lock:
             if self.active:
                 raise ValueError('A live job is already running.')
             self.root.mkdir(parents=True, exist_ok=True)
-            job_id = uuid.uuid4().hex
+            job_id = prior['id'] if prior else uuid.uuid4().hex
             plan = ([(np, tokens) for np in config['nps'] for tokens in config['inputs']] if sweep else [(config['np'], None)])
             job = {'id': job_id, 'machine_id': machine['machine_id'], 'framework': framework,
                    'config': {k: v for k, v in config.items() if k != 'prompt'},
@@ -228,6 +258,17 @@ class LiveJobs:
             if sweep:
                 job['server_props'] = dict(props or {}, slots=slots)
                 job['summary'] = []
+            if prior:
+                done = done_rounds(prior['rows'])
+                kept = [r for r in prior['rows'] if (r.get('np'), r.get('input_tokens'), r.get('repeat')) in done]
+                dropped = [r for r in prior['rows'] if (r.get('np'), r.get('input_tokens'), r.get('repeat')) not in done]
+                job = dict(prior, status='running', rows=kept, discarded_rows=prior.get('discarded_rows', []) + dropped)
+                job.pop('error', None)
+                job['summary'] = summarize(kept)
+                job['resumes'] = prior.get('resumes', []) + [{
+                    'at': datetime.datetime.now().astimezone().isoformat(timespec='seconds'), 'previous_status': prior['status'],
+                    'rounds_kept': len(done), 'rows_discarded': len(dropped), 'server_props': dict(props or {}, slots=slots)}]
+            job['progress'] = progress_of(job['rows'], plan, config['repeat'])
             self.active = job_id
             self.stop = threading.Event()
             stop = self.stop
@@ -243,12 +284,18 @@ class LiveJobs:
                     for np, tokens in plan:
                         if tokens and tokens not in prompts and not stop.is_set():
                             prompts[tokens] = build_ids(target, tokens)
-                    job['prompt_sha256_by_input'] = {str(t): hashlib.sha256(json.dumps(p, separators=(',', ':')).encode()).hexdigest() for t, p in prompts.items()} if sweep else None
+                    hashes = {str(t): hashlib.sha256(json.dumps(p, separators=(',', ':')).encode()).hexdigest() for t, p in prompts.items()} if sweep else None
+                    if prior and hashes and any((prior.get('prompt_sha256_by_input') or {}).get(k, v) != v for k, v in hashes.items()):
+                        raise ValueError('Prompt token ids differ from the interrupted run (tokenizer or model changed); start a new run instead of resuming.')
+                    job['prompt_sha256_by_input'] = hashes
+                    finished = done_rounds(job['rows'])
                     for np, tokens in plan:
                         text = prompts[tokens] if sweep else prompt
                         for repeat in range(1, config['repeat'] + 1):
                             if stop.is_set():
                                 break
+                            if (np, tokens, repeat) in finished:
+                                continue
                             barrier = threading.Barrier(np)
                             def one(index):
                                 barrier.wait(timeout=30)
@@ -262,7 +309,7 @@ class LiveJobs:
                                     row['error'] = None if row['valid'] else ('Input tokens differ from the target, or incomplete stream / unexpected output usage.' if sweep else 'Incomplete stream or unexpected token usage.')
                                 except Exception:
                                     row = {'valid': False, 'error': 'Inference request failed or cancelled.'}
-                                return dict(row, request=index, repeat=repeat, np=np, input_tokens=tokens)
+                                return dict(row, request=index, repeat=repeat, np=np, input_tokens=tokens, **({'resumed': True} if prior else {}))
                             started = time.perf_counter()
                             with ThreadPoolExecutor(max_workers=np) as pool:
                                 batch = list(pool.map(one, range(1, np + 1)))
@@ -277,6 +324,7 @@ class LiveJobs:
                                 job['rows'].extend(batch)
                                 if sweep:
                                     job['summary'] = summarize(job['rows'])
+                                job['progress'] = progress_of(job['rows'], plan, config['repeat'])
                                 save()
                             if not valid:
                                 break
@@ -295,6 +343,26 @@ class LiveJobs:
                         self.active = None
             threading.Thread(target=work, daemon=True).start()
             return {'id': job_id}
+
+    def _resumable(self, job_id, machine, framework):
+        if not isinstance(job_id, str) or not re.fullmatch(r'[0-9a-f]{32}', job_id):
+            raise ValueError('Invalid job id.')
+        with self.lock:
+            path = self.root / (job_id + '.json')
+            if not path.is_file():
+                raise ValueError('Job not found.')
+            job = json.loads(path.read_text())
+            if self.active:
+                raise ValueError('A live job is already running.')
+        status = 'interrupted' if job['status'] == 'running' else job['status']
+        if status not in ('interrupted', 'failed', 'cancelled'):
+            raise ValueError(f'A {status} job cannot be resumed.')
+        if (job.get('config') or {}).get('mode') != 'sweep':
+            raise ValueError('Only V4 sweep jobs can be resumed.')
+        if job.get('machine_id') != machine['machine_id'] or job.get('framework') != framework:
+            raise ValueError('The job belongs to a different machine or framework.')
+        job['status'] = status
+        return job
 
     def cancel(self):
         with self.lock:

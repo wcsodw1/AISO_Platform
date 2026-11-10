@@ -324,6 +324,7 @@ function sweepTable(job){
   const props=sp?`<p>伺服器回報：slots ${esc(sp.total_slots??"—")} · n_ctx ${esc(sp.n_ctx_reported??"—")} · ${esc(sp.build_info??"")} · ${esc(sp.model_file??"")}</p>`:"<p>伺服器未回報 /props（無法自動記錄 slots／context）。</p>";
   return props+`<table class="v2-table"><thead><tr><th>NP</th><th>Input</th><th>狀態</th><th>TTFT s</th><th>TPOT ms</th><th>Aggregate tok/s</th><th>Normalized</th></tr></thead><tbody>${job.summary.map(g=>`<tr><td>${g.np}</td><td>${g.input}</td><td>${g.status}（${g.repeats_done} 次）</td><td>${f(g.ttft_s,2)}</td><td>${f(g.tpot_ms)}</td><td>${f(g.aggregate_tps)}</td><td>${f(g.normalized_tps)}</td></tr>`).join("")}</tbody></table>`;
 }
+const canResume=job=>!!(job.config&&job.config.mode==="sweep"&&["interrupted","failed","cancelled"].includes(job.status)&&liveSnapshot&&!liveSnapshot.active);
 async function refreshLive(){
   if(!state.token)return;
   try{
@@ -339,9 +340,18 @@ async function refreshLive(){
       if(job.status!==seen.status){tlog(`job ${job.id.slice(0,8)} ${job.status}`,job.status==="completed"?"ok":job.status==="running"?"":"err");seen.status=job.status}
     });
     $("termState").textContent=liveSnapshot.active?"running":"idle";
-    $("liveJobs").innerHTML=liveSnapshot.jobs.filter(job=>job.machine_id===machine()?.machine_id&&job.framework===framework()).map(job=>`<article class="job-card"><b>${esc(job.machine_id)} · ${esc(job.config.model)} · ${esc(job.status)}</b><p>MEASURED EXPLORATORY · ${job.rows.length}/${job.total_requests} requests${job.error?` · ${esc(job.error)}`:""}</p>${job.summary?sweepTable(job):""}${job.summary?"":job.rows.map(r=>`<p>Repeat ${r.repeat} / Request ${r.request}: ${r.valid?"Measured":"Failed"} · Input ${r.input_tokens_actual??"—"} · Output ${r.output_tokens_actual??"—"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · Aggregate ${num(r.aggregate_tps)} tok/s${r.error?` · ${esc(r.error)}`:""}</p>`).join("")}</article>`).join("");
+    $("liveJobs").innerHTML=liveSnapshot.jobs.filter(job=>job.machine_id===machine()?.machine_id&&job.framework===framework()).map(job=>`<article class="job-card"><b>${esc(job.machine_id)} · ${esc(job.config.model)} · ${esc(job.status)}</b><p>MEASURED EXPLORATORY · ${job.rows.length}/${job.total_requests} requests${job.progress?` · ${job.progress.rounds_done}/${job.progress.rounds_total} 輪已存檔`:""}${(job.resumes||[]).length?` · 已續跑 ${job.resumes.length} 次`:""}${job.error?` · ${esc(job.error)}`:""}</p>${canResume(job)?`<button type="button" class="live-resume" data-job="${esc(job.id)}">從中斷處繼續（已完成 ${job.progress?job.progress.rounds_done:0}/${job.progress?job.progress.rounds_total:"?"} 輪，只補未完成的輪次）</button>`:""}${job.summary?sweepTable(job):""}${job.summary?"":job.rows.map(r=>`<p>Repeat ${r.repeat} / Request ${r.request}: ${r.valid?"Measured":"Failed"} · Input ${r.input_tokens_actual??"—"} · Output ${r.output_tokens_actual??"—"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · Aggregate ${num(r.aggregate_tps)} tok/s${r.error?` · ${esc(r.error)}`:""}</p>`).join("")}</article>`).join("");
   }catch(error){$("liveStatus").textContent=error.message}
 }
+$("liveJobs").onclick=async event=>{
+  const button=event.target.closest(".live-resume");if(!button)return;
+  button.disabled=true;
+  try{
+    const result=await post("/live/start",{machine_id:machine().machine_id,framework:framework(),config:{resume_job:button.dataset.job}});
+    $("liveStatus").textContent=`實機測試 ${result.id} 從中斷處繼續。`;termOpen(true);tlog(`job ${result.id.slice(0,8)} resumed from last saved round`,"ok");
+  }catch(error){$("liveStatus").textContent=error.message;tlog(error.message,"err")}
+  await refreshLive();
+};
 function liveConfig(){
   const base={service:$("liveService").value,model:$("liveModel").value,output_tokens:Number($("liveOutput").value),repeat:Number($("liveRepeat").value)};
   if($("liveMode").value==="sweep"){

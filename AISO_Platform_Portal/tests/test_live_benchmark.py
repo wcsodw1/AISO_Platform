@@ -118,6 +118,92 @@ class SweepTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             LiveJobs().start(self.machine, 'vllm', self.config)
 
+    def _session(self, manager, measure, build_info='b', slots=5):
+        slot_list = [{'id': 10 + i, 'n_ctx': 18432} for i in range(slots)]
+        return [patch('benchmark.live.discover', return_value=[{'id': 'm'}]), patch('benchmark.live.v4_measure', side_effect=measure),
+                patch('benchmark.live.server_props', return_value={'build_info': build_info}), patch('benchmark.live.server_slots', return_value=slot_list),
+                patch('benchmark.live.build_ids', side_effect=lambda t, n: list(range(n)))]
+
+    def _wait(self, manager):
+        deadline = time.monotonic() + 5
+        while manager.active and time.monotonic() < deadline:
+            time.sleep(.01)
+        self.assertIsNone(manager.active)
+        return manager.snapshot()['jobs'][0]
+
+    def test_resume_continues_from_the_first_unfinished_round_and_keeps_evidence(self):
+        calls = []
+        def measure(bad_at):
+            def fake(target, ids, slot_id, output_tokens, stop):
+                calls.append(slot_id)
+                ok = len(calls) != bad_at
+                return {'valid': True, 'stream_complete': True, 'ttft_ms': 2000, 'tpot_ms': 50.0, 'decode_tps': 20.0,
+                        'input_tokens_actual': len(ids) if ok else len(ids) + 1, 'output_tokens_actual': output_tokens,
+                        'finish_reason': 'length', 't_start': 100.0, 't_end': 120.0}
+            return fake
+        with tempfile.TemporaryDirectory() as root:
+            manager = LiveJobs(root)
+            ps = self._session(manager, measure(4))
+            for p in ps: p.start()
+            try:
+                manager.start(self.machine, 'llamacpp', self.config)
+                first = self._wait(manager)
+                self.assertEqual(first['status'], 'failed')
+                self.assertEqual(first['progress']['rounds_done'], 3)      # saved after every round
+                self.assertEqual(first['progress']['next_round'], [1, 8192, 2])
+                self.assertEqual(len(calls), 4)
+            finally:
+                for p in ps: p.stop()
+            calls.clear()
+            ps = self._session(manager, measure(0))
+            for p in ps: p.start()
+            try:
+                manager.start(self.machine, 'llamacpp', {'resume_job': first['id']})
+                job = self._wait(manager)
+            finally:
+                for p in ps: p.stop()
+            self.assertEqual(job['id'], first['id'])
+            self.assertEqual(job['status'], 'completed')
+            self.assertEqual(len(job['rows']), 12)
+            self.assertEqual(len(calls), 1 + 2 * 4)                         # round 4 again, then NP2 x 4 rounds; finished rounds not rerun
+            self.assertEqual(len(job['discarded_rows']), 1)                 # the invalid round is kept as evidence, not mixed in
+            self.assertEqual(job['resumes'][0]['rounds_kept'], 3)
+            self.assertEqual(sum(1 for r in job['rows'] if r.get('resumed')), 9)
+            self.assertEqual(job['progress']['next_round'], None)
+            self.assertEqual(job['progress']['rounds_done'], 8)
+
+    def test_resume_refuses_changed_server_wrong_state_and_wrong_machine(self):
+        def fake(target, ids, slot_id, output_tokens, stop):
+            return {'valid': True, 'stream_complete': True, 'ttft_ms': 1, 'tpot_ms': 1, 'decode_tps': 1, 'input_tokens_actual': len(ids) + 1,
+                    'output_tokens_actual': output_tokens, 'finish_reason': 'length', 't_start': 1.0, 't_end': 2.0}
+        with tempfile.TemporaryDirectory() as root:
+            manager = LiveJobs(root)
+            ps = self._session(manager, fake)
+            for p in ps: p.start()
+            try:
+                manager.start(self.machine, 'llamacpp', self.config)
+                failed = self._wait(manager)
+            finally:
+                for p in ps: p.stop()
+            self.assertEqual(failed['status'], 'failed')
+            ps = self._session(manager, fake, build_info='other-build')
+            for p in ps: p.start()
+            try:
+                with self.assertRaisesRegex(ValueError, 'build_info differs'):
+                    manager.start(self.machine, 'llamacpp', {'resume_job': failed['id']})
+                with self.assertRaisesRegex(ValueError, 'Invalid job id'):
+                    manager.start(self.machine, 'llamacpp', {'resume_job': '../etc/passwd'})
+                with self.assertRaisesRegex(ValueError, 'Job not found'):
+                    manager.start(self.machine, 'llamacpp', {'resume_job': 'a' * 32})
+                with self.assertRaisesRegex(ValueError, 'different machine'):
+                    manager.start(dict(self.machine, machine_id='someone-else'), 'llamacpp', {'resume_job': failed['id']})
+            finally:
+                for p in ps: p.stop()
+            path = manager.root / (failed['id'] + '.json')
+            done = json.loads(path.read_text()); done['status'] = 'completed'; path.write_text(json.dumps(done))
+            with self.assertRaisesRegex(ValueError, 'cannot be resumed'):
+                manager.start(self.machine, 'llamacpp', {'resume_job': failed['id']})
+
     def test_build_ids_matches_b60_v4_prompt(self):
         seen = {}
         def tokenize(target, path, payload=None, timeout=30):

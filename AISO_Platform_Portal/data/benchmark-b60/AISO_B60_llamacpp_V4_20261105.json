@@ -48,7 +48,24 @@
    "decode_tps": 31.111,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     4.323,
+     4.238,
+     4.232
+    ],
+    "tpot_ms": [
+     28.011,
+     28.012,
+     27.995
+    ],
+    "aggregate_tps": [
+     31.051,
+     31.13,
+     31.152
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -61,7 +78,24 @@
    "decode_tps": 24.907,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     8.171,
+     8.248,
+     8.348
+    ],
+    "tpot_ms": [
+     32.068,
+     32.143,
+     32.143
+    ],
+    "aggregate_tps": [
+     24.99,
+     24.896,
+     24.836
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -74,7 +108,24 @@
    "decode_tps": 19.401,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     16.702,
+     16.881,
+     17.204
+    ],
+    "tpot_ms": [
+     34.916,
+     34.972,
+     35.259
+    ],
+    "aggregate_tps": [
+     19.534,
+     19.447,
+     19.221
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -87,7 +138,24 @@
    "decode_tps": 20.272,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     12.969,
+     8.78,
+     8.778
+    ],
+    "tpot_ms": [
+     39.676,
+     39.263,
+     39.546
+    ],
+    "aggregate_tps": [
+     38.226,
+     41.826,
+     41.582
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -100,7 +168,24 @@
    "decode_tps": 16.944,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     17.577,
+     17.981,
+     17.469
+    ],
+    "tpot_ms": [
+     41.944,
+     41.466,
+     41.895
+    ],
+    "aggregate_tps": [
+     33.84,
+     33.896,
+     33.927
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -113,7 +198,24 @@
    "decode_tps": 12.595,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     33.521,
+     33.969,
+     33.107
+    ],
+    "tpot_ms": [
+     45.772,
+     45.897,
+     48.255
+    ],
+    "aggregate_tps": [
+     25.472,
+     25.29,
+     24.809
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -126,7 +228,24 @@
    "decode_tps": 10.073,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     24.563,
+     22.63,
+     22.807
+    ],
+    "tpot_ms": [
+     75.061,
+     77.571,
+     76.813
+    ],
+    "aggregate_tps": [
+     50.476,
+     50.158,
+     50.454
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -139,7 +258,24 @@
    "decode_tps": 7.449,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     37.107,
+     40.925,
+     41.743
+    ],
+    "tpot_ms": [
+     95.845,
+     93.691,
+     96.086
+    ],
+    "aggregate_tps": [
+     37.826,
+     37.386,
+     36.516
+    ]
+   }
   },
   {
    "model": "Gemma26",
@@ -152,7 +288,24 @@
    "decode_tps": 4.714,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     74.375,
+     81.165,
+     80.934
+    ],
+    "tpot_ms": [
+     133.06,
+     134.634,
+     137.223
+    ],
+    "aggregate_tps": [
+     24.275,
+     23.345,
+     23.09
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -165,7 +318,24 @@
    "decode_tps": 11.521,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     20.707,
+     20.769,
+     20.722
+    ],
+    "tpot_ms": [
+     66.593,
+     66.671,
+     66.589
+    ],
+    "aggregate_tps": [
+     11.527,
+     11.509,
+     11.526
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -191,7 +361,24 @@
    "decode_tps": 5.871,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     84.52,
+     84.478,
+     84.318
+    ],
+    "tpot_ms": [
+     88.022,
+     88.0,
+     87.874
+    ],
+    "aggregate_tps": [
+     5.866,
+     5.868,
+     5.878
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -204,7 +391,24 @@
    "decode_tps": 8.228,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     46.485,
+     43.756,
+     42.276
+    ],
+    "tpot_ms": [
+     78.462,
+     78.47,
+     78.449
+    ],
+    "aggregate_tps": [
+     16.152,
+     16.506,
+     16.709
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -217,7 +421,24 @@
    "decode_tps": 5.855,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     87.427,
+     87.515,
+     85.667
+    ],
+    "tpot_ms": [
+     85.428,
+     85.534,
+     86.962
+    ],
+    "aggregate_tps": [
+     11.712,
+     11.699,
+     11.722
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -230,7 +451,24 @@
    "decode_tps": 3.709,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     154.609,
+     158.739,
+     158.742
+    ],
+    "tpot_ms": [
+     115.847,
+     116.075,
+     115.898
+    ],
+    "aggregate_tps": [
+     7.493,
+     7.378,
+     7.38
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -243,7 +481,24 @@
    "decode_tps": 3.56,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     107.092,
+     110.729,
+     105.842
+    ],
+    "tpot_ms": [
+     176.446,
+     176.796,
+     173.601
+    ],
+    "aggregate_tps": [
+     17.793,
+     17.55,
+     18.052
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -256,7 +511,24 @@
    "decode_tps": 2.308,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": true
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     189.715,
+     189.239,
+     183.635
+    ],
+    "tpot_ms": [
+     242.359,
+     251.882,
+     255.82
+    ],
+    "aggregate_tps": [
+     11.688,
+     11.445,
+     11.485
+    ]
+   }
   },
   {
    "model": "Gemma31",
@@ -269,7 +541,24 @@
    "decode_tps": 1.305,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": true
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     353.373,
+     361.295,
+     366.189
+    ],
+    "tpot_ms": [
+     399.577,
+     424.788,
+     418.491
+    ],
+    "aggregate_tps": [
+     6.709,
+     6.424,
+     6.435
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -282,7 +571,24 @@
    "decode_tps": 50.639,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     3.194,
+     3.203,
+     3.183
+    ],
+    "tpot_ms": [
+     16.634,
+     16.642,
+     16.659
+    ],
+    "aggregate_tps": [
+     50.666,
+     50.622,
+     50.629
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -295,7 +601,24 @@
    "decode_tps": 38.612,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     6.786,
+     6.795,
+     6.77
+    ],
+    "tpot_ms": [
+     19.266,
+     19.305,
+     19.309
+    ],
+    "aggregate_tps": [
+     38.649,
+     38.578,
+     38.609
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -308,7 +631,24 @@
    "decode_tps": 26.182,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     14.618,
+     14.612,
+     14.635
+    ],
+    "tpot_ms": [
+     23.922,
+     23.928,
+     23.967
+    ],
+    "aggregate_tps": [
+     26.196,
+     26.196,
+     26.154
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -321,7 +661,24 @@
    "decode_tps": 23.048,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     11.878,
+     7.492,
+     7.485
+    ],
+    "tpot_ms": [
+     34.756,
+     34.994,
+     34.527
+    ],
+    "aggregate_tps": [
+     43.166,
+     47.294,
+     47.83
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -334,7 +691,24 @@
    "decode_tps": 19.132,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     15.462,
+     15.036,
+     15.072
+    ],
+    "tpot_ms": [
+     37.069,
+     37.834,
+     37.451
+    ],
+    "aggregate_tps": [
+     38.354,
+     38.091,
+     38.345
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -347,7 +721,24 @@
    "decode_tps": 13.132,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     30.659,
+     31.283,
+     31.383
+    ],
+    "tpot_ms": [
+     45.799,
+     45.817,
+     45.674
+    ],
+    "aggregate_tps": [
+     26.404,
+     26.187,
+     26.202
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -360,7 +751,24 @@
    "decode_tps": 10.436,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     24.611,
+     21.741,
+     21.932
+    ],
+    "tpot_ms": [
+     71.25,
+     74.905,
+     74.64
+    ],
+    "aggregate_tps": [
+     52.482,
+     52.011,
+     52.047
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -373,7 +781,24 @@
    "decode_tps": 7.414,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     35.803,
+     42.469,
+     41.315
+    ],
+    "tpot_ms": [
+     98.156,
+     95.009,
+     94.497
+    ],
+    "aggregate_tps": [
+     37.532,
+     36.615,
+     37.061
+    ]
+   }
   },
   {
    "model": "Laguna",
@@ -386,7 +811,24 @@
    "decode_tps": 4.347,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     78.974,
+     89.876,
+     86.308
+    ],
+    "tpot_ms": [
+     146.801,
+     145.051,
+     148.178
+    ],
+    "aggregate_tps": [
+     22.293,
+     21.443,
+     21.473
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -399,7 +841,24 @@
    "decode_tps": 41.722,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     3.955,
+     3.956,
+     3.958
+    ],
+    "tpot_ms": [
+     20.086,
+     20.129,
+     20.158
+    ],
+    "aggregate_tps": [
+     41.791,
+     41.713,
+     41.662
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -412,7 +871,24 @@
    "decode_tps": 35.845,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     7.644,
+     7.644,
+     7.645
+    ],
+    "tpot_ms": [
+     20.438,
+     20.453,
+     20.468
+    ],
+    "aggregate_tps": [
+     35.865,
+     35.845,
+     35.824
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -425,7 +901,24 @@
    "decode_tps": 28.06,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     15.088,
+     15.076,
+     15.083
+    ],
+    "tpot_ms": [
+     20.947,
+     20.974,
+     20.869
+    ],
+    "aggregate_tps": [
+     28.042,
+     28.03,
+     28.107
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -438,7 +931,24 @@
    "decode_tps": 20.496,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     10.328,
+     8.238,
+     8.249
+    ],
+    "tpot_ms": [
+     39.713,
+     40.274,
+     40.311
+    ],
+    "aggregate_tps": [
+     40.182,
+     41.416,
+     41.375
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -451,7 +961,24 @@
    "decode_tps": 17.543,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     16.047,
+     15.883,
+     15.9
+    ],
+    "tpot_ms": [
+     40.687,
+     41.921,
+     41.767
+    ],
+    "aggregate_tps": [
+     35.505,
+     34.836,
+     34.919
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -464,7 +991,24 @@
    "decode_tps": 13.318,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     28.524,
+     30.49,
+     29.278
+    ],
+    "tpot_ms": [
+     46.987,
+     45.09,
+     46.973
+    ],
+    "aggregate_tps": [
+     26.723,
+     26.718,
+     26.468
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -477,7 +1021,24 @@
    "decode_tps": 10.405,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     21.477,
+     19.262,
+     19.88
+    ],
+    "tpot_ms": [
+     76.309,
+     76.566,
+     76.26
+    ],
+    "aggregate_tps": [
+     51.392,
+     52.421,
+     52.258
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -490,7 +1051,24 @@
    "decode_tps": 8.134,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     35.38,
+     36.81,
+     37.574
+    ],
+    "tpot_ms": [
+     87.634,
+     87.401,
+     86.444
+    ],
+    "aggregate_tps": [
+     40.902,
+     40.518,
+     40.587
+    ]
+   }
   },
   {
    "model": "Nemotron",
@@ -503,7 +1081,24 @@
    "decode_tps": 5.486,
    "status": "PASS",
    "run_id": "B60_matrix_v4_20261104_201559_715039",
-   "ttft_over_180s": false
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     65.868,
+     70.144,
+     69.295
+    ],
+    "tpot_ms": [
+     117.052,
+     117.074,
+     111.62
+    ],
+    "aggregate_tps": [
+     27.532,
+     26.911,
+     27.849
+    ]
+   }
   }
  ],
  "model_parity": [

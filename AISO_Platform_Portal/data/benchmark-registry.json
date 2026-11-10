@@ -77,7 +77,7 @@
   {
    "machine": "b70",
    "framework": "llamacpp",
-   "file": "data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json",
+   "file": "data/benchmark-b70/AISO_B70_llamacpp_V4B1024_20261110.json",
    "runs_key": "b70_runs"
   },
   {
