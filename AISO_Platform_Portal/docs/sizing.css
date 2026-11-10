@@ -165,3 +165,17 @@ main .report-section h2 .zh{font-size:17px;margin-top:8px}
 .sz-opt.cross.on b{color:#e8a15a}
 .sz-warnTag{color:#e8a15a;font-style:normal;font-weight:700}
 .sz-warnp{margin:8px 0 12px!important;padding:12px 14px;border:1px solid #e8a15a;border-radius:12px;background:rgba(232,161,90,.1);color:#f3d9b8;font-size:16px;line-height:1.65}
+
+/* Notes: considerations + case-by-case parameters */
+.sz-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}
+.sz-ncard{padding:20px 22px;border:1px solid rgba(244,239,228,.12);border-radius:16px;background:#0a0e15}
+.sz-ncard h3{margin:0 0 10px;color:var(--gold);font-size:18px}
+.sz-ncard h3:not(:first-child){margin-top:18px}
+.sz-nlist{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:16px;line-height:1.6}
+.sz-nlist li{position:relative;padding-left:26px}
+.sz-nlist li:before{position:absolute;left:0;top:0}
+.sz-nlist.yes li:before{content:"✓";color:var(--green);font-weight:700}
+.sz-nlist.no li:before{content:"–";color:#e8a15a;font-weight:700}
+.sz-nlist.case li{padding-left:18px}
+.sz-nlist.case li:before{content:"•";color:var(--gold)}
+.sz-nlist b{color:var(--ivory)}
