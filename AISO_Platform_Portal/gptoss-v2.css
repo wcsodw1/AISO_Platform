@@ -228,4 +228,5 @@
 .st .pair-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
 .st .pair-btn.on{background:#d6a84a;border-color:#d6a84a;color:#14161b}
 .st .pair-btn.all{border-style:dashed;color:#d6a84a}
+.st .pair-btn.all.on{border-style:solid;color:#14161b}
 .st .cmp-pending{color:#ffb86b;font-size:15px}
