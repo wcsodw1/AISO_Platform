@@ -38,12 +38,7 @@
     t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
     setTimeout(() => t.classList.remove("flash"), 1800);
   });
-  /* machine menu: close after a pick, reopen on the next hover */
-  let shut = false;
-  document.addEventListener("click", e => { if (e.target.closest && e.target.closest(".sz-cas .cm")) { shut = true; document.querySelectorAll(".sz-cas").forEach(c => c.classList.add("shut")); } });
-  document.addEventListener("mouseover", e => { if (shut && !(e.target.closest && e.target.closest(".sz-cas"))) { shut = false; document.querySelectorAll(".sz-cas.shut").forEach(c => c.classList.remove("shut")); } });
-  const keepShut = host => { if (shut) { const c = host.querySelector(".sz-cas"); if (c) c.classList.add("shut"); } };
-  window.SizingUI = { hnShow, setCalc, keepShut };
+  window.SizingUI = { hnShow, setCalc };
 })();
 (function () {
   "use strict";
@@ -126,32 +121,22 @@
   }
   function renderRows(b, usablePct) {
     const reqTps = C.num(el.reqTps.value, 0), srvTps = C.num(el.srvTps.value, 0), ha = el.ha.checked;
-    $("szRows").innerHTML = gpus.map((g, i) => {
+    $("szRows").innerHTML = C.refRowsHtml(gpus, g => {
       const s = C.sizeFor(b.total, g, usablePct, { requiredTps: reqTps, perServerTps: srvTps, ha });
-      const notes = [];
-      if (s.crossNode) notes.push("TP 超過單台，需跨節點");
-      if (s.serversByTps > s.serversByMem) notes.push("吞吐量決定台數");
-      if (ha) notes.push("已含 +1 備援");
-      if (g.assumed) notes.push("規格為規劃假設");
-      if (g.basis) notes.push(g.basis);
-      return `<tr class="${s.crossNode ? "warn" : ""}"><th>${esc(g.name)}${g.assumed ? ' <i class="sz-flag" title="規劃假設">假設</i>' : ""}</th>` +
-        `<td><input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}"> GB</td>` +
-        `<td><input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}"></td>` +
-        `<td>${s.gpusMin} 張</td><td><b>${s.gpusTP} 張</b></td>` +
-        `<td><b class="sz-srv">${s.withHA} 台</b><small>${s.withHA * g.perServer} 張 · ${fmt(s.physicalVram, 0)} GB</small></td>` +
-        `<td>${notes.map(esc).join("；") || "—"}</td></tr>`;
-    }).join("");
+      return { html: `Needs <b>${s.gpusMin}</b> GPU${s.gpusMin === 1 ? "" : "s"} · TP <b>${s.gpusTP}</b> → <b>${C.resEn(s.withHA, s.withHA * g.perServer)}</b>${s.serversByTps > s.serversByMem ? " · 吞吐量決定台數" : ""}` };
+    }, true);
   }
 
-  let picked = null;
+  let picked = null, browse = {}, refState = {};
   function renderFormula(b, usablePct, opts) {
     $("szFTotal").textContent = C.memText(b.total);
     const inp = read();
     UI.setCalc($("szFormula"), C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] }));
     const list = C.options(b.total, C.variants(gpus), usablePct, opts);
     if (picked && !list.some(o => o.gpu.id === picked)) picked = null;   // default: nothing chosen, the user picks a machine
-    const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
-    $("szCasHost").innerHTML = C.pickMenuHtml(items, picked, "sz"); UI.keepShut($("szCasHost"));
+    const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, best: i === 0 }));
+    $("szCasHost").innerHTML = C.pickPanelHtml(items, picked, "sz", browse);
+    C.syncRef($("szCasHost"), $("szRows"), refState);
     const label = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`, bestI = items[0];
     $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
     const cur = list.find(o => o.gpu.id === picked);
@@ -163,9 +148,8 @@
     const g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s), ci = items.find(o => o.gpu.id === picked);
     /* visible: one result line (+ one warning when a cross-node TP would be needed) */
     $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)} → <b>${esc(label(ci))} × ${C.resEn(s.withHA, C.physical(ci))}</b><span class="bz">${s.withHA} 台 · ${C.physical(ci)} 張 GPU</span></p>` +
-      `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>` +
-      (s.crossNode ? `<p class="sz-warnp">⚠ 需跨節點：TP ${s.gpusTP} 張 &gt; 每台 ${g.perServer} 張 ${C.tip("不建議：單一模型必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT）。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。")}</p>` : "");
-    $("szPickCalc").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
+      `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
+    $("szPickCalc").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
       `<p class="sz-sym">${C.sci(gf.sym)} ${C.tip(`V：每卡 VRAM（${g.vram} GB）；u：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位。`)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}</p>`;
   }
   /* The tabs carry a one-line summary so collapsed settings are never forgotten */
@@ -198,7 +182,10 @@
     warn.hidden = !msgs.length; warn.textContent = msgs.join(" ");
   }
 
-  $("szCasHost").addEventListener("click", e => { const b = e.target.closest(".cm"); if (b) { picked = b.dataset.id; render(); } });
+  $("szCasHost").addEventListener("click", e => {
+    const v = e.target.closest(".pp-v"), m = e.target.closest(".pp-m"), c = e.target.closest(".pp-c");
+    if (v) { browse = { v: v.dataset.v }; render(); } else if (m) { browse = { ...browse, m: m.dataset.m }; render(); } else if (c) { picked = c.dataset.id; browse = {}; render(); }
+  });
   el.model.addEventListener("change", () => { loadPreset(); render(); if (el.model.value === "custom") el.params.focus(); });
   FIELDS.forEach(k => el[k].addEventListener("input", () => { el.model.value = "custom"; el.note.hidden = true; syncCustomUI(); render(); }));
   el.cfg.addEventListener("input", applyConfig);

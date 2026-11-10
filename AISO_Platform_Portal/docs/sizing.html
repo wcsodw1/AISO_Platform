@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=40">
+  <link rel="stylesheet" href="sizing.css?v=49">
 </head>
 <body>
   <header class="site-header">
@@ -29,7 +29,7 @@
 
     <div id="szSingle">
     <section class="report-section sz-inputs" id="szInputs" aria-label="參數">
-      <header><div><p class="section-label">STEP 1</p><h2>Parameters<span class="bz">參數</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">客戶需求：改這裡，下方的計算公式與建議配置會即時連動。必填與選填各自收在下拉，滑鼠移到標籤即展開。</span></span></h2></div></header>
+      <header><div><p class="section-label">STEP 1</p><h2>Select parameters<span class="bz">參數選擇</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">客戶需求：改這裡，下方的計算公式與建議配置會即時連動。必填與選填各自收在下拉，滑鼠移到標籤即展開。</span></span></h2></div></header>
       <div class="sz-hn sz-hn-params" id="szParamsHn">
         <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="szReqTab"><b>Required<span class="bz">必填參數</span></b><small id="szReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="szOptTab"><b>Optional<span class="bz">選填參數</span></b><small id="szCurtainHint">Not set 未設定</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
@@ -77,7 +77,7 @@
     </section>
 
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
-      <header><div><p class="section-label">STEP 2</p><h2>Formula<span class="bz">計算公式</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
+      <header><div><p class="section-label">STEP 2</p><h2>Calculate total memory <var>M<sub>required</sub></var><span class="bz">計算總容量需求</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
         <div class="sz-result"><small>Estimated total GPU memory<span class="bz">預估總 GPU 顯存需求</span></small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="szJumpTxt">—</span></a></div></header>
       <div id="szFormula" class="sz-calcbox"></div>
       <b id="szTotal" hidden></b>
@@ -88,22 +88,19 @@
     </section>
 
     <section class="report-section" id="szPickSec">
-      <header><div><p class="section-label">STEP 3</p><h2>Recommendation<span class="bz">建議配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
-      <div id="szCasHost" class="sz-cas-host"></div>
-      <div id="szPickDetail" class="sz-pickline"></div>
-      <div class="sz-hn sz-hn-pick">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="calc" aria-expanded="false"><b>Calculation<span class="bz">算式</span></b><small>N_GPU 如何算出張數</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="spec" aria-expanded="false"><b>GPU specs<span class="bz">機型規格表</span></b><small>每卡 VRAM、每台張數（可修改）</small><span class="car" aria-hidden="true">▾</span></button></div>
-        <div class="sz-hn-panels">
-          <div class="sz-hn-panel" data-p="calc"><div id="szPickCalc" class="sz-detail"></div></div>
-          <div class="sz-hn-panel" data-p="spec"><div class="table-wrap"><table class="sz-table"><thead><tr><th>GPU</th><th>VRAM per GPU<span class="bz">每卡 VRAM</span></th><th>GPUs per server<span class="bz">每台 GPU 數</span></th><th>Min GPUs<span class="bz">容量下限</span></th><th>TP<span class="bz">TP 建議</span></th><th>Servers<span class="bz">需要伺服器</span></th><th>Notes<span class="bz">備註</span></th></tr></thead><tbody id="szRows"></tbody></table></div></div>
+      <header><div><p class="section-label">STEP 3</p><h2>Select a configuration for <var>M<sub>required</sub></var><span class="bz">依據 Step 2 選擇相對應配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+      <div class="sz-s3"><div class="sz-s3-main">
+        <div id="szCasHost" class="sz-cas-host"></div>
+        <div id="szPickDetail" class="sz-pickline"></div>
+        <details class="sz-more"><summary>How N_GPU is calculated<span class="bz">算式</span></summary><div id="szPickCalc" class="sz-detail"></div></details>
         </div>
-      </div>
-    </section>
+        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">VRAM and servers sizes are planning values — editable<span class="bz">可修改</span></p><div id="szRows" class="sz-ref-list"></div></aside></div>
+      </section>
 
     <section class="report-section">
       <header><div><p class="section-label">NOTES</p><h2>Considerations &amp; scenarios<span class="bz">考量項目與情境差異</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
       <div class="sz-hn">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included<span class="bz">未納入，需實測或另評</span></b><small>3 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>Scenario-dependent<span class="bz">依使用情境而異的參數</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included &amp; scenario-dependent<span class="bz">未納入與依情境而異</span></b><small>10 items</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
             <li>模型權重（依量化／精度）</li>
@@ -114,12 +111,11 @@
             <li>並行請求數（人數 × 活躍比例 × 等待回應比例）</li>
             <li>HA 備援台數與吞吐量需求（選填）</li>
           </ul></div>
-          <div class="sz-hn-panel" data-p="no"><ul class="sz-nlist no">
+          <div class="sz-hn-panel" data-p="no"><h4 class="sz-nh">Not included<span class="bz">未納入，需實測或另評</span></h4><ul class="sz-nlist no">
             <li>實際速度：TTFT、TPOT、P95</li>
             <li>DFlash 草稿模型、PLE Offload、aiDAPTIV 卸載</li>
             <li>Prefix cache 命中、網路互連與跨節點延遲</li>
-          </ul></div>
-          <div class="sz-hn-panel" data-p="case"><ul class="sz-nlist case">
+          </ul><h4 class="sz-nh">Scenario-dependent<span class="bz">依使用情境而異的參數</span></h4><ul class="sz-nlist case">
             <li><b>Context</b>：問答 8K、Coding Agent 32K、長文件 128K，KV 約與長度成正比（差 4～16 倍）。</li>
             <li><b>Concurrency<span class="bz">並行請求</span></b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
             <li><b>Quantization<span class="bz">量化</span></b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
@@ -135,7 +131,7 @@
 
     <div id="szMulti" hidden>
       <section class="report-section sz-inputs" aria-label="參數">
-        <header><div><p class="section-label">STEP 1</p><h2>Parameters<span class="bz">參數</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">人數、規劃條件與三個模型的量化／Context／流量比例；改這裡，下方計算與建議配置即時連動。</span></span></h2></div></header>
+        <header><div><p class="section-label">STEP 1</p><h2>Select parameters<span class="bz">參數選擇</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">人數、規劃條件與三個模型的量化／Context／流量比例；改這裡，下方計算與建議配置即時連動。</span></span></h2></div></header>
         <div class="sz-hn sz-hn-params" id="mzParamsHn">
           <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="mzReqTab"><b>Required<span class="bz">必填參數</span></b><small id="mzReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="mzOptTab"><b>Optional<span class="bz">選填參數</span></b><small id="mzOptSum">Default 預設</small><span class="car" aria-hidden="true">▾</span></button></div>
           <div class="sz-hn-panels">
@@ -160,20 +156,20 @@
       </section>
 
       <section class="report-section sz-formula" aria-live="polite">
-        <header><div><p class="section-label">STEP 2</p><h2>Calculation<span class="bz">計算方式</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
+        <header><div><p class="section-label">STEP 2</p><h2>Calculate total memory <var>M<sub>total</sub></var><span class="bz">計算總容量需求</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json。滑鼠移到下方標籤可看代入計算與參數意涵。</span></span></h2></div>
           <div class="sz-result"><small>Total GPU memory<span class="bz">合計 GPU 顯存需求</span></small><b id="mzTotal">—</b><a class="sz-jump" href="#mzPickSec" data-jump="mzPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="mzJumpTxt">—</span></a></div></header>
         <div id="mzFormula" class="sz-calcbox"></div>
         <p id="mzWarn" class="report-notice" hidden></p>
       </section>
 
       <section class="report-section" id="mzPickSec">
-        <header><div><p class="section-label">STEP 3</p><h2>Recommendation<span class="bz">建議配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+        <header><div><p class="section-label">STEP 3</p><h2>Select a configuration for <var>M<sub>total</sub></var><span class="bz">依據 Step 2 選擇相對應配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+        <div class="sz-s3"><div class="sz-s3-main">
         <div id="mzCasHost" class="sz-cas-host"></div>
         <div id="mzPickDetail" class="sz-pickline"></div>
-        <div class="sz-hn sz-hn-pick">
-          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="bins" aria-expanded="false"><b>Placement<span class="bz">配置明細</span></b><small>每張 GPU 放哪些模型</small><span class="car" aria-hidden="true">▾</span></button></div>
-          <div class="sz-hn-panels"><div class="sz-hn-panel" data-p="bins"><div id="mzDetail" class="sz-detail"></div></div></div>
+        <details class="sz-more" open><summary>Placement<span class="bz">配置明細：每張 GPU 放哪些模型</span></summary><div id="mzDetail" class="sz-detail"></div></details>
         </div>
+        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">Needs for the current scenario<span class="bz">依目前情境所需張數</span></p><div id="mzRows" class="sz-ref-list"></div></aside></div>
       </section>
 
       <section class="report-section">
@@ -184,7 +180,7 @@
     <section class="report-section">
       <header><div><p class="section-label">NOTES</p><h2>Considerations &amp; scenarios<span class="bz">考量項目與情境差異</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
       <div class="sz-hn">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included<span class="bz">未納入，需實測或另評</span></b><small>3 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="case" aria-expanded="false"><b>Scenario-dependent<span class="bz">依使用情境而異的參數</span></b><small>8 items</small><span class="car" aria-hidden="true">▾</span></button></div>
+        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included &amp; scenario-dependent<span class="bz">未納入與依情境而異</span></b><small>11 items</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
             <li>模型權重（依量化／精度）</li>
@@ -195,12 +191,11 @@
             <li>並行請求數（人數 × 活躍比例 × 等待回應比例）</li>
             <li>HA 備援台數與吞吐量需求（選填）</li>
           </ul></div>
-          <div class="sz-hn-panel" data-p="no"><ul class="sz-nlist no">
+          <div class="sz-hn-panel" data-p="no"><h4 class="sz-nh">Not included<span class="bz">未納入，需實測或另評</span></h4><ul class="sz-nlist no">
             <li>實際速度：TTFT、TPOT、P95</li>
             <li>DFlash 草稿模型、PLE Offload、aiDAPTIV 卸載</li>
             <li>Prefix cache 命中、網路互連與跨節點延遲</li>
-          </ul></div>
-          <div class="sz-hn-panel" data-p="case"><ul class="sz-nlist case">
+          </ul><h4 class="sz-nh">Scenario-dependent<span class="bz">依使用情境而異的參數</span></h4><ul class="sz-nlist case">
             <li><b>Context</b>：問答 8K、Coding Agent 32K、長文件 128K，KV 約與長度成正比（差 4～16 倍）。</li>
             <li><b>Concurrency<span class="bz">並行請求</span></b>：內部問答約 10%（40% × 25%），Agent／批次工作高得多，直接決定 KV 大小。</li>
             <li><b>Quantization<span class="bz">量化</span></b>：BF16、Q8、Q4 的權重約為 1、0.53、0.31 倍。</li>
@@ -215,7 +210,7 @@
     </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=22"></script>
-  <script src="sizing.js?v=21"></script>
-  <script src="sizing-multi.js?v=14"></script>
+  <script src="sizing-core.js?v=29"></script>
+  <script src="sizing.js?v=26"></script>
+  <script src="sizing-multi.js?v=18"></script>
 </body></html>

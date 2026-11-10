@@ -109,11 +109,10 @@ assert.ok(C.tip("說明").includes("💡") && C.tip("<b>").includes("&lt;b&gt;")
 assert.ok(box.includes("模型總參數量") && box.includes("70 B"), "legend carries meaning and current value");
 assert.ok(box.includes("= 38.5 GB（0.04 TB）") && box.includes("= 308.5 GB（0.31 TB）"), "numeric results are formatted as GB (TB)");
 assert.ok(!/= \d+\.\d{4,}/.test(box), "no raw floating point numbers");
-// options that need cross-node TP are never ranked above practical ones
+// options that do not fit in one server are recommended as N servers; ranking = fewest GPUs to buy (servers x GPUs per server)
+const refOpsPhys = o => o.size.withHA * o.gpu.perServer;
 const refOps = C.options(b.total, C.GPUS, 90, {});
-const firstCross = refOps.findIndex(o => o.size.crossNode);
-assert.ok(firstCross > 0 && refOps.slice(firstCross).every(o => o.size.crossNode), "cross-node options come last");
-assert.ok(!refOps[0].size.crossNode, "the suggested option is practical");
+for (let i = 1; i < refOps.length; i++) assert.ok(refOps[i - 1].size.withHA < refOps[i].size.withHA || (refOps[i - 1].size.withHA === refOps[i].size.withHA && refOpsPhys(refOps[i - 1]) <= refOpsPhys(refOps[i])), "ranked by fewest servers, then fewest GPUs");
 // per-server counts follow the TPI test machines (B60: 4 GPUs = 96 GB, B70: 2 GPUs = 64 GB)
 assert.strictEqual(C.GPUS.find(g => g.id === "b60").perServer * C.GPUS.find(g => g.id === "b60").vram, 96);
 assert.strictEqual(C.GPUS.find(g => g.id === "b70").perServer * C.GPUS.find(g => g.id === "b70").vram, 64);
@@ -125,16 +124,15 @@ assert.ok(pn.hybrid && pn.notes.length === 2 && pn.headDim === 256, "hybrid + Mo
 assert.strictEqual(C.parseConfig({ num_hidden_layers: 32, num_attention_heads: 32, hidden_size: 4096 }).kvHeads, 32, "MHA falls back to attention heads");
 assert.throws(() => C.parseConfig({ foo: 1 }), /找不到/);
 assert.throws(() => C.parseConfig("not json"), /不是有效的 JSON/);
-// machine picker: vendor -> model menu, server x GPUs-per-server wording, flags
+// machine chooser: always-visible Vendor | Model | Server size panel, flags and wording
 const mk = o => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: false });
-const pk0 = C.options(b.total, C.GPUS, 90, {}).map(mk); pk0[0].best = true;
-const menuHtml = C.pickMenuHtml(pk0, pk0[0].gpu.id, "t");
-assert.ok(menuHtml.indexOf(">NVIDIA<") >= 0 || menuHtml.indexOf("NVIDIA<i") >= 0, "vendor level");
-assert.ok(menuHtml.indexOf("NVIDIA") < menuHtml.indexOf("AMD") && menuHtml.indexOf("AMD") < menuHtml.indexOf("Intel"), "vendors listed NVIDIA, AMD, Intel top to bottom");
-assert.ok(/1 server · 8 GPUs/.test(menuHtml), "result wording is servers x GPUs per server (e.g. 1 server · 8 GPUs)");
-assert.ok(menuHtml.includes("B300") && menuHtml.includes("MI300X") && menuHtml.includes("Arc Pro B70"), "models of every vendor present");
-assert.ok(menuHtml.includes('class="warn"'), "cross-node models are flagged");
-assert.strictEqual((menuHtml.match(/class="star"/g) || []).length, 1, "exactly one recommended model");
+const pk0 = C.options(b.total, C.variants(C.GPUS), 90, {}).map(mk); pk0[0].best = true;
+const panel0 = C.pickPanelHtml(pk0, pk0[0].gpu.id, "t", {});
+assert.ok(panel0.indexOf('data-v="NVIDIA"') >= 0 && panel0.indexOf('data-v="NVIDIA"') < panel0.indexOf('data-v="AMD"') && panel0.indexOf('data-v="AMD"') < panel0.indexOf('data-v="Intel"'), "vendors listed NVIDIA, AMD, Intel");
+assert.ok(/\d+ servers? · \d+ GPUs/.test(panel0), "result wording is servers x GPUs");
+assert.ok(/Selected/.test(panel0) && /pp-c/.test(panel0), "selected header and server-size column");
+assert.strictEqual((panel0.match(/class="star"/g) || []).length >= 1, true, "recommendation is starred");
+for (const v of ["AMD", "Intel"]) assert.ok(C.pickPanelHtml(pk0, null, "t", { v }).includes('class="pp-m'), v + " models listed when browsed");
 assert.ok(C.GPUS.every(g => C.VENDORS.includes(g.vendor) && g.model && g.vram > 0 && g.perServer > 0), "catalog entries have vendor, model, vram, perServer");
 console.log("sizing-core: all assertions passed");
 
@@ -147,12 +145,13 @@ console.log("sizing-core: all assertions passed");
   const ops = C.options(441.3, vs, 90, {});
   const phys = o => o.size.withHA * o.gpu.perServer;
   for (let i = 1; i < ops.length; i++) {
-    if (ops[i - 1].size.crossNode === ops[i].size.crossNode) assert.ok(phys(ops[i - 1]) <= phys(ops[i]), "ranked by fewest GPUs to buy");
+    assert.ok(ops[i - 1].size.withHA < ops[i].size.withHA || (ops[i - 1].size.withHA === ops[i].size.withHA && phys(ops[i - 1]) <= phys(ops[i])), "ranked by fewest servers, then fewest GPUs");
   }
   const items = ops.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
-  const html = C.pickMenuHtml(items, null, "t");
-  assert.ok(/Choose a machine/.test(html), "nothing picked -> placeholder");
-  assert.ok(/class="sz-cas-cfgs"/.test(html) && /8 GPUs \/ server/.test(html) && /4 GPUs \/ server/.test(html), "models with several server sizes get a third level");
-  assert.ok(/data-id="rtxpro6000@4"/.test(html), "each server option is selectable");
+  const html = C.pickPanelHtml(items, null, "t", { v: "NVIDIA", m: "rtxpro6000" });
+  assert.ok(/Choose a machine/.test(html), "nothing picked -> placeholder header");
+  assert.ok(/8 GPUs \/ server/.test(html) && /4 GPUs \/ server/.test(html) && /2 GPUs \/ server/.test(html), "a model with several server sizes lists every size");
+  assert.ok(/data-id="rtxpro6000@4"/.test(html), "each server size is selectable");
+  assert.ok(/data-id="rtxpro6000@4"[^>]*>/.test(html) && !/data-id="h200@4"/.test(html), "only the browsed model's sizes are shown");
 }
 console.log("sizing-core: per-server options passed");
