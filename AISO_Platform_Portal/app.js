@@ -617,7 +617,7 @@ $("homeBrandLink").addEventListener("click",event=>{event.preventDefault();rende
 $("homeLink").onclick=()=>{if(window.matchMedia("(hover: none)").matches&&!homeMenu.classList.contains("open")){setHomeMenu(true);return}setHomeMenu(false);renderHome()};
 $("productsLink").onclick=goProducts;
 $("capabilitiesLink").onclick=goCapabilities;
-$("benchmarkLink").onclick=goBenchmark;
+$("benchmarkLink").onclick=goBenchmark; $("sizingLink").onclick=()=>{location.href="sizing.html"};
 $("guideLink").onclick=renderConsulting;
 $("aboutLink").onclick=renderAbout;
 $("heroProductsLink").onclick=goProducts;
