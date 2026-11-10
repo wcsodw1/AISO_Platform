@@ -89,14 +89,15 @@
     // GPU options
     const items = sel.map((x, i) => ({ name: x.m.name, total: budgets[i].total }));
     const list = gpus.map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
-      .sort((a, b) => a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
+      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
     if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
-    $("mzOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}" data-id="${o.gpu.id}"><b>${esc(shortName(o.gpu.name))} × ${o.size.gpus}</b><small>${i === 0 ? "★ 建議 · " : ""}${o.size.servers} 台（${o.size.servers * o.gpu.perServer} 張）</small></button>`).join("");
+    $("mzOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}"><b>${esc(shortName(o.gpu.name))} × ${o.size.gpus}</b><small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.servers} 台（${o.size.servers * o.gpu.perServer} 張）</small></button>`).join("");
     const cur = list.find(o => o.gpu.id === picked), s = cur.size, gp = cur.gpu;
     const iso = sizeAll(items, { ...gp, usablePct: g.usable }, false, false), pk = sizeAll(items, { ...gp, usablePct: g.usable }, true, false);
     $("mzDetail").innerHTML = `<p class="sz-gl"><b>${esc(gp.name)}</b>${gp.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${gp.vram} GB（可規劃 ${f1(s.cap)} GB）、每台 ${gp.perServer} 張</p>` +
       `<p class="sz-sub">TP 分片：${s.tp.map(t => `${esc(t.name)} ${t.k} 張`).join(" · ")}（每個模型取 2 的次方張）</p>` +
       `<ol class="mz-bins">${s.bins.map((b, i) => `<li><b>GPU ${i + 1}</b><div class="mz-bar"><i style="width:${Math.min(100, b.used / s.cap * 100)}%"></i></div><span>${f1(b.used)} / ${f1(s.cap)} GB　${b.shards.map(sh => `${esc(sh.name)}${sh.k > 1 ? `（1/${sh.k} 分片）` : ""} ${f1(sh.gb)}`).join(" ＋ ")}</span></li>`).join("")}</ol>` +
+      (s.crossNode ? `<p class="sz-warnp">⚠ 不建議：有模型需要的 TP 張數超過這個機型每台 ${gp.perServer} 張，必須跨節點（需高速互連，會拖慢 TPOT）。這只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。</p>` : "") +
       `<p class="sz-final">${C.memText(total)} → <b>${esc(shortName(gp.name))} × ${s.gpus}</b>（${g.pack ? "共用打包" : "各模型獨立"}）／<b>${s.servers} 台</b>${g.ha ? "（含 +1 備援）" : ""}，實體顯存 ${C.memText(s.servers * gp.perServer * gp.vram)}${s.crossNode ? "；有模型的 TP 超過單台，需跨節點" : ""}<br>` +
       `<small>比較：共用打包 ${pk.gpus} 張、各模型獨立 ${iso.gpus} 張（${esc(shortName(gp.name))}）</small></p>`;
 

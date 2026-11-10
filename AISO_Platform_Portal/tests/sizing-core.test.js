@@ -99,4 +99,12 @@ assert.strictEqual((box.match(/sz-legend/g) || []).length, 1);
 assert.ok(box.includes("模型總參數量") && box.includes("70 B"), "legend carries meaning and current value");
 assert.ok(box.includes("= 38.5 GB（0.04 TB）") && box.includes("= 308.5 GB（0.31 TB）"), "numeric results are formatted as GB (TB)");
 assert.ok(!/= \d+\.\d{4,}/.test(box), "no raw floating point numbers");
+// options that need cross-node TP are never ranked above practical ones
+const refOps = C.options(b.total, C.GPUS, 90, {});
+const firstCross = refOps.findIndex(o => o.size.crossNode);
+assert.ok(firstCross > 0 && refOps.slice(firstCross).every(o => o.size.crossNode), "cross-node options come last");
+assert.ok(!refOps[0].size.crossNode, "the suggested option is practical");
+// per-server counts follow the TPI test machines (B60: 4 GPUs = 96 GB, B70: 2 GPUs = 64 GB)
+assert.strictEqual(C.GPUS.find(g => g.id === "b60").perServer * C.GPUS.find(g => g.id === "b60").vram, 96);
+assert.strictEqual(C.GPUS.find(g => g.id === "b70").perServer * C.GPUS.find(g => g.id === "b70").vram, 64);
 console.log("sizing-core: all assertions passed");

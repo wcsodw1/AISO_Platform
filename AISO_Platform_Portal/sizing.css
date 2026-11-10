@@ -158,3 +158,10 @@ main .report-section h2 .zh{font-size:17px;margin-top:8px}
 .sz-row.fin .sz-eq.out{color:var(--green);font-size:26px}
 .sz-lgl{margin:2px 0 6px;color:#a4a9b4;font-size:15px}
 @media(max-width:700px){.sz-row{grid-template-columns:1fr;gap:6px}.sz-sci{font-size:21px}.sz-lg{grid-template-columns:70px 1fr}.sz-lg b{grid-column:2}}
+
+/* options that need cross-node TP */
+.sz-opt.cross{opacity:.75;border-style:dashed}
+.sz-opt.cross.on{opacity:1;border-color:#e8a15a;background:rgba(232,161,90,.1)}
+.sz-opt.cross.on b{color:#e8a15a}
+.sz-warnTag{color:#e8a15a;font-style:normal;font-weight:700}
+.sz-warnp{margin:8px 0 12px!important;padding:12px 14px;border:1px solid #e8a15a;border-radius:12px;background:rgba(232,161,90,.1);color:#f3d9b8;font-size:16px;line-height:1.65}

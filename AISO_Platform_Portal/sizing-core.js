@@ -28,8 +28,8 @@
     { id: "h200", name: "NVIDIA H200", vram: 141, perServer: 8 },
     { id: "h100", name: "NVIDIA H100", vram: 80, perServer: 8 },
     { id: "l40s", name: "NVIDIA L40S", vram: 48, perServer: 8 },
-    { id: "b70", name: "Intel Arc Pro B70（AISO 平台）", vram: 32, perServer: 2, assumed: true },
-    { id: "b60", name: "Intel Arc Pro B60（AISO 平台）", vram: 24, perServer: 2 },
+    { id: "b70", name: "Intel Arc Pro B70（AISO 平台）", vram: 32, perServer: 2, basis: "依 TPI B70 測試機：2 張＝64 GB" },
+    { id: "b60", name: "Intel Arc Pro B60（AISO 平台）", vram: 24, perServer: 4, basis: "依 TPI B60 測試機：4 張＝96 GB" },
     { id: "aiso1", name: "AMD AISO1（統一記憶體）", vram: 96, perServer: 1, assumed: true }
   ];
 
@@ -190,7 +190,7 @@
   /* every GPU option sized and ranked: fewest servers first, then fewest GPUs; first = suggested */
   function options(totalGB, gpus, usablePct, opts) {
     return gpus.map(g => ({ gpu: g, size: sizeFor(totalGB, g, usablePct, opts) }))
-      .sort((a, b) => a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
+      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
   }
 
   /* ---- calculation box (shared by single and multi-model views) ---- */

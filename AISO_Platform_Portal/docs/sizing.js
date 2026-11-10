@@ -52,6 +52,7 @@
       if (s.serversByTps > s.serversByMem) notes.push("吞吐量決定台數");
       if (ha) notes.push("已含 +1 備援");
       if (g.assumed) notes.push("規格為規劃假設");
+      if (g.basis) notes.push(g.basis);
       return `<tr class="${s.crossNode ? "warn" : ""}"><th>${esc(g.name)}${g.assumed ? ' <i class="sz-flag" title="規劃假設">假設</i>' : ""}</th>` +
         `<td><input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}"> GB</td>` +
         `<td><input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}"></td>` +
@@ -68,12 +69,13 @@
     $("szFormula").innerHTML = C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] });
     const list = C.options(b.total, gpus, usablePct, opts);
     if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
-    $("szOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}" data-id="${o.gpu.id}">` +
+    $("szOptions").innerHTML = list.map((o, i) => `<button type="button" role="radio" aria-checked="${o.gpu.id === picked}" class="sz-opt${o.gpu.id === picked ? " on" : ""}${o.size.crossNode ? " cross" : ""}" data-id="${o.gpu.id}">` +
       `<b>${esc(o.gpu.name.replace(/（.*?）/g, "").replace("NVIDIA ", "").replace("Intel Arc Pro ", "").replace("AMD ", ""))} × ${o.size.gpusMin}</b>` +
-      `<small>${i === 0 ? "★ 建議 · " : ""}${o.size.withHA} 台（${o.size.withHA * o.gpu.perServer} 張）</small></button>`).join("");
+      `<small>${o.size.crossNode ? '<em class="sz-warnTag">⚠ 需跨節點</em> · ' : (i === 0 ? "★ 建議 · " : "")}${o.size.withHA} 台（${o.size.withHA * o.gpu.perServer} 張）</small></button>`).join("");
     const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s);
     $("szPickDetail").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>${g.assumed ? ' <i class="sz-flag">假設</i>' : ""}　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
       `<p class="sz-sym">${C.sci(gf.sym)}</p><p class="sz-lgl"><var>V</var>：每卡 VRAM（${g.vram} GB）；<var>u</var>：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}${s.crossNode ? "（超過單台，需跨節點）" : ""}</p>` +
+      (s.crossNode ? `<p class="sz-warnp">⚠ 不建議：單一模型需要 TP ${s.gpusTP} 張，超過這個機型每台 ${g.perServer} 張，必須跨節點（需 InfiniBand／RoCE 等高速互連，頻寬與延遲會拖慢 TPOT），而且要 ${s.withHA} 台機器。這個容量下限只代表「顯存加起來夠」，不代表可行；建議改用單卡顯存更大的 GPU。</p>` : "") +
       `<p class="sz-final">${C.memText(b.total)} → <b>${g.name.replace(/（.*?）/g, "")} × ${s.gpusMin}</b>（容量下限）／TP 建議 ${s.gpusTP} 張／<b>${s.withHA} 台</b>，實體顯存 ${C.memText(s.physicalVram)}${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
   }
   function render() {
