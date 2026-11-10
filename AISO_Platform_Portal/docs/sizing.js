@@ -149,12 +149,18 @@
     const inp = read();
     UI.setCalc($("szFormula"), C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] }));
     const list = C.options(b.total, gpus, usablePct, opts);
-    if (!picked || !list.some(o => o.gpu.id === picked)) picked = list[0].gpu.id;
+    if (picked && !list.some(o => o.gpu.id === picked)) picked = null;   // default: nothing chosen, the user picks a machine
     const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("szCasHost").innerHTML = C.pickMenuHtml(items, picked, "sz"); UI.keepShut($("szCasHost"));
     const label = o => `${o.gpu.vendor} ${o.gpu.model}`, bestI = items[0];
     $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
-    const cur = list.find(o => o.gpu.id === picked), g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s), ci = items.find(o => o.gpu.id === picked);
+    const cur = list.find(o => o.gpu.id === picked);
+    if (!cur) {
+      $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)}<span class="bz">需要的總顯存 · 請從上方選擇機型</span></p>`;
+      $("szPickCalc").innerHTML = `<p class="sz-sub">Choose a machine first<span class="bz">先選擇機型</span></p>`;
+      return;
+    }
+    const g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s), ci = items.find(o => o.gpu.id === picked);
     /* visible: one result line (+ one warning when a cross-node TP would be needed) */
     $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)} → <b>${esc(label(ci))} × ${C.resEn(s.withHA, C.physical(ci))}</b><span class="bz">${s.withHA} 台 · ${C.physical(ci)} 張 GPU</span></p>` +
       `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>` +

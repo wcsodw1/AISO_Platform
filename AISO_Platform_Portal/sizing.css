@@ -413,3 +413,5 @@ h2 .bz{font-size:17px}
 .sz-result small .bz{display:block;margin:2px 0 0}
 .sz-final-line .bz{margin-left:.8em}
 .sz-break .dtn .bz{margin-left:.5em}
+.sz-cas-main.ask .cm-name{font-size:22px;letter-spacing:0}
+.sz-cas-main.ask .cm-res{color:var(--muted);font-size:17px;font-weight:600}

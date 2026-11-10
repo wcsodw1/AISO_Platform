@@ -263,18 +263,18 @@
   const physical = o => o.servers * o.gpu.perServer;
   const resEn = (servers, gpus) => `${servers} server${servers === 1 ? "" : "s"} · ${gpus} GPU${gpus === 1 ? "" : "s"}`;
   function pickMenuHtml(items, pickedId, ns) {
-    const cur = items.find(o => o.gpu.id === pickedId) || items[0];
+    const cur = items.find(o => o.gpu.id === pickedId) || null;   // nothing chosen yet -> placeholder prompt
     const fmtRes = o => resEn(o.servers, physical(o));
     const mark = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
     return `<div class="sz-cas" id="${ns}Cas">` +
-      `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></span>` +
-      `<small>${cur.best ? "★ Recommended · " : ""}Capacity needs ${cur.need} GPU${cur.need === 1 ? "" : "s"}${cur.tp && cur.tp !== cur.need ? ` (TP ${cur.tp})` : ""}${cur.cross ? " · ⚠ Cross-node" : ""}<span class="bz">${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>` +
+      (cur ? `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></span>` +
+      `<small>${cur.best ? "★ Recommended · " : ""}Capacity needs ${cur.need} GPU${cur.need === 1 ? "" : "s"}${cur.tp && cur.tp !== cur.need ? ` (TP ${cur.tp})` : ""}${cur.cross ? " · ⚠ Cross-node" : ""}<span class="bz">${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>` : `<button type="button" class="sz-cas-main ask" aria-haspopup="true"><span class="cm-name">Choose a machine<span class="bz">選擇機型</span></span><span class="cm-res">Vendor ▸ Model</span><small>Hover to choose · ★ marks the recommendation<span class="bz">滑過選擇 · ★ 為建議機型</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>`) +
       `<div class="sz-cas-menu"><ul class="sz-cas-vendors">` +
       VENDORS.map(v => {
         const list = items.filter(o => o.gpu.vendor === v);
         if (!list.length) return "";
-        return `<li class="${v === cur.gpu.vendor ? "cur" : ""}"><span class="cv-name">${v}<i aria-hidden="true">▸</i></span><ul class="sz-cas-models">` +
-          list.map(o => `<li><button type="button" class="cm${o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${escH(o.gpu.model)}</b><span>${fmtRes(o)}</span>${mark(o)}${o.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}</button></li>`).join("") +
+        return `<li class="${cur && v === cur.gpu.vendor ? "cur" : ""}"><span class="cv-name">${v}<i aria-hidden="true">▸</i></span><ul class="sz-cas-models">` +
+          list.map(o => `<li><button type="button" class="cm${cur && o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${escH(o.gpu.model)}</b><span>${fmtRes(o)}</span>${mark(o)}${o.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}</button></li>`).join("") +
           `</ul></li>`;
       }).join("") + `</ul></div></div>`;
   }
