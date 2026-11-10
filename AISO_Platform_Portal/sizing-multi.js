@@ -52,7 +52,7 @@
     return { ...p, servers, gpu: g };
   }
 
-  let picked = null, browse = {};
+  let picked = null, browse = {}, refState = {};
   function syncSummaries(g, sel) {
     $("mzReqSum").textContent = sel.length ? `${f1(g.users, 0)} users · ${sel.length} models · ${sel.map(x => (Q[x.cfg.quant] || x.cfg.quant)).join("/")}` : "No model selected 未選模型";
     $("mzReqTab").classList.toggle("warn", !sel.length);
@@ -108,6 +108,7 @@
       const z = sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha);
       return { warn: z.crossNode, html: `Needs <b>${z.gpus}</b> GPU${z.gpus === 1 ? "" : "s"} → <b>${C.resEn(z.servers, z.servers * gp.perServer)}</b>${z.crossNode ? ' <em class="warn">⚠ cross-node 需跨節點</em>' : ""}` };
     }, false);
+    C.syncRef($("mzCasHost"), $("mzRows"), refState);
     const cur = list.find(o => o.gpu.id === picked);
     if (!cur) {
       $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)}<span class="bz">合計顯存 · 請從上方選擇機型</span></p>`;

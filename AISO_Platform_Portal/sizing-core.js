@@ -276,7 +276,7 @@
     const cur = items.find(o => o.gpu.id === pickedId) || null;
     const best = items.find(o => o.best) || items[0];
     const per = o => `${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"} / server`;
-    const marks = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
+    const marks = o => (o.best ? '<em class="star" title="Recommended 建議">★</em>' : "") + (o.cross ? '<em class="warn" title="Cross-node 需跨節點：TP 超過單台張數">⚠</em>' : "");
     const vendors = VENDORS.filter(v => items.some(o => o.gpu.vendor === v));
     let bv = (browse && browse.v) || (cur ? cur.gpu.vendor : best.gpu.vendor);
     if (!vendors.includes(bv)) bv = vendors[0];
@@ -299,13 +299,33 @@
     const top = cfgs[0];
     const colC = `<div class="pp-ch"><b>${escH(top.gpu.model)}</b><span>Server size<span class="bz">每台幾張</span></span></div>` + cfgs.map(o =>
       `<button type="button" class="pp-c${cur && o.gpu.id === cur.gpu.id ? " sel" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${per(o)}</b><span>${resEn(o.servers, physical(o))}</span>${marks(o)}<small>Needs ${o.need} GPU${o.need === 1 ? "" : "s"}${o.tp && o.tp !== o.need ? ` · TP ${o.tp}` : ""}${o.cross ? " · cross-node 需跨節點" : ""}</small></button>`).join("");
-    return `<div class="pp" id="${ns}Pp">${head}<div class="pp-cols"><div class="pp-col pp-cv"><div class="pp-ch"><span>Vendor<span class="bz">品牌</span></span></div>${colV}</div>` +
-      `<div class="pp-col pp-cm"><div class="pp-ch"><span>Model<span class="bz">機型</span></span></div>${colM}</div><div class="pp-col pp-cc">${colC}</div></div></div>`;
+    return `<div class="pp" id="${ns}Pp" data-bv="${bv}" data-bm="${bm}">${head}<div class="pp-cols"><div class="pp-col pp-cv"><div class="pp-ch"><span>Vendor<span class="bz">品牌</span></span></div>${colV}</div>` +
+      `<div class="pp-col pp-cm"><div class="pp-ch"><span>Model<span class="bz">機型</span></span></div>${colM}</div><div class="pp-col pp-cc">${colC}</div></div>` +
+      `<div class="pp-legend"><span><em class="star">★</em> Recommended 建議：買最少張 GPU 且不跨節點</span><span><em class="warn">⚠</em> Cross-node 需跨節點：模型的 TP 超過單台張數，要靠高速網路（InfiniBand／RoCE）串多台，會拖慢速度，不建議</span></div></div>`;
+  }
+
+  /* scroll the reference card so the row of `baseId` is near its top (card = the scroll container) */
+  function focusRefRow(card, baseId) {
+    const row = card && card.querySelector(`.sz-ref-row[data-base="${baseId}"]`);
+    if (!row) return;
+    const top = card.scrollTop + row.getBoundingClientRect().top - card.getBoundingClientRect().top - 78;
+    card.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }
+
+  /* keep the reference card in step with the chooser: highlight the browsed model's row and scroll to it when the model changes */
+  function syncRef(panelHost, listEl, state) {
+    const pp = panelHost && panelHost.querySelector(".pp");
+    if (!pp || !listEl) return;
+    const bm = pp.dataset.bm;
+    listEl.querySelectorAll(".sz-ref-row.hl").forEach(r => r.classList.remove("hl"));
+    const row = listEl.querySelector(`.sz-ref-row[data-base="${bm}"]`);
+    if (row) row.classList.add("hl");
+    if (state.last !== bm) { state.last = bm; focusRefRow(listEl.closest(".sz-ref"), bm); }
   }
 
   /* GPU reference card (right side of Step 3): grouped by vendor, VRAM as a bar, server sizes as chips.
      info(g) -> html line for the current scenario (or "" / null); editable adds VRAM and default GPUs-per-server inputs (data-i = index in `gpus`). */
-  function refRowsHtml(gpus, info, editable) {
+  function refRowsHtml(gpus, info, editable, hlId) {
     const maxV = Math.max(...gpus.map(g => g.vram), 1);
     return VENDORS.map(v => {
       const list = gpus.map((g, i) => ({ g, i })).filter(x => x.g.vendor === v);
@@ -313,7 +333,7 @@
       return `<section class="sz-ref-v"><h4>${v}</h4>` + list.map(({ g, i }) => {
         const ks = [...new Set([...(g.configs || []), g.perServer])].sort((a, b) => a - b);
         const inf = info ? info(g) : "";
-        return `<div class="sz-ref-row${inf && inf.warn ? " warn" : ""}"><div class="rr-top"><b>${escH(g.model)}</b>${g.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}` +
+        return `<div class="sz-ref-row${inf && inf.warn ? " warn" : ""}${hlId === g.id ? " hl" : ""}" data-base="${g.id}"><div class="rr-top"><b>${escH(g.model)}</b>${g.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}` +
           `<span class="rr-vram">${editable ? `<input class="sz-mini" data-i="${i}" data-k="vram" type="number" min="1" value="${g.vram}" aria-label="VRAM GB">` : g.vram} GB</span></div>` +
           `<div class="rr-bar"><i style="width:${(g.vram / maxV * 100).toFixed(1)}%"></i></div>` +
           `<div class="rr-opts">${ks.map(k => `<em>${k}</em>`).join("")}<span>GPUs / server</span>${editable ? `<label class="rr-def">default <input class="sz-mini" data-i="${i}" data-k="perServer" type="number" min="1" value="${g.perServer}" aria-label="GPUs per server"></label>` : ""}</div>` +
@@ -322,5 +342,5 @@
     }).join("");
   }
 
-  return { VENDORS, refRowsHtml, physical, resEn, pickPanelHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  return { VENDORS, refRowsHtml, focusRefRow, syncRef, physical, resEn, pickPanelHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

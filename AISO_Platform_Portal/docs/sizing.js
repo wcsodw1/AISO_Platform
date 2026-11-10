@@ -127,7 +127,7 @@
     }, true);
   }
 
-  let picked = null, browse = {};
+  let picked = null, browse = {}, refState = {};
   function renderFormula(b, usablePct, opts) {
     $("szFTotal").textContent = C.memText(b.total);
     const inp = read();
@@ -136,6 +136,7 @@
     if (picked && !list.some(o => o.gpu.id === picked)) picked = null;   // default: nothing chosen, the user picks a machine
     const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("szCasHost").innerHTML = C.pickPanelHtml(items, picked, "sz", browse);
+    C.syncRef($("szCasHost"), $("szRows"), refState);
     const label = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`, bestI = items[0];
     $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
     const cur = list.find(o => o.gpu.id === picked);
