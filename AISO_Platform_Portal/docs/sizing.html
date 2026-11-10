@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=28">
+  <link rel="stylesheet" href="sizing.css?v=30">
 </head>
 <body>
   <header class="site-header">
@@ -81,6 +81,7 @@
         <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> 建議配置：<span id="szJumpTxt">—</span></a></div></header>
       <div id="szFormula" class="sz-calcbox"></div>
       <b id="szTotal" hidden></b>
+      <p class="sz-compose"><var>M<sub>required</sub></var>組成占比 <span class="hint" tabindex="0" role="note">💡<span class="hintbox">下方色條與五張卡片對應上方結果框的四個項目：模型權重、KV Cache、Runtime、安全餘裕，四項相加＝ M_required（100%）；百分比＝該項 ÷ M_required。最後一張「KV / 請求」是 M_KV 的拆解。</span></span></p>
       <div id="szBars" class="sz-bars"></div>
       <dl id="szBreak" class="sz-break"></dl>
       <p id="szWarn" class="report-notice" hidden></p>
@@ -208,6 +209,6 @@
     </div>
   </main>
   <script src="sizing-core.js?v=16"></script>
-  <script src="sizing.js?v=12"></script>
+  <script src="sizing.js?v=13"></script>
   <script src="sizing-multi.js?v=10"></script>
 </body></html>

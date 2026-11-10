@@ -337,3 +337,15 @@ h2 .hint{font-size:18px}
 @keyframes szflash{0%,100%{box-shadow:0 8px 26px rgba(8,12,22,.22)}25%,70%{box-shadow:0 0 0 3px var(--gold),0 8px 26px rgba(8,12,22,.22)}}
 html{scroll-behavior:smooth}
 @media(max-width:700px){.sz-result{align-items:flex-start}.sz-pick-head b{font-size:23px}}
+
+/* breakdown cards use the same symbols as the equation */
+.sz-break dt{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}
+.sz-break dt var{font-family:"STIX Two Math","Cambria Math",Georgia,serif;font-style:italic;font-size:19px;color:#cfe3ff}
+.sz-break dt sub{font-size:.7em;font-style:normal}
+.sz-break dt .dtn{color:#bcc2ce;font-size:14px}
+.sz-break dd small.kvsub var{font-family:"STIX Two Math","Cambria Math",Georgia,serif;font-style:italic;color:#cfe3ff}
+.sz-compose{display:flex;align-items:center;margin:20px 0 10px;font-size:18px;color:var(--gold);font-weight:700}
+.sz-compose sub{font-size:.7em}
+
+.sz-compose var{font-family:"STIX Two Math","Cambria Math",Georgia,serif;font-style:italic;font-weight:400;color:#cfe3ff;font-size:21px;margin-right:6px}
+.sz-compose var sub{font-style:normal}

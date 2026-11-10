@@ -110,12 +110,12 @@
   }
 
   function renderBars(b, inp) {
-    const parts = [["Weights", b.weights, "w"], ["KV Cache", b.kv, "k"], ["Runtime", b.runtime, "r"], ["Headroom", b.headroom, "h"]];
-    $("szBars").innerHTML = parts.map(([n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${n} ${fmt(v)} GB"></i>`).join("");
-    $("szBreak").innerHTML = parts.map(([n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${n}</dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
-      `<div><dt>KV / 請求${C.tip("每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數就是 KV Cache 總量。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(b.kvPerTokenKiB * 1024 * inp.context / 1e9, 1)} GB<small class="kvsub">${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens；共 ${inp.concurrent} 個請求</small></dd></div>`;
+    /* the four cards are the four terms of M_required — same symbols as the result row, % = term ÷ M_required */
+    const parts = [["M_weights", "模型權重", b.weights, "w"], ["M_KV", "KV Cache", b.kv, "k"], ["M_runtime", "Runtime", b.runtime, "r"], ["M_headroom", "安全餘裕", b.headroom, "h"]];
+    $("szBars").innerHTML = parts.map(([sym, n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${sym} ${n} ${fmt(v)} GB"></i>`).join("");
+    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n}</small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
+      `<div><dt><i class="sz-dot k"></i>KV / 請求${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(b.kvPerTokenKiB * 1024 * inp.context / 1e9, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
   }
-
   function renderRows(b, usablePct) {
     const reqTps = C.num(el.reqTps.value, 0), srvTps = C.num(el.srvTps.value, 0), ha = el.ha.checked;
     $("szRows").innerHTML = gpus.map((g, i) => {
