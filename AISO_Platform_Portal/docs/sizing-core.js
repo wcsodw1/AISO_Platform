@@ -172,17 +172,17 @@
   function formula(i, b) {
     const w = f1(b.weights), kv = f1(b.kv), r = f1(b.runtime), h = f1(b.headroom);
     return [
-      { k: "M_weights", sym: "P × b ÷ 8 × (1 + metadata%)", sub: `${i.params}B × ${i.weightBits} ÷ 8 × (1 + ${i.metaPct}%)`, out: b.weights },
+      { k: "M_weights", sym: "P × b ÷ 8 × (1 + δ)", sub: `${i.params}B × ${i.weightBits} ÷ 8 × (1 + ${i.metaPct}%)`, out: b.weights },
       { k: "M_KV", sym: "2 × L × H_KV × D × (b_KV ÷ 8) × T × C", sub: `2 × ${i.layers} × ${i.kvHeads} × ${i.headDim} × (${i.kvBits} ÷ 8) × ${f1(i.context, 0)} × ${i.concurrent}`, out: b.kv, note: `每 token ${f1(b.kvPerTokenKiB, 0)} KiB；T＝每請求 Context，C＝同時請求數` },
-      { k: "M_runtime", sym: "Runtime overhead", sub: `${r} GB`, out: b.runtime },
-      { k: "M_headroom", sym: "(M_weights + M_KV + M_runtime) × headroom%", sub: `(${w} + ${kv} + ${r}) × ${i.headroomPct}%`, out: b.headroom },
-      { k: "M_required", sym: "M_weights + M_KV + M_runtime + M_headroom", sub: `${w} + ${kv} + ${r} + ${h}`, out: b.total, total: true }
+      { k: "M_runtime", sym: "固定開銷（輸入值）", sub: `${r} GB`, out: b.runtime },
+      { k: "M_headroom", sym: "(M_weights + M_KV + M_runtime) × h", sub: `(${w} + ${kv} + ${r}) × ${i.headroomPct}%`, out: b.headroom },
+      { k: "M_required", sym: "M_weights + M_KV + M_runtime + M_headroom", sub: `${w} + ${kv} + ${r} + ${h}`, out: b.total, total: true, fin: true }
     ];
   }
 
   /* GPU count for one option, with the substituted line */
   function gpuFormula(totalGB, gpu, usablePct, size) {
-    return { sym: "N_GPU = ⌈ M_required ÷ (VRAM × usable%) ⌉",
+    return { sym: "N_GPU = ⌈ M_required ÷ (V × u) ⌉",
              sub: `⌈ ${f1(totalGB)} ÷ (${gpu.vram} × ${usablePct}%) ⌉ = ⌈ ${f1(totalGB / size.usablePerGpu, 2)} ⌉ = ${size.gpusMin}`,
              tp: `TP 建議取 2 的次方：${size.gpusMin} → ${size.gpusTP} 張` };
   }
@@ -193,5 +193,35 @@
       .sort((a, b) => a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
   }
 
-  return { MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  /* ---- calculation box (shared by single and multi-model views) ---- */
+  const escH = x => String(x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  /* "M_weights = P × b ÷ 8" -> variables in italics, names after "_" as subscripts */
+  function sci(t) {
+    return escH(t).replace(/\b([A-Za-z]{1,3})_([A-Za-z]+)\b/g, "<var>$1<sub>$2</sub></var>")
+      .replace(/(^|[\s(×÷+=⌈,])(KV|[PbLDTChUARVuWE]|δ)(?=[\s)×÷+=⌉,]|$)/g, "$1<var>$2</var>");
+  }
+  const rowHtml = r => `<div class="sz-row${r.fin ? " fin" : ""}"><div class="sz-ck">${sci(r.k)}</div><div class="sz-cb">` +
+    (r.sym ? `<div class="sz-eq sym">= ${sci(r.sym)}</div>` : "") + `<div class="sz-eq">= ${escH(r.sub)}</div><div class="sz-eq out">= ${escH(typeof r.out === "number" ? memText(r.out) : r.out)}</div>` +
+    (r.note ? `<small>${escH(r.note)}</small>` : "") + `</div></div>`;
+  const legendHtml = items => `<div class="sz-legend">${items.map(([sym, name, val]) => `<div class="sz-lg"><span class="sy">${sci(sym)}</span><span class="mn">${escH(name)}</span><b>${escH(val)}</b></div>`).join("")}</div>`;
+  /* sections: [{title, rows:[{k,sym,sub,out,note,fin}]}] — everything in ONE box; the row marked fin is the highlighted result */
+  function calcBoxHtml(o) {
+    return `<div class="sz-sci">${sci(o.line)}</div>` +
+      `<h4 class="sz-bh">符號說明<small>括號內為目前參數值</small></h4>${legendHtml(o.legend)}` +
+      `<h4 class="sz-bh">代入計算</h4><div class="sz-rows">` +
+      o.sections.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") + `</div>`;
+  }
+  /* legend of the single-model formula with the current values */
+  function legendFor(i, b) {
+    return [
+      ["M_required", "總 GPU 顯存需求", memText(b.total)], ["M_weights", "模型權重", memText(b.weights)], ["M_KV", "KV Cache（上下文暫存）", memText(b.kv)],
+      ["M_runtime", "框架／CUDA 固定開銷", memText(b.runtime)], ["M_headroom", "安全餘裕", memText(b.headroom)],
+      ["P", "模型總參數量（MoE 取總數）", `${f1(i.params, i.params % 1 ? 2 : 0)} B`], ["b", "權重位元數", `${i.weightBits} bit`], ["δ", "量化 metadata 加成", `${i.metaPct}%`],
+      ["L", "Transformer 層數", String(i.layers)], ["H_KV", "KV attention heads 數", String(i.kvHeads)], ["D", "每個 head 的維度", String(i.headDim)],
+      ["b_KV", "KV 每元素位元數", `${i.kvBits} bit`], ["T", "每個請求的 Context", `${f1(i.context, 0)} tokens`], ["C", "同時推論的請求數", String(i.concurrent)],
+      ["h", "安全餘裕比例", `${i.headroomPct}%`]
+    ];
+  }
+
+  return { sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });

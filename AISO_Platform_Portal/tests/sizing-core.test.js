@@ -89,4 +89,14 @@ assert.ok(pk.bins.every(b => b.used <= pk.cap + 1e-9), "no bin over capacity");
 // shards of one model never share a GPU
 const tp = C.place([{ name: "A", total: 200 }], P6, 90, true);
 assert.strictEqual(tp.gpus, 4); assert.ok(tp.bins.every(b => b.shards.length === 1));
+assert.strictEqual(C.sci("(W + KV + R + E) × (1 + h)"), "(<var>W</var> + <var>KV</var> + <var>R</var> + <var>E</var>) × (1 + <var>h</var>)");
+// calculation box: variables as <var>, subscripts, one box, exactly one highlighted result row
+assert.strictEqual(C.sci("M_weights = P × b ÷ 8"), "<var>M<sub>weights</sub></var> = <var>P</var> × <var>b</var> ÷ 8");
+assert.ok(C.sci("2 × L × H_KV × D × (b_KV ÷ 8) × T × C").includes("<var>H<sub>KV</sub></var>"));
+const box = C.calcBoxHtml({ line: "M_required = M_weights + M_KV", legend: C.legendFor(ref, b), sections: [{ rows: C.formula(ref, b) }] });
+assert.strictEqual((box.match(/class="sz-row fin"/g) || []).length, 1, "one highlighted M_required row");
+assert.strictEqual((box.match(/sz-legend/g) || []).length, 1);
+assert.ok(box.includes("模型總參數量") && box.includes("70 B"), "legend carries meaning and current value");
+assert.ok(box.includes("= 38.5 GB（0.04 TB）") && box.includes("= 308.5 GB（0.31 TB）"), "numeric results are formatted as GB (TB)");
+assert.ok(!/= \d+\.\d{4,}/.test(box), "no raw floating point numbers");
 console.log("sizing-core: all assertions passed");

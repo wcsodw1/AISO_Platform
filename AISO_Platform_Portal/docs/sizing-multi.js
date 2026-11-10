@@ -61,22 +61,22 @@
     $("mzTotal").textContent = sel.length ? C.memText(total) : "—";
 
     // per-model result blocks
-    const calc = [];
+    const sections = [{ title: "並行請求", rows: [{ k: "C", sym: "U × A × R", sub: `${f1(g.users, 0)} × ${g.active}% × ${g.inflight}%`, out: `${conc} 個同時推論請求`, note: sel.length ? "依流量比例分配：" + sel.map((x, i) => `${x.m.name} ${split[i]}`).join(" · ") : "" }] }];
     sel.forEach((x, i) => {
       const b = budgets[i], m = x.m, groupsTxt = m.groups.map(gr => `${gr.layers}×2×${gr.kvHeads}×${gr.headDim}×${g.kvBits / 8}B×${gr.window ? `min(T,${gr.window})` : "T"}`).join(" + ") + (m.stateMB ? ` + state ${m.stateMB} MiB` : "");
-      calc.push(`<article class="mz-card"><h3>${esc(m.name)}<small>${esc(b.quant)} · ${split[i]} 個並行請求</small></h3><ol class="mz-lines">
-        <li><span class="sz-fk">W</span><span class="sz-sub">${b.w.real ? `實際檔案 ${C.memText(b.weights)}` : `${m.params}B × ${b.bpw} ÷ 8 = ${C.memText(b.weights)}`}<small>${b.w.real ? `${esc(b.w.repo)} / ${esc(b.w.file)}　` : ""}有效 ${f1(b.bpw, 2)} bit/weight${b.w.vsBf16 ? `；約為 BF16（${f1(m.files.bf16.bytes / 1e9)} GB）的 ${f1(b.w.vsBf16 * 100, 0)}%（÷${f1(1 / b.w.vsBf16, 1)}）` : ""}</small></span></li>
-        <li><span class="sz-fk">KV</span><span class="sz-sub">(${esc(groupsTxt)}) → ${f1(b.perReq, 3)} GB/請求 × ${split[i]} 請求 = ${C.memText(b.kv)}<small>T = ${f1(x.cfg.context, 0)} tokens</small></span></li>
-        <li><span class="sz-fk">R+E</span><span class="sz-sub">Runtime ${f1(b.runtime)} + 額外（MTP）${f1(b.extra, 2)} = ${f1(b.runtime + b.extra, 2)} GB</span></li>
-        <li class="tot"><span class="sz-fk">M</span><span class="sz-sub">(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra, 2)}) × (1 + ${g.headroomPct}%) = <b class="sz-out">${C.memText(b.total)}</b></span></li></ol></article>`);
+      sections.push({ title: `${m.name} · ${b.quant} · ${split[i]} 個並行請求`, rows: [
+        { k: "W", sym: b.w.real ? "實際檔案大小（Hugging Face）" : "P × b ÷ 8", sub: b.w.real ? `${b.w.file}（${b.w.repo}）` : `${m.params}B × ${b.bpw} ÷ 8`, out: C.memText(b.weights),
+          note: `有效 ${f1(b.bpw, 2)} bit/weight${b.w.vsBf16 ? `；約為 BF16（${f1(m.files.bf16.bytes / 1e9)} GB）的 ${f1(b.w.vsBf16 * 100, 0)}%（÷${f1(1 / b.w.vsBf16, 1)}）` : ""}` },
+        { k: "KV", sym: "Σ 層數 × 2 × H_KV × D × (b_KV ÷ 8) × min(T, 窗口) ＋ 固定 state", sub: `(${groupsTxt}) → ${f1(b.perReq, 3)} GB/請求 × ${split[i]} 請求`, out: C.memText(b.kv), note: `T = ${f1(x.cfg.context, 0)} tokens` },
+        { k: "R + E", sym: "Runtime ＋ 額外（MTP 檔案）", sub: `${f1(b.runtime)} + ${f1(b.extra, 2)}`, out: `${f1(b.runtime + b.extra, 2)} GB` },
+        { k: "M_i", sym: "(W + KV + R + E) × (1 + h)", sub: `(${f1(b.weights)} + ${f1(b.kv)} + ${f1(b.runtime + b.extra, 2)}) × (1 + ${g.headroomPct}%)`, out: C.memText(b.total) }] });
     });
-    $("mzCalc").innerHTML = calc.join("");
-
-    // top formula list
-    $("mzFormula").innerHTML = [
-      { k: "C", sym: "C = U × A × R（人數 × 尖峰活躍 × 正在推論）", sub: `${f1(g.users, 0)} × ${g.active}% × ${g.inflight}%`, out: `${conc} 個同時推論請求`, note: sel.length ? "按流量比例分配：" + sel.map((x, i) => `${x.m.name} ${split[i]}`).join(" · ") : "" },
-      { k: "M_total", sym: "M_total = Σ M_i，M_i = (W_i + KV_i + R_i + E_i) × (1 + headroom%)", sub: sel.length ? budgets.map(b => f1(b.total)).join(" + ") : "0", out: sel.length ? C.memText(total) : "—", tot: true }
-    ].map(r => `<li class="${r.tot ? "tot" : ""}"><div class="sz-fk">${esc(r.k)}</div><div class="sz-fb"><span class="sz-sym">${esc(r.sym)}</span><span class="sz-sub">= ${esc(r.sub)}</span><span class="sz-out">= ${esc(r.out)}</span>${r.note ? `<small>${esc(r.note)}</small>` : ""}</div></li>`).join("");
+    sections.push({ title: "合計", rows: [{ k: "M_total", sym: "Σ M_i", sub: sel.length ? budgets.map(b => f1(b.total)).join(" + ") : "0", out: sel.length ? C.memText(total) : "—", fin: true }] });
+    const legend = [["U", "總使用人數", f1(g.users, 0)], ["A", "尖峰活躍比例", `${g.active}%`], ["R", "活躍者正在推論比例", `${g.inflight}%`], ["C", "同時推論請求數", String(conc)],
+      ["W", "模型權重（實際檔案）", sel.length ? C.memText(budgets.reduce((a, b) => a + b.weights, 0)) + " 合計" : "—"], ["KV", "KV Cache（每請求 × 請求數）", sel.length ? C.memText(budgets.reduce((a, b) => a + b.kv, 0)) + " 合計" : "—"],
+      ["R + E", "Runtime 與 MTP 額外", `${f1(g.runtimeGB)} GB／模型 + MTP`], ["M_i", "單一模型顯存需求", "見各模型小節"], ["M_total", "三模型合計", sel.length ? C.memText(total) : "—"],
+      ["h", "安全餘裕比例", `${g.headroomPct}%`], ["T", "每請求 Context", "各模型設定"]];
+    $("mzFormula").innerHTML = C.calcBoxHtml({ line: "M_total = Σ M_i，M_i = (W + KV + R + E) × (1 + h)", legend, sections });
 
     // warnings
     const warn = [];

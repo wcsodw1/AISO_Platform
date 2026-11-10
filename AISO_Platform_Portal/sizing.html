@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=11">
+  <link rel="stylesheet" href="sizing.css?v=12">
 </head>
 <body>
   <header class="site-header">
@@ -71,7 +71,7 @@
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
       <header><div><p class="section-label">STEP 2 · CALCULATION</p><h2>計算公式<span class="zh">代入上方參數後的算式與結果</span></h2></div>
         <div class="sz-result"><small>預估總 GPU 顯存需求</small><b id="szFTotal">—</b></div></header>
-      <ol id="szFormula" class="sz-flist"></ol>
+      <div id="szFormula" class="sz-calcbox"></div>
       <p class="sz-compose">組成：合計 <b id="szTotal">—</b> GB</p>
       <div id="szBars" class="sz-bars"></div>
       <dl id="szBreak" class="sz-break"></dl>
@@ -118,8 +118,7 @@
       <section class="report-section sz-formula" aria-live="polite">
         <header><div><p class="section-label">STEP 2 · CALCULATION</p><h2>計算方式<span class="zh">並行請求數、各模型顯存、合計；架構數字取自各模型公開的 config.json</span></h2></div>
           <div class="sz-result"><small>合計 GPU 顯存需求</small><b id="mzTotal">—</b></div></header>
-        <ol id="mzFormula" class="sz-flist"></ol>
-        <div id="mzCalc" class="mz-calc"></div>
+        <div id="mzFormula" class="sz-calcbox"></div>
         <p id="mzWarn" class="report-notice" hidden></p>
       </section>
 
@@ -148,7 +147,7 @@
       </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=5"></script>
-  <script src="sizing.js?v=2"></script>
-  <script src="sizing-multi.js?v=3"></script>
+  <script src="sizing-core.js?v=8"></script>
+  <script src="sizing.js?v=3"></script>
+  <script src="sizing-multi.js?v=4"></script>
 </body></html>
