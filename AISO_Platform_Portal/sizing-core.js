@@ -201,7 +201,8 @@
       .replace(/(^|[\s(×÷+=⌈,])(KV|[PbLDTChUARVuWE]|δ)(?=[\s)×÷+=⌉,]|$)/g, "$1<var>$2</var>");
   }
   const rowHtml = r => `<div class="sz-row${r.fin ? " fin" : ""}"><div class="sz-ck">${sci(r.k)}</div><div class="sz-cb">` +
-    (r.sym ? `<div class="sz-eq sym">= ${sci(r.sym)}</div>` : "") + `<div class="sz-eq">= ${escH(r.sub)}</div><div class="sz-eq out">= ${escH(typeof r.out === "number" ? memText(r.out) : r.out)}</div>` +
+    (r.fin ? `<div class="sz-eq sym">= ${sci(r.sym)} <span class="sz-num">= ${escH(r.sub)}</span></div>`
+           : (r.sym ? `<div class="sz-eq sym">= ${sci(r.sym)}</div>` : "") + `<div class="sz-eq">= ${escH(r.sub)}</div>`) + `<div class="sz-eq out">= ${escH(typeof r.out === "number" ? memText(r.out) : r.out)}</div>` +
     (r.note ? `<small>${escH(r.note)}</small>` : "") + `</div></div>`;
   const legendHtml = items => `<div class="sz-legend">${items.map(([sym, name, val]) => `<div class="sz-lg"><span class="sy">${sci(sym)}</span><span class="mn">${escH(name)}</span><b>${escH(val)}</b></div>`).join("")}</div>`;
   /* 💡 hint: the explanation lives in the bubble, not on the page */
@@ -212,12 +213,14 @@
   function calcBoxHtml(o) {
     const fin = o.sections.flatMap(sec => sec.rows).filter(r => r.fin);
     const detail = o.sections.map(sec => ({ ...sec, rows: sec.rows.filter(r => !r.fin) })).filter(sec => sec.rows.length);
-    return `<div class="sz-sci">${sci(o.line)}</div><div class="sz-rows sz-final">${fin.map(rowHtml).join("")}</div>` +
-      `<div class="sz-hn sz-hn-calc"><div class="sz-hn-tabs" role="tablist">${tabHtml("calc", "代入計算", "算式與代入數字")}${tabHtml("sym", "Parameter meaning", "參數意涵")}</div>` +
+    /* order: dropdown tabs on top (left = calculation, right = parameter meaning), then the always-visible result */
+    return `<div class="sz-hn sz-hn-calc"><div class="sz-hn-tabs" role="tablist">${tabHtml("calc", "計算方式", "算式與代入數字")}${tabHtml("sym", "Parameter meaning", "參數意涵")}</div>` +
       `<div class="sz-hn-panels"><div class="sz-hn-panel" data-p="calc"><div class="sz-rows">` +
       detail.map(sec => (sec.title ? `<div class="sz-sec">${escH(sec.title)}</div>` : "") + sec.rows.map(rowHtml).join("")).join("") +
-      `</div></div><div class="sz-hn-panel" data-p="sym">${legendHtml(o.legend)}</div></div></div>`;
+      `</div></div><div class="sz-hn-panel" data-p="sym">${legendHtml(o.legend)}</div></div></div>` +
+      `<div class="sz-rows sz-final">${fin.map(rowHtml).join("")}</div>`;
   }
+
   /* legend of the single-model formula with the current values */
   function legendFor(i, b) {
     return [

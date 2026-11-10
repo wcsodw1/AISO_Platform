@@ -97,8 +97,12 @@ const box = C.calcBoxHtml({ line: "M_required = M_weights + M_KV", legend: C.leg
 assert.strictEqual((box.match(/class="sz-row fin"/g) || []).length, 1, "one highlighted M_required row");
 assert.strictEqual((box.match(/class="sz-legend"/g) || []).length, 1, "all symbol meanings in one dropdown legend");
 assert.ok(box.indexOf('class="sz-hn-panel" data-p="sym"') < box.indexOf("模型總參數量"), "parameter meanings live inside the dropdown");
-assert.ok(box.indexOf("sz-final") < box.indexOf('class="sz-hn sz-hn-calc"'), "the highlighted result stays visible above the dropdowns");
-assert.ok(box.indexOf('class="sz-row fin"') < box.indexOf('class="sz-hn-panel" data-p="calc"'), "result row is not inside the substituted-calculation dropdown");
+assert.ok(box.indexOf('class="sz-hn sz-hn-calc"') < box.indexOf('class="sz-rows sz-final"'), "dropdown tabs come first, the highlighted result stays visible below");
+assert.ok(box.indexOf('data-p="calc"') < box.indexOf('data-p="sym"'), "left tab = calculation, right tab = parameter meaning");
+const finRow = box.slice(box.indexOf('class="sz-row fin"'));
+assert.strictEqual((finRow.match(/class="sz-eq sym"/g) || []).length, 1, "formula and substituted numbers share ONE line in the result row");
+assert.ok(/<div class="sz-eq sym">= .*<span class="sz-num">= 38\.5 \+ 214\.7 \+ 15\.0 \+ 40\.2<\/span><\/div>/.test(finRow), "same line holds formula then numbers");
+assert.ok(box.indexOf('class="sz-row fin"') > box.indexOf('class="sz-hn-panel" data-p="sym"'), "result row is not inside the dropdown panels");
 const detailPanel = box.slice(box.indexOf('class="sz-hn-panel" data-p="calc"'), box.indexOf('class="sz-hn-panel" data-p="sym"'));
 assert.ok(!detailPanel.includes("row fin") && detailPanel.includes("38.5 GB"), "detail dropdown holds the other rows only");
 assert.ok(C.tip("說明").includes("💡") && C.tip("<b>").includes("&lt;b&gt;"), "tip escapes text");

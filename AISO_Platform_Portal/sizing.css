@@ -312,3 +312,10 @@ h2 .hint{font-size:18px}
 .sz-note{font-size:15px}
 
 .sz-break dd small.kvsub{display:block;white-space:normal;margin:4px 0 0;font-size:14px;line-height:1.45;color:#bcc2ce}
+
+/* result row: formula and numbers on one line; tabs sit above */
+.sz-hn-calc{margin:0 0 14px!important}
+.sz-final{margin:0!important}
+.sz-row.fin .sz-eq.sym{font-size:19px;line-height:1.7;color:#d9e6f5}
+.sz-row.fin .sz-eq.sym .sz-num{margin-left:6px;font-family:ui-monospace,Menlo,monospace;font-size:17px;color:var(--ivory)}
+.sz-calcbox{padding-top:16px}
