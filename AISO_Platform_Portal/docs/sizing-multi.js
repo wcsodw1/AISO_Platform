@@ -97,10 +97,10 @@
 
     // GPU options
     const items = sel.map((x, i) => ({ name: x.m.name, total: budgets[i].total }));
-    const list = gpus.map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
-      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
+    const list = C.variants(gpus).map(gp => ({ gpu: gp, size: sizeAll(items, { ...gp, usablePct: g.usable }, g.pack, g.ha) }))
+      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.servers * a.gpu.perServer - b.size.servers * b.gpu.perServer || a.size.servers - b.size.servers || a.size.gpus - b.size.gpus || b.gpu.vram - a.gpu.vram);
     if (picked && !list.some(o => o.gpu.id === picked)) picked = null;
-    const UI = window.SizingUI, nm = o => `${o.gpu.vendor} ${o.gpu.model}`;
+    const UI = window.SizingUI, nm = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`;
     const its = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.servers, need: o.size.gpus, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("mzCasHost").innerHTML = C.pickMenuHtml(its, picked, "mz"); UI.keepShut($("mzCasHost"));
     $("mzJumpTxt").textContent = ` · ${nm(its[0])} · ${C.resEn(its[0].servers, C.physical(its[0]))}`;

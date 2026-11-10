@@ -137,3 +137,22 @@ assert.ok(menuHtml.includes('class="warn"'), "cross-node models are flagged");
 assert.strictEqual((menuHtml.match(/class="star"/g) || []).length, 1, "exactly one recommended model");
 assert.ok(C.GPUS.every(g => C.VENDORS.includes(g.vendor) && g.model && g.vram > 0 && g.perServer > 0), "catalog entries have vendor, model, vram, perServer");
 console.log("sizing-core: all assertions passed");
+
+/* ---- per-server GPU options (e.g. RTX PRO 6000 as a 2 / 4 / 8-GPU server) ---- */
+{
+  const vs = C.variants(C.GPUS);
+  const rtx = vs.filter(v => v.baseId === "rtxpro6000");
+  assert.deepStrictEqual(rtx.map(v => v.perServer), [2, 4, 8], "RTX PRO 6000 is offered as 2 / 4 / 8 GPUs per server");
+  assert.ok(rtx.every(v => v.id === "rtxpro6000@" + v.perServer), "variant id = model@gpusPerServer");
+  const ops = C.options(441.3, vs, 90, {});
+  const phys = o => o.size.withHA * o.gpu.perServer;
+  for (let i = 1; i < ops.length; i++) {
+    if (ops[i - 1].size.crossNode === ops[i].size.crossNode) assert.ok(phys(ops[i - 1]) <= phys(ops[i]), "ranked by fewest GPUs to buy");
+  }
+  const items = ops.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
+  const html = C.pickMenuHtml(items, null, "t");
+  assert.ok(/Choose a machine/.test(html), "nothing picked -> placeholder");
+  assert.ok(/class="sz-cas-cfgs"/.test(html) && /8 GPUs \/ server/.test(html) && /4 GPUs \/ server/.test(html), "models with several server sizes get a third level");
+  assert.ok(/data-id="rtxpro6000@4"/.test(html), "each server option is selectable");
+}
+console.log("sizing-core: per-server options passed");

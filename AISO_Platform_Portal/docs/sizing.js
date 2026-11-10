@@ -148,11 +148,11 @@
     $("szFTotal").textContent = C.memText(b.total);
     const inp = read();
     UI.setCalc($("szFormula"), C.calcBoxHtml({ line: "M_required = M_weights + M_KV + M_runtime + M_headroom", legend: C.legendFor(inp, b), sections: [{ rows: C.formula(inp, b) }] }));
-    const list = C.options(b.total, gpus, usablePct, opts);
+    const list = C.options(b.total, C.variants(gpus), usablePct, opts);
     if (picked && !list.some(o => o.gpu.id === picked)) picked = null;   // default: nothing chosen, the user picks a machine
     const items = list.map((o, i) => ({ gpu: o.gpu, servers: o.size.withHA, need: o.size.gpusMin, tp: o.size.gpusTP, cross: o.size.crossNode, best: i === 0 && !o.size.crossNode }));
     $("szCasHost").innerHTML = C.pickMenuHtml(items, picked, "sz"); UI.keepShut($("szCasHost"));
-    const label = o => `${o.gpu.vendor} ${o.gpu.model}`, bestI = items[0];
+    const label = o => `${o.gpu.vendor} ${o.gpu.model} · ${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"}/server`, bestI = items[0];
     $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
     const cur = list.find(o => o.gpu.id === picked);
     if (!cur) {

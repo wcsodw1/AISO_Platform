@@ -23,19 +23,19 @@
   /* GPU catalog. vram in GB, perServer = GPUs in one chassis (editable in UI).
      assumed:true → value is a planning assumption, confirm with real hardware. */
   const GPUS = [
-    { id: "rtxpro6000", vendor: "NVIDIA", model: "RTX PRO 6000", name: "NVIDIA RTX PRO 6000", vram: 96, perServer: 8 },
-    { id: "b300", vendor: "NVIDIA", model: "B300", name: "NVIDIA B300（HGX）", vram: 288, perServer: 8, assumed: true },
-    { id: "h200", vendor: "NVIDIA", model: "H200", name: "NVIDIA H200", vram: 141, perServer: 8 },
-    { id: "h100", vendor: "NVIDIA", model: "H100", name: "NVIDIA H100", vram: 80, perServer: 8 },
-    { id: "l40s", vendor: "NVIDIA", model: "L40S", name: "NVIDIA L40S", vram: 48, perServer: 8 },
-    { id: "b200", vendor: "NVIDIA", model: "B200", name: "NVIDIA B200（HGX）", vram: 180, perServer: 8, assumed: true },
-    { id: "b70", vendor: "Intel", model: "Arc Pro B70", name: "Intel Arc Pro B70（AISO 平台）", vram: 32, perServer: 2, basis: "依 TPI B70 測試機：2 張＝64 GB" },
-    { id: "b60", vendor: "Intel", model: "Arc Pro B60", name: "Intel Arc Pro B60（AISO 平台）", vram: 24, perServer: 4, basis: "依 TPI B60 測試機：4 張＝96 GB" },
-    { id: "gaudi3", vendor: "Intel", model: "Gaudi 3", name: "Intel Gaudi 3", vram: 128, perServer: 8, assumed: true },
-    { id: "aiso1", vendor: "AMD", model: "AISO1", name: "AMD AISO1（統一記憶體）", vram: 96, perServer: 1, assumed: true },
-    { id: "mi300x", vendor: "AMD", model: "Instinct MI300X", name: "AMD Instinct MI300X", vram: 192, perServer: 8 },
-    { id: "mi325x", vendor: "AMD", model: "Instinct MI325X", name: "AMD Instinct MI325X", vram: 256, perServer: 8, assumed: true },
-    { id: "mi355x", vendor: "AMD", model: "Instinct MI355X", name: "AMD Instinct MI355X", vram: 288, perServer: 8, assumed: true }
+    { id: "rtxpro6000", vendor: "NVIDIA", model: "RTX PRO 6000", name: "NVIDIA RTX PRO 6000", vram: 96, perServer: 8, configs: [2, 4, 8] },
+    { id: "b300", vendor: "NVIDIA", model: "B300", name: "NVIDIA B300（HGX）", vram: 288, perServer: 8, configs: [8], assumed: true },
+    { id: "h200", vendor: "NVIDIA", model: "H200", name: "NVIDIA H200", vram: 141, perServer: 8, configs: [4, 8] },
+    { id: "h100", vendor: "NVIDIA", model: "H100", name: "NVIDIA H100", vram: 80, perServer: 8, configs: [4, 8] },
+    { id: "l40s", vendor: "NVIDIA", model: "L40S", name: "NVIDIA L40S", vram: 48, perServer: 8, configs: [2, 4, 8] },
+    { id: "b200", vendor: "NVIDIA", model: "B200", name: "NVIDIA B200（HGX）", vram: 180, perServer: 8, configs: [8], assumed: true },
+    { id: "b70", vendor: "Intel", model: "Arc Pro B70", name: "Intel Arc Pro B70（AISO 平台）", vram: 32, perServer: 2, configs: [2, 4], basis: "依 TPI B70 測試機：2 張＝64 GB" },
+    { id: "b60", vendor: "Intel", model: "Arc Pro B60", name: "Intel Arc Pro B60（AISO 平台）", vram: 24, perServer: 4, configs: [2, 4], basis: "依 TPI B60 測試機：4 張＝96 GB" },
+    { id: "gaudi3", vendor: "Intel", model: "Gaudi 3", name: "Intel Gaudi 3", vram: 128, perServer: 8, configs: [8], assumed: true },
+    { id: "aiso1", vendor: "AMD", model: "AISO1", name: "AMD AISO1（統一記憶體）", vram: 96, perServer: 1, configs: [1], assumed: true },
+    { id: "mi300x", vendor: "AMD", model: "Instinct MI300X", name: "AMD Instinct MI300X", vram: 192, perServer: 8, configs: [8] },
+    { id: "mi325x", vendor: "AMD", model: "Instinct MI325X", name: "AMD Instinct MI325X", vram: 256, perServer: 8, configs: [8], assumed: true },
+    { id: "mi355x", vendor: "AMD", model: "Instinct MI355X", name: "AMD Instinct MI355X", vram: 288, perServer: 8, configs: [8], assumed: true }
   ];
   const VENDORS = ["NVIDIA", "AMD", "Intel"];
 
@@ -194,9 +194,17 @@
   }
 
   /* every GPU option sized and ranked: fewest servers first, then fewest GPUs; first = suggested */
+  /* one entry per (GPU model x GPUs-per-server option): e.g. RTX PRO 6000 as a 2-, 4- or 8-GPU server. id = "<model>@<k>" */
+  function variants(gpus) {
+    return gpus.flatMap(g => {
+      const ks = [...new Set([...(g.configs || []), g.perServer])].filter(k => k > 0).sort((a, b) => a - b);
+      return ks.map(k => ({ ...g, id: g.id + "@" + k, baseId: g.id, perServer: k, nCfg: ks.length }));
+    });
+  }
+  /* rank: single-node first, then fewest GPUs to buy (servers x GPUs per server), then fewest servers, then larger VRAM */
   function options(totalGB, gpus, usablePct, opts) {
     return gpus.map(g => ({ gpu: g, size: sizeFor(totalGB, g, usablePct, opts) }))
-      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
+      .sort((a, b) => (a.size.crossNode - b.size.crossNode) || (a.size.withHA * a.gpu.perServer - b.size.withHA * b.gpu.perServer) || a.size.withHA - b.size.withHA || a.size.gpusTP - b.size.gpusTP || b.gpu.vram - a.gpu.vram);
   }
 
   /* ---- calculation box (shared by single and multi-model views) ---- */
@@ -264,20 +272,31 @@
   const resEn = (servers, gpus) => `${servers} server${servers === 1 ? "" : "s"} · ${gpus} GPU${gpus === 1 ? "" : "s"}`;
   function pickMenuHtml(items, pickedId, ns) {
     const cur = items.find(o => o.gpu.id === pickedId) || null;   // nothing chosen yet -> placeholder prompt
+    const base = o => o.gpu.baseId || o.gpu.id;
     const fmtRes = o => resEn(o.servers, physical(o));
     const mark = o => (o.best ? '<em class="star">★</em>' : "") + (o.cross ? '<em class="warn">⚠</em>' : "");
-    return `<div class="sz-cas" id="${ns}Cas">` +
-      (cur ? `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></span>` +
-      `<small>${cur.best ? "★ Recommended · " : ""}Capacity needs ${cur.need} GPU${cur.need === 1 ? "" : "s"}${cur.tp && cur.tp !== cur.need ? ` (TP ${cur.tp})` : ""}${cur.cross ? " · ⚠ Cross-node" : ""}<span class="bz">${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>` : `<button type="button" class="sz-cas-main ask" aria-haspopup="true"><span class="cm-name">Choose a machine<span class="bz">選擇機型</span></span><span class="cm-res">Vendor ▸ Model</span><small>Hover to choose · ★ marks the recommendation<span class="bz">滑過選擇 · ★ 為建議機型</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>`) +
-      `<div class="sz-cas-menu"><ul class="sz-cas-vendors">` +
+    const flag = o => (o.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : "");
+    const per = o => `${o.gpu.perServer} GPU${o.gpu.perServer === 1 ? "" : "s"} / server`;
+    const main = cur ? `<button type="button" class="sz-cas-main" aria-haspopup="true"><span class="cm-name">${escH(cur.gpu.vendor)} · ${escH(cur.gpu.model)}</span><span class="cm-res">${fmtRes(cur)}<span class="bz">${cur.servers} 台 · ${physical(cur)} 張 GPU</span></span>` +
+      `<small>${per(cur)} · ${cur.best ? "★ Recommended · " : ""}Capacity needs ${cur.need} GPU${cur.need === 1 ? "" : "s"}${cur.tp && cur.tp !== cur.need ? ` (TP ${cur.tp})` : ""}${cur.cross ? " · ⚠ Cross-node" : ""}<span class="bz">每台 ${cur.gpu.perServer} 張 · ${cur.best ? "★ 建議 · " : ""}容量需要 ${cur.need} 張${cur.tp && cur.tp !== cur.need ? `（TP ${cur.tp}）` : ""}${cur.cross ? " · ⚠ 需跨節點" : ""}</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>`
+      : `<button type="button" class="sz-cas-main ask" aria-haspopup="true"><span class="cm-name">Choose a machine<span class="bz">選擇機型</span></span><span class="cm-res">Vendor ▸ Model ▸ Servers</span><small>Hover to choose · ★ marks the recommendation<span class="bz">滑過選擇 · ★ 為建議機型</span></small><span class="cm-arrow" aria-hidden="true">▸</span></button>`;
+    const btn = (o, inner) => `<button type="button" class="cm${cur && o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}">${inner}</button>`;
+    return `<div class="sz-cas" id="${ns}Cas">${main}<div class="sz-cas-menu"><ul class="sz-cas-vendors">` +
       VENDORS.map(v => {
         const list = items.filter(o => o.gpu.vendor === v);
         if (!list.length) return "";
+        const models = [...new Set(list.map(base))];
         return `<li class="${cur && v === cur.gpu.vendor ? "cur" : ""}"><span class="cv-name">${v}<i aria-hidden="true">▸</i></span><ul class="sz-cas-models">` +
-          list.map(o => `<li><button type="button" class="cm${cur && o.gpu.id === cur.gpu.id ? " on" : ""}${o.cross ? " cross" : ""}" data-id="${o.gpu.id}"><b>${escH(o.gpu.model)}</b><span>${fmtRes(o)}</span>${mark(o)}${o.gpu.assumed ? '<i class="sz-flag">Assumed 假設</i>' : ""}</button></li>`).join("") +
-          `</ul></li>`;
+          models.map(m => {
+            const opts = list.filter(o => base(o) === m);   // already ranked: first = best config for this model
+            const top = opts[0];
+            if (opts.length === 1) return `<li>${btn(top, `<b>${escH(top.gpu.model)}</b><span>${per(top)} · ${fmtRes(top)}</span>${mark(top)}${flag(top)}`)}</li>`;
+            const here = cur && base(cur) === m;
+            return `<li class="has-cfg${here ? " cur" : ""}"><span class="cm-group"><b>${escH(top.gpu.model)}</b><span>${opts.length} server options</span>${opts.some(o => o.best) ? '<em class="star">★</em>' : ""}${flag(top)}<i aria-hidden="true">▸</i></span>` +
+              `<ul class="sz-cas-cfgs">${opts.map(o => `<li>${btn(o, `<b>${per(o)}</b><span>${fmtRes(o)}</span>${mark(o)}`)}</li>`).join("")}</ul></li>`;
+          }).join("") + `</ul></li>`;
       }).join("") + `</ul></div></div>`;
   }
 
-  return { VENDORS, physical, resEn, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
+  return { VENDORS, physical, resEn, pickMenuHtml, tip, tabHtml, parseConfig, sci, calcBoxHtml, legendFor, MODELS, GPUS, num, weightsGB, kvBytesPerToken, kvGB, concurrentFromUsers, budget, sizeFor, pow2Up, memText, formula, gpuFormula, options, variants, kvPerRequestGB, QUANTS, VIS_MODELS, weightsOf, mtpOf, modelBudget, splitConcurrency, place };
 });
