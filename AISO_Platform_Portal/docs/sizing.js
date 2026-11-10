@@ -53,8 +53,7 @@
     layers: $("szLayers"), kvHeads: $("szKvHeads"), headDim: $("szHeadDim"), note: $("szModelNote"),
     kvBits: $("szKvBits"), context: $("szContext"), conc: $("szConc"),
     users: $("szUsers"), active: $("szActive"), inflight: $("szInflight"), estConc: $("szEstConc"), apply: $("szApplyConc"),
-    runtime: $("szRuntime"), headroom: $("szHeadroom"), usable: $("szUsable"),
-    reqTps: $("szReqTps"), srvTps: $("szSrvTps"), ha: $("szHA"), custom: $("szCustomBox"), cfg: $("szCfg"), cfgMsg: $("szCfgMsg")
+    runtime: $("szRuntime"), headroom: $("szHeadroom"), usable: $("szUsable"), custom: $("szCustomBox"), cfg: $("szCfg"), cfgMsg: $("szCfgMsg")
   };
 
   el.model.innerHTML = C.MODELS.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join("");
@@ -113,16 +112,18 @@
     /* the four cards are the four terms of M_required — same symbols as the result row, % = term ÷ M_required */
     const parts = [["M_weights", "Weights|模型權重", b.weights, "w"], ["M_KV", "KV cache|KV 快取", b.kv, "k"], ["M_runtime", "Runtime|執行時", b.runtime, "r"], ["M_headroom", "Headroom|安全餘裕", b.headroom, "h"]].sort((x, y) => y[2] - x[2]);   // largest share first
     const perReq = b.kvPerTokenKiB * 1024 * inp.context / 1e9;
-    /* one request's KV is 1/C of the M_KV segment — drawn as a striped slice inside it (it is part of M_KV, not an extra term) */
-    const slice = c => c === "k" && inp.concurrent > 0 ? `<b class="sz-reqslice" style="width:${(100 / inp.concurrent).toFixed(3)}%" title="KV per request 每請求 KV ${fmt(perReq, 1)} GB = M_KV ÷ C（M_KV 的 1/${inp.concurrent}）"></b>` : "";
-    $("szBars").innerHTML = parts.map(([sym, n, v, c]) => `<i class="sz-seg ${c}" style="flex:${Math.max(v, 0.0001)}" title="${sym} ${n.replace("|", " ")} ${fmt(v)} GB">${slice(c)}</i>`).join("");
-    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n.split("|")[0]}<span class="bz">${n.split("|")[1]}</span></small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
-      `<div><dt><i class="sz-dot kr"></i>KV per request<span class="bz">每請求 KV</span>${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(perReq, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
+    /* the bar is sorted largest to smallest; one request's KV (part of M_KV, = M_KV / C) is drawn as its own striped piece so the order stays by size */
+    const hasSlice = inp.concurrent > 1 && perReq > 0 && perReq < b.kv;
+    const segs = parts.map(([sym, n, v, c]) => ({ v: c === "k" && hasSlice ? v - perReq : v, c, t: `${sym} ${n.replace("|", " ")} ${fmt(v)} GB${c === "k" && hasSlice ? `（含右側斜紋：每請求 ${fmt(perReq, 1)} GB）` : ""}` }));
+    if (hasSlice) segs.push({ v: perReq, c: "kr", t: `KV per request 每請求 KV ${fmt(perReq, 1)} GB = M_KV ÷ C（M_KV 的 1/${inp.concurrent}）` });
+    segs.sort((x, y) => y.v - x.v);
+    $("szBars").innerHTML = segs.map(g => `<i class="sz-seg ${g.c}" style="flex:${Math.max(g.v, 0.0001)}" title="${g.t}"></i>`).join("");
+    $("szBreak").innerHTML = parts.map(([sym, n, v, c]) => `<div class="cc-${c}"><dt><i class="sz-dot ${c}"></i>${C.sci(sym)}<small class="dtn">${n.split("|")[0]}<span class="bz">${n.split("|")[1]}</span></small></dt><dd>${fmt(v)} GB<small>${b.total ? fmt(v / b.total * 100, 0) : 0}%</small></dd></div>`).join("") +
+      `<div class="cc-kr"><dt><i class="sz-dot kr"></i>KV per request<span class="bz">每請求 KV</span>${C.tip("M_KV 的拆解：每個 token 在每一層都要存 K 和 V，單看每 token 的數字很小；乘上 Context 才是每個請求的實際佔用，再乘上同時請求數 C 就是 M_KV。實際執行時分頁與碎片會再多一些，由「安全餘裕」吸收。")}</dt><dd>${fmt(perReq, 1)} GB<small class="kvsub">= ${C.sci("M_KV")} ÷ ${C.sci("C")} = ${fmt(b.kv)} ÷ ${inp.concurrent}<br>${fmt(b.kvPerTokenKiB, 0)} KiB/token × ${fmt(inp.context / 1024, 0)}K tokens</small></dd></div>`;
   }
   function renderRows(b, usablePct) {
-    const reqTps = C.num(el.reqTps.value, 0), srvTps = C.num(el.srvTps.value, 0), ha = el.ha.checked;
     $("szRows").innerHTML = C.refRowsHtml(gpus, g => {
-      const s = C.sizeFor(b.total, g, usablePct, { requiredTps: reqTps, perServerTps: srvTps, ha });
+      const s = C.sizeFor(b.total, g, usablePct, {});
       return { html: `Needs <b>${s.gpusMin}</b> GPU${s.gpusMin === 1 ? "" : "s"} · TP <b>${s.gpusTP}</b> → <b>${C.resEn(s.withHA, s.withHA * g.perServer)}</b>${s.serversByTps > s.serversByMem ? " · 吞吐量決定台數" : ""}` };
     }, true);
   }
@@ -148,23 +149,11 @@
     const g = cur.gpu, s = cur.size, gf = C.gpuFormula(b.total, g, usablePct, s), ci = items.find(o => o.gpu.id === picked);
     /* visible: one result line (+ one warning when a cross-node TP would be needed) */
     $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)} → <b>${esc(label(ci))} × ${C.resEn(s.withHA, C.physical(ci))}</b><span class="bz">${s.withHA} 台 · ${C.physical(ci)} 張 GPU</span></p>` +
-      `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}${$("szHA").checked ? "；含 +1 備援" : ""}</p>`;
+      `<p class="sz-sub">容量需要 ${s.gpusMin} 張，TP ${s.gpusTP} 張；每卡 ${g.vram} GB、每台 ${g.perServer} 張${s.serversByTps > s.serversByMem ? "；台數由吞吐量決定" : ""}</p>`;
     $("szPickCalc").innerHTML = `<p class="sz-gl"><b>${esc(g.name)}</b>　每卡 ${g.vram} GB、每台 ${g.perServer} 張</p>` +
       `<p class="sz-sym">${C.sci(gf.sym)} ${C.tip(`V：每卡 VRAM（${g.vram} GB）；u：每卡可規劃容量比例（${usablePct}%）；⌈ ⌉ 表示無條件進位。`)}</p><p class="sz-sub">= ${esc(gf.sub)}</p><p class="sz-sub">${esc(gf.tp)}</p>`;
   }
-  /* The tabs carry a one-line summary so collapsed settings are never forgotten */
-  const BITS = { 16: "BF16", 8: "FP8", 4: "4-bit" };
-  function syncSummaries() {
-    const m = C.MODELS.find(x => x.id === el.model.value), inp = read();
-    const complete = inp.params > 0 && inp.layers > 0 && inp.kvHeads > 0 && inp.headDim > 0;
-    $("szReqSum").textContent = complete ? `${m && m.id !== "custom" ? m.name : "Custom model"} · ${BITS[inp.weightBits] || inp.weightBits + "-bit"} · ${Math.round(inp.context / 1024)}K · ${inp.concurrent} concurrent` : "Enter model parameters 待輸入模型參數";
-    $("szReqTab").classList.toggle("warn", !complete);
-    const set = !!(String(el.reqTps.value).trim() || String(el.srvTps.value).trim() || el.ha.checked);
-    $("szOptTab").classList.toggle("set", set);
-    $("szCurtainHint").textContent = set ? "✓ Set 已設定" : "Not set 未設定";
-  }
   function render() {
-    syncSummaries();
     const inp = read();
     const usablePct = Math.min(100, Math.max(50, C.num(el.usable.value, 90)));
     el.estConc.textContent = C.concurrentFromUsers(C.num(el.users.value, 1), C.num(el.active.value, 0), C.num(el.inflight.value, 0));
@@ -173,7 +162,7 @@
     $("szTotal").textContent = fmt(b.total);
     renderBars(b, inp);
     renderRows(b, usablePct);
-    renderFormula(b, usablePct, { requiredTps: C.num(el.reqTps.value, 0), perServerTps: C.num(el.srvTps.value, 0), ha: el.ha.checked });
+    renderFormula(b, usablePct, {});
     const warn = $("szWarn"), msgs = [];
     if (!inp.params || !inp.layers || !inp.kvHeads || !inp.headDim) msgs.push("模型參數、層數、KV Heads、Head Dimension 需大於 0。");
     if (inp.runtimeGB <= 0) msgs.push("Runtime overhead 為 0 不實際：CUDA context、activation、推論框架一定會佔顯存（建議至少 5 GB，單一大模型通常 10～15 GB）。");

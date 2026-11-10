@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=49">
+  <link rel="stylesheet" href="sizing.css?v=53">
 </head>
 <body>
   <header class="site-header">
@@ -30,10 +30,7 @@
     <div id="szSingle">
     <section class="report-section sz-inputs" id="szInputs" aria-label="參數">
       <header><div><p class="section-label">STEP 1</p><h2>Select parameters<span class="bz">參數選擇</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">客戶需求：改這裡，下方的計算公式與建議配置會即時連動。必填與選填各自收在下拉，滑鼠移到標籤即展開。</span></span></h2></div></header>
-      <div class="sz-hn sz-hn-params" id="szParamsHn">
-        <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="szReqTab"><b>Required<span class="bz">必填參數</span></b><small id="szReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="szOptTab"><b>Optional<span class="bz">選填參數</span></b><small id="szCurtainHint">Not set 未設定</small><span class="car" aria-hidden="true">▾</span></button></div>
-        <div class="sz-hn-panels">
-          <div class="sz-hn-panel" data-p="req"><div class="sz-in-grid">
+      <div class="sz-params"><div class="sz-in-grid">
             <fieldset><legend>① Model<span class="bz">模型</span></legend>
               <label><span class="lbl">Model preset<span class="bz">模型預設</span></span><select autocomplete="off" id="szModel"></select></label>
               <label><span class="lbl">Total parameters (B)<span class="bz">總參數量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">MoE 請填全部專家的總數，不是 active 參數。</span></span></span><input autocomplete="off" id="szParams" type="number" min="1" step="1"></label>
@@ -67,13 +64,6 @@
               <label><span class="lbl">Usable capacity per GPU (%)<span class="bz">每卡可規劃容量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="szUsable" type="number" min="50" max="100" step="1" value="90"></label>
             </fieldset>
           </div></div>
-          <div class="sz-hn-panel" data-p="opt"><div class="sz-opt-grid">
-            <label><span class="lbl">Required total tokens/sec<span class="bz">需要的總輸出 tokens/sec</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">留空＝只算容量。</span></span></span><input autocomplete="off" id="szReqTps" type="number" min="0" step="100" placeholder="留空＝只算容量"></label>
-            <label><span class="lbl">Measured aggregate tokens/sec per server<span class="bz">每台實測 aggregate tokens/sec</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">取自 Benchmark，同模型同 Context。</span></span></span><input autocomplete="off" id="szSrvTps" type="number" min="0" step="100" placeholder="取自 Benchmark"></label>
-            <label class="sz-check"><input autocomplete="off" id="szHA" type="checkbox"> <span class="lbl">HA required (+1 server)<span class="bz">需要 HA（+1 台備援）</span></span></label>
-          </div></div>
-        </div>
-      </div>
     </section>
 
     <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
@@ -132,11 +122,7 @@
     <div id="szMulti" hidden>
       <section class="report-section sz-inputs" aria-label="參數">
         <header><div><p class="section-label">STEP 1</p><h2>Select parameters<span class="bz">參數選擇</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">人數、規劃條件與三個模型的量化／Context／流量比例；改這裡，下方計算與建議配置即時連動。</span></span></h2></div></header>
-        <div class="sz-hn sz-hn-params" id="mzParamsHn">
-          <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="req" aria-expanded="false" id="mzReqTab"><b>Required<span class="bz">必填參數</span></b><small id="mzReqSum">—</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="opt" aria-expanded="false" id="mzOptTab"><b>Optional<span class="bz">選填參數</span></b><small id="mzOptSum">Default 預設</small><span class="car" aria-hidden="true">▾</span></button></div>
-          <div class="sz-hn-panels">
-            <div class="sz-hn-panel" data-p="req">
-              <div class="mz-global">
+        <div class="sz-params"><div class="mz-global">
                 <label><span class="lbl">Total users<span class="bz">總使用人數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">VIS 先以 1000 人估算。</span></span></span><input autocomplete="off" id="mzUsers" type="number" min="1" value="1000"></label>
                 <label><span class="lbl">Peak active users (%)<span class="bz">尖峰活躍比例</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">尖峰時段正在使用 AI 的人數比例。</span></span></span><input autocomplete="off" id="mzActive" type="number" min="1" max="100" value="40"></label>
                 <label><span class="lbl">Active users waiting (%)<span class="bz">活躍者等待回應</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">活躍使用者當下正在等模型回應的比例。</span></span></span><input autocomplete="off" id="mzInflight" type="number" min="1" max="100" value="25"></label>
@@ -145,14 +131,7 @@
                 <label><span class="lbl">Usable capacity per GPU (%)<span class="bz">每卡可規劃容量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="mzUsable" type="number" min="50" max="100" value="90"></label>
                 <label><span class="lbl">KV cache precision<span class="bz">KV Cache 精度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="mzKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
               </div>
-              <div id="mzModels" class="mz-models"></div>
-            </div>
-            <div class="sz-hn-panel" data-p="opt"><div class="sz-opt-grid">
-              <label><span class="lbl">Allocation<span class="bz">配置方式</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">共用打包：不同模型的分片共用同一張 GPU，最省卡但維運較複雜；各模型獨立：每個模型有專屬 GPU，好維運。</span></span></span><select autocomplete="off" id="mzPack"><option value="1">Shared packing · 共用打包（最省 GPU）</option><option value="0">Per-model · 各模型獨立（好維運）</option></select></label>
-              <label class="sz-check"><input autocomplete="off" id="mzHA" type="checkbox"> <span class="lbl">HA required (+1 server)<span class="bz">需要 HA（+1 台備援）</span></span></label>
-            </div></div>
-          </div>
-        </div>
+              <div id="mzModels" class="mz-models"></div></div>
       </section>
 
       <section class="report-section sz-formula" aria-live="polite">
@@ -210,7 +189,7 @@
     </section>
     </div>
   </main>
-  <script src="sizing-core.js?v=29"></script>
-  <script src="sizing.js?v=26"></script>
-  <script src="sizing-multi.js?v=18"></script>
+  <script src="sizing-core.js?v=30"></script>
+  <script src="sizing.js?v=29"></script>
+  <script src="sizing-multi.js?v=20"></script>
 </body></html>

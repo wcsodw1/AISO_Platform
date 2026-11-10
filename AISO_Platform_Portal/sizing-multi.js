@@ -39,7 +39,7 @@
     return { users: C.num($("mzUsers").value, 1000), active: C.num($("mzActive").value, 40), inflight: C.num($("mzInflight").value, 25),
       runtimeGB: Math.max(0, C.num($("mzRuntime").value, 5)), headroomPct: Math.max(0, C.num($("mzHeadroom").value, 15)),
       usable: Math.min(100, Math.max(50, C.num($("mzUsable").value, 90))), kvBits: C.num($("mzKvBits").value, 16),
-      pack: $("mzPack").value === "1", ha: $("mzHA").checked };
+      pack: true, ha: false };
   }
   function readModel(m) {
     const c = card(m.id);
@@ -53,17 +53,10 @@
   }
 
   let picked = null, browse = {}, refState = {};
-  function syncSummaries(g, sel) {
-    $("mzReqSum").textContent = sel.length ? `${f1(g.users, 0)} users · ${sel.length} models · ${sel.map(x => (Q[x.cfg.quant] || x.cfg.quant)).join("/")}` : "No model selected 未選模型";
-    $("mzReqTab").classList.toggle("warn", !sel.length);
-    $("mzOptSum").textContent = `${g.pack ? "Shared packing" : "Per-model"}${g.ha ? " · HA" : ""}`;
-    $("mzOptTab").classList.toggle("set", g.ha);
-  }
   function render() {
     if ($("szMulti").hidden) return;
     const g = readGlobal(), conc = C.concurrentFromUsers(g.users, g.active, g.inflight);
     const sel = C.VIS_MODELS.map(m => ({ m, cfg: readModel(m) })).filter(x => x.cfg.on);
-    syncSummaries(g, sel);
     const shares = sel.map(x => x.cfg.share), split = C.splitConcurrency(conc, shares.some(v => v > 0) ? shares : shares.map(() => 1));
     const budgets = sel.map((x, i) => C.modelBudget(x.m, { ...x.cfg, concurrent: split[i], runtimeGB: g.runtimeGB, headroomPct: g.headroomPct, kvBits: g.kvBits }));
     const total = budgets.reduce((a, b) => a + b.total, 0);
