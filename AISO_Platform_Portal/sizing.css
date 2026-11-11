@@ -497,3 +497,4 @@ main .sz-break>div{border:0;border-right:1px solid rgba(244,239,228,.12);border-
 .sz-ref-wrap{position:relative;flex:1;min-height:420px}
 .sz-ref-wrap .sz-ref{position:absolute;inset:0;max-height:none}
 @media(max-width:1180px){.sz-ref-wrap{min-height:0}.sz-ref-wrap .sz-ref{position:static;max-height:640px}}
+.sz-s3-more{grid-column:1/-1}.sz-s3-more .sz-more{margin-top:0}
