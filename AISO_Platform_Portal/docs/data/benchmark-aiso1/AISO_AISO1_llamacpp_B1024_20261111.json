@@ -2,10 +2,10 @@
  "dataset": "AISO_AISO1_llamacpp_B1024_20261111",
  "evidence_until": "2026-11-11",
  "generated_on": "2026-11-11",
- "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）截至 2026-11-11 08:54 的 Runner 快照：18 組完整條件已有 Aggregate TPS（Gemma26 / Gemma31，NP1/2/4）；Laguna、Nemotron 與 NP5 尚在執行或暫緩。Runner 仍在執行，數據會再增加。只有 Aggregate，TTFT／TPOT 尚缺，不估算。",
+ "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）：31 / 48 條件完整（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 20261111_115737；Runner 仍在執行，Laguna、Nemotron 與 NP5 尚未全部完成。",
  "comparability": {
   "level": "retest_unverified",
-  "text": "這批為 batch 1024 統一參數（Ubatch 512、Context／Slot 18432、KV F16、Flash Attention OFF）的進行中快照，PASS 由 waves.csv 與終端紀錄統計，完整 Raw 驗證與模型來源稽核尚待確認。數值明顯低於 2026-11-09 重測（例如 Gemma26 NP1 4K 25.7 vs 51.0、Gemma31 NP1 4K 5.38 vs 9.34），原因未查明（可能是機器負載、降頻或記憶體壓力，不只是 batch）；Gemma31 NP4 被標為 very slow／outlier，Gemma26 NP4 8K（5.86）低於 16K（7.50）不單調，皆保留原值。"
+  "text": "Partial data; not equivalent to V4；驗證：CSV/raw/repeat/basic KPI checks; provenance pending。參數：Batch 1024 / Ubatch 512 / Context 18432 每 slot / KV f16 / Flash Attention off。數值明顯低於 2026-11-09 重測，原因未查明（Gemma31 NP4 在原 log 標為 very slow／outlier，保留原值）。"
  },
  "profile": {
   "machine": "AISO1 AMD (Radeon 8060S · RADV GFX1151 · Vulkan0 97 GiB)",
@@ -28,7 +28,7 @@
   "ubatch": 512,
   "per_slot_context": 18432,
   "kv_cache_type": "f16",
-  "flash_attention": "OFF"
+  "flash_attention": "off"
  },
  "aiso1_runs": [
   {
@@ -36,12 +36,13 @@
    "format": "GGUF Q4_0",
    "np": 1,
    "input": 4096,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 6.789,
+   "tpot_ms": 32.323,
    "aggregate_tps": 25.694,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
@@ -49,12 +50,13 @@
    "format": "GGUF Q4_0",
    "np": 1,
    "input": 8192,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 11.855,
+   "tpot_ms": 54.211,
    "aggregate_tps": 15.213,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
@@ -62,12 +64,13 @@
    "format": "GGUF Q4_0",
    "np": 1,
    "input": 16384,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 24.737,
+   "tpot_ms": 69.88,
    "aggregate_tps": 10.642,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
@@ -75,12 +78,13 @@
    "format": "GGUF Q4_0",
    "np": 2,
    "input": 4096,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 17.991,
+   "tpot_ms": 122.034,
    "aggregate_tps": 14.328,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
@@ -88,12 +92,13 @@
    "format": "GGUF Q4_0",
    "np": 2,
    "input": 8192,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 31.208,
+   "tpot_ms": 137.855,
    "aggregate_tps": 11.872,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
@@ -101,12 +106,13 @@
    "format": "GGUF Q4_0",
    "np": 2,
    "input": 16384,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 55.849,
+   "tpot_ms": 164.506,
    "aggregate_tps": 9.125,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
@@ -114,223 +120,373 @@
    "format": "GGUF Q4_0",
    "np": 4,
    "input": 4096,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 598.385,
+   "tpot_ms": 382.906,
    "aggregate_tps": 9.396,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
   },
   {
    "model": "Gemma26",
    "format": "GGUF Q4_0",
    "np": 4,
    "input": 8192,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 986.755,
+   "tpot_ms": 551.052,
    "aggregate_tps": 5.86,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
   },
   {
    "model": "Gemma26",
    "format": "GGUF Q4_0",
    "np": 4,
    "input": 16384,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 217.123,
+   "tpot_ms": 357.507,
    "aggregate_tps": 7.499,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 5,
+   "input": 4096,
+   "ttft_s": 1144.296,
+   "tpot_ms": 787.754,
+   "aggregate_tps": 8.679,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 29.67,
+   "tpot_ms": 157.065,
+   "aggregate_tps": 5.38,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "original",
+   "valid_repeats": 3,
    "ttft_over_180s": false
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 1,
-   "input": 4096,
-   "ttft_s": null,
-   "tpot_ms": null,
-   "aggregate_tps": 5.38,
-   "decode_tps": null,
-   "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "repeats_aggregate_tps": [
-    5.38,
-    5.38,
-    5.379
-   ]
-  },
-  {
-   "model": "Gemma31",
-   "format": "GGUF Q4_0",
-   "np": 1,
    "input": 8192,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 53.717,
+   "tpot_ms": 277.025,
    "aggregate_tps": 3.038,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "repeats_aggregate_tps": [
-    3.023,
-    3.05,
-    3.039
-   ]
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 1,
    "input": 16384,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 111.404,
+   "tpot_ms": 306.986,
    "aggregate_tps": 2.407,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "repeats_aggregate_tps": [
-    2.411,
-    2.413,
-    2.397
-   ]
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 2,
    "input": 4096,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 78.408,
+   "tpot_ms": 459.444,
    "aggregate_tps": 3.753,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "repeats_aggregate_tps": [
-    3.553,
-    3.533,
-    4.174
-   ]
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 2,
    "input": 8192,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 129.565,
+   "tpot_ms": 538.908,
    "aggregate_tps": 3.009,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "repeats_aggregate_tps": [
-    3.208,
-    2.884,
-    2.936
-   ]
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 2,
    "input": 16384,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 260.378,
+   "tpot_ms": 643.455,
    "aggregate_tps": 2.224,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "repeats_aggregate_tps": [
-    2.266,
-    2.203,
-    2.202
-   ]
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 4,
    "input": 4096,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 2608.488,
+   "tpot_ms": 1473.734,
    "aggregate_tps": 2.346,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "consistency_note": "Very slow/outlier; preserve original values"
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 4,
    "input": 8192,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 3225.455,
+   "tpot_ms": 1696.464,
    "aggregate_tps": 1.743,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "consistency_note": "Very slow/outlier; preserve original values"
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
   },
   {
    "model": "Gemma31",
    "format": "GGUF Q4_0",
    "np": 4,
    "input": 16384,
-   "ttft_s": null,
-   "tpot_ms": null,
+   "ttft_s": 3099.33,
+   "tpot_ms": 2459.928,
    "aggregate_tps": 1.074,
    "decode_tps": null,
    "status": "PASS",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
-   "ttft_over_180s": false,
-   "consistency_note": "Very slow/outlier; preserve original values"
+   "campaign": "original",
+   "valid_repeats": 3,
+   "ttft_over_180s": true
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 7.293,
+   "tpot_ms": 26.865,
+   "aggregate_tps": 29.446,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 15.366,
+   "tpot_ms": 32.777,
+   "aggregate_tps": 20.942,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 34.244,
+   "tpot_ms": 42.371,
+   "aggregate_tps": 13.198,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 16.523,
+   "tpot_ms": 79.87,
+   "aggregate_tps": 20.836,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 37.195,
+   "tpot_ms": 104.122,
+   "aggregate_tps": 14.247,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 83.709,
+   "tpot_ms": 159.103,
+   "aggregate_tps": 8.302,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": 2.691,
+   "tpot_ms": 17.804,
+   "aggregate_tps": 49.0,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": 5.734,
+   "tpot_ms": 18.952,
+   "aggregate_tps": 40.766,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": 12.737,
+   "tpot_ms": 20.97,
+   "aggregate_tps": 29.951,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": 5.753,
+   "tpot_ms": 29.753,
+   "aggregate_tps": 56.538,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": 12.626,
+   "tpot_ms": 36.885,
+   "aggregate_tps": 40.628,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": 39.758,
+   "tpot_ms": 56.54,
+   "aggregate_tps": 20.966,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "fastlane",
+   "valid_repeats": 3,
+   "ttft_over_180s": false
   }
  ],
  "partial_runs": [
   {
    "model": "Gemma26",
    "np": 5,
-   "input": 4096,
-   "repeats_pass": 3,
-   "status": "PASS_REPORTED",
-   "reason": "PASS exists in campaign, but Aggregate metric not in pasted log"
-  },
-  {
-   "model": "Gemma26",
-   "np": 5,
    "input": 8192,
-   "repeats_pass": 1,
-   "status": "DEFERRED_PARTIAL_PASS",
-   "reason": "PASS exists in campaign, but Aggregate metric not in pasted log; user approved deferred"
+   "valid_repeats": 1,
+   "status": "DEFERRED"
   },
   {
    "model": "Gemma26",
    "np": 5,
    "input": 16384,
-   "repeats_pass": 0,
-   "status": "DEFERRED",
-   "reason": "user approved deferred"
+   "valid_repeats": 0,
+   "status": "DEFERRED"
   },
   {
    "model": "Gemma31",
    "np": 5,
    "input": 4096,
-   "repeats_pass": 1,
-   "status": "PARTIAL_PASS_REPORTED",
-   "reason": "尚無完整 Aggregate"
+   "valid_repeats": 2,
+   "status": "PARTIAL_PASS"
   }
  ],
  "not_run": [
@@ -342,12 +498,12 @@
   {
    "model": "Laguna",
    "reason": "待測（Runner 執行中）",
-   "conditions": 12
+   "conditions": 6
   },
   {
    "model": "Nemotron",
    "reason": "待測（Runner 執行中）",
-   "conditions": 12
+   "conditions": 6
   }
  ],
  "config_by_model": {
@@ -358,10 +514,10 @@
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
-   "max_seqs": null,
+   "max_seqs": 10,
    "mem_fraction": null,
-   "cache": "KV f16 · Flash Attention OFF",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "cache": "KV f16 · Flash Attention off",
+   "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
    "date": "2026-11-10 ~ 11"
   },
   "Gemma31": {
@@ -371,10 +527,10 @@
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
-   "max_seqs": null,
+   "max_seqs": 10,
    "mem_fraction": null,
-   "cache": "KV f16 · Flash Attention OFF",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "cache": "KV f16 · Flash Attention off",
+   "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
    "date": "2026-11-10 ~ 11"
   },
   "Laguna": {
@@ -384,25 +540,47 @@
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
-   "max_seqs": null,
+   "max_seqs": 10,
    "mem_fraction": null,
-   "cache": "KV f16 · Flash Attention OFF",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "cache": "KV f16 · Flash Attention off",
+   "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
    "date": "2026-11-10 ~ 11"
   },
   "Nemotron": {
    "repo": null,
-   "format": "GGUF Q4_K_M",
+   "format": "GGUF UD-Q4_K_M",
    "backend": "llama.cpp（版本未核實）",
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
-   "max_seqs": null,
+   "max_seqs": 10,
    "mem_fraction": null,
-   "cache": "KV f16 · Flash Attention OFF",
-   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "cache": "KV f16 · Flash Attention off",
+   "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
    "date": "2026-11-10 ~ 11"
   }
  },
- "source_file": "AISO1_B1024_Platform_Snapshot_20261111_0854.csv（Runner B1024_20261110_094603_759433）"
+ "source_file": "AISO1 handoff 20261111_115737: aiso1_platform_cases.csv, aiso1_manifest.json",
+ "provenance": {
+  "handoff_stamp": "20261111_115737",
+  "zip_sha256": {
+   "AISO1_Runner_Manifest_Handoff_20261111_113859.zip": "736dc5324da59e5331e1a503b8cbe8c1a9cb29c6248789f8682ea7643303b507",
+   "AISO1_Runner_Manifest_Handoff_20261111_114341.zip": "a8f6bd5581266c507eb3d180b5f31d23f905259bba8947fc1304bb37d5e15224",
+   "AISO1_Runner_Manifest_Handoff_20261111_114347.zip": "5f80d9f7ba48123cbb85d16d9346d7c38318c396dcef6599c01e575b51f8df3d",
+   "AISO1_Runner_Manifest_Handoff_20261111_115737.zip": "b44342e6d20fe497c3e5c9d5b608e3d254bc38f5a3f6c0954d6886310b7fae7e"
+  },
+  "runner_sha256": {
+   "AISO1_B1024.py": "fb6d5944960d95cddcbdea052f5a2e3f94ef2744d6bb9c9f9b8c67017cd7391f",
+   "AISO1_B1024_remaining.py": "06899df428d3880aa1bfc21259dda8e78a5ffe6ddddf031b466f2bfd59cda56a",
+   "AISO1_B1024_fastlane.py": "440f6842c0652dade7fee84a7079e48cb33bc84004517a97fcea6eb04b34401b",
+   "checkpoint_manifest.py": "83776a2abc06133f2509e0bee2e37c042c4c93bdc4dc994abe35c9e1bef4571c",
+   "checkpoint_keeper.py": "446268f30c38ef25c2eab0af5d980522a081c2c2d1dd1155a5821bb63c35920b",
+   "AISO1_B1024_resume_20min.py": "7209ebfa0353b69bd9118295de65dfb681ae56ac6843fb2d23884ddd48446d3a",
+   "preflight.json": "a8251d8fcb7f438b9244f30d482ae5833157d8d8937382d1a1402aefd55ea109",
+   "campaign.json": "f347603f48c6321c80922242b51048ec602049683632e400425eb5ef3342a967",
+   "campaign_fastlane_np12.json": "b98b2b859d8e46a0eef9063bc74623241d1d0399ea6bfdfed7026fcd0fbbac1d"
+  },
+  "cases_csv_sha256": "6b6c4fbab2b865d69cfc9467e0dd8a92ec66e8e7ce11f0b807b025c3e6500fee",
+  "manifest_sha256": "bb04006d609d0b7debfd5ce84fe51b5206a2604dbb7e668f7e118aba3d19b94e"
+ }
 }

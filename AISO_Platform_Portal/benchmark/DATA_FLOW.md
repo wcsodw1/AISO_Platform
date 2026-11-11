@@ -29,4 +29,19 @@ Rules
 4. Only L3/L4 content is committed. L0/L1 stay under `Buffer/` (and the machines' own archives).
 5. Intel B60/B70 hosts are being retired: the archive above is the only copy of their runner/manifest evidence.
 
+Worked example — AISO1 (2026-11-11)
+```
+AISO1 host  ~/aiso1_benchmark/platform_handoff/   (made by aiso1_handoff_packager.py)
+  └─ scp -r  ─────────────►  L0  Buffer/Benchmark/AISO1_evidence/AISO1_Platform_Handoff_20261111/   (read-only, SHA256SUMS.txt)
+                               ├─ aiso1_platform_cases.csv   public KPI rows (48, status PASS/PENDING/…)
+                               ├─ aiso1_manifest.json        L1 public manifest (workload, counts, validation)
+                               ├─ runner_sha256_manifest.json  runner file hashes
+                               ├─ aiso1_private_cases.csv + *.zip   private (server paths, runners) — never published
+                               ▼  scripts/ingest_aiso1_handoff.py   validate (48 rows, PASS == complete_cases, no KPI gap)
+                          L2/L3  data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json  (+ provenance: zip/cases/manifest SHA256)
+                                 data/terminal/aiso1.json            (manifest + runner hashes for the Terminal tabs)
+                                 data/benchmark-registry.json        (machine × framework → file)
+                          L4    make export → docs/  → GitHub Pages
+```
+
 Current gaps: B60 runner binding (vLLM, llama.cpp) unverified; B70 runner file and its manifest not yet imported to L3; AISO1 runner/manifest pending; B70 and AISO1 llama.cpp have Aggregate only (no TTFT/TPOT).
