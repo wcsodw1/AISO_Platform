@@ -1,0 +1,16 @@
+{
+  "title": "待 RD list",
+  "note": "From David's task sheet (screenshot, 2026-11-11). Titles and dates only: the description column was cut off in the screenshot, so nothing is invented here.",
+  "items": [
+    {"added": "2026-11-01", "task": "Benchmark Dashboard"},
+    {"added": "2026-11-01", "task": "多框架測試"},
+    {"added": "2026-11-01", "task": "LMCache Research and Develop"},
+    {"added": "2026-11-01", "task": "Agent 判斷機制"},
+    {"added": "2026-11-01", "task": "Research：Kyojin"},
+    {"added": "2026-11-01", "task": "Ray Serve"},
+    {"added": "2026-11-01", "task": "EAGLE-4"},
+    {"added": "2026-11-01", "task": "ORCA"},
+    {"added": "2026-11-01", "task": "TUF Gaming LMCache"},
+    {"added": "2026-11-05", "task": "B300 大模型驗測"}
+  ]
+}

@@ -8,6 +8,16 @@
     box.dataset.open = p || "";
     tabsOf(box).forEach(t => { const on = t.dataset.p === p; t.classList.toggle("on", on); t.setAttribute("aria-expanded", on); });
     panelsOf(box).forEach(x => x.classList.toggle("on", x.dataset.p === p));
+    if (p) revealPanel(box, p);
+  }
+  /* A panel that opens below the visible area looks like it "dropped away": bring it into view (never push the tab under the header). */
+  function revealPanel(box, p) {
+    const el = panelsOf(box).find(x => x.dataset.p === p), tab = tabsOf(box).find(t => t.dataset.p === p);
+    if (!el) return;
+    setTimeout(() => {
+      const r = el.getBoundingClientRect(), tr = tab ? tab.getBoundingClientRect() : r, over = r.bottom - (innerHeight - 24), room = tr.top - 96;
+      if (over > 0 && room > 0) window.scrollBy({ top: Math.min(over, room), behavior: "smooth" });
+    }, 40);
   }
   const keep = box => { const a = document.activeElement; return !!(a && box.contains(a) && a.matches("input,select,textarea")); };
   const boxOf = el => el.closest && el.closest(".sz-hn");

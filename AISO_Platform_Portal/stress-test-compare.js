@@ -52,7 +52,7 @@ function renderMetrics(){
  const av=`<p class="v2-fine cmp-av">${availability()}</p>`+(nom.length?`<p class="v2-fine cmp-pending">${esc(nom.join("、"))}：TTFT／TPOT 待原始 summary.csv，目前只有 TPS（Aggregate／Normalized）；圖中以「—」表示。</p>`:"");
  if(!have.length){$s("stMetrics").innerHTML=av+'<p class="v2-fine st-empty">此框架、模型、NP 三台機器都還沒有資料。</p>';return}
  $s("stMetrics").innerHTML=av+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grpNow(),series:REG.machines.map(m=>({key:m.key,label:m.label,color:m.color})),get:(mk,g)=>{const r=get(mk,FW,MODEL,NP,g.i);return r&&Number.isFinite(r[k])?r:null},
-  baseline:have.length>1?base:null,summaryNote:(k==="tpot_ms"&&FW==="llamacpp")?"B70 的 TPOT 為 server 端計時，定義與其他機器不同":"",width:w,context:`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}`,
+  baseline:have.length>1?base:null,summaryNote:(k==="tpot_ms"&&FW==="llamacpp")?["B70 TPOT is server-side timing, not the same definition","B70 的 TPOT 為 server 端計時，定義與其他機器不同"]:null,width:w,context:`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}`,
   message:have.length>1?"":`目前只有 ${have[0].label} 有「${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}」的資料，另外的機器登錄後會自動並排並計算差異`,
   tableNote:have.length>1?`差異以 ${baseLabel} 為基準；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二台機器可比較"})).join("");
 }
@@ -69,15 +69,18 @@ function renderCover(){
  const rows=REG.frameworks.flatMap(f=>REG.models.map((m,i)=>`<tr>${i===0?`<td rowspan="${REG.models.length}" class="st-model">${esc(f.label)}</td>`:""}<td title="${esc(mtitle(f.key,m.key))}">${esc(mlabel(f.key,m.key))}</td>${REG.machines.map(x=>`<td>${desc(x.key,f.key,m.key)}</td>`).join("")}</tr>`)).join("");
  $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th>${REG.machines.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
+const bi=(en,zh)=>zh?`${en}<small class="zhs">${zh}</small>`:en;
+const lab=l=>{const [en,zh]=String(l).split("|");return bi(esc(en),esc(zh||""))};      // "English|中文" -> English large, Chinese small beside it
+const dispVal=v=>v==="未記錄"?bi("Not recorded","未記錄"):(v==="UNVERIFIED"||v==="未核實"?bi("Unverified","未核實"):esc(v));
 function paramTable(){
- const L={llamacpp:{batch:"Batch size 批次 (--batch-size)",ubatch:"Ubatch 微批次 (--ubatch-size)",per_slot_context:"Context / slot 每槽上下文",slots:"Parallel slots 槽數",split:"Split mode 切分模式"},
-  vllm:{batch:"Max batched tokens（≠ llama.cpp Batch）",per_slot_context:"Max model len 模型長度",slots:"Max sequences 序列數",split:"Tensor Parallel"},
-  sglang:{batch:"Chunked prefill（≠ llama.cpp Batch）",per_slot_context:"Context / model len",slots:"Max running requests",split:"Tensor Parallel"}}[FW]||{};
+ const L={llamacpp:{batch:"Batch size (--batch-size)|批次",ubatch:"Ubatch (--ubatch-size)|微批次",per_slot_context:"Context / slot|每槽上下文",slots:"Parallel slots|槽數",split:"Split mode|切分模式"},
+  vllm:{batch:"Max batched tokens (≠ llama.cpp batch)|最大批次 token",per_slot_context:"Max model len|模型長度",slots:"Max sequences|序列數",split:"Tensor parallel|張量並行"},
+  sglang:{batch:"Chunked prefill (≠ llama.cpp batch)|分塊預填",per_slot_context:"Context / model len|上下文長度",slots:"Max running requests|最大並行請求",split:"Tensor parallel|張量並行"}}[FW]||{};
  const lc=FW==="llamacpp";
- const rows=[[L.batch||"Batch","batch"],lc&&[L.ubatch,"ubatch"],[L.per_slot_context||"Context","per_slot_context"],[L.slots||"Slots","slots"],lc&&["總 Context（NP"+NP+"）","total_kv"],["KV cache 型別","kv_cache_type"],["Prefix cache 前綴快取","prefix_cache"],lc&&["Flash Attention","flash_attention"],[L.split||"Split","split"],lc&&["Unified KV","unified_kv"],lc&&["Continuous batching","cont_batching"],lc&&["Context shift","context_shift"],lc&&["GPU layers (-ngl)","gpu_layers"],["GPU memory 使用率","memory_fraction"],FW==="vllm"&&["Chunked prefill","chunked_prefill"],["Attention backend","attention_backend"],["Page size","page_size"],["使用 GPU 數","gpus_used"],["GPU 型號佐證","gpu_evidence"],["Runtime 版本","runtime"]].filter(Boolean);
+ const rows=[[L.batch||"Batch|批次","batch"],lc&&[L.ubatch,"ubatch"],[L.per_slot_context||"Context|上下文","per_slot_context"],[L.slots||"Slots|槽數","slots"],lc&&["Total context (NP"+NP+")|總 Context","total_kv"],["KV cache type|KV cache 型別","kv_cache_type"],["Prefix cache|前綴快取","prefix_cache"],lc&&["Flash Attention|","flash_attention"],[L.split||"Split|切分","split"],lc&&["Unified KV|","unified_kv"],lc&&["Continuous batching|連續批次","cont_batching"],lc&&["Context shift|","context_shift"],lc&&["GPU layers (-ngl)|","gpu_layers"],["GPU memory utilization|GPU 記憶體使用率","memory_fraction"],FW==="vllm"&&["Chunked prefill|","chunked_prefill"],["Attention backend|","attention_backend"],["Page size|","page_size"],["GPUs used|使用 GPU 數","gpus_used"],["GPU evidence|型號佐證","gpu_evidence"],["Runtime|版本","runtime"]].filter(Boolean);
  const ALT={batch:"batch",per_slot_context:"max_context",slots:"max_seqs",split:"tp"};
- const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});if(p.gpus_used==null){const g=typeof p.tp==='number'?p.tp:p.gpu_count;if(g!=null)p.gpus_used=g}
- if(typeof p.batch==='string'){const n=p.batch.match(/\d+/);if(n)p.batch=n[0]}return p};
+ const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;if(p.gpus_used==null){const g=typeof p.tp==='number'?p.tp:p.gpu_count;if(g!=null)p.gpus_used=g}Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});
+  if(typeof p.batch==='string'){const n=p.batch.match(/\d+/);if(n)p.batch=n[0]}return p};
  const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
  const bad=v=>v==="未記錄"||v==="—"||v==="UNVERIFIED";
  const present=vs=>vs.filter(v=>v!=="—");
@@ -86,22 +89,22 @@ function paramTable(){
  const same=[],diff=[];
  shown.forEach(([l,vs])=>{const pr=present(vs),known=pr.filter(v=>!bad(v));(pr.length>=2&&known.length===pr.length&&new Set(known).size===1?same:diff).push([l,vs,known])});
  const th=REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("");
- const dRows=diff.map(([l,vs,known])=>{const st=new Set(known).size>1?"設定不同":"未核實";return `<tr><th>${l}</th>${vs.map(v=>`<td${bad(v)?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>⚠ ${st}</td></tr>`}).join("");
- const sRows=same.map(([l,vs,known])=>`<div><dt>${l}</dt><dd>${esc(known[0])}</dd></div>`).join("");
- const title=OTHER?"其餘框架測試":"主要比對";
- const lead=OTHER?`<p class="pt-lead warn">⚠ ${esc(fwLabel(FW))} 各機參數不同，<b>不可當成同條件比較</b>，僅供參考。</p>`:`<p class="pt-lead">${REG.machines.length===2?"兩機":"三機"}比對必須使用<b>相同參數</b>。下列是完全一致的設定；不同或未核實的項目在頁面最下方。</p>`;
-if(!OTHER){const mk=REG.machines.map(m=>m.label.replace(/^Intel /,"").replace(/ AMD$/,""));
-  const uRows=diff.map(([l,vs])=>`<div class="pt-u"><dt>${l}</dt><dd>${vs.map((v,n)=>`<span class="${bad(v)?"pt-unk":""}"><i>${esc(mk[n])}</i> ${esc(v==="UNVERIFIED"?"未核實":v)}</span>`).join("")}</dd></div>`).join("");
-  const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>未匹配參數<span class="zh">Unmatched · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · 各機設定不同或未核實的項目（不屬於上方「相同參數」）。</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
-  return `<h3 class="pt-h">${REG.machines.length===2?"兩機":"三機"}相同參數 <small>Identical · ${esc(fwLabel(FW))} · ${same.length} 項</small></h3><div class="pt-same pt-only">${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div>`}
+ const dRows=diff.map(([l,vs,known])=>{const st=new Set(known).size>1?bi("Different","設定不同"):bi("Unverified","未核實");return `<tr><th>${lab(l)}</th>${vs.map(v=>`<td${bad(v)?' class="pt-unk"':""}>${dispVal(v)}</td>`).join("")}<td>⚠ ${st}</td></tr>`}).join("");
+ const sRows=same.map(([l,vs,known])=>`<div><dt>${lab(l)}</dt><dd>${esc(known[0])}</dd></div>`).join("");
+ const nM=REG.machines.length===2?bi("Two machines","兩機"):bi("Three machines","三機");
+ const lead=OTHER?`<p class="pt-lead warn">⚠ ${esc(fwLabel(FW))}: ${bi("parameters differ, do not compare as equal conditions","各機參數不同，不可當成同條件比較")}</p>`:"";
+ if(!OTHER){const mk=REG.machines.map(m=>m.label.replace(/^Intel /,"").replace(/ AMD$/,""));
+  const uRows=diff.map(([l,vs])=>`<div class="pt-u"><dt>${lab(l)}</dt><dd>${vs.map((v,n)=>`<span class="${bad(v)?"pt-unk":""}"><i>${esc(mk[n])}</i> ${dispVal(v)}</span>`).join("")}</dd></div>`).join("");
+  const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>Unmatched parameters<span class="zh">未匹配參數 · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · ${bi("Differing or unverified settings (not in the identical list above)","各機設定不同或未核實的項目")}</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
+  return `<h3 class="pt-h">Identical parameters<small class="zhs">${REG.machines.length===2?"兩機":"三機"}相同參數 · ${esc(fwLabel(FW))} · ${same.length}</small></h3><div class="pt-same pt-only">${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("No parameter is identical across the machines","目前沒有各機一致的參數")}</p>`}</div>`}
  {const um=$s("secUnmatched");if(um){um.hidden=true;um.innerHTML=""}}
-  return `<h3 class="pt-h">${title}：各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ 相同參數 <small>Identical · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div><div class="pt-diffbox"><h4>⚠ 不同／未核實 <small>Different / Unverified · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數</th>${th}<th>判定</th></tr></thead><tbody>${dRows}</tbody></table></div>`:'<p class="pt-none">無</p>'}</div></div>`;
+  return `<h3 class="pt-h">Other frameworks: machine parameters<small class="zhs">其餘框架測試 · ${esc(fwLabel(FW))}</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ Identical<small class="zhs">相同 · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("None","沒有")}</p>`}</div><div class="pt-diffbox"><h4>⚠ Different / unverified<small class="zhs">不同／未核實 · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>${bi("Parameter","參數")}</th>${th}<th>${bi("Verdict","判定")}</th></tr></thead><tbody>${dRows}</tbody></table></div>`:`<p class="pt-none">${bi("None","無")}</p>`}</div></div>`;
 }
 function renderSetup(){
- const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
+ const r=(k,v)=>`<div><dt>${lab(k)}</dt><dd>${v}</dd></div>`;
  const rng=(m,k)=>{const v=[...new Set(REG.frameworks.flatMap(f=>runsOf(m,f.key)).map(x=>x[k]))].sort((a,b)=>a-b);return v.length?v.join("/"):"待核"};
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>測試參數<span>Key Parameters</span></h2>
- <dl class="v2-params">${r("Output 輸出","1,024 tokens")}${r("Repeat 重複","3 次取平均")}${r("Input 輸入","4K / 8K / 16K")}${r("NP 並發","1 / 2 / 4 / 5")}</dl>
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>Key parameters<span>測試參數</span></h2>
+ <dl class="v2-params">${r("Output|輸出","1,024 tokens")}${r("Repeat|重複",bi("3 runs, averaged","3 次取平均"))}${r("Input|輸入","4K / 8K / 16K")}${r("NP (concurrency)|並發","1 / 2 / 4 / 5")}</dl>
  ${paramTable()}</section>`;
 }
 function renderConfig(){
@@ -172,12 +175,12 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
  renderPairs();renderGap();renderCover();renderAll();
  (function(){   // one collapsible "Detail" panel with tabs; the five detail sections live inside it
-  const parts=[["secRepeat","Repeat 穩定度"],["secTable","完整數值"],["secCfg","設定差異"],["secCover","資料覆蓋"],["secUnmatched","未匹配參數"]].filter(([id])=>$s(id));
+  const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Unmatched","未匹配參數"]].filter(([id])=>$s(id));
   const first=$s(parts[0][0]),det=document.createElement("section");det.className="report-section sec-detail hv-fold hv-closed";det.id="secDetail";
-  det.innerHTML='<header><h2>Detail<span class="zh">細節 · Repeat 穩定度 · 完整數值 · 設定差異 · 資料覆蓋 · 未匹配參數</span></h2></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
+  det.innerHTML='<header><h2>Detail<span class="zh">細節</span></h2></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
   first.parentNode.insertBefore(det,first);
   const tabs=det.querySelector(".dt-tabs"),body=det.querySelector(".dt-body");
-  parts.forEach(([id,label],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.textContent=label;b.onclick=()=>pick(id);tabs.appendChild(b)});
+  parts.forEach(([id,label,zh],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.innerHTML=label+'<small class="zhs">'+zh+"</small>";b.onclick=()=>pick(id);tabs.appendChild(b)});
   function pick(id){tabs.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.id===id));parts.forEach(([i])=>$s(i).classList.toggle("dt-off",i!==id));if(id==="secRepeat")renderRepeats()}
   HoverFold.bind(det);det.addEventListener("hvopen",()=>renderRepeats());
   pick(parts[0][0]);

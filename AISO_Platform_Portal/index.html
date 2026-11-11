@@ -9,13 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.32.6"><link rel="stylesheet" href="site-header.css?v=1.28.2">
+  <link rel="stylesheet" href="style.css?v=1.32.9"><link rel="stylesheet" href="site-header.css?v=1.28.3">
 </head>
 <body class="brand-site">
   <div class="galaxy-bg" aria-hidden="true"><div class="galaxy-stars galaxy-stars-far"></div><div class="galaxy-stars galaxy-stars-near"></div><div class="galaxy-disc"></div><div class="galaxy-dust"></div><div class="galaxy-glow"></div></div>
   <header class="topbar">
     <a id="homeBrandLink" class="brand" href="./" aria-label="AISO 首頁"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="主要導覽"><div id="homeMenu" class="nav-menu"><button id="homeLink" data-site-nav="home" type="button" aria-haspopup="true" aria-expanded="false">Home<span class="caret" aria-hidden="true"></span></button><div class="nav-dropdown" role="menu" aria-label="Home sections"><button data-home-target="overview" role="menuitem" type="button">Overview<small>Platform summary</small></button><button id="capabilitiesLink" role="menuitem" type="button">Applications<small>AI agents on verified hardware</small></button><button id="productsLink" role="menuitem" type="button">Products<small>Systems by tier</small></button></div></div><button id="benchmarkLink" data-site-nav="benchmark" type="button">Benchmark</button><button id="sizingLink" type="button">Sizing</button><button id="guideLink" data-site-nav="guide" type="button">Consulting</button><button id="aboutLink" data-site-nav="about" type="button">Contact</button></nav>
+    <nav class="site-nav" aria-label="主要導覽"><div id="homeMenu" class="nav-menu"><button id="homeLink" data-site-nav="home" type="button" aria-haspopup="true" aria-expanded="false">Home<span class="caret" aria-hidden="true"></span></button><div class="nav-dropdown" role="menu" aria-label="Home sections"><button data-home-target="overview" role="menuitem" type="button">Overview<small>Platform summary</small></button><button id="capabilitiesLink" role="menuitem" type="button">Applications<small>AI agents on verified hardware</small></button><button id="productsLink" role="menuitem" type="button">Products<small>Systems by tier</small></button></div></div><button id="benchmarkLink" data-site-nav="benchmark" type="button">Benchmark</button><button id="sizingLink" type="button">Sizing</button><button id="guideLink" data-site-nav="guide" type="button">Consulting</button><button id="aboutLink" data-site-nav="about" type="button" hidden style="display:none">Contact</button></nav>
     <div class="top-actions"><label class="search-box"><span aria-hidden="true">⌕</span><input id="globalSearch" type="search" placeholder="Search systems, models and resources"></label><span id="modeBadge" class="mode-badge">Loading</span><a id="manageLink" class="button secondary hidden" href="manage.html">Manage</a></div>
   </header>
 
@@ -78,10 +78,11 @@
     <section id="searchView" class="hidden"><button class="back-button" data-back="search">← Close search</button><div class="section-heading search-heading"><div><p class="eyebrow">SEARCH</p><h2>SEARCH RESULTS</h2><p class="search-title-zh">搜尋結果</p></div></div><div id="searchResults" class="search-results"></div></section>
   </main>
 
-  <footer class="site-footer"><div class="footer-brand"><strong>AISO</strong><p>Local AI systems, verified for real work.</p></div><nav aria-label="頁尾導覽"><button data-footer-route="capabilities" type="button">Applications</button><button data-footer-route="products" type="button">Products</button><button data-footer-route="benchmark" type="button">Benchmark</button><button data-footer-route="models" type="button">Models</button><button data-footer-route="resources" type="button">Documents</button><button data-footer-route="contact" type="button">Contact</button></nav><div class="footer-meta"><span id="updatedAt"></span><span>AISO Official Product &amp; Technical Resource Portal</span></div><p class="footer-wordmark" aria-hidden="true">JUST AI IT.</p></footer>
+  <footer class="site-footer"><div class="footer-brand"><strong>AISO</strong><p>Local AI systems, verified for real work.</p></div><nav aria-label="頁尾導覽"><button data-footer-route="capabilities" type="button">Applications</button><button data-footer-route="products" type="button">Products</button><button data-footer-route="benchmark" type="button">Benchmark</button><button data-footer-route="models" type="button">Models</button><button data-footer-route="resources" type="button">Documents</button><button data-footer-route="contact" type="button" hidden style="display:none">Contact</button></nav><div class="footer-meta"><span id="updatedAt"></span><span>AISO Official Product &amp; Technical Resource Portal</span></div><p class="footer-wordmark" aria-hidden="true">JUST AI IT.</p></footer>
   <template id="emptyTemplate"><div class="empty-state">No data available.</div></template>
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
-  <script src="app.js?v=1.32.7"></script>
+  <script src="app.js?v=1.32e.7"></script>
+<script src="ui-min-type.js?v=1" defer></script>
 </body>
 </html>

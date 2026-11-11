@@ -11,6 +11,7 @@ const num=(value,digits=2)=>typeof value==="number"?value.toFixed(digits):"—";
 async function request(path,options={}){
   const headers={...(options.headers||{})};
   if(state.token)headers.Authorization=`Bearer ${state.token}`;
+  if(window.RunGate&&RunGate.needs(options.method,path))headers["X-Run-Ticket"]=await RunGate.ticket();   // every Run asks for the test password first
   const response=await fetch(path,{...options,headers});
   if(!response.ok){let data={};try{data=await response.json()}catch{}throw new Error(data.error||`HTTP ${response.status}`)}
   return response;
