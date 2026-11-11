@@ -364,3 +364,9 @@
 .bhub-proof>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:6px 0 30px}.bhub-proof article{padding:20px 22px;border:1px solid rgba(244,239,228,.14);border-radius:16px;background:rgba(5,8,14,.45)}
 .bhub-proof span{display:block;font-size:17px;color:var(--gold);letter-spacing:.12em;margin-bottom:6px}.bhub-proof b{display:block;font-size:22px;color:var(--ivory)}.bhub-proof small{display:block;margin-top:6px;font-size:17px;color:var(--muted)}
 .bhub-h{margin-top:6px}
+
+/* Stress Test: View Result button to the right of the title */
+.st-title-row{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}.st-title-row h1{margin:0}
+.st-view{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-items:center;column-gap:18px;padding:14px 22px;border:1px solid var(--gold);border-radius:16px;background:rgba(200,184,117,.12);color:var(--ivory);text-decoration:none}
+.st-view b{grid-column:1;font-size:26px}.st-view b small{font-size:18px;margin-left:10px;opacity:.75;font-weight:600}.st-view em{grid-column:1;font-style:normal;font-size:17px;color:var(--muted)}
+.st-view i{grid-column:2;grid-row:1/3;font-style:normal;font-size:32px;color:var(--gold)}.st-view:hover{background:rgba(200,184,117,.24)}
