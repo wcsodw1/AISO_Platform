@@ -1,0 +1,408 @@
+{
+ "dataset": "AISO_AISO1_llamacpp_B1024_20261111",
+ "evidence_until": "2026-11-11",
+ "generated_on": "2026-11-11",
+ "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）截至 2026-11-11 08:54 的 Runner 快照：18 組完整條件已有 Aggregate TPS（Gemma26 / Gemma31，NP1/2/4）；Laguna、Nemotron 與 NP5 尚在執行或暫緩。Runner 仍在執行，數據會再增加。只有 Aggregate，TTFT／TPOT 尚缺，不估算。",
+ "comparability": {
+  "level": "retest_unverified",
+  "text": "這批為 batch 1024 統一參數（Ubatch 512、Context／Slot 18432、KV F16、Flash Attention OFF）的進行中快照，PASS 由 waves.csv 與終端紀錄統計，完整 Raw 驗證與模型來源稽核尚待確認。數值明顯低於 2026-11-09 重測（例如 Gemma26 NP1 4K 25.7 vs 51.0、Gemma31 NP1 4K 5.38 vs 9.34），原因未查明（可能是機器負載、降頻或記憶體壓力，不只是 batch）；Gemma31 NP4 被標為 very slow／outlier，Gemma26 NP4 8K（5.86）低於 16K（7.50）不單調，皆保留原值。"
+ },
+ "profile": {
+  "machine": "AISO1 AMD (Radeon 8060S · RADV GFX1151 · Vulkan0 97 GiB)",
+  "framework": "llama.cpp",
+  "np": [
+   1,
+   2,
+   4,
+   5
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": 1024,
+  "repeat": 3,
+  "runtime": "UNVERIFIED",
+  "batch": 1024,
+  "ubatch": 512,
+  "per_slot_context": 18432,
+  "kv_cache_type": "f16",
+  "flash_attention": "OFF"
+ },
+ "aiso1_runs": [
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 25.694,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 15.213,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 10.642,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 14.328,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 11.872,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 9.125,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 9.396,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 5.86,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 7.499,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 4096,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 5.38,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "repeats_aggregate_tps": [
+    5.38,
+    5.38,
+    5.379
+   ]
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 8192,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 3.038,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "repeats_aggregate_tps": [
+    3.023,
+    3.05,
+    3.039
+   ]
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 1,
+   "input": 16384,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 2.407,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "repeats_aggregate_tps": [
+    2.411,
+    2.413,
+    2.397
+   ]
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 2,
+   "input": 4096,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 3.753,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "repeats_aggregate_tps": [
+    3.553,
+    3.533,
+    4.174
+   ]
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 2,
+   "input": 8192,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 3.009,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "repeats_aggregate_tps": [
+    3.208,
+    2.884,
+    2.936
+   ]
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 2,
+   "input": 16384,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 2.224,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "repeats_aggregate_tps": [
+    2.266,
+    2.203,
+    2.202
+   ]
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 2.346,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "consistency_note": "Very slow/outlier; preserve original values"
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 1.743,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "consistency_note": "Very slow/outlier; preserve original values"
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": 1.074,
+   "decode_tps": null,
+   "status": "PASS",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "ttft_over_180s": false,
+   "consistency_note": "Very slow/outlier; preserve original values"
+  }
+ ],
+ "partial_runs": [
+  {
+   "model": "Gemma26",
+   "np": 5,
+   "input": 4096,
+   "repeats_pass": 3,
+   "status": "PASS_REPORTED",
+   "reason": "PASS exists in campaign, but Aggregate metric not in pasted log"
+  },
+  {
+   "model": "Gemma26",
+   "np": 5,
+   "input": 8192,
+   "repeats_pass": 1,
+   "status": "DEFERRED_PARTIAL_PASS",
+   "reason": "PASS exists in campaign, but Aggregate metric not in pasted log; user approved deferred"
+  },
+  {
+   "model": "Gemma26",
+   "np": 5,
+   "input": 16384,
+   "repeats_pass": 0,
+   "status": "DEFERRED",
+   "reason": "user approved deferred"
+  },
+  {
+   "model": "Gemma31",
+   "np": 5,
+   "input": 4096,
+   "repeats_pass": 1,
+   "status": "PARTIAL_PASS_REPORTED",
+   "reason": "尚無完整 Aggregate"
+  }
+ ],
+ "not_run": [
+  {
+   "model": "Gemma31",
+   "reason": "待測（Runner 執行中）",
+   "conditions": 2
+  },
+  {
+   "model": "Laguna",
+   "reason": "待測（Runner 執行中）",
+   "conditions": 12
+  },
+  {
+   "model": "Nemotron",
+   "reason": "待測（Runner 執行中）",
+   "conditions": 12
+  }
+ ],
+ "config_by_model": {
+  "Gemma26": {
+   "repo": null,
+   "format": "GGUF Q4_0",
+   "backend": "llama.cpp（版本未核實）",
+   "tp": null,
+   "max_context": "18432 / slot",
+   "batch": "batch 1024 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "KV f16 · Flash Attention OFF",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "date": "2026-11-10 ~ 11"
+  },
+  "Gemma31": {
+   "repo": null,
+   "format": "GGUF Q4_0",
+   "backend": "llama.cpp（版本未核實）",
+   "tp": null,
+   "max_context": "18432 / slot",
+   "batch": "batch 1024 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "KV f16 · Flash Attention OFF",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "date": "2026-11-10 ~ 11"
+  },
+  "Laguna": {
+   "repo": null,
+   "format": "GGUF Q4_K_M",
+   "backend": "llama.cpp（版本未核實）",
+   "tp": null,
+   "max_context": "18432 / slot",
+   "batch": "batch 1024 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "KV f16 · Flash Attention OFF",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "date": "2026-11-10 ~ 11"
+  },
+  "Nemotron": {
+   "repo": null,
+   "format": "GGUF Q4_K_M",
+   "backend": "llama.cpp（版本未核實）",
+   "tp": null,
+   "max_context": "18432 / slot",
+   "batch": "batch 1024 / ubatch 512",
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "KV f16 · Flash Attention OFF",
+   "run_id": "AISO1_llamacpp_B1024_20261110_094603_759433",
+   "date": "2026-11-10 ~ 11"
+  }
+ },
+ "source_file": "AISO1_B1024_Platform_Snapshot_20261111_0854.csv（Runner B1024_20261110_094603_759433）"
+}
