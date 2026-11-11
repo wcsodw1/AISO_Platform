@@ -102,5 +102,26 @@ window.AisoTerm=(function(){
   const sel=root.querySelector(".tm-pick select");if(sel)sel.onchange=()=>{machine=sel.value;load()};
   load().then(()=>initLive(P('live')));
  }
- return {mount};
+
+ /* Corner flyout: the terminal sits behind a tab at the top-right; hover (or click to pin) opens it like an envelope, from the corner toward the bottom-left. */
+ function flyout(root){
+  if(root.dataset.fly)return;root.dataset.fly="1";
+  const sec=root.closest("section");if(sec&&sec.id==="secTerminal")sec.style.display="none";
+  const wrap=document.createElement("div");wrap.className="tm-fly";
+  wrap.innerHTML=`<button type="button" class="tm-fly-tab" aria-expanded="false" aria-controls="tmFlyPanel"><span aria-hidden="true">&gt;_</span> Terminal<span class="bz">終端機</span></button>
+   <div class="tm-fly-panel" id="tmFlyPanel" role="dialog" aria-label="Terminal"><button type="button" class="tm-fly-x" aria-label="Close">✕</button></div>`;
+  wrap.querySelector(".tm-fly-panel").appendChild(root);
+  document.body.appendChild(wrap);
+  const tab=wrap.querySelector(".tm-fly-tab");let pinned=false,timer=null;
+  const set=o=>{wrap.classList.toggle("open",o);tab.setAttribute("aria-expanded",String(o))};
+  const open=()=>{clearTimeout(timer);set(true)};
+  const close=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(!pinned&&!wrap.contains(document.activeElement))set(false)},350)};
+  wrap.addEventListener("mouseenter",open);wrap.addEventListener("mouseleave",close);
+  tab.addEventListener("click",()=>{pinned=!pinned||!wrap.classList.contains("open");pinned?open():set(false);wrap.classList.toggle("pinned",pinned)});
+  wrap.querySelector(".tm-fly-panel").addEventListener("pointerdown",()=>{pinned=true;wrap.classList.add("pinned")});
+  wrap.querySelector(".tm-fly-x").onclick=()=>{pinned=false;wrap.classList.remove("pinned");set(false)};
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){pinned=false;wrap.classList.remove("pinned");set(false)}});
+ }
+ const _mount=mount;
+ return {mount:(root,opt)=>{_mount(root,opt);if(!opt||opt.flyout!==false)flyout(root)}};
 })();
