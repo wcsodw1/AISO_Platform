@@ -167,8 +167,9 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  // default: a combination all three machines share, else two, else the first one with any data, else the first one with any data
  const combos=[...REG.frameworks].sort((a,b)=>(b.key==='llamacpp')-(a.key==='llamacpp')).flatMap(f=>REG.models.flatMap(m=>npsAll().map(n=>[f.key,m.key,n])));
  const cnt=([f,m,n])=>REG.machines.filter(x=>runsOf(x.key,f).some(r=>r.model===m&&r.np===n)).length;
- const best=combos.find(c=>cnt(c)>=REG.machines.length)||combos.find(c=>cnt(c)>=2)||combos.find(c=>cnt(c)>=1)||combos[0];
- [FW,MODEL,NP]=best;
+ const full=([f,m,n])=>REG.machines.every(x=>{const rs=runsOf(x.key,f).filter(r=>r.model===m&&r.np===n);return [4096,8192,16384].every(i=>rs.some(r=>r.input===i&&Number.isFinite(r.ttft_s)&&Number.isFinite(r.tpot_ms)&&Number.isFinite(r.aggregate_tps)))});   // all machines, all inputs, TTFT + TPOT + TPS present
+ const best=combos.find(full)||combos.find(c=>cnt(c)>=REG.machines.length)||combos.find(c=>cnt(c)>=2)||combos.find(c=>cnt(c)>=1)||combos[0];
+ [FW,MODEL,NP]=best;OTHER=FW!=="llamacpp";
  if(PAIR){const t=PAIR_TITLE[PAIR],lb=REG.machines.map(m=>m.label).join(" · ");
   document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").textContent=`Stress Test｜${t}`;$s("pgSub").innerHTML=`同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較兩台機器的 TTFT · TPOT · TPS</span>`;
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
