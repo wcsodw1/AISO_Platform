@@ -89,7 +89,7 @@ def main():
                            "腳本 B70_V4_B1024_llamacpp.py，--model-workers 1；模型 GGUF 檔名／SHA 假設與 B60 相同，B70 端尚未核對（UNVERIFIED）。"],
         "source_file": "B70 terminal output (B70_Full_48.log); " + RUN_ID, "metrics_version": "v4-pdf-e2e",
         "config_by_model": {n: {"repo": next((p["repo"] for p in ref["model_parity"] if p["model"] == n), None), "format": f, "backend": "llama.cpp（image／build 未核實）",
-                                "tp": "UNVERIFIED", "max_context": "18432 × 10 slots", "batch": "batch 1024 / ubatch 512", "max_seqs": 10, "mem_fraction": None,
+                                "tp": "UNVERIFIED", "max_context": "18432 / slot", "batch": "batch 1024 / ubatch 512", "max_seqs": 10, "mem_fraction": None,
                                 "cache": "Prefix Cache OFF · KV f16", "run_id": RUN_ID, "date": "2026-11-10"} for n, f in MODELS.values()},
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n")

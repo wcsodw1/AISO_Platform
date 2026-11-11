@@ -95,7 +95,7 @@ function paramTable(){
  const lead=OTHER?`<p class="pt-lead warn">⚠ ${esc(fwLabel(FW))}: ${bi("parameters differ, do not compare as equal conditions","各機參數不同，不可當成同條件比較")}</p>`:"";
  if(!OTHER){const mk=REG.machines.map(m=>m.label.replace(/^Intel /,"").replace(/ AMD$/,""));
   const uRows=diff.map(([l,vs])=>`<div class="pt-u"><dt>${lab(l)}</dt><dd>${vs.map((v,n)=>`<span class="${bad(v)?"pt-unk":""}"><i>${esc(mk[n])}</i> ${dispVal(v)}</span>`).join("")}</dd></div>`).join("");
-  const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>Unmatched parameters<span class="zh">未匹配參數 · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · ${bi("Differing or unverified settings (not in the identical list above)","各機設定不同或未核實的項目")}</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
+  const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>Notes<span class="zh">備註 · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · ${bi("Differing or unverified settings (not in the identical list above)","各機設定不同或未核實的項目")}</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
   return `<h3 class="pt-h">Identical parameters<small class="zhs">${REG.machines.length===2?"兩機":"三機"}相同參數 · ${esc(fwLabel(FW))} · ${same.length}</small></h3><div class="pt-same pt-only">${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("No parameter is identical across the machines","目前沒有各機一致的參數")}</p>`}</div>`}
  {const um=$s("secUnmatched");if(um){um.hidden=true;um.innerHTML=""}}
   return `<h3 class="pt-h">Other frameworks: machine parameters<small class="zhs">其餘框架測試 · ${esc(fwLabel(FW))}</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ Identical<small class="zhs">相同 · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("None","沒有")}</p>`}</div><div class="pt-diffbox"><h4>⚠ Different / unverified<small class="zhs">不同／未核實 · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>${bi("Parameter","參數")}</th>${th}<th>${bi("Verdict","判定")}</th></tr></thead><tbody>${dRows}</tbody></table></div>`:`<p class="pt-none">${bi("None","無")}</p>`}</div></div>`;
@@ -181,9 +181,9 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){m.classList.remove("open");b.setAttribute("aria-expanded","false")}});
  })();
  (function(){   // one collapsible "Detail" panel with tabs; the five detail sections live inside it
-  const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Unmatched","未匹配參數"]].filter(([id])=>$s(id));
+  const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Notes","備註"]].filter(([id])=>$s(id));
   const first=$s(parts[0][0]),det=document.createElement("section");det.className="report-section sec-detail hv-fold hv-closed";det.id="secDetail";
-  det.innerHTML='<header><h2>Notes<span class="zh">備註</span></h2><span class="hv-hint" aria-hidden="true">Click to pin <small class="zhs">點一下固定</small></span></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
+  det.innerHTML='<header><h2>Detail<span class="zh">細節</span></h2><span class="hv-hint" aria-hidden="true">Click to pin <small class="zhs">點一下固定</small></span></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
   first.parentNode.insertBefore(det,first);
   const tabs=det.querySelector(".dt-tabs"),body=det.querySelector(".dt-body");
   parts.forEach(([id,label,zh],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.innerHTML=label+'<small class="zhs">'+zh+"</small>";b.onclick=()=>pick(id);tabs.appendChild(b)});
