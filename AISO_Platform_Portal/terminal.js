@@ -15,13 +15,13 @@ window.AisoTerm=(function(){
   root.classList.add("tm-root");
   const pick=opt.machines?`<label class="tm-pick">Example run<span class="bz">範例</span><select>${opt.machines.map(([k,l])=>`<option value="${k}"${k===machine?" selected":""}>${esc(l)}</option>`).join("")}</select></label>`:"";
   root.innerHTML=pick+`<div class="tm-tabs" role="tablist">
-    <button type="button" role="tab" class="on" data-t="run">Completed run<span class="bz">已完成</span></button>
+    <button type="button" role="tab" class="on" data-t="live">Live shell<span class="bz">即時終端</span></button>
+    <button type="button" role="tab" data-t="run">Past run<span class="bz">歷史紀錄</span></button>
     <button type="button" role="tab" data-t="runner">Runner<span class="bz">執行檔</span></button>
-    <button type="button" role="tab" data-t="manifest">Manifest<span class="bz">參數清單</span></button>
-    <button type="button" role="tab" data-t="live">Live shell<span class="bz">即時終端</span></button></div>
-   <div class="tm-panel" data-p="run"></div><div class="tm-panel" data-p="runner" hidden></div><div class="tm-panel" data-p="manifest" hidden></div><div class="tm-panel" data-p="live" hidden></div>`;
+    <button type="button" role="tab" data-t="manifest">Manifest<span class="bz">參數清單</span></button></div>
+   <div class="tm-panel" data-p="live"></div><div class="tm-panel" data-p="run" hidden></div><div class="tm-panel" data-p="runner" hidden></div><div class="tm-panel" data-p="manifest" hidden></div>`;
   const P=k=>root.querySelector(`.tm-panel[data-p="${k}"]`);
-  let D=null,liveInit=false;
+  let D=null,liveInit=true;
   root.querySelector(".tm-tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-t]");if(!b)return;
    root.querySelectorAll(".tm-tabs button").forEach(x=>x.classList.toggle("on",x===b));
    root.querySelectorAll(".tm-panel").forEach(p=>p.hidden=p.dataset.p!==b.dataset.t);
@@ -100,7 +100,7 @@ window.AisoTerm=(function(){
   const load=()=>fetch(`data/terminal/${machine}.json`,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{D=d;renderRun();renderRunner();renderManifest()})
    .catch(()=>{P("run").innerHTML=`<p class="tm-empty">Terminal data not available<span class="bz">尚無終端資料</span></p>`});
   const sel=root.querySelector(".tm-pick select");if(sel)sel.onchange=()=>{machine=sel.value;load()};
-  load();
+  load().then(()=>initLive(P('live')));
  }
  return {mount};
 })();
