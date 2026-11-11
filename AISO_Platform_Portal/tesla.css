@@ -1,0 +1,35 @@
+/* Tesla-style refinement layer (David, 2026-11-11: "整個網頁都參考Tesla微調 UI"). Loaded LAST on every page; only fine-tunes, never changes content.
+   Principles: flat dark surfaces, no glow / spotlight / drop shadows, thin 1px lines, equal-size cards, calm type, one filled primary action, generous space. */
+:root{--t-bg:#0b0c0f;--t-panel:#13151a;--t-line:rgba(244,239,228,.12);--t-line2:rgba(244,239,228,.26);--t-r:14px}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.cursor-glow{display:none!important}
+/* no spotlight / gradient fills / shadows on panels */
+.report-section,.job-section,.bm-side,.bm-workspace,.machine-card,.connection-card,.issue-card,.v2-pane,.v2-card,.st-tier,.picker-console,.picker-column,.gap-box,.pt-same,.pt-diffbox,.mw,.bh-grp,.v2-verdict{background-image:none!important;box-shadow:none!important}
+.report-section:hover,.job-section:hover,.bm-side:hover,.bm-workspace:hover,.machine-card:hover,.connection-card:hover,.issue-card:hover,.chart-grid article:hover,.model-facts div:hover{background-image:none!important}
+.report-section,.job-section,.st-tier,.v2-pane,.gap-box,.pt-same,.pt-diffbox{border:1px solid var(--t-line)!important;border-radius:var(--t-r)!important}
+.v2 .report-section,.v2 .st-tier,.v2 .v2-pane{background:var(--t-panel)!important}
+.mw{background:var(--t-panel)!important;border-color:var(--t-line)!important}
+/* header: quiet, solid, thin line */
+.site-header{background:rgba(11,12,15,.88)!important;backdrop-filter:blur(14px);border-bottom:1px solid var(--t-line)!important;box-shadow:none!important}
+.site-nav>a,.site-nav .nav-menu>a,.site-nav button{font-weight:500;letter-spacing:.01em}
+/* type: calmer hierarchy */
+h1,h2,h3{letter-spacing:-.01em}
+.eyebrow,.section-label{letter-spacing:.12em!important;font-weight:600}
+.v2-hero{padding-top:8px}
+/* buttons: one filled primary, outlined secondary, same radius everywhere */
+.button,.pg-back,.v2-dl,.bh-menu button,.mw-back{border-radius:10px}
+.button.primary,.mw-next,.sp-run,.bh-enter{background:var(--gold,#d8c779)!important;color:#14161b!important;border:0!important;box-shadow:none!important;font-weight:700}
+.button:not(.primary),.v2-dl{border:1px solid var(--t-line2);background:transparent}
+.pg-back{border:1px solid var(--t-line2);background:transparent}
+/* selections: thin gold outline, never a glow */
+.mw-opt.sel,.sp-vendor.on,.bh-menu button.on,.cmp-tabs button.on{box-shadow:none!important;outline:1px solid var(--gold);outline-offset:-1px}
+.mw-opt,.mw-opt:hover{transition:border-color .15s,background .15s}
+/* equal-size option cards inside the wizard: title on top, status caption below, both left aligned */
+.mw-opt{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;min-height:80px;padding:12px 24px}
+.mw-l,.mw-l b{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.mw-r{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;justify-content:flex-start;text-align:left}
+.mw-q{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+/* tables and chips: hairlines only */
+.v2-table th,.v2-table td{border-color:var(--t-line)!important}
+.mw-chip,.cmp-badge,.sp-on,.sp-off{box-shadow:none!important}
+@media print{.mw,.report-section{border-color:#ccc!important}}

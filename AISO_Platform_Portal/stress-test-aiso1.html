@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="tesla.css?v=3">
 </head>
 <body>
   <header class="site-header">
@@ -36,43 +37,43 @@
     </section>
 
     <section class="report-section" id="secPick">
-      <header><h2>選擇條件<span class="zh">Framework · Model · NP</span></h2></header>
-      <div class="cmp-pick"><span>框架</span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
-      <div class="cmp-pick"><span>模型</span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
-      <div class="cmp-pick"><span>並發</span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
+      <header><h2>Select conditions<span class="zh">選擇條件</span></h2></header>
+      <div class="cmp-pick"><span>Framework<small class="zhs">框架</small></span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
+      <div class="cmp-pick"><span>Model<small class="zhs">模型</small></span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
+      <div class="cmp-pick"><span>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
     </section>
 
     <section class="report-section st-same" id="secSame">
-      <header><h2>測試參數<span class="zh">Key Parameters</span></h2></header>
+      <header><h2>Key parameters<span class="zh">測試參數</span></h2></header>
       <dl class="st-params" id="stParams"></dl><div id="stPend"></div>
     </section>
 
     <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh">AISO1 · 隨上方框架、模型、NP 切換</span></h2></header>
+      <header><h2>TTFT · TPOT · TPS<span class="zh">AISO1 · 四項指標</span></h2></header>
       <div id="stMetrics"></div>
     </section>
 
     <section class="report-section" id="secTable">
-      <header><h2>逐情境數值<span class="zh">AISO1 · 隨上方選擇切換</span></h2></header>
+      <header><h2>Values by scenario<span class="zh">逐情境數值</span></h2></header>
       <p class="v2-fine" id="stTableSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
     </section>
 
     <section class="report-section" id="secCover">
-      <header><h2>資料覆蓋<span class="zh">框架 × 模型（AISO1）</span></h2></header>
+      <header><h2>Coverage<span class="zh">資料覆蓋</span></h2></header>
       <div class="table-wrap"><table class="v2-table v2-sc" id="stCover"></table></div>
     </section>
 
     <section class="report-section" id="secTrouble" data-machine="AISO1"></section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">AISO1 各框架資料</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 比對 →</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json" download>llama.cpp JSON ↓</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_vLLM_20261015.json" download>vLLM JSON ↓</a></header>
+      <header><h2>Data<span class="zh">AISO1 各框架資料</span></h2><a class="v2-dl" href="stress-test-compare.html">Compare<small class="zhs">B60 vs B70 vs AISO1 比對</small> →</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json" download>llama.cpp JSON ↓</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_vLLM_20261015.json" download>vLLM JSON ↓</a></header>
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
       <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
 
-  </main><script src="bench-viz.js?v=10"></script><script src="troubleshooting.js?v=3"></script><script src="stress-test-aiso1.js?v=4"></script>
+  </main><script src="bench-viz.js?v=12"></script><script src="troubleshooting.js?v=3t"></script><script src="stress-test-aiso1.js?v=4t"></script>
 <script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"aiso1"})</script>
 <script src="debug-notes.js?v=3"></script>
 <script src="ui-min-type.js?v=2" defer></script>

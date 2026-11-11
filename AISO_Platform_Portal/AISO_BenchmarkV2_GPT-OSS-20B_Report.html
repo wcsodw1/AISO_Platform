@@ -352,6 +352,7 @@ thead th .zh-i{display:block;margin:2px 0 0;font-size:11px;letter-spacing:0;colo
 .site-nav,.bm-auth{display:none}
 .site-header{position:static}
 </style>
+  <link rel="stylesheet" href="tesla.css?v=3">
 </head>
 <body>
   <header class="site-header">
@@ -462,8 +463,8 @@ function renderTop(){
  const s=V.scope;
  const nGood=V.batches.filter(valid).length,okAll=nGood===V.batches.length;
  const row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
- $v("v2Setup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">相同模型、相同 Prompt 下，比較 <b>Baseline</b>（關閉 KV 卸載）、<b>aiDAPTIV</b>、<b>LMCache</b>：重複請求（KV Warm）能快多少，第一次請求（KV Cold）要多付多少。</p></section>
- <section class="v2-pane"><h2>測試方式及參數<span>Method &amp; Parameters</span></h2>
+ $v("v2Setup").innerHTML=`<section class="v2-pane"><h2>Purpose<span>實驗目的</span></h2><p class="v2-goal">相同模型、相同 Prompt 下，比較 <b>Baseline</b>（關閉 KV 卸載）、<b>aiDAPTIV</b>、<b>LMCache</b>：重複請求（KV Warm）能快多少，第一次請求（KV Cold）要多付多少。</p></section>
+ <section class="v2-pane"><h2>Method &amp; Parameters<span>測試方式及參數</span></h2>
  <p class="v2-goal">每個情境送<b>同一組 Prompt</b>：<b>KV Cold</b> 1 次（快取空）→ <b>KV Warm</b> 3 次（快取已有）；量 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p>
  <dl class="v2-params">${row("Model 模型",s.model)}${row("Context 上限",`${tok(s.max_model_len)} tokens`)}${row("Input 輸入",`${s.input_tokens.map(tok).join(" / ")} tokens`)}${row("Output 輸出",`${s.output_tokens} tokens`)}${row("Concurrency 並發",s.concurrency.join(" / "))}${row("Scenarios 情境",`${SC.length} 個（15950 × C5 不納入）`)}</dl></section>`;
  $v("v2Check").className="v2-check "+(okAll?"ok":"bad");$v("v2Check").textContent=`${okAll?"✓":"✗"} 資料檢查：${nGood} / ${V.batches.length} 筆符合快取規則（Baseline 無任何命中；aiDAPTIV、LMCache 的 KV Warm 都有外部命中）`;

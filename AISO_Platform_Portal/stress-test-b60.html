@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="tesla.css?v=3">
 </head>
 <body>
   <header class="site-header">
@@ -38,7 +39,7 @@
     <section class="report-section gd" id="secDash" aria-label="Dashboard"></section>
 
     <section class="report-section" id="secFwCmp">
-      <header><h2>同參數框架比對<span class="zh">不同推論框架 · 同機器、同模型、同 NP / Input · TTFT · TPOT · TPS 四項指標</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
+      <header><h2>Framework comparison<span class="zh">同參數框架比對</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
       <p class="v2-fine" id="stFwNote"></p>
       <div id="stFwCmp"></div>
       <p class="v2-fn">比較的是「不同推論框架」，不是模型互相比較；每個區塊只放同一個模型，並隨上方 NP 分頁切換。只放該框架已有成績的情境，沒有成績的框架不畫、不補值。圖上綠色 + ／紅色 − 為相對基準框架的差異，綠色表示較佳、紅色表示較差；TPS (Normalized) = Aggregate ÷ NP。已相同：B60 硬體、Context 18,432、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。不同：vLLM／SGLang 為 safetensors（Gemma31 W4A16、Laguna FP8），llama.cpp 為 GGUF（Q4_0 / Q4_K_M）且為 layer split 而非 TP 2，量化與切分方式不同，差異不能全歸因於框架；runtime 映像／build 尚未核實。</p>
@@ -52,7 +53,7 @@
     </section>
 
     <section class="report-section" id="secRetry">
-      <header><h2>失敗與重跑紀錄<span class="zh">Original Full vs Retry</span></h2></header>
+      <header><h2>Original Full vs Retry<span class="zh">失敗與重跑紀錄</span></h2></header>
       <p class="v2-fine" id="stRetry"></p>
     </section>
 
@@ -65,7 +66,7 @@
 
       <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
 
-  </main><script src="bench-viz.js?v=10"></script><script src="bench-dash.js?v=2"></script><script src="troubleshooting.js?v=3"></script><script src="stress-test-b60.js?v=15"></script>
+  </main><script src="bench-viz.js?v=12"></script><script src="bench-dash.js?v=3t"></script><script src="troubleshooting.js?v=3t"></script><script src="stress-test-b60.js?v=15t"></script>
 <script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"b60"})</script>
 <script src="debug-notes.js?v=3"></script>
 <script src="ui-min-type.js?v=2" defer></script>

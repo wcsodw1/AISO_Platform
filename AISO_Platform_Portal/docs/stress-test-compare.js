@@ -41,7 +41,7 @@ function fixPick(){   // keep FW / model / NP on a combination that has data (co
 function renderControls(){
  fixPick();
  const fws=REG.frameworks.filter(f=>OTHER?f.key!=="llamacpp":f.key==="llamacpp");
- $s("cmpFw").innerHTML=btn("fw",fws.map(f=>[f.key,f.label,anyData(f.key)]),FW)+(OTHER?`<button type="button" class="cmp-other back" data-g="other" data-k="0">◂ 回主要比對 llama.cpp（三機參數相同）</button>`:`<button type="button" class="cmp-other" data-g="other" data-k="1">其餘框架測試（含不同參數）▸</button>`);
+ $s("cmpFw").innerHTML=btn("fw",fws.map(f=>[f.key,f.label,anyData(f.key)]),FW)+(OTHER?`<button type="button" class="cmp-other back" data-g="other" data-k="0">◂ Back to llama.cpp<small class="zhs">回主要比對（三機參數相同）</small></button>`:`<button type="button" class="cmp-other" data-g="other" data-k="1">Other frameworks<small class="zhs">其餘框架測試（含不同參數）</small> ▸</button>`);
  $s("cmpModel").innerHTML=btn("model",REG.models.map(m=>[m.key,anyData(FW,m.key)?mlabel(FW,m.key):m.name,anyData(FW,m.key)]),MODEL);
  $s("cmpNp").innerHTML=btn("np",npsAll().map(n=>["" +n,"NP"+n,anyData(FW,MODEL,n)]),NP);
  document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.disabled)return;const g=b.dataset.g;if(g==="other")OTHER=b.dataset.k==="1";if(g==="fw")FW=b.dataset.k;if(g==="model")MODEL=b.dataset.k;if(g==="np")NP=+b.dataset.k;renderAll()});
