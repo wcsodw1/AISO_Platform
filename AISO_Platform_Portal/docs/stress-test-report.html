@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="site-header.css?v=1.28.2">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=40">
   <link rel="stylesheet" href="debug-notes.css?v=2">
@@ -41,19 +42,19 @@
       <div id="rpA"></div>
     </section>
 
-    <section class="report-section">
+    <section class="report-section hv-fold hv-closed">
       <header><h2>B　雙機同框架<span class="zh">SGLang · Gemma 4 31B · NP2（B60 vs B70）</span></h2></header>
       <p class="v2-fine">AISO1 沒有 SGLang 成績。</p>
       <div id="rpB"></div>
     </section>
 
-    <section class="report-section">
+    <section class="report-section hv-fold hv-closed">
       <header><h2>C　雙機同框架<span class="zh">llama.cpp（GGUF）· 四模型 · NP2（B60 vs B70）</span></h2></header>
       <p class="v2-fine">同 Repo、同量化；Context、Batch、Prompt 不同。AISO1 無正式成績。</p>
       <div id="rpC"></div>
     </section>
 
-    <section class="report-section">
+    <section class="report-section hv-fold hv-closed">
       <header><h2>D　備註<span class="zh">Notes</span></h2></header>
       <div class="table-wrap"><table class="v2-table v2-sc rp-c"><thead><tr><th>項目</th><th class="l">狀態</th></tr></thead><tbody>
         <tr><td class="st-model">B60 V4</td><td>協定 v4-pdf-e2e；SGLang 18／vLLM 18／llama.cpp 36 PASS；Gemma26 無核准來源（SKIP_SOURCE）、Nemotron 在 vLLM／SGLang 啟動失敗。</td></tr>
@@ -70,7 +71,7 @@
       <header><h2>Data<span class="zh">互動版與各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 互動比對 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a></header>
       <p class="v2-fine" id="rpFoot"></p><p class="v2-fine" id="rpErr"></p>
     </section>
-  </main><script src="stress-test-report.js?v=2"></script>
+  </main><script src="hover-fold.js?v=1"></script><script src="stress-test-report.js?v=3"></script>
 <script src="debug-notes.js?v=3"></script>
 </body>
 </html>

@@ -26,8 +26,8 @@ function cfg(fw,model){
  return `<div class="table-wrap"><table class="v2-table v2-sc rp-c"><thead><tr><th>項目</th>${ms.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${keys.map(([l,k])=>`<tr><td class="st-model">${l}</td>${ms.map(m=>c(m,k)).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 function render(){
- $s("rpA").innerHTML=metrics("vllm","Gemma31",2)+`<h3 class="rp-h3">測試設定差異</h3>`+cfg("vllm","Gemma31");
- $s("rpB").innerHTML=metrics("sglang","Gemma31",2)+`<h3 class="rp-h3">測試設定差異</h3>`+cfg("sglang","Gemma31");
+ $s("rpA").innerHTML=metrics("vllm","Gemma31",2)+`<div class="hv-sub hv-fold hv-closed"><div class="hv-head">測試設定差異</div><div>`+cfg("vllm","Gemma31")+`</div></div>`;
+ $s("rpB").innerHTML=metrics("sglang","Gemma31",2)+`<div class="hv-sub hv-fold hv-closed"><div class="hv-head">測試設定差異</div><div>`+cfg("sglang","Gemma31")+`</div></div>`;
  $s("rpC").innerHTML=["Gemma26","Gemma31","Laguna","Nemotron"].map(m=>{const c=((D["b60|llamacpp"].config||{})[m]||{}).format||"";return `<h3 class="rp-h3">${esc(MN[m])} <small>${esc(c)}</small></h3>${metrics("llamacpp",m,2)}`}).join("")+`<h3 class="rp-h3">測試設定差異（Gemma 4 31B）</h3>`+cfg("llamacpp","Gemma31");
  const last=Object.values(D).map(d=>d.evidence_until).sort().pop();
  $s("rpFoot").textContent=`資料更新至 ${last}；表格由 data/benchmark-registry.json 登錄的資料集即時產生，上方結論文字為 2026-11-09 的人工整理。`;

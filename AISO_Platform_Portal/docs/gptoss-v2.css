@@ -310,3 +310,11 @@
 .sec-detail .report-section{border:0;background:none;box-shadow:none;padding:0;margin:0}
 .sec-detail .dt-off{display:none!important}
 .sec-detail.sec-closed>.dt-tabs,.sec-detail.sec-closed>.dt-body{display:none!important}
+
+/* hover-to-expand panels */
+.hv-fold>header,.hv-fold>.hv-head{cursor:pointer;position:relative;padding-right:44px}
+.hv-fold>header::after,.hv-fold>.hv-head::after{content:"▾";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--gold,#d9b45a);transition:transform .2s}
+.hv-fold.hv-closed>header::after,.hv-fold.hv-closed>.hv-head::after{transform:translateY(-50%) rotate(-90deg)}
+.hv-fold.hv-closed>:not(header):not(.hv-head){display:none!important}
+.hv-fold>.hv-head{font-size:19px;font-weight:600;color:var(--ivory);padding:10px 44px 10px 0;border-top:1px solid rgba(255,255,255,.1)}
+.sec-detail.hv-closed>.dt-tabs,.sec-detail.hv-closed>.dt-body{display:none!important}
