@@ -14,13 +14,13 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=44">
+  <link rel="stylesheet" href="gptoss-v2.css?v=46">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
@@ -28,16 +28,36 @@
     <section class="v2-hero">
       <a class="pg-back" href="./"><span aria-hidden="true">←</span> 返回 Home</a><p class="eyebrow">EVIDENCE ENGINE</p>
       <h1>BENCHMARK</h1>
-      <p class="v2-sub">Proof, not specs.<span class="zh-i">同模型、同負載、不同硬體；每筆結果都保留條件與 Log 證據。</span></p>
+      <p class="v2-sub">Proof, not specs.<span class="zh-i">先選機型，再實測，最後看結果</span></p>
     </section>
-    <section class="bhub-links" aria-label="Result of Benchmark">
-      <a class="sp-compare" href="stress-test.html"><span><b>Stress Test<small>壓力測試</small></b><em>依廠商與機型查看 TTFT · TPOT · TPS，並可在機型頁執行 Run</em></span><i aria-hidden="true">→</i></a>
-      <a class="sp-compare" href="gptoss-v2.html"><span><b>LMCache v.s aiDAPTIV<small>快取效能對照</small></b><em>快取與記憶體擴充方案的效能對照</em></span><i aria-hidden="true">→</i></a>
+    <nav class="bh-menu" role="tablist" aria-label="Benchmark menu">
+      <button type="button" role="tab" data-tab="benchmarking" class="on"><b>Benchmarking</b><small>實測：選機型 → Run → Result</small></button>
+      <button type="button" role="tab" data-tab="sota"><b>SOTA R&amp;D</b><small>前沿研究：LMCache …</small></button>
+    </nav>
+    <section class="bh-panel" id="tabBenchmarking" role="tabpanel">
+      <div class="bh-flow"><span>① 選廠商</span><i>→</i><span>② 選機型</span><i>→</i><span>③ Run 實測</span><i>→</i><span>④ 看 Result</span></div>
+      <div id="bhPicker"></div>
+      <a class="st-view bh-all" href="stress-test-compare.html"><b>View Result<small>結果總覽</small></b><em>B60 · B70 · AISO1 並排比對</em><i aria-hidden="true">→</i></a>
     </section>
-    <section class="bhub-metrics" aria-label="Metrics we record"><h2>指標<small>Metrics we record</small></h2><div><article><b>TTFT</b><small>Time to first token 首字時間</small></article><article><b>TPOT</b><small>Time per output token 每個字的間隔</small></article><article><b>TPS</b><small>Prompt · Decode · Aggregate 每秒輸出</small></article><article><b>E2E</b><small>End-to-end latency 端到端延遲</small></article></div></section>
-    <section aria-label="Systems we measure"><h2 class="bhub-h">機型<small>Systems we measure</small></h2><div class="st-tiers"><article class="st-tier"><header><span>01</span><h2>CONSUMER<small>消費級</small></h2></header><ul><li class="soon"><span><i class="amd"></i>ROG AI MAX 395<em>COMING SOON</em></span></li><li class="soon"><span><i class="amd"></i>TUF AI MAX 392<em>COMING SOON</em></span></li><li class="soon"><span><i class="intel"></i>Intel Arc B390<em>COMING SOON</em></span></li></ul></article><article class="st-tier"><header><span>02</span><h2>MINI-WORKSTATION<small>迷你工作站</small></h2></header><ul><li class="has"><a href="stress-test-aiso1.html"><i class="amd"></i>AISO1 · AI MAX+ 395<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-b60.html"><i class="intel"></i>Intel Arc Pro B60<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-b70.html"><i class="intel"></i>Intel Arc Pro B70<em>TTFT · TPOT · TPS →</em></a></li><li class="soon"><span><i class="amd"></i>AMD ASRock<em>COMING SOON</em></span></li></ul></article><article class="st-tier"><header><span>03</span><h2>SERVER<small>伺服器</small></h2></header><ul><li class="soon"><span><i class="nvidia"></i>NVIDIA RTX PRO 6000<em>COMING SOON</em></span></li><li class="soon"><span><i class="nvidia"></i>NVIDIA B300<em>COMING SOON</em></span></li><li class="soon"><span><i class="amd"></i>AMD Instinct MI350X<em>COMING SOON</em></span></li></ul></article></div></section>
-    <section class="bhub-proof" aria-label="How we prove it"><h2>如何證明<small>How we prove it</small></h2><div><article><span>01</span><b>Same model file 同模型檔</b><small>Exact repo, quantization and SHA256</small></article><article><span>02</span><b>Same workload 同負載</b><small>Fixed prompts, NP, input and output length</small></article><article><span>03</span><b>Real metrics 實測數值</b><small>Recorded per request, not estimated</small></article><article><span>04</span><b>Logs before PASS 先有 Log 才算 PASS</b><small>Unverified results stay labelled</small></article></div></section>
+    <section class="bh-panel" id="tabSota" role="tabpanel" hidden>
+      <div class="sp-cols bh-sota"><div class="sp-col"><h3>研究項目<small>Topics</small></h3><div class="spm">
+        <div class="sp-model has"><a class="sp-open" href="gptoss-v2.html"><span class="sp-name">LMCache v.s aiDAPTIV</span><span class="sp-tier">快取效能對照</span><em>Result 結果 →</em></a></div>
+        <div class="sp-model soon"><span class="sp-name">KV cache offload</span><span class="sp-tier">記憶體擴充</span><em>COMING SOON</em></div>
+        <div class="sp-model soon"><span class="sp-name">Speculative decoding</span><span class="sp-tier">推論加速</span><em>COMING SOON</em></div>
+      </div></div></div>
+    </section>
   </main>
+<script src="machine-picker.js?v=1"></script>
+<script>
+(function(){
+ MachinePicker.mount(document.getElementById("bhPicker"));
+ var tabs=document.querySelectorAll(".bh-menu button"),panels={benchmarking:document.getElementById("tabBenchmarking"),sota:document.getElementById("tabSota")};
+ function open(k){if(!panels[k])k="benchmarking";tabs.forEach(function(b){b.classList.toggle("on",b.dataset.tab===k);b.setAttribute("aria-selected",b.dataset.tab===k)});Object.keys(panels).forEach(function(x){panels[x].hidden=x!==k});try{history.replaceState(null,"","#"+k)}catch(e){}}
+ tabs.forEach(function(b){b.addEventListener("click",function(){open(b.dataset.tab)});b.addEventListener("mouseenter",function(){open(b.dataset.tab)})});
+ open((location.hash||"").slice(1)||"benchmarking");
+ window.addEventListener("hashchange",function(){open((location.hash||"").slice(1))});
+})();
+</script>
 <script src="debug-notes.js?v=3"></script>
 <script src="ui-min-type.js?v=1" defer></script>
 </body>

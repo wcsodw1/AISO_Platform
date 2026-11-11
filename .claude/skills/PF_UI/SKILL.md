@@ -24,8 +24,8 @@ const out={};for(const e of document.body.querySelectorAll('*')){if(e.closest('[
 3. Look at a screenshot of the busiest sections (home, sizing, compare) - a lifted size must not break the layout.
 
 ## Page patterns that were agreed
-- Stress Test: vendor (NVIDIA / AMD / INTEL) on the left, models extend to the right; each machine has its own Run button; Run always asks for the test password first.
-- Benchmark has its own page (`benchmark-hub.html`); the home page shows only the top half and a button into it.
+- Benchmark has its own page (`benchmark-hub.html`); the home page shows only the top half and ONE button "TRY & Benchmark IT !" into it. `stress-test.html` only redirects there.
+- Benchmark menu (tabs + header dropdown): **Benchmarking** (guided flow: vendor → machine → Run → Result; vendor on the left, its machines extend to the right via `machine-picker.js`; each machine has Result + Run; Run always asks for the test password first) and **SOTA R&D** (LMCache v.s aiDAPTIV … each with its own Result).
 - Long detail goes behind hover-to-expand panels (`hover-fold.js`), not a long page.
 - "返回" goes to the previous page (`back-nav.js`).
 - One short summary sentence per chart; no duplicated explanatory text.

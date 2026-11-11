@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
-  <title>AISO — Stress Test</title>
+  <title>AISO — Stress Test → Benchmark</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,52 +16,16 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=45">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+<meta http-equiv="refresh" content="0; url=benchmark-hub.html#benchmarking">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
-  <main class="v2 st">
-    <section class="v2-hero">
-      <a class="pg-back" href="benchmark-hub.html"><span aria-hidden="true">←</span> 返回 Benchmark</a><p class="eyebrow">BENCHMARK / STRESS TEST</p>
-      <div class="st-title-row"><h1>Stress Test｜壓力測試</h1><a class="st-view" href="stress-test-compare.html"><b>View Result<small>結果總覽</small></b><em>B60 · B70 · AISO1 並排比對</em><i aria-hidden="true">→</i></a></div>
-      <p class="v2-sub">先選廠商，再選機型<span class="zh-i">同標準參數下，比較不同硬體與框架的 TTFT · TPOT · TPS</span></p>
-    </section>
-    <section class="sp" id="stPick" aria-label="依廠商與機型選擇">
-      <div class="sp-cols">
-        <div class="sp-col sp-vendors"><h2>廠商<small>Vendor</small></h2><div id="spVendors" role="tablist" aria-label="Vendor"></div></div>
-        <div class="sp-arrow" aria-hidden="true">→</div>
-        <div class="sp-col sp-models"><h2>機型<small>Model</small></h2><div id="spModels" aria-live="polite"></div></div>
-      </div>
-    </section>
-  </main>
-<script>
-(function(){
- var T={c:"Consumer 消費級",m:"Mini-workstation 迷你工作站",s:"Server 伺服器"},TAG="TTFT · TPOT · TPS";
- var V=[
-  {k:"nvidia",name:"NVIDIA",models:[{n:"H200",t:"s"},{n:"B300",t:"s"},{n:"RTX PRO 6000",t:"s"}]},
-  {k:"amd",name:"AMD",models:[{n:"AISO1 · AI MAX+ 395",t:"m",href:"stress-test-aiso1.html"},{n:"ROG AI MAX 395",t:"c"},{n:"TUF AI MAX 392",t:"c"},{n:"ASRock",t:"m"},{n:"Instinct MI350X",t:"s"}]},
-  {k:"intel",name:"INTEL",models:[{n:"Arc Pro B60",t:"m",href:"stress-test-b60.html"},{n:"Arc Pro B70",t:"m",href:"stress-test-b70.html"},{n:"Arc B390",t:"c"}]}];
- var vEl=document.getElementById("spVendors"),mEl=document.getElementById("spModels"),cur=null,pinned=null;
- function count(v){return v.models.filter(function(m){return m.href}).length}
- function show(k){
-  cur=k;var v=V.filter(function(x){return x.k===k})[0];
-  [].forEach.call(vEl.children,function(b){var on=b.dataset.k===k;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
-  mEl.innerHTML=v.models.map(function(m){
-   var body='<span class="sp-name">'+m.n+'</span><span class="sp-tier">'+T[m.t]+'</span>';
-   return m.href?'<div class="sp-model has"><a class="sp-open" href="'+m.href+'">'+body+'<em>'+TAG+' →</em></a><a class="sp-run" href="benchmark.html" title="先輸入測試密碼才會開始執行">Run 實測</a></div>':'<div class="sp-model soon">'+body+'<em>COMING SOON</em></div>'}).join("");
- }
- vEl.innerHTML=V.map(function(v){return '<button type="button" role="tab" data-k="'+v.k+'" class="sp-vendor"><b>'+v.name+'</b><small>'+(count(v)?count(v)+" 機型有資料":"即將推出")+'</small></button>'}).join("");
- vEl.addEventListener("mouseover",function(e){var b=e.target.closest&&e.target.closest(".sp-vendor");if(b&&!pinned)show(b.dataset.k)});
- vEl.addEventListener("click",function(e){var b=e.target.closest(".sp-vendor");if(!b)return;pinned=b.dataset.k;show(b.dataset.k)});
- vEl.addEventListener("focusin",function(e){var b=e.target.closest(".sp-vendor");if(b)show(b.dataset.k)});
- show((V.filter(function(v){return count(v)})[0]||V[0]).k);
-})();
-</script>
-<script src="debug-notes.js?v=3"></script>
+  <main class="v2 st"><section class="v2-hero"><p class="eyebrow">BENCHMARK</p><h1>Benchmark</h1><p class="v2-sub">Stress Test 已併入 Benchmark 頁，正在前往…<span class="zh-i"><a href="benchmark-hub.html#benchmarking">前往 Benchmark →</a></span></p></section></main>
 <script src="ui-min-type.js?v=1" defer></script>
 </body>
 </html>
