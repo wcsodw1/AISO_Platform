@@ -172,8 +172,17 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
   document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").textContent=`Stress Test｜${t}`;$s("pgSub").innerHTML=`同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較兩台機器的 TTFT · TPOT · TPS</span>`;
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
  renderPairs();renderGap();renderCover();renderAll();
- ["secRepeat","secTable","secCfg","secCover","secUnmatched"].forEach(id=>{const sec=$s(id);if(!sec)return;sec.classList.add("sec-fold","sec-closed");
-  sec.addEventListener("click",e=>{const h=e.target.closest("header");if(!h||!sec.contains(h)||e.target.closest("button,a,.st-tabs"))return;sec.classList.toggle("sec-closed");if(id==="secRepeat"&&!sec.classList.contains("sec-closed"))renderRepeats()})});
+ (function(){   // one collapsible "Detail" panel with tabs; the five detail sections live inside it
+  const parts=[["secRepeat","Repeat 穩定度"],["secTable","完整數值"],["secCfg","設定差異"],["secCover","資料覆蓋"],["secUnmatched","未匹配參數"]].filter(([id])=>$s(id));
+  const first=$s(parts[0][0]),det=document.createElement("section");det.className="report-section sec-fold sec-closed sec-detail";det.id="secDetail";
+  det.innerHTML='<header><h2>Detail<span class="zh">細節 · Repeat 穩定度 · 完整數值 · 設定差異 · 資料覆蓋 · 未匹配參數</span></h2></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
+  first.parentNode.insertBefore(det,first);
+  const tabs=det.querySelector(".dt-tabs"),body=det.querySelector(".dt-body");
+  parts.forEach(([id,label],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.textContent=label;b.onclick=()=>pick(id);tabs.appendChild(b)});
+  function pick(id){tabs.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.id===id));parts.forEach(([i])=>$s(i).classList.toggle("dt-off",i!==id));if(id==="secRepeat")renderRepeats()}
+  det.addEventListener("click",e=>{const h=e.target.closest("header");if(!h||h.parentNode!==det)return;det.classList.toggle("sec-closed");if(!det.classList.contains("sec-closed"))renderRepeats()});
+  pick(parts[0][0]);
+ })();
  const last=Object.values(DATA).flatMap(o=>Object.values(o)).map(d=>d.evidence_until).sort().pop();
  $s("stFoot").textContent=`資料更新至 ${last}；新增資料集只需在 data/benchmark-registry.json 登錄，本頁自動帶入。`;
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{renderMetrics();renderRepeats()},150)});

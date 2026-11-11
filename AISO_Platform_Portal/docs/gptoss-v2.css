@@ -303,3 +303,10 @@
 .sec-fold.sec-closed>header::after{transform:translateY(-50%) rotate(-90deg)}
 .sec-fold.sec-closed>:not(header){display:none!important}
 .sec-fold.sec-closed>header{margin-bottom:0}
+
+.sec-detail .dt-tabs{margin:10px 0 16px;display:flex;flex-wrap:wrap;gap:8px}
+.sec-detail .dt-tabs button{border:1px solid rgba(255,255,255,.18);background:transparent;color:var(--ivory);border-radius:999px;padding:8px 16px;font-size:16px;cursor:pointer}
+.sec-detail .dt-tabs button.on{background:var(--ivory,#f3efe4);color:#15171d;font-weight:600}
+.sec-detail .report-section{border:0;background:none;box-shadow:none;padding:0;margin:0}
+.sec-detail .dt-off{display:none!important}
+.sec-detail.sec-closed>.dt-tabs,.sec-detail.sec-closed>.dt-body{display:none!important}
