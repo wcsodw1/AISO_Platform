@@ -264,3 +264,7 @@
 .bv-mode button.on{background:rgba(216,199,121,.2);color:var(--gold)}
 .bv-charts[data-mode="bar"] .bv-line,.bv-charts[data-mode="line"] .bv-bar{display:none}
 .bv-charts[data-mode="both"] .bv-line{margin-top:18px;padding-top:14px;border-top:1px dashed rgba(244,239,228,.14)}
+.pt-h{margin:20px 0 8px;font-size:18px;color:var(--ivory)}.pt-h small{font-size:14px;color:var(--muted);font-weight:400;margin-left:6px}
+.pt-wrap{overflow-x:auto}.pt-tbl{width:100%;border-collapse:collapse;font-size:16px}.pt-tbl th,.pt-tbl td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.pt-tbl thead th{color:var(--muted);font-size:14px;font-weight:600}.pt-tbl tbody th{font-weight:500;color:var(--ivory)}
+.pt-diff td,.pt-diff th{background:rgba(224,160,64,.10)}.pt-unk{color:#e0a040}

@@ -66,12 +66,22 @@ function renderCover(){
  const rows=REG.frameworks.flatMap(f=>REG.models.map((m,i)=>`<tr>${i===0?`<td rowspan="${REG.models.length}" class="st-model">${esc(f.label)}</td>`:""}<td title="${esc(mtitle(f.key,m.key))}">${esc(mlabel(f.key,m.key))}</td>${REG.machines.map(x=>`<td>${desc(x.key,f.key,m.key)}</td>`).join("")}</tr>`)).join("");
  $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th>${REG.machines.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
+function paramTable(){
+ const rows=[["Batch size 批次","batch"],["Ubatch 微批次","ubatch"],["Context / slot 每槽上下文","per_slot_context"],["Slots 槽數","slots"],["KV cache 型別","kv_cache_type"],["Prefix cache 前綴快取","prefix_cache"],["Flash Attention","flash_attention"],["Split / TP 切分","split"],["GPU 數","gpu_count"],["Runtime 版本","runtime"]];
+ const ALT={batch:"batch",per_slot_context:"max_context",slots:"max_seqs",split:"tp"};
+ const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});return p};
+ const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
+ const body=rows.map(([l,k])=>{const vs=REG.machines.map(m=>val(prof(m),k)),known=vs.filter(v=>v!=="未記錄"&&v!=="—"),diff=new Set(known).size>1||(known.length&&vs.some(v=>v==="未記錄"));
+  return `<tr${diff||known.length===0?' class="pt-diff"':""}><th>${l}</th>${vs.map(v=>`<td${v==="未記錄"||v==="UNVERIFIED"?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>${known.length===0?"⚠ 全部未記錄":diff?"⚠ 不同／未核實":"一致"}</td></tr>`}).join("");
+ return `<h3 class="pt-h">各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3><div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數 Parameter</th>${REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("")}<th>判定</th></tr></thead><tbody>${body}</tbody></table></div><p class="v2-fn">統一決定：batch = 1024。B60 因已歸還廠商，實跑為 4096、無法重測，與其他機器不能視為純硬體差異；標「⚠」或「未記錄」的列代表需核實。</p>`;
+}
 function renderSetup(){
  const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
  const rng=(m,k)=>{const v=[...new Set(REG.frameworks.flatMap(f=>runsOf(m,f.key)).map(x=>x[k]))].sort((a,b)=>a-b);return v.length?v.join("/"):"待核"};
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">同一框架、同一模型下，並排比較 <b>${esc(REG.machines.map(m=>m.label).join("、"))}</b> 的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>。</p></section>
  <section class="v2-pane"><h2>測試參數<span>Key Parameters</span></h2>
  <dl class="v2-params">${r("Output 輸出","1,024 tokens")}${r("Repeat 重複","3 次取平均")}${r("Input 輸入","4K / 8K / 16K")}${r("NP 並發","1 / 2 / 4 / 5")}${r("TPS (Normalized)","Aggregate ÷ NP")}${r("基準 Baseline","有資料的第一台")}</dl>
+ ${paramTable()}
  <p class="v2-fn">各機實測 NP：${REG.machines.map(m=>`${esc(m.label)} ${rng(m.key,"np")}`).join("、")}；NP 與 Input 相同才可比；設定差異與「歷史・未核實」見下方。</p></section>`;
 }
 function renderConfig(){
@@ -125,7 +135,7 @@ function renderRepeats(){
  el.innerHTML=RC.html({width:el.clientWidth,machines:REG.machines,runsFor:mk=>cellRuns(mk),metric:RMET,inputs:inputsNow(),np:NP,title:`${modelName(MODEL)} / NP${NP} · ${fwLabel(FW)}`});
  RC.bind(el);
 }
-function renderAll(){renderControls();renderMetrics();renderRepeats();renderTable();renderConfig()}
+function renderAll(){renderSetup();renderControls();renderMetrics();renderRepeats();renderTable();renderConfig()}
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry "+r.status);return r.json()})]).then(([reg])=>{
  REG=reg;
  if(PAIR)REG.machines=reg.machines.filter(m=>PAIRS[PAIR].includes(m.key));
@@ -142,7 +152,7 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  if(PAIR){const t=PAIR_TITLE[PAIR],lb=REG.machines.map(m=>m.label).join(" · ");
   document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").textContent=`Stress Test｜${t}`;$s("pgSub").innerHTML=`同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較兩台機器的 TTFT · TPOT · TPS</span>`;
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
- renderPairs();renderSetup();renderGap();renderCover();renderAll();
+ renderPairs();renderGap();renderCover();renderAll();
  const last=Object.values(DATA).flatMap(o=>Object.values(o)).map(d=>d.evidence_until).sort().pop();
  $s("stFoot").textContent=`資料更新至 ${last}；新增資料集只需在 data/benchmark-registry.json 登錄，本頁自動帶入。`;
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{renderMetrics();renderRepeats()},150)});
