@@ -12,7 +12,7 @@ const val=(k,v)=>k==="ttft_s"&&v<10?num(v,2):num(v,1);
 const PAIRS={"b60-b70":["b60","b70"],"aiso1-b60":["b60","aiso1"],"aiso1-b70":["b70","aiso1"]};
 const PAIR_TITLE={"b60-b70":"B60 vs B70","aiso1-b60":"AISO1 vs B60","aiso1-b70":"AISO1 vs B70"};
 const PAIR=(()=>{const q=new URLSearchParams(location.search).get("pair"),b=document.body.dataset.pair;return PAIRS[q||b]?(q||b):null})();
-let REG,DATA={},FW,MODEL,NP;   // DATA[machine][framework] = dataset
+let REG,DATA={},FW,MODEL,NP,OTHER=false;   // main comparison = llama.cpp; OTHER = the remaining frameworks (different parameters)   // DATA[machine][framework] = dataset
 const MAXI=16384;   // compare page: 4K / 8K / 16K only (B70-only 32K / 64K stay on the B70 page)
 const runsOf=(mach,fw)=>{const ds=DATA[mach]&&DATA[mach][fw];return ds?ds.runs.filter(r=>r.input<=MAXI):[]};
 const get=(mach,fw,m,np,i)=>runsOf(mach,fw).find(r=>r.model===m&&r.np===np&&r.input===i);
@@ -32,16 +32,19 @@ const availability=()=>REG.machines.map(m=>{const n=cellRuns(m.key).length,c=n?c
 function btn(group,items,cur){return items.map(([k,l,has])=>`<button type="button" role="tab" class="${String(k)===String(cur)?"on":""}${has?" has":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}"${has?"":" disabled aria-disabled=\"true\" title=\"沒有資料\""}>${esc(l)}</button>`).join("")}
 const anyData=(fw,m,np)=>REG.machines.some(x=>runsOf(x.key,fw).some(r=>(!m||r.model===m)&&(!np||r.np===np)));
 function fixPick(){   // keep FW / model / NP on a combination that has data (combinations without data are not selectable)
+ if(!OTHER&&anyData("llamacpp"))FW="llamacpp";
+ if(OTHER&&FW==="llamacpp")FW=(REG.frameworks.find(f=>f.key!=="llamacpp"&&anyData(f.key))||{key:"llamacpp"}).key;
  if(!anyData(FW))FW=(REG.frameworks.find(f=>anyData(f.key))||REG.frameworks[0]).key;
  if(!anyData(FW,MODEL))MODEL=(REG.models.find(m=>anyData(FW,m.key))||REG.models[0]).key;
  if(!anyData(FW,MODEL,NP))NP=npsAll().find(n=>anyData(FW,MODEL,n))||NP;
 }
 function renderControls(){
  fixPick();
- $s("cmpFw").innerHTML=btn("fw",REG.frameworks.map(f=>[f.key,f.label,anyData(f.key)]),FW);
+ const fws=REG.frameworks.filter(f=>OTHER?f.key!=="llamacpp":f.key==="llamacpp");
+ $s("cmpFw").innerHTML=btn("fw",fws.map(f=>[f.key,f.label,anyData(f.key)]),FW)+(OTHER?`<button type="button" class="cmp-other back" data-g="other" data-k="0">◂ 回主要比對 llama.cpp（三機參數相同）</button>`:`<button type="button" class="cmp-other" data-g="other" data-k="1">其餘框架測試（含不同參數）▸</button>`);
  $s("cmpModel").innerHTML=btn("model",REG.models.map(m=>[m.key,anyData(FW,m.key)?mlabel(FW,m.key):m.name,anyData(FW,m.key)]),MODEL);
  $s("cmpNp").innerHTML=btn("np",npsAll().map(n=>["" +n,"NP"+n,anyData(FW,MODEL,n)]),NP);
- document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.disabled)return;const g=b.dataset.g;if(g==="fw")FW=b.dataset.k;if(g==="model")MODEL=b.dataset.k;if(g==="np")NP=+b.dataset.k;renderAll()});
+ document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.disabled)return;const g=b.dataset.g;if(g==="other")OTHER=b.dataset.k==="1";if(g==="fw")FW=b.dataset.k;if(g==="model")MODEL=b.dataset.k;if(g==="np")NP=+b.dataset.k;renderAll()});
 }
 function renderMetrics(){
  const w=Math.max(320,($s("stMetrics").clientWidth||860)-100),have=REG.machines.filter(m=>cellRuns(m.key).length),base=have.length?have[0].key:null;
@@ -76,11 +79,17 @@ function paramTable(){
  const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});if(typeof p.batch==='string'){const n=p.batch.match(/\d+/);if(n)p.batch=n[0]}return p};
  const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
  const bad=v=>v==="未記錄"||v==="—"||v==="UNVERIFIED";
+ const present=vs=>vs.filter(v=>v!=="—");
  const shown=rows.map(([l,k])=>[l,REG.machines.map(m=>val(prof(m),k))]).filter(([l,vs])=>vs.some(v=>!bad(v)));
  if(!shown.length)return "";
- const body=shown.map(([l,vs])=>{const known=vs.filter(v=>!bad(v)),unk=vs.some(bad),diff=new Set(known).size>1,st=diff?"設定不同":unk?"未核實（有機器沒記錄）":"數值一致";
-  return `<tr${diff||unk?' class="pt-diff"':""}><th>${l}</th>${vs.map(v=>`<td${bad(v)?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>${diff||unk?"⚠ ":""}${st}</td></tr>`}).join("");
- return `<h3 class="pt-h">各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3><div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數 Parameter</th>${REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("")}<th>判定</th></tr></thead><tbody>${body}</tbody></table></div><p class="v2-fn">統一決定：llama.cpp batch = 1024。B60 llama.cpp 為 Legacy Campaign（batch 4096，已歸還廠商無法重測），與 B70 / AISO1 的 B1024 Campaign 分開保留，不能宣稱參數完全一致。vLLM 的 Max batched tokens、SGLang 的 Chunked prefill 與 llama.cpp 的 Batch size 是不同的調度參數，不互相比較。「總 Context」＝ 每槽 Context × NP（llama.cpp --ctx-size）。</p>`;
+ const same=[],diff=[];
+ shown.forEach(([l,vs])=>{const pr=present(vs),known=pr.filter(v=>!bad(v));(pr.length>=2&&known.length===pr.length&&new Set(known).size===1?same:diff).push([l,vs,known])});
+ const th=REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("");
+ const dRows=diff.map(([l,vs,known])=>{const st=new Set(known).size>1?"設定不同":"未核實";return `<tr><th>${l}</th>${vs.map(v=>`<td${bad(v)?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>⚠ ${st}</td></tr>`}).join("");
+ const sRows=same.map(([l,vs,known])=>`<div><dt>${l}</dt><dd>${esc(known[0])}</dd></div>`).join("");
+ const title=OTHER?"其餘框架測試":"主要比對";
+ const lead=OTHER?`<p class="pt-lead warn">⚠ ${esc(fwLabel(FW))} 各機參數不同，<b>不可當成同條件比較</b>，僅供參考。</p>`:`<p class="pt-lead">三機比對必須使用<b>相同參數</b>：左側是三機相同的設定，右側是不同／未核實的項目。</p>`;
+ return `<h3 class="pt-h">${title}：各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ 相同參數 <small>Identical · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div><div class="pt-diffbox"><h4>⚠ 不同／未核實 <small>Different / Unverified · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數</th>${th}<th>判定</th></tr></thead><tbody>${dRows}</tbody></table></div>`:'<p class="pt-none">無</p>'}</div></div><p class="v2-fn">統一決定：llama.cpp batch = 1024。B60 llama.cpp 為 Legacy Campaign（batch 4096，已歸還廠商無法重測），與 B70 / AISO1 的 B1024 Campaign 分開保留，不能宣稱參數完全一致。vLLM 的 Max batched tokens、SGLang 的 Chunked prefill 與 llama.cpp 的 Batch size 是不同的調度參數，不互相比較。「總 Context」＝ 每槽 Context × NP（llama.cpp --ctx-size）。</p>`;
 }
 function renderSetup(){
  const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
@@ -117,7 +126,7 @@ function renderGapPair(){
  $s("stGap").innerHTML=box("ok","可直接並排",`${esc(A.label)}、${esc(B.label)} 都有 Input 4K / 8K / 16K · ${both.length} 組`,both,"both","點選任一組合會跳到下方圖表。")+
   (ob.length?box("miss",`只缺 ${esc(A.label)}`,`${esc(B.label)} 有、${esc(A.label)} 沒有 · ${ob.length} 組`,ob,"onlyB",""):"")+
   (oa.length?box("miss",`只缺 ${esc(B.label)}`,`${esc(A.label)} 有、${esc(B.label)} 沒有 · ${oa.length} 組`,oa,"onlyA",(B.key==="b70"||A.key==="b70")&&!ai?"B60、B70 需歸還廠商，缺的組合無法補測。":""):"");
- $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
+ $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;OTHER=FW!=="llamacpp";MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 function renderGap(){
  if(PAIR)return renderGapPair();
@@ -132,7 +141,7 @@ function renderGap(){
  const all=[...key.values()].filter(o=>o.all.length),miss=[...key.values()].filter(o=>o.miss.length);
  $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 B1024 重測，含 TTFT / TPOT）。</p></div>
  <div class="gap-box miss"><h3>只缺 AISO1 <small>B60、B70 都有 · ${miss.length} 組，AISO1 重測後即可三機並排</small></h3><div class="gap-chips">${miss.map(o=>chip(o,o.miss)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">各機實測 NP：${REG.machines.map(m=>`${esc(m.label)} ${[...new Set(REG.frameworks.flatMap(f=>runsOf(m.key,f.key)).map(x=>x.np))].sort((a,b)=>a-b).join("/")||"待核"}`).join("、")}。AISO1 的 NP5 跑不動，已省略、不列為缺口。</p></div>`;
- $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
+ $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;OTHER=FW!=="llamacpp";MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 let RMET="norm_tps";
 function renderRepeats(){
@@ -142,7 +151,7 @@ function renderRepeats(){
  el.innerHTML=RC.html({width:el.clientWidth,machines:REG.machines,runsFor:mk=>cellRuns(mk),metric:RMET,inputs:inputsNow(),np:NP,title:`${modelName(MODEL)} / NP${NP} · ${fwLabel(FW)}`});
  RC.bind(el);
 }
-function renderAll(){renderSetup();renderControls();renderMetrics();renderRepeats();renderTable();renderConfig()}
+function renderAll(){renderControls();renderSetup();renderMetrics();renderRepeats();renderTable();renderConfig()}
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry "+r.status);return r.json()})]).then(([reg])=>{
  REG=reg;
  if(PAIR)REG.machines=reg.machines.filter(m=>PAIRS[PAIR].includes(m.key));
@@ -152,7 +161,7 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  })));
 }).then(()=>{
  // default: a combination all three machines share, else two, else the first one with any data, else the first one with any data
- const combos=REG.frameworks.flatMap(f=>REG.models.flatMap(m=>npsAll().map(n=>[f.key,m.key,n])));
+ const combos=[...REG.frameworks].sort((a,b)=>(b.key==='llamacpp')-(a.key==='llamacpp')).flatMap(f=>REG.models.flatMap(m=>npsAll().map(n=>[f.key,m.key,n])));
  const cnt=([f,m,n])=>REG.machines.filter(x=>runsOf(x.key,f).some(r=>r.model===m&&r.np===n)).length;
  const best=combos.find(c=>cnt(c)>=REG.machines.length)||combos.find(c=>cnt(c)>=2)||combos.find(c=>cnt(c)>=1)||combos[0];
  [FW,MODEL,NP]=best;
