@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark — proof, not specs.">
+  <title>AISO — Benchmark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.3">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=44">
+  <link rel="stylesheet" href="debug-notes.css?v=2">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><a href="./#benchmark" aria-current="page">Benchmark</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <a class="pg-back" href="./"><span aria-hidden="true">←</span> 返回 Home</a><p class="eyebrow">EVIDENCE ENGINE</p>
+      <h1>BENCHMARK</h1>
+      <p class="v2-sub">Proof, not specs.<span class="zh-i">同模型、同負載、不同硬體；每筆結果都保留條件與 Log 證據。</span></p>
+    </section>
+    <section class="bhub-links" aria-label="Result of Benchmark">
+      <a class="sp-compare" href="stress-test.html"><span><b>Stress Test<small>壓力測試</small></b><em>依廠商與機型查看 TTFT · TPOT · TPS，並可在機型頁執行 Run</em></span><i aria-hidden="true">→</i></a>
+      <a class="sp-compare" href="gptoss-v2.html"><span><b>LMCache v.s aiDAPTIV<small>快取效能對照</small></b><em>快取與記憶體擴充方案的效能對照</em></span><i aria-hidden="true">→</i></a>
+    </section>
+    <section class="bhub-metrics" aria-label="Metrics we record"><h2>指標<small>Metrics we record</small></h2><div><article><b>TTFT</b><small>Time to first token 首字時間</small></article><article><b>TPOT</b><small>Time per output token 每個字的間隔</small></article><article><b>TPS</b><small>Prompt · Decode · Aggregate 每秒輸出</small></article><article><b>E2E</b><small>End-to-end latency 端到端延遲</small></article></div></section>
+    <section aria-label="Systems we measure"><h2 class="bhub-h">機型<small>Systems we measure</small></h2><div class="st-tiers"><article class="st-tier"><header><span>01</span><h2>CONSUMER<small>消費級</small></h2></header><ul><li class="soon"><span><i class="amd"></i>ROG AI MAX 395<em>COMING SOON</em></span></li><li class="soon"><span><i class="amd"></i>TUF AI MAX 392<em>COMING SOON</em></span></li><li class="soon"><span><i class="intel"></i>Intel Arc B390<em>COMING SOON</em></span></li></ul></article><article class="st-tier"><header><span>02</span><h2>MINI-WORKSTATION<small>迷你工作站</small></h2></header><ul><li class="has"><a href="stress-test-aiso1.html"><i class="amd"></i>AISO1 · AI MAX+ 395<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-b60.html"><i class="intel"></i>Intel Arc Pro B60<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-b70.html"><i class="intel"></i>Intel Arc Pro B70<em>TTFT · TPOT · TPS →</em></a></li><li class="soon"><span><i class="amd"></i>AMD ASRock<em>COMING SOON</em></span></li></ul></article><article class="st-tier"><header><span>03</span><h2>SERVER<small>伺服器</small></h2></header><ul><li class="soon"><span><i class="nvidia"></i>NVIDIA RTX PRO 6000<em>COMING SOON</em></span></li><li class="soon"><span><i class="nvidia"></i>NVIDIA B300<em>COMING SOON</em></span></li><li class="soon"><span><i class="amd"></i>AMD Instinct MI350X<em>COMING SOON</em></span></li></ul></article></div></section>
+    <section class="bhub-proof" aria-label="How we prove it"><h2>如何證明<small>How we prove it</small></h2><div><article><span>01</span><b>Same model file 同模型檔</b><small>Exact repo, quantization and SHA256</small></article><article><span>02</span><b>Same workload 同負載</b><small>Fixed prompts, NP, input and output length</small></article><article><span>03</span><b>Real metrics 實測數值</b><small>Recorded per request, not estimated</small></article><article><span>04</span><b>Logs before PASS 先有 Log 才算 PASS</b><small>Unverified results stay labelled</small></article></div></section>
+  </main>
+<script src="debug-notes.js?v=3"></script>
+<script src="ui-min-type.js?v=1" defer></script>
+</body>
+</html>

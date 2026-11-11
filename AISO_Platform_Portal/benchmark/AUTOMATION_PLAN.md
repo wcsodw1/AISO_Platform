@@ -2,6 +2,22 @@
 
 Goal (David): set parameters → press **Run** inside **Stress Test** → the Terminal shows live status → results are added to the platform one condition at a time (for the machine being tested, e.g. AISO1, and in the comparisons) → numbers, charts and the written conclusions update by themselves. Built in three steps; each step is finished and unit-tested on its own, then chained.
 
+## The Run flow David specified (2026-11-11)
+Drop a new model into its folder, press **Benchmark** on that machine's page, and everything else is automatic.
+
+**Step 1 — Environment setup** (`benchmark/preflight.py`, per-vendor settings in `benchmark/vendors.py`; both unit-tested)
+- Vendor settings are assigned automatically: Intel = SYCL/XPU (Docker, `--device /dev/dri`, `SYCL0,SYCL1`), AMD = Vulkan (native binary, `Vulkan0`; ROCm for vLLM is unverified), NVIDIA = CUDA (template only, never run here → always flagged unverified, smoke test mandatory).
+- 16 checks, each tied to a real earlier problem: SSH key login (AISO1 asks for a password) · GPU model is the expected one (the host's card was swapped B70→B60→B70) · requested devices are the intended cards (`SYCL0,SYCL1` is not guaranteed) · no other GPU workload running (AISO1 "BLOCKED") · model file at the path · model sha256 + official source (B60-LLAMA-01, `UNVERIFIED_LOCAL_SMOKE_ONLY`) · runner registered + sha unchanged · image / binary pinned · CLI pre-check run WITH the device mounted (B60-VLLM-03 false failure) · enough free VRAM (B60-SGL-02 Nemotron OOM) · disk + RAM recorded (B70 RAM changed) · no unfinished campaign overwritten (AISO1 "STOP: campaign exists") · launch flags match the protocol (batch 1024, ctx = NP×18432; B60 ran 4096) · manifest folder writable · hardware snapshot complete.
+- Known failures that are NOT preflight problems but must be handled in Step 2: Gemma26 AWQ on SGLang XPU (CUDA Marlin JIT, B60-SGL-01), Level Zero resource error at NP5/8K (B60-SGL-03), AISO1 NP5 cannot run, AISO1 NP4 TTFT of 600–3200 s (queueing, not a hang), GPU reset interrupting a run (32K).
+
+**Step 2a — Smoke test** (all models once; one model is allowed)
+- A model selector / input box lists the models found on the machine; the user ticks or types the ones to run.
+- When smoke finishes, the platform **generates the full-run script** for exactly those models: it saves after **every repeat** (atomic write), keeps a state file, and on the next start **resumes from the interrupted condition** (verified repeats are reused, never re-run).
+
+**Step 2b — Full benchmark with a liveness watchdog** (`benchmark/watchdog.py`, unit-tested)
+- Polls the machine every 60 s. A round that runs longer than 30 min (30 polls) raises a notification with evidence (process alive? log growing? GPU busy?) and three choices: **Continue / skip to the next NP / skip to the next model**. Nothing is killed automatically because legitimate rounds can be very slow; a dead process or 30 min of "alive but silent and GPU idle" notifies immediately.
+- The skip choices are written to a control file the generated script reads between repeats.
+
 ## Where it lives in the UI
 - **Stress Test is the single entry, and you pick the machine first**: vendor (NVIDIA / AMD / Intel) → machine (H200, B300, AI MAX 395, B60, B70 …). The old home card "Run benchmark 實測" is gone. **Every machine runs its own benchmark from its own page**: results, Run, live status, runner and manifest all sit under the selected machine. Until the per-machine Run panel exists (Step 1 UI), a "Run 實測" button in the machine row opens the current Run page.
 - **Every Run asks for the test password first** (done, Step 0): `POST /api/run-auth` → one-time ticket (60 s, single use) → the start request carries `X-Run-Ticket`. Nothing is remembered; wrong passwords are rate limited; localhost only; password = `AISO_TERMINAL_PASSWORD`, never in git (tests generate a random one).
