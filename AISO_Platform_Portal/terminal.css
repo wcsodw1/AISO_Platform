@@ -52,3 +52,9 @@
 .tm-fly .tm-root{margin:0}
 @media(prefers-reduced-motion:reduce){.tm-fly-panel,.tm-fly.open .tm-fly-panel{transition:none}}
 @media(max-width:700px){.tm-fly{top:70px}.tm-fly-tab .bz{display:none}}
+
+/* anchored variant: the tab sits right under the page title, the panel opens from it toward the bottom-left */
+.tm-anchor{display:flex;justify-content:flex-end;margin:4px 0 6px;min-height:46px}
+.tm-fly.tm-fly-inline{position:relative;top:auto;right:auto;z-index:60}
+.tm-fly-inline .tm-fly-tab{border:1px solid rgba(216,199,121,.55);border-radius:14px}
+.tm-fly-inline .tm-fly-panel{top:calc(100% + 8px);border-radius:22px 6px 22px 22px;max-height:calc(100vh - 160px)}

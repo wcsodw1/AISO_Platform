@@ -111,7 +111,8 @@ window.AisoTerm=(function(){
   wrap.innerHTML=`<button type="button" class="tm-fly-tab" aria-expanded="false" aria-controls="tmFlyPanel"><span aria-hidden="true">&gt;_</span> Terminal<span class="bz">終端機</span></button>
    <div class="tm-fly-panel" id="tmFlyPanel" role="dialog" aria-label="Terminal"><button type="button" class="tm-fly-x" aria-label="Close">✕</button></div>`;
   wrap.querySelector(".tm-fly-panel").appendChild(root);
-  document.body.appendChild(wrap);
+  const anchor=document.getElementById("tmAnchor");
+  if(anchor){wrap.classList.add("tm-fly-inline");anchor.appendChild(wrap)}else document.body.appendChild(wrap);
   const tab=wrap.querySelector(".tm-fly-tab");let pinned=false,timer=null;
   const set=o=>{wrap.classList.toggle("open",o);tab.setAttribute("aria-expanded",String(o))};
   const open=()=>{clearTimeout(timer);set(true)};
