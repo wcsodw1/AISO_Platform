@@ -11,6 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 HTTP_PW = secrets.token_urlsafe(12)
+BAD_PW = secrets.token_urlsafe(12)
 os.environ["AISO_TERMINAL_PASSWORD"] = HTTP_PW
 import launcher  # noqa: E402
 
@@ -54,7 +55,7 @@ class TerminalHttpTest(unittest.TestCase):
         self.assertEqual(st, 403)
 
     def test_login_flow_and_shell(self):
-        st, _ = call(self.port, "POST", "/api/terminal/login", {"password": "wrong"})
+        st, _ = call(self.port, "POST", "/api/terminal/login", {"password": BAD_PW})
         self.assertEqual(st, 401)
         st, _ = call(self.port, "POST", "/api/terminal/open", {})
         self.assertEqual(st, 401)                        # no token

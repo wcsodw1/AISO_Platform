@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from benchmark.run_auth import LOCK_AFTER_FAILS, PASSWORD_ENV, RUN_TICKET_TTL, RunAuth, RunAuthError, is_run_request  # noqa: E402
 
 PW = secrets.token_urlsafe(12)       # generated per run: no password literal in the repository
+BAD = secrets.token_urlsafe(12)      # a different random value for the "wrong password" cases (also no literal)
 
 
 class Clock:
@@ -54,7 +55,7 @@ class RunAuthUnitTest(unittest.TestCase):
     def test_wrong_password_and_lockout(self):
         for _ in range(LOCK_AFTER_FAILS):
             with self.assertRaises(RunAuthError) as c:
-                self.auth.issue("nope")
+                self.auth.issue(BAD)
             self.assertEqual(c.exception.status, 401)
         with self.assertRaises(RunAuthError) as c:
             self.auth.issue(PW)                                # even the right one is refused while locked
@@ -65,7 +66,7 @@ class RunAuthUnitTest(unittest.TestCase):
     def test_disabled_without_password(self):
         os.environ.pop(PASSWORD_ENV)
         with self.assertRaises(RunAuthError) as c:
-            self.auth.issue("anything")
+            self.auth.issue(BAD)
         self.assertEqual(c.exception.status, 503)
         self.assertFalse(self.auth.consume("whatever"))
 
@@ -124,7 +125,7 @@ class RunAuthHttpTest(unittest.TestCase):
             self.assertEqual(body.get("code"), "run-password-required")
 
     def test_wrong_password_gives_no_ticket(self):
-        st, body = self.call("/api/run-auth", {"password": "wrong"})
+        st, body = self.call("/api/run-auth", {"password": BAD})
         self.assertEqual(st, 401)
         self.assertNotIn("ticket", body)
 

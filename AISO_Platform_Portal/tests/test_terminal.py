@@ -12,6 +12,7 @@ from benchmark.terminal import LOCK_AFTER_FAILS, PASSWORD_ENV, TerminalError, Te
 
 PW = secrets.token_urlsafe(12)       # generated per run: no password literal in the repository
 BEARER = secrets.token_urlsafe(12)
+BAD = secrets.token_urlsafe(12)
 
 
 def read_until(svc, token, sid, needle, timeout=6.0):
@@ -54,7 +55,7 @@ class TerminalServiceTest(unittest.TestCase):
     def test_wrong_password_and_lockout(self):
         for _ in range(LOCK_AFTER_FAILS):
             with self.assertRaises(TerminalError) as c:
-                self.svc.login("nope")
+                self.svc.login(BAD)
             self.assertEqual(c.exception.status, 401)
         with self.assertRaises(TerminalError) as c:
             self.svc.login(PW)        # even the right password is refused while locked
