@@ -12,7 +12,7 @@ window.AisoTerm=(function(){
 
  function mount(root,opt){
   let machine=opt.machine;
-  root.classList.add("tm-root");
+  root.classList.add("tm-root","tm-locked");   // stage 1: only the unlock form is visible
   const pick=opt.machines?`<label class="tm-pick">Example run<span class="bz">範例</span><select>${opt.machines.map(([k,l])=>`<option value="${k}"${k===machine?" selected":""}>${esc(l)}</option>`).join("")}</select></label>`:"";
   root.innerHTML=pick+`<div class="tm-tabs" role="tablist">
     <button type="button" role="tab" class="on" data-t="live">Live shell<span class="bz">即時終端</span></button>
@@ -63,7 +63,7 @@ window.AisoTerm=(function(){
    const targets=st.targets||[];
    el.innerHTML=`<form class="tm-login"><label>Terminal password<span class="bz">終端密碼（第二層）</span><input type="password" autocomplete="off" required></label>${targets.length?`<label>Connect to<span class="bz">連線目標</span><select class="tm-target"><option value="">This computer · 本機</option>${targets.map(x=>`<option value="${esc(x)}"${D&&D.target===x?" selected":""}>${esc(x)} (ssh)</option>`).join("")}</select></label>`:""}<button type="submit" class="tm-btn pri">Unlock<span class="bz">解鎖</span></button><p class="tm-note tm-msg" aria-live="polite">This opens a real shell on this computer. 這會在本機開啟真實的 shell。</p></form>`;
    el.querySelector("form").onsubmit=async ev=>{ev.preventDefault();const f=ev.currentTarget,msg=f.querySelector(".tm-msg");
-    try{const r=await api("login",{method:"POST",body:JSON.stringify({password:f.querySelector("input").value})});f.querySelector("input").value="";startShell(el,r.token,f.querySelector(".tm-target")?f.querySelector(".tm-target").value:"")}catch(e){msg.textContent=e.message;msg.classList.add("bad")}};
+    try{const r=await api("login",{method:"POST",body:JSON.stringify({password:f.querySelector("input").value})});f.querySelector("input").value="";root.classList.remove("tm-locked");startShell(el,r.token,f.querySelector(".tm-target")?f.querySelector(".tm-target").value:"")}catch(e){msg.textContent=e.message;msg.classList.add("bad")}};
   }
   async function startShell(el,token,target){
    const H={"X-Terminal-Token":token};
