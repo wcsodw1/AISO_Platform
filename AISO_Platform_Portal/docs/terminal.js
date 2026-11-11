@@ -69,9 +69,9 @@ window.AisoTerm=(function(){
    const H={"X-Terminal-Token":token};
    el.innerHTML=`<div class="tm-bar"><b>Live shell<span class="bz">即時終端</span></b><span class="tm-badge warn" data-s>connecting…</span><span class="tm-sp"></span>
      <button type="button" class="tm-btn" data-a="probe">Check machines<span class="bz">檢查可連線</span></button><button type="button" class="tm-btn" data-a="int">Ctrl+C</button><button type="button" class="tm-btn" data-a="clear">Clear<span class="bz">清除</span></button><button type="button" class="tm-btn" data-a="close">Close<span class="bz">關閉</span></button></div>
-    <pre class="tm-screen tm-live" tabindex="0"></pre>
     ${(D&&D.presets&&D.presets.length)?`<div class="tm-presets"><b>Benchmark<span class="bz">一鍵帶入</span></b>${D.presets.map((p,i)=>`<button type="button" class="tm-btn${p.run?" run":""}" data-preset="${i}">${esc(p.label)}</button>`).join("")}<small>Fills the input only; press Send to run. 只帶入指令，按 Send 才會執行。</small></div>`:""}
-    <form class="tm-input"><span class="tm-prompt">$</span><textarea rows="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command" placeholder="Paste or type commands · Enter = send, Shift+Enter = new line"></textarea><input type="password" class="tm-pw" autocomplete="off" aria-label="password" hidden><button type="submit" class="tm-btn pri">Send<span class="bz">送出</span></button></form>
+    <div class="tm-term"><pre class="tm-screen tm-live" tabindex="0"></pre>
+    <form class="tm-input"><span class="tm-prompt">$</span><textarea rows="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command" placeholder="Paste or type commands · Enter = send, Shift+Enter = new line"></textarea><input type="password" class="tm-pw" autocomplete="off" aria-label="password" hidden><button type="submit" class="tm-btn pri">Send<span class="bz">送出</span></button></form></div>
     <p class="tm-note">Runs in the repository folder with a minimal environment (no AISO_* secrets). Idle shells are closed after 15 minutes. 閒置 15 分鐘會自動關閉。</p>`;
    const scr=el.querySelector(".tm-live"),inp=el.querySelector(".tm-input textarea"),pw=el.querySelector(".tm-pw"),badge=el.querySelector("[data-s]");
    let sid=null,since=0,stop=false,hist=[],hi=0;
@@ -89,7 +89,7 @@ window.AisoTerm=(function(){
    const send=d=>api("write",{method:"POST",body:JSON.stringify({sid,data:d}),headers:H}).catch(e=>setState(e.message,false));
    const fit=()=>{inp.style.height="auto";inp.style.height=Math.min(180,inp.scrollHeight)+"px"};
    inp.addEventListener("input",fit);
-   el.querySelector(".tm-input").onsubmit=ev=>{ev.preventDefault();if(!pw.hidden){const v=pw.value;pw.value="";send(v+"\n");return}const v=inp.value;if(v.trim())hist.push(v);hi=hist.length;inp.value="";fit();send(v.replace(/\r\n?/g,"\n").replace(/\n*$/,"")+"\n")};
+   el.querySelector(".tm-input").onsubmit=ev=>{ev.preventDefault();if(!pw.hidden){const v=pw.value;pw.value="";send(v+"\n");scr.scrollTop=scr.scrollHeight;return}const v=inp.value;if(v.trim())hist.push(v);hi=hist.length;inp.value="";fit();scr.scrollTop=scr.scrollHeight;send(v.replace(/\r\n?/g,"\n").replace(/\n*$/,"")+"\n")};
    inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();el.querySelector(".tm-input").requestSubmit()}});
    inp.addEventListener("keydown",e=>{if(e.key==="ArrowUp"&&hist.length&&!/\n/.test(inp.value.slice(0,inp.selectionStart))){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault()}else if(e.key==="ArrowDown"&&!/\n/.test(inp.value.slice(inp.selectionStart))){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||"";e.preventDefault()}else if(e.key==="c"&&e.ctrlKey){send("\x03");e.preventDefault()}});
    el.querySelector('[data-a="probe"]').onclick=async()=>{try{const r=await api("probe",{method:"POST",body:"{}",headers:H});scr.textContent+=`\n[reachability] ${r.reachable}/${r.total} machines answer on SSH:\n`+r.targets.map(x=>`  ${x.reachable?"✓":"✗"} ${x.name}  ${x.user||""}@${x.host||"?"}:${x.port||""}`).join("\n")+"\n";scr.scrollTop=scr.scrollHeight}catch(e){setState(e.message,false)}};
@@ -126,7 +126,7 @@ window.AisoTerm=(function(){
   tab.addEventListener("click",()=>{pinned=!pinned||!wrap.classList.contains("open");pinned?open():set(false);wrap.classList.toggle("pinned",pinned)});
   wrap.querySelector(".tm-fly-panel").addEventListener("pointerdown",()=>{pinned=true;wrap.classList.add("pinned")});
   wrap.querySelector(".tm-fly-x").onclick=()=>{pinned=false;wrap.classList.remove("pinned");if(wrap.classList.contains("full"))setFull(false);set(false)};
-  const maxb=wrap.querySelector(".tm-fly-max"),setFull=on=>{if(!on){const pn=wrap.querySelector(".tm-fly-panel");pn.style.cssText=""}wrap.classList.toggle("full",on);if(!on)place();maxb.setAttribute("aria-pressed",String(on));maxb.textContent=on?"⤡":"⤢";document.documentElement.classList.toggle("tm-noscroll",on);if(on){pinned=true;wrap.classList.add("pinned");set(true)}};
+  const maxb=wrap.querySelector(".tm-fly-max"),setFull=on=>{wrap.querySelector(".tm-fly-panel").style.cssText="";wrap.classList.toggle("full",on);if(!on)place();maxb.setAttribute("aria-pressed",String(on));maxb.textContent=on?"⤡":"⤢";document.documentElement.classList.toggle("tm-noscroll",on);if(on){pinned=true;wrap.classList.add("pinned");set(true)}};
   maxb.onclick=()=>setFull(!wrap.classList.contains("full"));
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(wrap.classList.contains("full")){setFull(false);return}pinned=false;wrap.classList.remove("pinned");set(false)}});
  }

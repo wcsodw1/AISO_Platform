@@ -75,3 +75,20 @@ html.tm-noscroll{overflow:hidden}
 .tm-fly-inline .tm-fly-panel{width:min(1200px,94vw)}
 .tm-fly.full .tm-live{height:calc(100vh - 340px)}
 .tm-fly.full .tm-fly-panel{max-height:none!important}
+
+/* one terminal surface: output scrolls, the prompt line stays at the bottom and is always visible */
+[hidden]{display:none!important}
+.tm-term{display:flex;flex-direction:column;min-height:360px;border:1px solid rgba(244,239,228,.14);border-radius:14px;background:#060a10;overflow:hidden}
+.tm-term .tm-live{flex:1;min-height:0;height:auto;max-height:none;border:0;border-radius:0;background:transparent}
+.tm-term .tm-input{margin:0;padding:8px 14px;border-top:1px solid rgba(244,239,228,.12);background:rgba(244,239,228,.03);align-items:flex-start}
+.tm-term .tm-input textarea,.tm-term .tm-input .tm-pw{border:0;background:transparent;padding:8px 6px;min-height:38px;max-height:140px;outline:0;box-shadow:none}
+.tm-term .tm-input .tm-btn{align-self:flex-end}
+.tm-term .tm-input .tm-prompt{padding-top:9px}
+.tm-fly.full .tm-fly-panel{display:flex;flex-direction:column}
+.tm-fly.full .tm-fly-panel .tm-root{flex:1;min-height:0;display:flex;flex-direction:column}
+.tm-fly.full .tm-fly-panel .tm-panel[data-p="live"]{flex:1;min-height:0;display:flex;flex-direction:column}
+.tm-fly.full .tm-panel[data-p="live"]>.tm-login,.tm-fly.full .tm-panel[data-p="live"]>.tm-empty{flex:none}
+.tm-fly.full .tm-term{min-height:0}
+.tm-fly.full .tm-term .tm-live{height:auto}
+.tm-fly:not(.full) .tm-term .tm-live{height:clamp(300px,44vh,640px)}
+.tm-fly.full .tm-term{flex:1}
