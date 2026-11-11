@@ -54,7 +54,8 @@
    "aggregate": "sum output tokens / complete batch wall seconds",
    "normalized": "aggregate / NP"
   },
-  "context_length": 18432
+  "context_length": 18432,
+  "gpu_evidence": "機器回報 Arc Pro B70 ×2（11/10）"
  },
  "b70_runs": [
   {

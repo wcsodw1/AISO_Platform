@@ -43,7 +43,8 @@
   "cont_batching": "ON",
   "context_shift": "OFF",
   "gpu_layers": 999,
-  "cache_ram": "0"
+  "cache_ram": "0",
+  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）"
  },
  "b60_runs": [
   {

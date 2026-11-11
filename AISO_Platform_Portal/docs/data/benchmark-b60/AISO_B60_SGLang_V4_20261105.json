@@ -32,7 +32,8 @@
   "image_sha256": "a66de2a4b337f4a5ac55fdb5d5b7f7ff2a33ff76b970ae4773caabf2795695b4",
   "gpus_used": 2,
   "attention_backend": "intel_xpu",
-  "page_size": 64
+  "page_size": 64,
+  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）"
  },
  "b60_runs": [
   {

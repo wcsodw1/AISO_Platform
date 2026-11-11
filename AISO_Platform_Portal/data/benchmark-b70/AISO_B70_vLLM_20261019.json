@@ -31,7 +31,8 @@
   "batch": 4096,
   "vram_total_gb": 64,
   "vram_layout": "32 GB x 2",
-  "runtime": "UNVERIFIED"
+  "runtime": "UNVERIFIED",
+  "gpu_evidence": "推定 B70：執行日 10/19（早於 10/27 換卡），資料內無裝置字串"
  },
  "b70_runs": [
   {

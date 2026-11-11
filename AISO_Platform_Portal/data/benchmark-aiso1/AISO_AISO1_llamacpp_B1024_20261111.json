@@ -52,7 +52,8 @@
    "normalized": "aggregate/NP, tokens/s/user (one concurrent request per user)"
   },
   "batch": 1024,
-  "ubatch": 512
+  "ubatch": 512,
+  "gpu_evidence": "機器回報 Radeon 8060S（RADV GFX1151）"
  },
  "aiso1_runs": [
   {

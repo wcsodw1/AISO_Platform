@@ -31,7 +31,8 @@
   "memory_fraction_note": "B60 vLLM 啟動命令（command.json）已核實：TP2、max-model-len 18432、max-num-seqs 10、max-num-batched-tokens 4096、gpu-memory-utilization 0.90、no prefix caching。",
   "image_sha256": "95ac815038c4b3537b173798bfe3b89bdf525a52bd653cd14d4deb01f1062be7",
   "gpus_used": 2,
-  "chunked_prefill": "ON"
+  "chunked_prefill": "ON",
+  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）"
  },
  "b60_runs": [
   {
