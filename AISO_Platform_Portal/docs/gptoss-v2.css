@@ -287,3 +287,13 @@
 @media(max-width:900px){.pt-main{grid-template-columns:1fr}}
 
 .pt-ucols{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px 24px}
+/* parameter panels: larger, clearer type */
+.pt-h{font-size:24px;margin:26px 0 10px}.pt-h small{font-size:16px}
+.pt-lead{font-size:18px}
+.pt-split h4{font-size:21px}.pt-split h4 small{font-size:16px}
+.pt-same dt{font-size:17px;color:var(--ivory);opacity:.8}.pt-same dd{font-size:26px;margin-top:4px}
+.pt-only dl{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px 28px}
+.pt-u dt{font-size:18px;color:var(--ivory);opacity:.85}.pt-u dd{font-size:21px;gap:6px 22px;margin-top:5px}.pt-u dd i{font-size:16px}
+#secUnmatched .v2-fn{font-size:16px}.pt-ucols{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+.pt-tbl{font-size:17px}.pt-tbl thead th{font-size:16px}
+#stSetup .v2-fn{font-size:16px;line-height:1.6}
