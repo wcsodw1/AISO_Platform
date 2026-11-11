@@ -14,7 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="gptoss-v2.css?v=49">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
@@ -31,22 +31,22 @@
       <p class="v2-sub">Proof, not specs.<span class="zh-i">先選機型，再實測，最後看結果</span></p>
     </section>
     <nav class="bh-menu" role="tablist" aria-label="Benchmark menu">
-      <button type="button" role="tab" data-tab="benchmarking" class="on"><b>Benchmarking</b><small>實測：選機型 → Run → Result</small></button>
-      <button type="button" role="tab" data-tab="sota"><b>SOTA R&amp;D</b><small>前沿研究：LMCache …</small></button>
+      <button type="button" role="tab" data-tab="benchmarking" class="on"><b>Benchmarking<small class="zhs">實測</small></b><small>Machine → Run → Result</small></button>
+      <button type="button" role="tab" data-tab="sota"><b>SOTA R&amp;D<small class="zhs">前沿研究</small></b><small>LMCache …</small></button>
     </nav>
     <section class="bh-panel" id="tabBenchmarking" role="tabpanel">
-      <div class="bh-flow"><span>① 選廠商</span><i>→</i><span>② 選機型</span><i>→</i><span>③ Run 實測</span><i>→</i><span>④ 看 Result</span></div>
+      <div class="bh-flow"><span>① Vendor<small class="zhs">選廠商</small></span><i>→</i><span>② Machine<small class="zhs">選機型</small></span><i>→</i><span>③ Run<small class="zhs">實測</small></span><i>→</i><span>④ Result<small class="zhs">看結果</small></span></div>
       <div id="bhPicker"></div>
       <a class="st-view bh-all" href="stress-test-compare.html"><b>View Result<small>結果總覽</small></b><em>B60 · B70 · AISO1 並排比對</em><i aria-hidden="true">→</i></a>
     </section>
     <section class="bh-panel" id="tabSota" role="tabpanel" hidden>
-      <div class="sp-col bh-sota-col"><h3>已有結果<small>Results</small></h3><div class="spm">
-        <div class="sp-model has"><a class="sp-open" href="gptoss-v2.html"><span class="sp-name">LMCache v.s aiDAPTIV</span><span class="sp-tier">快取效能對照</span><em>Result 結果 →</em></a></div>
+      <div class="sp-col bh-sota-col"><h3>Results<small class="zhs">已有結果</small></h3><div class="spm">
+        <div class="sp-model has"><a class="sp-open" href="gptoss-v2.html"><span class="sp-name">LMCache v.s aiDAPTIV</span><span class="sp-tier">Cache performance<small class="zhs">快取效能對照</small></span><em>Result<small class="zhs">結果</small> →</em></a></div>
       </div></div>
-      <div class="sp-col bh-sota-col"><h3>待 RD list<small>Pending R&amp;D</small></h3><div class="spm" id="rdTodo" aria-live="polite"></div></div>
+      <div class="sp-col bh-sota-col"><h3>Pending R&amp;D<small class="zhs">待 RD list</small></h3><div class="spm" id="rdTodo" aria-live="polite"></div></div>
     </section>
   </main>
-<script src="machine-picker.js?v=1"></script>
+<script src="machine-picker.js?v=4"></script>
 <script>
 (function(){
  MachinePicker.mount(document.getElementById("bhPicker"));
@@ -55,7 +55,7 @@
  tabs.forEach(function(b){b.addEventListener("click",function(){open(b.dataset.tab)});b.addEventListener("mouseenter",function(){open(b.dataset.tab)})});
  fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
-  document.getElementById("rdTodo").innerHTML=d.items.map(function(x){return '<div class="sp-model soon rd"><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier">'+esc(x.added.replace(/-/g,"/"))+' 加入</span><em>待 RD</em></div>'}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">待 RD list 載入失敗</span></div>'});
+  document.getElementById("rdTodo").innerHTML=d.items.map(function(x){return '<div class="sp-model soon rd"><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier">Added <small class="zhs">加入</small> '+esc(x.added.replace(/-/g,"/"))+'</span><em>Pending<small class="zhs">待 RD</small></em></div>'}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
  open((location.hash||"").slice(1)||"benchmarking");
  window.addEventListener("hashchange",function(){open((location.hash||"").slice(1))});
 })();

@@ -381,3 +381,14 @@
 .bh-sota{grid-template-columns:minmax(0,1fr)}
 
 .bh-sota-col{margin-bottom:26px}.sp-model.rd{opacity:1}.sp-model.rd .sp-name{font-size:22px}.sp-model.rd em{color:var(--gold);font-weight:700;opacity:.9}
+
+.sp-on{font-size:16px;font-weight:700;color:#6fdc9a}.sp-off{font-size:16px;color:#e0a040}
+.sp-model.has.off{border-color:rgba(244,239,228,.2);background:rgba(5,8,14,.5)}.sp-model.has.off .sp-open em{color:var(--muted)}
+.sp-noresult{color:var(--muted)!important;font-weight:600!important}
+
+/* bilingual pattern: English large, Chinese small beside it */
+.zhs{margin-left:.55em;color:var(--muted);font-size:16px;font-weight:500;letter-spacing:0;white-space:nowrap}
+h1 .zhs,h2 .zhs,h3 .zhs{font-size:17px}
+.spv-sub{display:block;font-size:16px;color:var(--muted)}.sp-vendor .spv-sub .zhs{font-size:16px}
+.sp-tier .zhs{font-size:16px}.sp-model em .zhs{font-size:16px;color:var(--muted);font-weight:500}.sp-run .zhs{color:#3b3720;font-size:16px;font-weight:700}
+.bh-flow .zhs{color:var(--muted);font-size:16px}.bh-menu b .zhs{font-size:17px}

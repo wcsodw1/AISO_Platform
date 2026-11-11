@@ -5,6 +5,12 @@ description: AISO Portal UI rules - minimum type sizes (headings >= 16pt, body >
 
 # PF_UI - UI rules for the AISO Portal (David, 2026-11-11)
 
+## Bilingual labels - EVERY page (David, 2026-11-11, said again)
+- **English is the large text, Chinese is small, right beside it.** Titles, section headings, tab / button labels, field labels, card names, status badges, table headers.
+- Shared pattern: `English<small class="zhs">中文</small>` (class `.zhs` in `gptoss-v2.css`; `<h2>English<span class="zh">中文</span></h2>` on the report pages; `.bz` on Sizing). Chinese stays >= 16 px.
+- Never make Chinese the main text with English as the small one. Long explanations belong in hover bubbles, not on the page.
+- When scanning a page for type size (below), also read every heading and button: Chinese-first ones are bugs.
+
 ## Type sizes (people must be able to read it)
 - **Headings: at least 16 pt = 21.33 px.** (h1-h3 and anything that acts as a title)
 - **Everything else: at least 12 pt = 16 px.** Labels, captions, table cells, buttons, badges, footnotes, English and Chinese alike.

@@ -44,31 +44,31 @@
     </section>
 
     <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh" id="zhMetrics">四項指標 · B60 · B70 · AISO1 長條圖</span></h2></header>
+      <header><h2>TTFT · TPOT · TPS<span class="zh" id="zhMetrics">四項指標</span></h2></header>
       <div id="stMetrics"></div>
     </section>
 
     <section class="report-section" id="secRepeat">
-      <header><h2>Repeat 穩定度<span class="zh">自己跟自己比 · Repeat 1 / 2 / 3 在 4K · 8K · 16K 的變化 · 隨上方框架、模型、NP 切換</span></h2><div class="st-tabs" id="rpMetric" role="tablist" aria-label="Repeat metric"></div></header>
+      <header><h2>Repeat stability<span class="zh">Repeat 穩定度</span></h2><div class="st-tabs" id="rpMetric" role="tablist" aria-label="Repeat metric"></div></header>
       <div id="stRepeat"></div>
       <p class="v2-fn">每條線是同一情境重複測試的一次（Repeat 1 / 2 / 3）；三條線越貼近，代表這台機器自己越穩定。只畫有逐次原始數值的資料：目前 B60（vLLM / SGLang / llama.cpp）、B70 llama.cpp（V4 batch 1024）與 AISO1 llama.cpp 重測有 TPS，TTFT / TPOT 逐次目前只有 B60。沒有逐次數值的機器顯示原因，不用平均值補。TPS (Normalized) = 每次 Aggregate ÷ NP。</p>
     </section>
 
     <section class="report-section" id="secTable">
-      <header><h2>完整數值<span class="zh">四個指標 · 含 TPS Aggregate</span></h2></header>
+      <header><h2>Full values<span class="zh">完整數值</span></h2></header>
       <p class="v2-fine" id="stTableSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
       <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度；Aggregate = NP × Output tokens ÷ E2E（含首字等待）。只有 NP 與 Input 完全相同的長條才有可比性；B70 為 NP 2 / 4、Input 4K–64K，B60 為 NP 1 / 2 / 5、Input 4K–16K。</p>
     </section>
 
     <section class="report-section" id="secCfg">
-      <header><h2>測試設定差異<span class="zh" id="zhCfg">同框架 · 同模型 · 三機實際啟動條件</span></h2></header>
+      <header><h2>Test configuration<span class="zh" id="zhCfg">測試設定差異</span></h2></header>
       <p class="v2-fine" id="stCfgSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCfg"></table></div>
     </section>
 
     <section class="report-section" id="secCover">
-      <header><h2>資料覆蓋<span class="zh">框架 × 模型 × 機器</span></h2></header>
+      <header><h2>Coverage<span class="zh">資料覆蓋</span></h2></header>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCover"></table></div>
       <p class="v2-fn">「無資料」= 尚未測試或無法啟動，不是 0，也不是通過；不使用推估值填入。</p>
     </section>
@@ -76,7 +76,7 @@
     <section class="report-section" id="secUnmatched" hidden></section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-report.html">壓測報告 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>資料登錄 JSON ↓</a></header>
+      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-report.html">Report<small class="zhs">壓測報告</small> →</a><a class="v2-dl" href="stress-test-b60.html">B60<small class="zhs">完整測試</small> →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>Registry JSON<small class="zhs">資料登錄</small> ↓</a></header>
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
