@@ -142,7 +142,7 @@
     $("szJumpTxt").textContent = ` · ${label(bestI)} · ${C.resEn(bestI.servers, C.physical(bestI))}`;
     const cur = list.find(o => o.gpu.id === picked);
     if (!cur) {
-      $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)}<span class="bz">需要的總顯存 · 請從上方選擇機型</span></p>`;
+      $("szPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(b.total)}<span class="bz">需要的總顯存 · 請從左側選擇機型</span></p>`;
       $("szPickCalc").innerHTML = `<p class="sz-sub">Choose a machine first<span class="bz">先選擇機型</span></p>`;
       return;
     }

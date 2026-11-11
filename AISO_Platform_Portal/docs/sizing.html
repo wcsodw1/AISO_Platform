@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=58">
+  <link rel="stylesheet" href="sizing.css?v=59">
 </head>
 <body>
   <header class="site-header">
@@ -107,10 +107,11 @@
       <header><div><p class="section-label">STEP 3</p><h2>Select a configuration for <var>M<sub>required</sub></var><span class="bz">依據 Step 2 選擇相對應配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
       <div class="sz-s3"><div class="sz-s3-main">
         <div id="szCasHost" class="sz-cas-host"></div>
+        </div>
+        <div class="sz-s3-side">
         <div id="szPickDetail" class="sz-pickline"></div>
         <details class="sz-more"><summary>How N_GPU is calculated<span class="bz">算式</span></summary><div id="szPickCalc" class="sz-detail"></div></details>
-        </div>
-        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">VRAM and servers sizes are planning values — editable<span class="bz">可修改</span></p><div id="szRows" class="sz-ref-list"></div></aside></div>
+        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">VRAM and servers sizes are planning values — editable<span class="bz">可修改</span></p><div id="szRows" class="sz-ref-list"></div></aside></div></div>
       </section>
 
         </div><!-- /szSingle -->
@@ -141,10 +142,11 @@
         <header><div><p class="section-label">STEP 3</p><h2>Select a configuration for <var>M<sub>total</sub></var><span class="bz">依據 Step 2 選擇相對應配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
         <div class="sz-s3"><div class="sz-s3-main">
         <div id="mzCasHost" class="sz-cas-host"></div>
+        </div>
+        <div class="sz-s3-side">
         <div id="mzPickDetail" class="sz-pickline"></div>
         <details class="sz-more" open><summary>Placement<span class="bz">配置明細：每張 GPU 放哪些模型</span></summary><div id="mzDetail" class="sz-detail"></div></details>
-        </div>
-        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">Needs for the current scenario<span class="bz">依目前情境所需張數</span></p><div id="mzRows" class="sz-ref-list"></div></aside></div>
+        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">Needs for the current scenario<span class="bz">依目前情境所需張數</span></p><div id="mzRows" class="sz-ref-list"></div></aside></div></div>
       </section>
 
       <section class="report-section">
@@ -186,6 +188,6 @@
     </div>
   </main>
   <script src="sizing-core.js?v=30"></script>
-  <script src="sizing.js?v=29"></script>
-  <script src="sizing-multi.js?v=20"></script>
+  <script src="sizing.js?v=30"></script>
+  <script src="sizing-multi.js?v=21"></script>
 </body></html>

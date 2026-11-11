@@ -104,7 +104,7 @@
     C.syncRef($("mzCasHost"), $("mzRows"), refState);
     const cur = list.find(o => o.gpu.id === picked);
     if (!cur) {
-      $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)}<span class="bz">合計顯存 · 請從上方選擇機型</span></p>`;
+      $("mzPickDetail").innerHTML = `<p class="sz-final-line">${C.memText(total)}<span class="bz">合計顯存 · 請從左側選擇機型</span></p>`;
       $("mzDetail").innerHTML = `<p class="sz-sub">Choose a machine first<span class="bz">先選擇機型</span></p>`;
     } else {
     const s = cur.size, gp = cur.gpu, ci = its.find(o => o.gpu.id === picked);
