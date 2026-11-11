@@ -1,0 +1,18 @@
+.dn-fly{position:fixed;right:18px;bottom:18px;z-index:90}
+.dn-btn{position:relative;display:flex;align-items:center;justify-content:center;width:52px;height:52px;margin-left:auto;border:1px solid rgba(237,120,111,.6);border-radius:50%;background:#1a1114;color:#ed786f;font-size:24px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.dn-btn:hover{background:#27161b}
+.dn-count{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:#ed786f;color:#1a1114;font:700 14px/22px inherit;font-style:normal;text-align:center}
+.dn-panel{position:absolute;right:0;bottom:62px;width:min(560px,92vw);max-height:min(70vh,640px);overflow:auto;padding:14px 16px 16px;border:1px solid rgba(237,120,111,.5);border-radius:18px 18px 4px 18px;background:#0e0f14;box-shadow:-12px -12px 40px rgba(0,0,0,.6);transform-origin:100% 100%;opacity:0;visibility:hidden;transform:scale(.92);transition:opacity .18s,transform .22s,visibility 0s .22s}
+.dn-fly.open .dn-panel{opacity:1;visibility:visible;transform:none;transition:opacity .18s,transform .22s,visibility 0s}
+.dn-panel header{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
+.dn-panel header b{color:#f4efe4;font-size:18px}
+.dn-panel .bz{margin-left:.6em;color:#aeb4c0;font-size:15px;font-weight:500}
+.dn-x{width:32px;height:32px;border:1px solid rgba(244,239,228,.25);border-radius:50%;background:transparent;color:#c4c9d4;cursor:pointer}
+.dn-list{display:grid;gap:10px}
+.dn-list .dn-item{margin:0!important}
+@media(prefers-reduced-motion:reduce){.dn-panel,.dn-fly.open .dn-panel{transition:none}}
+.dn-tabs{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
+.dn-tabs button{font:inherit;font-size:15px;font-weight:700;padding:7px 14px;border:1px solid rgba(244,239,228,.2);border-radius:999px;background:transparent;color:#c4c9d4;cursor:pointer}
+.dn-tabs button.on{background:rgba(237,120,111,.18);border-color:rgba(237,120,111,.6);color:#ed786f}
+.dn-tabs .dn-n{margin-left:8px;font-style:normal;font-size:14px;opacity:.85}
+.dn-list[hidden]{display:none}
