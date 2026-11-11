@@ -269,7 +269,9 @@ class Handler(SimpleHTTPRequestHandler):
             if url.path == "/api/terminal/login":
                 return self.send_json(TERMINAL.login(body.get("password", "")))
             if url.path == "/api/terminal/open":
-                return self.send_json(TERMINAL.open(token))
+                return self.send_json(TERMINAL.open(token, body.get("target") or None))
+            if url.path == "/api/terminal/probe":
+                return self.send_json(TERMINAL.probe(token))
             if url.path == "/api/terminal/write":
                 return self.send_json(TERMINAL.write(token, body.get("sid", ""), body.get("data", "")))
             if url.path == "/api/terminal/close":

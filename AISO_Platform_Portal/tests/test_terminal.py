@@ -94,3 +94,25 @@ class TerminalServiceTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SshTargetTest(unittest.TestCase):
+    def test_targets_parsed_from_config_and_allowlisted(self):
+        import tempfile
+        cfg = tempfile.NamedTemporaryFile("w", suffix=".cfg", delete=False)
+        cfg.write("Host github.com\n  User git\nHost AISO1\n  HostName 192.168.91.97\nHost *\n  ForwardAgent no\nHost PRO-1 PRO-2\n  User x\n")
+        cfg.close()
+        self.assertEqual(TerminalService.ssh_targets(cfg.name), ["AISO1", "PRO-1", "PRO-2"])
+        saved = os.environ.get(PASSWORD_ENV)
+        os.environ[PASSWORD_ENV] = "p"
+        try:
+            svc = TerminalService(Path(__file__).resolve().parent)
+            tok = svc.login("p")["token"]
+            with self.assertRaises(TerminalError) as c:
+                svc.open(tok, "evil.example.com")
+            self.assertEqual(c.exception.status, 400)
+        finally:
+            if saved is None:
+                os.environ.pop(PASSWORD_ENV, None)
+            else:
+                os.environ[PASSWORD_ENV] = saved

@@ -18,6 +18,8 @@ import secrets
 import signal
 import struct
 import subprocess
+import re
+import socket
 import termios
 import threading
 import time
@@ -107,7 +109,7 @@ class TerminalService:
         return bool(os.environ.get(PASSWORD_ENV, "").strip())
 
     def status(self):
-        return {"enabled": self.enabled(), "message": "" if self.enabled() else f"Terminal disabled: set {PASSWORD_ENV} before starting the launcher."}
+        return {"enabled": self.enabled(), "targets": self.ssh_targets(), "message": "" if self.enabled() else f"Terminal disabled: set {PASSWORD_ENV} before starting the launcher."}
 
     def _reap(self):
         now = time.time()
@@ -148,24 +150,59 @@ class TerminalService:
 
     # ---- session -----------------------------------------------------------------------------------------------
     def _env(self):
-        keep = {k: v for k, v in os.environ.items() if k in {"PATH", "HOME", "LANG", "LC_ALL", "USER", "LOGNAME"}}
+        keep = {k: v for k, v in os.environ.items() if k in {"PATH", "HOME", "LANG", "LC_ALL", "USER", "LOGNAME", "SSH_AUTH_SOCK"}}
         keep.update({"TERM": "dumb", "PS1": "\\w $ ", "HISTFILE": "/dev/null", "BASH_SILENCE_DEPRECATION_WARNING": "1"})
         return keep           # AISO_* (password, bearer token) are deliberately not inherited
 
-    def open(self, token):
+    # ---- ssh targets (aliases from ~/.ssh/config only; nothing else can be typed into a host field) ---------------------
+    @staticmethod
+    def ssh_targets(config=None):
+        path = config or os.path.expanduser("~/.ssh/config")
+        try:
+            text = open(path, encoding="utf-8", errors="ignore").read()
+        except OSError:
+            return []
+        out = []
+        for m in re.finditer(r"^\s*Host\s+(.+)$", text, re.M | re.I):
+            for a in m.group(1).split():
+                if re.fullmatch(r"[A-Za-z0-9._-]+", a) and not a.lower().startswith("github") and a not in out:
+                    out.append(a)
+        return out
+
+    def probe(self, token, config=None):
+        """Which configured machines answer on their SSH port right now (TCP connect only, no login)."""
         self._auth(token)
+        res = []
+        for a in self.ssh_targets(config):
+            info = {"name": a, "reachable": False}
+            try:
+                g = subprocess.run(["ssh", "-G", a], capture_output=True, text=True, timeout=5).stdout
+                kv = {l.split(" ", 1)[0]: l.split(" ", 1)[1] for l in g.splitlines() if " " in l}
+                host, port, user = kv.get("hostname", ""), int(kv.get("port", "22")), kv.get("user", "")
+                info.update(host=host, port=port, user=user)
+                with socket.create_connection((host, port), timeout=3):
+                    info["reachable"] = True
+            except (OSError, ValueError, subprocess.SubprocessError):
+                pass
+            res.append(info)
+        return {"targets": res, "reachable": sum(1 for r in res if r["reachable"]), "total": len(res)}
+
+    def open(self, token, target=None):
+        self._auth(token)
+        if target and target not in self.ssh_targets():
+            raise TerminalError("Unknown SSH target.", 400)
         with self._lock:
             if self._session:
                 self._session.kill()
             master, slave = os.openpty()
             fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 32, 120, 0, 0))
-            argv = [self.shell] + (["--noprofile", "--norc", "-i"] if self.shell.endswith("bash") else ["-i"])
+            argv = ["ssh", "-tt", "-o", "ConnectTimeout=10", target] if target else [self.shell] + (["--noprofile", "--norc", "-i"] if self.shell.endswith("bash") else ["-i"])
             proc = subprocess.Popen(argv, stdin=slave, stdout=slave, stderr=slave, cwd=self.cwd, env=self._env(),
                                     start_new_session=True, close_fds=True,
                                     preexec_fn=lambda: fcntl.ioctl(0, termios.TIOCSCTTY, 0))
             os.close(slave)
             self._session, self._sid = _Session(proc, master), secrets.token_hex(8)
-            return {"sid": self._sid, "cwd": self.cwd}
+            return {"sid": self._sid, "cwd": target or self.cwd}
 
     def _get(self, sid):
         if not self._session or sid != self._sid:

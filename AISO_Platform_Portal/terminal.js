@@ -60,25 +60,26 @@ window.AisoTerm=(function(){
    let st;
    try{st=await api("status")}catch(e){el.innerHTML=`<p class="tm-empty">Local only<span class="bz">僅限本機</span><br><small>The live shell runs on the computer that hosts the launcher (localhost) and is not available on the public site. 公開網站不提供即時終端。</small></p>`;return}
    if(!st.enabled){el.innerHTML=`<p class="tm-empty">Terminal disabled<span class="bz">未啟用</span><br><small>${esc(st.message)}<br>設定環境變數 AISO_TERMINAL_PASSWORD 後重新啟動 launcher。</small></p>`;return}
-   el.innerHTML=`<form class="tm-login"><label>Terminal password<span class="bz">終端密碼（第二層）</span><input type="password" autocomplete="off" required></label><button type="submit" class="tm-btn pri">Unlock<span class="bz">解鎖</span></button><p class="tm-note tm-msg" aria-live="polite">This opens a real shell on this computer. 這會在本機開啟真實的 shell。</p></form>`;
+   const targets=st.targets||[];
+   el.innerHTML=`<form class="tm-login"><label>Terminal password<span class="bz">終端密碼（第二層）</span><input type="password" autocomplete="off" required></label>${targets.length?`<label>Connect to<span class="bz">連線目標</span><select class="tm-target"><option value="">This computer · 本機</option>${targets.map(x=>`<option value="${esc(x)}">${esc(x)} (ssh)</option>`).join("")}</select></label>`:""}<button type="submit" class="tm-btn pri">Unlock<span class="bz">解鎖</span></button><p class="tm-note tm-msg" aria-live="polite">This opens a real shell on this computer. 這會在本機開啟真實的 shell。</p></form>`;
    el.querySelector("form").onsubmit=async ev=>{ev.preventDefault();const f=ev.currentTarget,msg=f.querySelector(".tm-msg");
-    try{const r=await api("login",{method:"POST",body:JSON.stringify({password:f.querySelector("input").value})});f.querySelector("input").value="";startShell(el,r.token)}catch(e){msg.textContent=e.message;msg.classList.add("bad")}};
+    try{const r=await api("login",{method:"POST",body:JSON.stringify({password:f.querySelector("input").value})});f.querySelector("input").value="";startShell(el,r.token,f.querySelector(".tm-target")?f.querySelector(".tm-target").value:"")}catch(e){msg.textContent=e.message;msg.classList.add("bad")}};
   }
-  async function startShell(el,token){
+  async function startShell(el,token,target){
    const H={"X-Terminal-Token":token};
    el.innerHTML=`<div class="tm-bar"><b>Live shell<span class="bz">即時終端</span></b><span class="tm-badge warn" data-s>connecting…</span><span class="tm-sp"></span>
-     <button type="button" class="tm-btn" data-a="int">Ctrl+C</button><button type="button" class="tm-btn" data-a="clear">Clear<span class="bz">清除</span></button><button type="button" class="tm-btn" data-a="close">Close<span class="bz">關閉</span></button></div>
+     <button type="button" class="tm-btn" data-a="probe">Check machines<span class="bz">檢查可連線</span></button><button type="button" class="tm-btn" data-a="int">Ctrl+C</button><button type="button" class="tm-btn" data-a="clear">Clear<span class="bz">清除</span></button><button type="button" class="tm-btn" data-a="close">Close<span class="bz">關閉</span></button></div>
     <pre class="tm-screen tm-live" tabindex="0"></pre>
     <form class="tm-input"><span class="tm-prompt">$</span><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command"><button type="submit" class="tm-btn pri">Send<span class="bz">送出</span></button></form>
     <p class="tm-note">Runs in the repository folder with a minimal environment (no AISO_* secrets). Idle shells are closed after 15 minutes. 閒置 15 分鐘會自動關閉。</p>`;
    const scr=el.querySelector(".tm-live"),inp=el.querySelector(".tm-input input"),badge=el.querySelector("[data-s]");
    let sid=null,since=0,stop=false,hist=[],hi=0;
    const setState=(t,ok)=>{badge.textContent=t;badge.className="tm-badge "+(ok?"ok":"warn")};
-   try{const o=await api("open",{method:"POST",body:"{}",headers:H});sid=o.sid;setState("connected "+o.cwd.split("/").slice(-2).join("/"),true)}catch(e){setState(e.message,false);return}
+   try{const o=await api("open",{method:"POST",body:JSON.stringify({target:target||null}),headers:H});sid=o.sid;setState("connected "+(target?"ssh "+target:o.cwd.split("/").slice(-2).join("/")),true)}catch(e){setState(e.message,false);return}
    async function poll(){
     if(stop||!root.isConnected)return;
     try{const r=await api(`read?sid=${sid}&since=${since}`,{headers:H});since=r.next;
-     if(r.data){const atEnd=scr.scrollTop+scr.clientHeight>=scr.scrollHeight-8;scr.textContent+=r.data.replace(ANSI,"");if(atEnd)scr.scrollTop=scr.scrollHeight}
+     if(r.data){const atEnd=scr.scrollTop+scr.clientHeight>=scr.scrollHeight-8;scr.textContent+=r.data.replace(ANSI,"");inp.type=/(password|passphrase)[^\n]*:\s*$/i.test(scr.textContent.slice(-200))?"password":"text";if(atEnd)scr.scrollTop=scr.scrollHeight}
      if(!r.alive){setState("shell ended",false);stop=true;return}}
     catch(e){setState(e.message,false);stop=true;return}
     setTimeout(poll,350);
@@ -87,6 +88,7 @@ window.AisoTerm=(function(){
    const send=d=>api("write",{method:"POST",body:JSON.stringify({sid,data:d}),headers:H}).catch(e=>setState(e.message,false));
    el.querySelector(".tm-input").onsubmit=ev=>{ev.preventDefault();const v=inp.value;if(v.trim())hist.push(v);hi=hist.length;inp.value="";send(v+"\n")};
    inp.addEventListener("keydown",e=>{if(e.key==="ArrowUp"&&hist.length){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault()}else if(e.key==="ArrowDown"){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||"";e.preventDefault()}else if(e.key==="c"&&e.ctrlKey){send("\x03");e.preventDefault()}});
+   el.querySelector('[data-a="probe"]').onclick=async()=>{try{const r=await api("probe",{method:"POST",body:"{}",headers:H});scr.textContent+=`\n[reachability] ${r.reachable}/${r.total} machines answer on SSH:\n`+r.targets.map(x=>`  ${x.reachable?"✓":"✗"} ${x.name}  ${x.user||""}@${x.host||"?"}:${x.port||""}`).join("\n")+"\n";scr.scrollTop=scr.scrollHeight}catch(e){setState(e.message,false)}};
    el.querySelector('[data-a="int"]').onclick=()=>send("\x03");
    el.querySelector('[data-a="clear"]').onclick=()=>{scr.textContent=""};
    el.querySelector('[data-a="close"]').onclick=async()=>{stop=true;try{await api("close",{method:"POST",body:JSON.stringify({sid}),headers:H})}catch(e){}liveInit=false;el.innerHTML=`<p class="tm-empty">Shell closed<span class="bz">已關閉</span></p>`};
