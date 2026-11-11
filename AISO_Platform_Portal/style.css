@@ -3379,3 +3379,4 @@ textarea{
 .case-disclaimer{margin:14px 0 0;padding:8px 12px;border:1px dashed rgba(200,184,117,.5);border-radius:10px;color:#e8d98a;font-size:12px;line-height:1.45}
 .case-stage.is-example em{border-color:rgba(243,239,229,.3);color:rgba(243,239,229,.6)}
 .bh-enter{display:inline-flex;align-items:center;gap:12px;margin:14px 0 6px}.bh-enter small{font-size:16px;opacity:.75}
+.bh-enter b{font-size:24px}.bh-enter{padding:16px 30px}
