@@ -25,10 +25,13 @@
   "prefix_cache": "OFF",
   "tp": 2,
   "gpu_count": 4,
-  "runtime": "UNVERIFIED",
+  "runtime": "vLLM XPU (Docker image sha256:95ac815038c4…)",
   "vram_total_gb": 96,
   "vram_layout": "48 GB x 2",
-  "memory_fraction_note": "B60 vLLM 實際啟動參數已核實（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）。"
+  "memory_fraction_note": "B60 vLLM 啟動命令（command.json）已核實：TP2、max-model-len 18432、max-num-seqs 10、max-num-batched-tokens 4096、gpu-memory-utilization 0.90、no prefix caching。",
+  "image_sha256": "95ac815038c4b3537b173798bfe3b89bdf525a52bd653cd14d4deb01f1062be7",
+  "gpus_used": 2,
+  "chunked_prefill": "ON"
  },
  "b60_runs": [
   {
@@ -609,7 +612,8 @@
   "常駐模型請求（Prefix Cache OFF），不含 Smoke；不是 process-cold 量測。每個模型第一個 case 的終端輸出多出一筆 R=1（已核對 vLLM Gemma31 NP1/4K 的平均值不含該筆），平均值只含 R1–R3。",
   "數值轉錄自 B60 終端輸出之 report.md（3 位小數），B60 原始 CSV 檔未被獨立重讀。",
   "vLLM Gemma31 NP5/16K 的 Aggregate 與 TTFT/TPOT 推算值差距 15%（已標 ‡）；先前歷史值同樣偏低。",
-  "vLLM 實際啟動參數（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）；Runtime 映像 tag 仍未設定。"
+  "vLLM 實際啟動參數（TP2／Context 18432／Max Num Seqs 10／Prefill 4096／Memory 0.90／Prefix Cache OFF）；Runtime 映像 tag 仍未設定。",
+  "啟動參數已由 RunnerManifest 內各模型／NP 的 command.json 核對（見 scripts/ingest_b60_commands.py）；主機路徑與環境變數不公開。"
  ],
  "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
  "metrics_version": "v4-pdf-e2e",
