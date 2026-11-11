@@ -23,12 +23,31 @@
   ],
   "output_tokens": 1024,
   "repeat": 3,
-  "runtime": "UNVERIFIED",
-  "batch": 1024,
-  "ubatch": 512,
+  "runtime": "llama.cpp commit e937b17 · Vulkan (RADV GFX1151)",
+  "slots": 10,
   "per_slot_context": 18432,
+  "total_kv_by_np": {
+   "1": 18432,
+   "2": 36864,
+   "4": 73728,
+   "5": 92160
+  },
+  "split": "layer",
+  "backend": "Vulkan",
+  "prefix_cache": "OFF",
   "kv_cache_type": "f16",
-  "flash_attention": "off"
+  "flash_attention": "off",
+  "cpu_threads": 20,
+  "gpu_count": 1,
+  "metrics_version": "v4-pdf-e2e",
+  "metric_definitions": {
+   "ttft": "first_content-start, seconds",
+   "tpot": "1000*(stream_done-first_content)/(actual_output_tokens-1), ms/token",
+   "aggregate": "sum actual output tokens/(last stream_done-first request_start), tokens/s",
+   "normalized": "aggregate/NP, tokens/s/user (one concurrent request per user)"
+  },
+  "batch": 1024,
+  "ubatch": 512
  },
  "aiso1_runs": [
   {

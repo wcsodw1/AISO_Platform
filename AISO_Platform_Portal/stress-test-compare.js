@@ -67,9 +67,9 @@ function renderCover(){
  $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th>${REG.machines.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
 function paramTable(){
- const rows=[["Batch size 批次","batch"],["Ubatch 微批次","ubatch"],["Context / slot 每槽上下文","per_slot_context"],["Slots 槽數","slots"],["KV cache 型別","kv_cache_type"],["Prefix cache 前綴快取","prefix_cache"],["Flash Attention","flash_attention"],["Split / TP 切分","split"],["GPU 數","gpu_count"],["Runtime 版本","runtime"]];
+ const rows=[["Batch size 批次","batch"],["Ubatch 微批次","ubatch"],["Context / slot 每槽上下文","per_slot_context"],["Slots 槽數","slots"],["總 Context（NP"+NP+"）","total_kv"],["KV cache 型別","kv_cache_type"],["Prefix cache 前綴快取","prefix_cache"],["Flash Attention","flash_attention"],["Split / TP 切分","split"],["GPU 數","gpu_count"],["Runtime 版本","runtime"]];
  const ALT={batch:"batch",per_slot_context:"max_context",slots:"max_seqs",split:"tp"};
- const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});return p};
+ const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});return p};
  const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
  const shown=rows.map(([l,k])=>[l,REG.machines.map(m=>val(prof(m),k))]).filter(([l,vs])=>vs.some(v=>v!=="未記錄"&&v!=="—"&&v!=="UNVERIFIED"));
  if(!shown.length)return "";
