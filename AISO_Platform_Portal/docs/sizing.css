@@ -478,7 +478,5 @@ main h2 var sub{font-style:normal;font-size:.62em}
 .sz-seg{border-radius:0;box-shadow:inset -2px 0 0 rgba(15,20,32,.75)}
 .sz-seg:last-child{box-shadow:none}
 .sz-break{gap:0!important;border:1px solid rgba(244,239,228,.16);border-top:0;border-radius:0 0 18px 18px;overflow:hidden;background:rgba(244,239,228,.035)}
-main .sz-break>div{border:0;border-right:1px solid rgba(244,239,228,.12);border-top:4px solid transparent;border-radius:0;background:transparent;padding:14px 16px 16px}
+main .sz-break>div{border:0;border-right:1px solid rgba(244,239,228,.12);border-top:0;border-radius:0;background:transparent;padding:14px 16px 16px}
 .sz-break>div:last-child{border-right:0;background:rgba(8,12,22,.25)}
-.sz-break>.cc-w{border-top-color:#7aaee8}.sz-break>.cc-k{border-top-color:var(--gold)}.sz-break>.cc-r{border-top-color:#70d3a2}.sz-break>.cc-h{border-top-color:#8a90a0}
-.sz-break>.cc-kr{border-top-color:transparent}
