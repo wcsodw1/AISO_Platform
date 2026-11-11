@@ -14,7 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=51">
+  <link rel="stylesheet" href="gptoss-v2.css?v=53">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
@@ -38,10 +38,8 @@
       <div id="bhPicker"></div>
     </section>
     <section class="bh-panel" id="tabSota" role="tabpanel" hidden>
-      <div class="sp-col bh-sota-col"><h3>Results<small class="zhs">已有結果</small></h3><div class="spm">
-        <div class="sp-model has"><a class="sp-open" href="gptoss-v2.html"><span class="sp-name">LMCache v.s aiDAPTIV</span><span class="sp-tier">Cache performance<small class="zhs">快取效能對照</small></span><em>Result<small class="zhs">結果</small> →</em></a></div>
-      </div></div>
-      <div class="sp-col bh-sota-col"><h3>Pending R&amp;D<small class="zhs">待 RD list</small></h3><div class="spm" id="rdTodo" aria-live="polite"></div></div>
+      <div class="sp-col bh-sota-col res"><h3>Results<small class="zhs">已有結果</small></h3><div class="spm" id="rdDone"></div></div>
+      <div class="sp-col bh-sota-col todo"><h3>Pending R&amp;D<small class="zhs">待 RD list</small></h3><div class="spm" id="rdTodo" aria-live="polite"></div></div>
     </section>
   </main>
 <script src="machine-picker.js?v=5"></script>
@@ -53,7 +51,10 @@
  tabs.forEach(function(b){b.addEventListener("click",function(){open(b.dataset.tab)});b.addEventListener("mouseenter",function(){open(b.dataset.tab)})});
  fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
-  document.getElementById("rdTodo").innerHTML=d.items.map(function(x){var S={wait:["Wait Select","待選擇"],progress:["In progress","進行中"],done:["Done","完成"]}[x.status||"wait"]||["Wait Select","待選擇"],day=function(v){return v?esc(String(v).replace(/-/g,"/")):"—"};return '<div class="sp-model soon rd"><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier">Added<small class="zhs">加入</small> '+day(x.added)+'</span><span class="sp-tier">Completed<small class="zhs">完成時間</small> '+day(x.done)+'</span><em>'+S[0]+'<small class="zhs">'+S[1]+'</small></em></div>'}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
+  var S={wait:["Wait Select","待選擇","wait"],progress:["In progress","進行中","prog"],done:["Done","完成","done"]},day=function(v){return v?esc(String(v).replace(/-/g,"/")):"—"};
+  function row(x){var s=S[x.status||"wait"]||S.wait,body='<span class="sp-name">'+esc(x.task)+(x.zh?'<small class="zhs">'+esc(x.zh)+'</small>':'')+'</span><span class="sp-tier">Added<small class="zhs">加入</small> '+day(x.added)+'</span><span class="sp-tier">Completed<small class="zhs">完成時間</small> '+day(x.done)+'</span><em class="rd-st '+s[2]+'">'+s[0]+'<small class="zhs">'+s[1]+'</small></em>';return x.href?'<a class="sp-model has rd '+s[2]+'" href="'+esc(x.href)+'">'+body+'<i class="rd-go" aria-hidden="true">→</i></a>':'<div class="sp-model soon rd '+s[2]+'">'+body+'</div>'}
+  document.getElementById("rdDone").innerHTML=(d.results||[]).map(row).join("");
+  document.getElementById("rdTodo").innerHTML=d.items.map(row).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
  open((location.hash||"").slice(1)||"benchmarking");
  window.addEventListener("hashchange",function(){open((location.hash||"").slice(1))});
 })();
