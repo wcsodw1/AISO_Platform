@@ -38,3 +38,15 @@ h1,h2,h3{letter-spacing:-.01em}
 .v2-setup .v2-pane,.v2-setup .pt-same,.v2-setup .pt-only{border:0!important;background:transparent!important;box-shadow:none!important;padding-left:0;padding-right:0}
 .v2-setup{border:1px solid var(--t-line);border-radius:var(--t-r);background:var(--t-panel);padding:24px 28px}
 .v2-setup .v2-pane h2,.v2-setup .pt-h{color:var(--ivory)}
+
+/* Notes bar: compact when closed, clear that it can be clicked */
+.hv-fold.hv-closed{padding-top:16px!important;padding-bottom:16px!important}
+.hv-fold.hv-closed>header{margin:0!important;min-height:0!important;padding-top:0!important;padding-bottom:0!important}
+.hv-fold>header{cursor:pointer}.hv-fold>header:hover h2{color:var(--gold)}
+.hv-fold>header .hv-hint{position:absolute;right:48px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);pointer-events:none}
+.hv-fold.hv-pinned>header .hv-hint,.hv-fold:not(.hv-closed)>header .hv-hint{display:none}
+.hv-fold.hv-closed>header h2{margin:0}
+.hv-fold.hv-closed>header .zh{margin-left:10px}
+/* Chinese label sits right beside the English heading (not under it) */
+.v2 header h2 .zh{display:inline!important;margin-left:12px;font-size:18px;font-weight:500}
+.v2 header h2 .zh{white-space:nowrap}.v2 header h2{white-space:nowrap}

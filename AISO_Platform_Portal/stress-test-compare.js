@@ -177,7 +177,7 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  (function(){   // one collapsible "Detail" panel with tabs; the five detail sections live inside it
   const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Unmatched","未匹配參數"]].filter(([id])=>$s(id));
   const first=$s(parts[0][0]),det=document.createElement("section");det.className="report-section sec-detail hv-fold hv-closed";det.id="secDetail";
-  det.innerHTML='<header><h2>Detail<span class="zh">細節</span></h2></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
+  det.innerHTML='<header><h2>Notes<span class="zh">備註</span></h2><span class="hv-hint" aria-hidden="true">Click to pin <small class="zhs">點一下固定</small></span></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
   first.parentNode.insertBefore(det,first);
   const tabs=det.querySelector(".dt-tabs"),body=det.querySelector(".dt-body");
   parts.forEach(([id,label,zh],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.innerHTML=label+'<small class="zhs">'+zh+"</small>";b.onclick=()=>pick(id);tabs.appendChild(b)});
