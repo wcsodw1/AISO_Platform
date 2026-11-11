@@ -379,3 +379,5 @@
 .bh-all{margin-top:22px;width:fit-content;max-width:100%}
 .sp-col h3{margin:0 0 14px;font-size:22px;color:var(--ivory)}.sp-col h3 small{font-size:17px;margin-left:10px;color:var(--muted);font-weight:500}
 .bh-sota{grid-template-columns:minmax(0,1fr)}
+
+.bh-sota-col{margin-bottom:26px}.sp-model.rd{opacity:1}.sp-model.rd .sp-name{font-size:22px}.sp-model.rd em{color:var(--gold);font-weight:700;opacity:.9}

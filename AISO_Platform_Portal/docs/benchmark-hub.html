@@ -14,7 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=46">
+  <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
@@ -40,11 +40,10 @@
       <a class="st-view bh-all" href="stress-test-compare.html"><b>View Result<small>結果總覽</small></b><em>B60 · B70 · AISO1 並排比對</em><i aria-hidden="true">→</i></a>
     </section>
     <section class="bh-panel" id="tabSota" role="tabpanel" hidden>
-      <div class="sp-cols bh-sota"><div class="sp-col"><h3>研究項目<small>Topics</small></h3><div class="spm">
+      <div class="sp-col bh-sota-col"><h3>已有結果<small>Results</small></h3><div class="spm">
         <div class="sp-model has"><a class="sp-open" href="gptoss-v2.html"><span class="sp-name">LMCache v.s aiDAPTIV</span><span class="sp-tier">快取效能對照</span><em>Result 結果 →</em></a></div>
-        <div class="sp-model soon"><span class="sp-name">KV cache offload</span><span class="sp-tier">記憶體擴充</span><em>COMING SOON</em></div>
-        <div class="sp-model soon"><span class="sp-name">Speculative decoding</span><span class="sp-tier">推論加速</span><em>COMING SOON</em></div>
-      </div></div></div>
+      </div></div>
+      <div class="sp-col bh-sota-col"><h3>待 RD list<small>Pending R&amp;D</small></h3><div class="spm" id="rdTodo" aria-live="polite"></div></div>
     </section>
   </main>
 <script src="machine-picker.js?v=1"></script>
@@ -54,6 +53,9 @@
  var tabs=document.querySelectorAll(".bh-menu button"),panels={benchmarking:document.getElementById("tabBenchmarking"),sota:document.getElementById("tabSota")};
  function open(k){if(!panels[k])k="benchmarking";tabs.forEach(function(b){b.classList.toggle("on",b.dataset.tab===k);b.setAttribute("aria-selected",b.dataset.tab===k)});Object.keys(panels).forEach(function(x){panels[x].hidden=x!==k});try{history.replaceState(null,"","#"+k)}catch(e){}}
  tabs.forEach(function(b){b.addEventListener("click",function(){open(b.dataset.tab)});b.addEventListener("mouseenter",function(){open(b.dataset.tab)})});
+ fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
+  var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+  document.getElementById("rdTodo").innerHTML=d.items.map(function(x){return '<div class="sp-model soon rd"><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier">'+esc(x.added.replace(/-/g,"/"))+' 加入</span><em>待 RD</em></div>'}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">待 RD list 載入失敗</span></div>'});
  open((location.hash||"").slice(1)||"benchmarking");
  window.addEventListener("hashchange",function(){open((location.hash||"").slice(1))});
 })();
