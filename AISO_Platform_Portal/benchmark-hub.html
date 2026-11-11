@@ -53,7 +53,7 @@
  tabs.forEach(function(b){b.addEventListener("click",function(){open(b.dataset.tab)});b.addEventListener("mouseenter",function(){open(b.dataset.tab)})});
  fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
-  document.getElementById("rdTodo").innerHTML=d.items.map(function(x){return '<div class="sp-model soon rd"><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier">Added <small class="zhs">加入</small> '+esc(x.added.replace(/-/g,"/"))+'</span><em>Pending<small class="zhs">待 RD</small></em></div>'}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
+  document.getElementById("rdTodo").innerHTML=d.items.map(function(x){var S={wait:["Wait Select","待選擇"],progress:["In progress","進行中"],done:["Done","完成"]}[x.status||"wait"]||["Wait Select","待選擇"],day=function(v){return v?esc(String(v).replace(/-/g,"/")):"—"};return '<div class="sp-model soon rd"><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier">Added<small class="zhs">加入</small> '+day(x.added)+'</span><span class="sp-tier">Completed<small class="zhs">完成時間</small> '+day(x.done)+'</span><em>'+S[0]+'<small class="zhs">'+S[1]+'</small></em></div>'}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
  open((location.hash||"").slice(1)||"benchmarking");
  window.addEventListener("hashchange",function(){open((location.hash||"").slice(1))});
 })();

@@ -1,16 +1,66 @@
 {
   "title": "待 RD list",
-  "note": "From David's task sheet (screenshot, 2026-11-11). Titles and dates only: the description column was cut off in the screenshot, so nothing is invented here.",
+  "note": "From David's task sheet (screenshot, 2026-11-11). status: wait = not started (shown as 'Wait Select'), progress, done. done = completion date (YYYY-MM-DD) or null.",
   "items": [
-    {"added": "2026-11-01", "task": "Benchmark Dashboard"},
-    {"added": "2026-11-01", "task": "多框架測試"},
-    {"added": "2026-11-01", "task": "LMCache Research and Develop"},
-    {"added": "2026-11-01", "task": "Agent 判斷機制"},
-    {"added": "2026-11-01", "task": "Research：Kyojin"},
-    {"added": "2026-11-01", "task": "Ray Serve"},
-    {"added": "2026-11-01", "task": "EAGLE-4"},
-    {"added": "2026-11-01", "task": "ORCA"},
-    {"added": "2026-11-01", "task": "TUF Gaming LMCache"},
-    {"added": "2026-11-05", "task": "B300 大模型驗測"}
+    {
+      "added": "2026-11-01",
+      "task": "Benchmark Dashboard",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "多框架測試",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "LMCache Research and Develop",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "Agent 判斷機制",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "Research：Kyojin",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "Ray Serve",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "EAGLE-4",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "ORCA",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-01",
+      "task": "TUF Gaming LMCache",
+      "status": "wait",
+      "done": null
+    },
+    {
+      "added": "2026-11-05",
+      "task": "B300 大模型驗測",
+      "status": "wait",
+      "done": null
+    }
   ]
 }
