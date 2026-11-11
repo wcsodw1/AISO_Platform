@@ -13,7 +13,7 @@
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=57">
+  <link rel="stylesheet" href="sizing.css?v=58">
 </head>
 <body>
   <header class="site-header">
@@ -58,38 +58,11 @@
               </div>
             </fieldset>
 
-            <fieldset><legend>③ Headroom &amp; planning<span class="bz">餘裕與規劃</span></legend>
+            <div class="sz-col3"><fieldset><legend>③ Headroom &amp; planning<span class="bz">餘裕與規劃</span></legend>
               <label><span class="lbl">Runtime overhead (GB)<span class="bz">執行時開銷</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">推論框架本身佔的顯存（CUDA context、暫存、activation），不含權重與 KV；大模型多卡約 10～15 GB。</span></span></span><input autocomplete="off" id="szRuntime" type="number" min="0" step="1" value="15"></label>
               <label><span class="lbl">Safety headroom (%)<span class="bz">安全餘裕</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">給峰值負載與記憶體碎片的緩衝，建議 10～20%。</span></span></span><input autocomplete="off" id="szHeadroom" type="number" min="0" max="100" step="1" value="15"></label>
               <label><span class="lbl">Usable capacity per GPU (%)<span class="bz">每卡可規劃容量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">每張卡實際敢用的比例（如 vLLM 的 gpu-memory-utilization），預設 90%。</span></span></span><input autocomplete="off" id="szUsable" type="number" min="50" max="100" step="1" value="90"></label>
-            </fieldset>
-          </div></div>
-    </section>
-
-    <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
-      <header><div><p class="section-label">STEP 2</p><h2>Calculate total memory <var>M<sub>required</sub></var><span class="bz">計算總容量需求</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
-        <div class="sz-result"><small>Estimated total GPU memory<span class="bz">預估總 GPU 顯存需求</span></small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="szJumpTxt">—</span></a></div></header>
-      <div id="szFormula" class="sz-calcbox"></div>
-      <b id="szTotal" hidden></b>
-      <p class="sz-compose"><var>M<sub>required</sub></var> composition<span class="bz">組成占比</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">下方色條與五張卡片對應上方結果框的四個項目：模型權重、KV Cache、Runtime、安全餘裕，四項相加＝ M_required（100%）；百分比＝該項 ÷ M_required。最後一張「KV / 請求」是 M_KV 的拆解。</span></span></p>
-      <div id="szBars" class="sz-bars"></div>
-      <dl id="szBreak" class="sz-break"></dl>
-      <p id="szWarn" class="report-notice" hidden></p>
-    </section>
-
-    <section class="report-section" id="szPickSec">
-      <header><div><p class="section-label">STEP 3</p><h2>Select a configuration for <var>M<sub>required</sub></var><span class="bz">依據 Step 2 選擇相對應配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
-      <div class="sz-s3"><div class="sz-s3-main">
-        <div id="szCasHost" class="sz-cas-host"></div>
-        <div id="szPickDetail" class="sz-pickline"></div>
-        <details class="sz-more"><summary>How N_GPU is calculated<span class="bz">算式</span></summary><div id="szPickCalc" class="sz-detail"></div></details>
-        </div>
-        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">VRAM and servers sizes are planning values — editable<span class="bz">可修改</span></p><div id="szRows" class="sz-ref-list"></div></aside></div>
-      </section>
-
-    <section class="report-section">
-      <header><div><p class="section-label">NOTES</p><h2>Considerations &amp; scenarios<span class="bz">考量項目與情境差異</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h2></div></header>
-      <div class="sz-hn">
+            </fieldset><aside class="sz-notes-card"><h3>Considerations &amp; scenarios<span class="bz">考量項目與情境差異</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">滑鼠移到下方標籤即展開：納入什麼、沒納入什麼、哪些參數依使用情境而異</span></span></h3><div class="sz-hn">
         <div class="sz-hn-tabs" role="tablist"><button type="button" class="sz-hn-tab" role="tab" data-p="yes" aria-expanded="false"><b>Included<span class="bz">已納入的考量</span></b><small>7 items</small><span class="car" aria-hidden="true">▾</span></button><button type="button" class="sz-hn-tab" role="tab" data-p="no" aria-expanded="false"><b>Not included &amp; scenario-dependent<span class="bz">未納入與依情境而異</span></b><small>10 items</small><span class="car" aria-hidden="true">▾</span></button></div>
         <div class="sz-hn-panels">
           <div class="sz-hn-panel" data-p="yes"><ul class="sz-nlist yes">
@@ -115,9 +88,32 @@
             <li><b>Prefix cache</b>：多人共用長 system prompt 時 KV 可共用，這裡的估算偏保守。</li>
           </ul></div>
         </div>
-      </div>
+      </div></aside></div>
+          </div></div>
     </section>
-    </div><!-- /szSingle -->
+
+    <section class="report-section sz-formula" id="szFormulaSec" aria-live="polite">
+      <header><div><p class="section-label">STEP 2</p><h2>Calculate total memory <var>M<sub>required</sub></var><span class="bz">計算總容量需求</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">代入上方參數後的結果；滑鼠移到下方標籤可看代入計算與各參數意涵。</span></span></h2></div>
+        <div class="sz-result"><small>Estimated total GPU memory<span class="bz">預估總 GPU 顯存需求</span></small><b id="szFTotal">—</b><a class="sz-jump" href="#szPickSec" data-jump="szPickSec"><span class="arr" aria-hidden="true">↓</span> Recommended<span class="bz">建議配置</span><span id="szJumpTxt">—</span></a></div></header>
+      <div id="szFormula" class="sz-calcbox"></div>
+      <b id="szTotal" hidden></b>
+      <p class="sz-compose"><var>M<sub>required</sub></var> composition<span class="bz">組成占比</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">下方色條與五張卡片對應上方結果框的四個項目：模型權重、KV Cache、Runtime、安全餘裕，四項相加＝ M_required（100%）；百分比＝該項 ÷ M_required。最後一張「KV / 請求」是 M_KV 的拆解。</span></span></p>
+      <div id="szBars" class="sz-bars"></div>
+      <dl id="szBreak" class="sz-break"></dl>
+      <p id="szWarn" class="report-notice" hidden></p>
+    </section>
+
+    <section class="report-section" id="szPickSec">
+      <header><div><p class="section-label">STEP 3</p><h2>Select a configuration for <var>M<sub>required</sub></var><span class="bz">依據 Step 2 選擇相對應配置</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">依照上述設計建議配置機型與台數、張數（整機出貨，台數 × 每台張數）。滑鼠移到機型上，往右依品牌、機型展開，可改選其他機型；★ 為建議（台數最少、張數最少），⚠ 為需跨節點。</span></span></h2></div></header>
+      <div class="sz-s3"><div class="sz-s3-main">
+        <div id="szCasHost" class="sz-cas-host"></div>
+        <div id="szPickDetail" class="sz-pickline"></div>
+        <details class="sz-more"><summary>How N_GPU is calculated<span class="bz">算式</span></summary><div id="szPickCalc" class="sz-detail"></div></details>
+        </div>
+        <aside class="sz-ref" aria-label="GPU reference"><h3>GPU reference<span class="bz">機型規格表</span></h3><p class="sz-ref-sub">VRAM and servers sizes are planning values — editable<span class="bz">可修改</span></p><div id="szRows" class="sz-ref-list"></div></aside></div>
+      </section>
+
+        </div><!-- /szSingle -->
 
     <div id="szMulti" hidden>
       <section class="report-section sz-inputs" aria-label="參數">
