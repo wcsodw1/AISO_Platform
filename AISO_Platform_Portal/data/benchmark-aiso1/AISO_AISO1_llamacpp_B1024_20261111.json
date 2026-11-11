@@ -40,6 +40,11 @@
   "cpu_threads": 20,
   "gpu_count": 1,
   "metrics_version": "v4-pdf-e2e",
+  "unified_kv": "ON",
+  "cont_batching": "ON",
+  "context_shift": "OFF",
+  "gpu_layers": 999,
+  "cache_ram": "0",
   "metric_definitions": {
    "ttft": "first_content-start, seconds",
    "tpot": "1000*(stream_done-first_content)/(actual_output_tokens-1), ms/token",

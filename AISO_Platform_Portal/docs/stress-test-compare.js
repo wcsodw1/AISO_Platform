@@ -67,15 +67,20 @@ function renderCover(){
  $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th>${REG.machines.map(m=>`<th class="l">${esc(m.label)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
 function paramTable(){
- const rows=[["Batch size 批次","batch"],["Ubatch 微批次","ubatch"],["Context / slot 每槽上下文","per_slot_context"],["Slots 槽數","slots"],["總 Context（NP"+NP+"）","total_kv"],["KV cache 型別","kv_cache_type"],["Prefix cache 前綴快取","prefix_cache"],["Flash Attention","flash_attention"],["Split / TP 切分","split"],["GPU 數","gpu_count"],["Runtime 版本","runtime"]];
+ const L={llamacpp:{batch:"Batch size 批次 (--batch-size)",ubatch:"Ubatch 微批次 (--ubatch-size)",per_slot_context:"Context / slot 每槽上下文",slots:"Parallel slots 槽數",split:"Split mode 切分模式"},
+  vllm:{batch:"Max batched tokens（≠ llama.cpp Batch）",per_slot_context:"Max model len 模型長度",slots:"Max sequences 序列數",split:"Tensor Parallel"},
+  sglang:{batch:"Chunked prefill（≠ llama.cpp Batch）",per_slot_context:"Context / model len",slots:"Max running requests",split:"Tensor Parallel"}}[FW]||{};
+ const lc=FW==="llamacpp";
+ const rows=[[L.batch||"Batch","batch"],lc&&[L.ubatch,"ubatch"],[L.per_slot_context||"Context","per_slot_context"],[L.slots||"Slots","slots"],lc&&["總 Context（NP"+NP+"）","total_kv"],["KV cache 型別","kv_cache_type"],["Prefix cache 前綴快取","prefix_cache"],lc&&["Flash Attention","flash_attention"],[L.split||"Split","split"],lc&&["Unified KV","unified_kv"],lc&&["Continuous batching","cont_batching"],lc&&["Context shift","context_shift"],lc&&["GPU layers (-ngl)","gpu_layers"],["GPU 數","gpu_count"],["Runtime 版本","runtime"]].filter(Boolean);
  const ALT={batch:"batch",per_slot_context:"max_context",slots:"max_seqs",split:"tp"};
- const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});return p};
+ const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});if(typeof p.batch==='string'){const n=p.batch.match(/\d+/);if(n)p.batch=n[0]}return p};
  const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
- const shown=rows.map(([l,k])=>[l,REG.machines.map(m=>val(prof(m),k))]).filter(([l,vs])=>vs.some(v=>v!=="未記錄"&&v!=="—"&&v!=="UNVERIFIED"));
+ const bad=v=>v==="未記錄"||v==="—"||v==="UNVERIFIED";
+ const shown=rows.map(([l,k])=>[l,REG.machines.map(m=>val(prof(m),k))]).filter(([l,vs])=>vs.some(v=>!bad(v)));
  if(!shown.length)return "";
- const body=shown.map(([l,vs])=>{const known=vs.filter(v=>v!=="未記錄"&&v!=="—"),diff=new Set(known).size>1||(known.length&&vs.some(v=>v==="未記錄"));
-  return `<tr${diff||known.length===0?' class="pt-diff"':""}><th>${l}</th>${vs.map(v=>`<td${v==="未記錄"||v==="UNVERIFIED"?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>${known.length===0?"⚠ 全部未記錄":diff?"⚠ 不同／未核實":"一致"}</td></tr>`}).join("");
- return `<h3 class="pt-h">各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3><div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數 Parameter</th>${REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("")}<th>判定</th></tr></thead><tbody>${body}</tbody></table></div><p class="v2-fn">統一決定：batch = 1024。B60 因已歸還廠商，實跑為 4096、無法重測，與其他機器不能視為純硬體差異；標「⚠」或「未記錄」的列代表需核實。</p>`;
+ const body=shown.map(([l,vs])=>{const known=vs.filter(v=>!bad(v)),unk=vs.some(bad),diff=new Set(known).size>1,st=diff?"設定不同":unk?"未核實（有機器沒記錄）":"數值一致";
+  return `<tr${diff||unk?' class="pt-diff"':""}><th>${l}</th>${vs.map(v=>`<td${bad(v)?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>${diff||unk?"⚠ ":""}${st}</td></tr>`}).join("");
+ return `<h3 class="pt-h">各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3><div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數 Parameter</th>${REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("")}<th>判定</th></tr></thead><tbody>${body}</tbody></table></div><p class="v2-fn">統一決定：llama.cpp batch = 1024。B60 llama.cpp 為 Legacy Campaign（batch 4096，已歸還廠商無法重測），與 B70 / AISO1 的 B1024 Campaign 分開保留，不能宣稱參數完全一致。vLLM 的 Max batched tokens、SGLang 的 Chunked prefill 與 llama.cpp 的 Batch size 是不同的調度參數，不互相比較。「總 Context」＝ 每槽 Context × NP（llama.cpp --ctx-size）。</p>`;
 }
 function renderSetup(){
  const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;

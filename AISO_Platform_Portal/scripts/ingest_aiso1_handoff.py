@@ -29,9 +29,13 @@ def preflight_public(d):
     pf = json.loads(zipfile.ZipFile(zips[-1]).read("private/runners/preflight.json"))
     w, commit = pf["workload"], re.search(r"commit (\w+)", pf.get("version", ""))
     assert (w["batch"], w["ubatch"], w["slots"], w["context_per_request"], w["kv"], w["flash_attention"], w["split"]) == (1024, 512, 10, 18432, "f16", "off", "layer"), "preflight differs from the agreed B1024 protocol"
+    src = zipfile.ZipFile(zips[-1]).read("private/runners/AISO1_B1024.py").decode(errors="replace")
+    need = ["'--kv-unified'", "'--cont-batching'", "'--no-context-shift'", "'--n-gpu-layers','999'", "'--cache-ram','0'"]
+    assert all(f in src.replace(" ", "") for f in need), "runner launch command lacks an expected flag"
+    extra = {"unified_kv": "ON", "cont_batching": "ON", "context_shift": "OFF", "gpu_layers": 999, "cache_ram": "0"}
     return {"slots": w["slots"], "per_slot_context": w["context_per_request"], "total_kv_by_np": w["total_kv"], "split": w["split"], "backend": w["backend"],
             "prefix_cache": "OFF" if not w["cache_prompt"] else "ON", "kv_cache_type": w["kv"], "flash_attention": w["flash_attention"].upper(), "cpu_threads": w["cpu_threads"],
-            "gpu_count": pf.get("device_count"), "runtime": f"llama.cpp commit {commit.group(1) if commit else '?'} · {w['backend']} (RADV GFX1151)", "metrics_version": pf["metrics"]["version"],
+            "gpu_count": pf.get("device_count"), "runtime": f"llama.cpp commit {commit.group(1) if commit else '?'} · {w['backend']} (RADV GFX1151)", "metrics_version": pf["metrics"]["version"], **extra,
             "metric_definitions": {k: pf["metrics"][k] for k in ("ttft", "tpot", "aggregate", "normalized")}}
 
 
