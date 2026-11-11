@@ -71,7 +71,9 @@ function paramTable(){
  const ALT={batch:"batch",per_slot_context:"max_context",slots:"max_seqs",split:"tp"};
  const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});return p};
  const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
- const body=rows.map(([l,k])=>{const vs=REG.machines.map(m=>val(prof(m),k)),known=vs.filter(v=>v!=="未記錄"&&v!=="—"),diff=new Set(known).size>1||(known.length&&vs.some(v=>v==="未記錄"));
+ const shown=rows.map(([l,k])=>[l,REG.machines.map(m=>val(prof(m),k))]).filter(([l,vs])=>vs.some(v=>v!=="未記錄"&&v!=="—"&&v!=="UNVERIFIED"));
+ if(!shown.length)return "";
+ const body=shown.map(([l,vs])=>{const known=vs.filter(v=>v!=="未記錄"&&v!=="—"),diff=new Set(known).size>1||(known.length&&vs.some(v=>v==="未記錄"));
   return `<tr${diff||known.length===0?' class="pt-diff"':""}><th>${l}</th>${vs.map(v=>`<td${v==="未記錄"||v==="UNVERIFIED"?' class="pt-unk"':""}>${esc(v==="UNVERIFIED"?"未核實":v)}</td>`).join("")}<td>${known.length===0?"⚠ 全部未記錄":diff?"⚠ 不同／未核實":"一致"}</td></tr>`}).join("");
  return `<h3 class="pt-h">各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3><div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數 Parameter</th>${REG.machines.map(m=>`<th>${esc(m.label)}</th>`).join("")}<th>判定</th></tr></thead><tbody>${body}</tbody></table></div><p class="v2-fn">統一決定：batch = 1024。B60 因已歸還廠商，實跑為 4096、無法重測，與其他機器不能視為純硬體差異；標「⚠」或「未記錄」的列代表需核實。</p>`;
 }
