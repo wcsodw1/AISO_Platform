@@ -485,3 +485,15 @@ main .sz-break>div{border:0;border-right:1px solid rgba(244,239,228,.12);border-
 .sz-notes-card h3 .bz{font-size:16px}
 .sz-notes-card .sz-hn-tabs{grid-template-columns:1fr!important}
 .sz-s3-side{display:grid;gap:14px;align-content:start;min-width:0}.sz-s3-side .sz-pickline{margin:0}.sz-s3-side .sz-more{margin-top:0}
+
+/* Step 3: both columns end on the same line; the result line sits in a box; the reference card fills the right column's remaining height */
+.sz-s3{align-items:stretch}
+.sz-s3-main{display:flex;flex-direction:column}
+.sz-s3-main .sz-cas-host{flex:1;display:flex;margin:0}
+.sz-s3-main .pp{flex:1;display:flex;flex-direction:column;width:100%}
+.sz-s3-main .pp-cols{flex:1;min-height:420px}
+.sz-s3-side{display:flex;flex-direction:column;gap:14px}
+.sz-s3-side .sz-pickline{margin:0;padding:14px 18px;border:1px solid rgba(216,199,121,.38);border-radius:18px;background:var(--sz-inner);line-height:1.6}
+.sz-ref-wrap{position:relative;flex:1;min-height:420px}
+.sz-ref-wrap .sz-ref{position:absolute;inset:0;max-height:none}
+@media(max-width:1180px){.sz-ref-wrap{min-height:0}.sz-ref-wrap .sz-ref{position:static;max-height:640px}}
