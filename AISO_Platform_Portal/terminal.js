@@ -112,19 +112,23 @@ window.AisoTerm=(function(){
   const sec=root.closest("section");if(sec&&sec.id==="secTerminal")sec.style.display="none";
   const wrap=document.createElement("div");wrap.className="tm-fly";
   wrap.innerHTML=`<button type="button" class="tm-fly-tab" aria-expanded="false" aria-controls="tmFlyPanel"><span aria-hidden="true">&gt;_</span> Terminal<span class="bz">終端機</span></button>
-   <div class="tm-fly-panel" id="tmFlyPanel" role="dialog" aria-label="Terminal"><button type="button" class="tm-fly-x" aria-label="Close">✕</button></div>`;
+   <div class="tm-fly-panel" id="tmFlyPanel" role="dialog" aria-label="Terminal"><button type="button" class="tm-fly-x" aria-label="Close">✕</button><button type="button" class="tm-fly-max" aria-label="Full screen" aria-pressed="false" title="Full screen · 全螢幕">⤢</button></div>`;
   wrap.querySelector(".tm-fly-panel").appendChild(root);
   const anchor=document.getElementById("tmAnchor");
   if(anchor){wrap.classList.add("tm-fly-inline");anchor.appendChild(wrap)}else document.body.appendChild(wrap);
   const tab=wrap.querySelector(".tm-fly-tab");let pinned=false,timer=null;
-  const set=o=>{wrap.classList.toggle("open",o);tab.setAttribute("aria-expanded",String(o))};
+  const place=()=>{if(!wrap.classList.contains("tm-fly-inline")||wrap.classList.contains("full"))return;const pn=wrap.querySelector(".tm-fly-panel"),b=tab.getBoundingClientRect(),top=Math.max(8,b.bottom+8);pn.style.position="fixed";pn.style.top=top+"px";pn.style.right=Math.max(8,innerWidth-b.right)+"px";pn.style.maxHeight=Math.max(300,innerHeight-top-16)+"px"};
+  const set=o=>{if(o)place();wrap.classList.toggle("open",o);tab.setAttribute("aria-expanded",String(o))};
+  addEventListener("resize",()=>{if(wrap.classList.contains("open"))place()});
   const open=()=>{clearTimeout(timer);set(true)};
   const close=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(!pinned&&!wrap.contains(document.activeElement))set(false)},350)};
   wrap.addEventListener("mouseenter",open);wrap.addEventListener("mouseleave",close);
   tab.addEventListener("click",()=>{pinned=!pinned||!wrap.classList.contains("open");pinned?open():set(false);wrap.classList.toggle("pinned",pinned)});
   wrap.querySelector(".tm-fly-panel").addEventListener("pointerdown",()=>{pinned=true;wrap.classList.add("pinned")});
-  wrap.querySelector(".tm-fly-x").onclick=()=>{pinned=false;wrap.classList.remove("pinned");set(false)};
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"){pinned=false;wrap.classList.remove("pinned");set(false)}});
+  wrap.querySelector(".tm-fly-x").onclick=()=>{pinned=false;wrap.classList.remove("pinned");if(wrap.classList.contains("full"))setFull(false);set(false)};
+  const maxb=wrap.querySelector(".tm-fly-max"),setFull=on=>{if(!on){const pn=wrap.querySelector(".tm-fly-panel");pn.style.cssText=""}wrap.classList.toggle("full",on);if(!on)place();maxb.setAttribute("aria-pressed",String(on));maxb.textContent=on?"⤡":"⤢";document.documentElement.classList.toggle("tm-noscroll",on);if(on){pinned=true;wrap.classList.add("pinned");set(true)}};
+  maxb.onclick=()=>setFull(!wrap.classList.contains("full"));
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(wrap.classList.contains("full")){setFull(false);return}pinned=false;wrap.classList.remove("pinned");set(false)}});
  }
  const _mount=mount;
  return {mount:(root,opt)=>{_mount(root,opt);if(!opt||opt.flyout!==false)flyout(root)}};
