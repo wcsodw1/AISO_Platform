@@ -50,3 +50,15 @@ h1,h2,h3{letter-spacing:-.01em}
 /* Chinese label sits right beside the English heading (not under it) */
 .v2 header h2 .zh{display:inline!important;margin-left:12px;font-size:18px;font-weight:500}
 .v2 header h2 .zh{white-space:nowrap}.v2 header h2{white-space:nowrap}
+
+/* Data menu: sits at the right end of the pair row, slides out on hover */
+.pair-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.pair-row .pair-nav{margin:0}
+.data-menu{position:relative}
+.dm-btn{display:inline-flex;align-items:baseline;gap:10px;padding:10px 20px;border:1px solid var(--t-line2);border-radius:999px;background:transparent;color:var(--ivory);font:inherit;font-size:19px;font-weight:700;cursor:pointer}
+.dm-btn .zhs{font-size:16px}.dm-caret{font-size:16px;color:var(--gold)}.data-menu:hover .dm-btn,.data-menu.open .dm-btn,.dm-btn:focus-visible{border-color:var(--gold);background:rgba(200,184,117,.12)}
+.dm-fly{position:absolute;right:0;top:100%;z-index:60;min-width:340px;padding:10px 12px 12px;margin-top:0;border:1px solid var(--t-line2);border-radius:14px;background:#14161b;display:none}
+.dm-fly::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}   /* hover bridge so the pointer can travel from the button */
+.data-menu:hover .dm-fly,.data-menu:focus-within .dm-fly,.data-menu.open .dm-fly{display:block}
+.dm-h{margin:6px 8px 8px;font-size:17px;color:var(--muted)}.dm-fly a{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 14px;border-radius:10px;color:var(--ivory);text-decoration:none;font-size:19px;font-weight:600}
+.dm-fly a:hover,.dm-fly a:focus-visible{background:rgba(200,184,117,.14)}.dm-fly a i{font-style:normal;color:var(--gold)}.dm-foot{margin:8px 8px 2px;font-size:16px}
+@media(max-width:700px){.dm-fly{left:0;right:auto;min-width:0;width:100%}}

@@ -174,6 +174,12 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
   document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").textContent=`Stress Test｜${t}`;$s("pgSub").innerHTML=`Same framework · same model<span class="zh-i">同推論框架、同模型：並排比較兩台機器的 TTFT · TPOT · TPS</span>`;
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
  renderPairs();renderGap();renderCover();renderAll();
+ (function(){   // Data menu: opens on hover / focus (CSS) and on click or tap
+  const m=$s("dataMenu");if(!m)return;const b=m.querySelector(".dm-btn");
+  b.addEventListener("click",e=>{e.preventDefault();const o=m.classList.toggle("open");b.setAttribute("aria-expanded",String(o))});
+  document.addEventListener("click",e=>{if(!m.contains(e.target)){m.classList.remove("open");b.setAttribute("aria-expanded","false")}});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){m.classList.remove("open");b.setAttribute("aria-expanded","false")}});
+ })();
  (function(){   // one collapsible "Detail" panel with tabs; the five detail sections live inside it
   const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Unmatched","未匹配參數"]].filter(([id])=>$s(id));
   const first=$s(parts[0][0]),det=document.createElement("section");det.className="report-section sec-detail hv-fold hv-closed";det.id="secDetail";
@@ -182,7 +188,7 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
   const tabs=det.querySelector(".dt-tabs"),body=det.querySelector(".dt-body");
   parts.forEach(([id,label,zh],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.innerHTML=label+'<small class="zhs">'+zh+"</small>";b.onclick=()=>pick(id);tabs.appendChild(b)});
   function pick(id){tabs.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.id===id));parts.forEach(([i])=>$s(i).classList.toggle("dt-off",i!==id));if(id==="secRepeat")renderRepeats()}
-  HoverFold.bind(det);det.addEventListener("hvopen",()=>renderRepeats());
+  if(window.HoverFold)HoverFold.bind(det);det.addEventListener("hvopen",()=>renderRepeats());
   pick(parts[0][0]);
  })();
  const last=Object.values(DATA).flatMap(o=>Object.values(o)).map(d=>d.evidence_until).sort().pop();

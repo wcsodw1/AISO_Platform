@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="debug-notes.css?v=2">
-  <link rel="stylesheet" href="tesla.css?v=7">
+  <link rel="stylesheet" href="tesla.css?v=8">
 </head>
 <body data-pair="aiso1-b70">
   <header class="site-header">
@@ -30,7 +30,15 @@
       <a class="pg-back" href="stress-test-compare.html"><span aria-hidden="true">←</span> 返回三機比對</a><p class="eyebrow">BENCHMARK / STRESS TEST / MINI-WORKSTATION · 2026-11-04</p>
       <h1 id="pgTitle">Stress Test｜AISO1 vs B70</h1>
       <p class="v2-sub" id="pgSub">Same framework · same model<span class="zh-i">同推論框架、同模型：並排比較兩台機器的 TTFT · TPOT · TPS</span></p>
-      <nav class="pair-nav" id="stPairs" aria-label="兩兩比對"></nav>
+      <div class="pair-row"><nav class="pair-nav" id="stPairs" aria-label="Pairs 兩兩比對"></nav>
+      <div class="data-menu" id="dataMenu"><button type="button" class="dm-btn" aria-haspopup="true" aria-expanded="false">Data<small class="zhs">資料</small><span class="dm-caret" aria-hidden="true">▾</span></button>
+        <div class="dm-fly" role="menu" aria-label="Single-machine data"><p class="dm-h">Single-machine data<small class="zhs">各機測試資料</small></p>
+          <a role="menuitem" href="stress-test-report.html"><span>Report<small class="zhs">壓測報告</small></span><i>→</i></a>
+          <a role="menuitem" href="stress-test-b60.html"><span>Intel B60<small class="zhs">完整測試</small></span><i>→</i></a>
+          <a role="menuitem" href="stress-test-b70.html"><span>Intel B70<small class="zhs">完整測試</small></span><i>→</i></a>
+          <a role="menuitem" href="stress-test-aiso1.html"><span>AISO1<small class="zhs">完整測試</small></span><i>→</i></a>
+          <a role="menuitem" href="data/benchmark-registry.json" download><span>Registry JSON<small class="zhs">資料登錄</small></span><i>↓</i></a>
+          <p class="dm-foot v2-fine" id="stFoot"></p></div></div></div>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and baseline"></div>
     </section>
 
@@ -73,13 +81,9 @@
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stCover"></table></div>
       <p class="v2-fn">「無資料」= 尚未測試或無法啟動，不是 0，也不是通過；不使用推估值填入。</p>
     </section>
+    <p class="v2-fine" id="stErr"></p>
 
-    <section class="report-section">
-      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-report.html">壓測報告 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>資料登錄 JSON ↓</a></header>
-      <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
-    </section>
-
-  </main><script src="bench-viz.js?v=12"></script><script src="repeat-chart.js?v=1"></script><script src="stress-test-compare.js?v=25"></script>
+  </main><script src="bench-viz.js?v=12"></script><script src="repeat-chart.js?v=1"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-compare.js?v=25"></script>
 <script src="debug-notes.js?v=3"></script>
 <script src="ui-min-type.js?v=2" defer></script>
 </body>
