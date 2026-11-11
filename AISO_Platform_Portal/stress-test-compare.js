@@ -173,6 +173,8 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
   document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").textContent=`Stress Test｜${t}`;$s("pgSub").innerHTML=`同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較兩台機器的 TTFT · TPOT · TPS</span>`;
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
  renderPairs();renderGap();renderCover();renderAll();
+ ["secRepeat","secTable","secCfg","secCover","secUnmatched"].forEach(id=>{const sec=$s(id);if(!sec)return;sec.classList.add("sec-fold","sec-closed");
+  sec.addEventListener("click",e=>{const h=e.target.closest("header");if(!h||!sec.contains(h)||e.target.closest("button,a,.st-tabs"))return;sec.classList.toggle("sec-closed");if(id==="secRepeat"&&!sec.classList.contains("sec-closed"))renderRepeats()})});
  const last=Object.values(DATA).flatMap(o=>Object.values(o)).map(d=>d.evidence_until).sort().pop();
  $s("stFoot").textContent=`資料更新至 ${last}；新增資料集只需在 data/benchmark-registry.json 登錄，本頁自動帶入。`;
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{renderMetrics();renderRepeats()},150)});

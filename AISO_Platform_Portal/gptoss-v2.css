@@ -297,3 +297,9 @@
 #secUnmatched .v2-fn{font-size:16px}.pt-ucols{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
 .pt-tbl{font-size:17px}.pt-tbl thead th{font-size:16px}
 #stSetup .v2-fn{font-size:16px;line-height:1.6}
+
+.sec-fold>header{cursor:pointer;position:relative;padding-right:44px}
+.sec-fold>header::after{content:"▾";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--gold,#d9b45a);transition:transform .2s}
+.sec-fold.sec-closed>header::after{transform:translateY(-50%) rotate(-90deg)}
+.sec-fold.sec-closed>:not(header){display:none!important}
+.sec-fold.sec-closed>header{margin-bottom:0}
