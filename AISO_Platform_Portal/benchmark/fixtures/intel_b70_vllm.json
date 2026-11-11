@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "fixture_id": "intel-b70-vllm-p0-20261022",
+  "machine_id": "intel-arc-pro-b70-2gpu",
+  "framework": "vllm",
+  "runtime": "XPU",
+  "fixture_notice": "Historical values supplied for UI implementation. Records without imported Runner, Client and Server logs remain UNVERIFIED.",
+  "defaults": {
+    "tp": 2,
+    "np": [2, 4],
+    "input_tokens": [4096, 8192, 16384, 32768, 65536],
+    "output_tokens": 1024,
+    "repeat": 3,
+    "max_model_len": 69632,
+    "max_num_seqs": 4,
+    "max_batched_tokens": 4096,
+    "gpu_memory_utilization": 0.9,
+    "prefix_caching": false
+  },
+  "models": [
+    {
+      "id": "gemma26",
+      "display_name": "Gemma 4 26B",
+      "model_repo": "Pending evidence import",
+      "quantization": "Safetensors Q4 fixture label",
+      "model_format": "Safetensors",
+      "source_verified": false,
+      "source_status": "CHECKPOINT_SOURCE_NON_COMPLIANT",
+      "overall_status": "UNVERIFIED",
+      "records": []
+    },
+    {
+      "id": "gemma31",
+      "display_name": "Gemma 4 31B",
+      "model_repo": "Pending evidence import",
+      "quantization": "Safetensors Q4 fixture label",
+      "model_format": "Safetensors",
+      "source_verified": false,
+      "source_status": "PENDING_LOG_IMPORT",
+      "overall_status": "UNVERIFIED",
+      "records": [
+        {"np": 4, "input_tokens": 4096, "repeat": null, "ttft_s": 21.693, "tpot_ms": 80.414, "aggregate_tps": 39.361, "status": "UNVERIFIED", "evidence": "Metrics supplied; logs not imported"},
+        {"np": 4, "input_tokens": 8192, "repeat": null, "ttft_s": 66.921, "tpot_ms": 108.764, "aggregate_tps": 22.953, "status": "UNVERIFIED", "evidence": "Metrics supplied; logs not imported"},
+        {"np": 4, "input_tokens": 16384, "repeat": null, "ttft_s": 248.728, "tpot_ms": 227.758, "aggregate_tps": 8.494, "status": "UNVERIFIED", "evidence": "Metrics supplied; logs not imported"},
+        {"np": 4, "input_tokens": 32768, "repeat": null, "ttft_s": 998.505, "tpot_ms": 706.857, "aggregate_tps": 2.377, "status": "UNVERIFIED", "evidence": "Calculated from three console log values; source logs not imported"},
+        {"np": 4, "input_tokens": 65536, "repeat": 1, "ttft_s": null, "tpot_ms": null, "aggregate_tps": null, "status": "FAIL", "error_type": "MISSING_FIRST_TOKEN_OR_USAGE", "error_message": "missing first token/usage; root cause unconfirmed", "evidence": "Original failure retained; do not infer OOM"}
+      ]
+    },
+    {
+      "id": "nemotron",
+      "display_name": "Nemotron",
+      "model_repo": "Pending evidence import",
+      "quantization": "Safetensors Q4 fixture label",
+      "model_format": "Safetensors",
+      "source_verified": false,
+      "source_status": "CHECKPOINT_SOURCE_NON_COMPLIANT",
+      "overall_status": "UNVERIFIED",
+      "records": []
+    },
+    {
+      "id": "laguna",
+      "display_name": "Laguna FP8",
+      "model_repo": "Pending evidence import",
+      "quantization": "FP8",
+      "model_format": "Safetensors",
+      "source_verified": false,
+      "source_status": "FILES_VERIFIED_BENCHMARK_UNCONFIRMED",
+      "overall_status": "UNVERIFIED",
+      "records": []
+    }
+  ]
+}

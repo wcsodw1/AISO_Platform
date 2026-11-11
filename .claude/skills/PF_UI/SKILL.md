@@ -36,5 +36,9 @@ const out={};for(const e of document.body.querySelectorAll('*')){if(e.closest('[
 - "返回" goes to the previous page (`back-nav.js`).
 - One short summary sentence per chart; no duplicated explanatory text.
 
+## Selection flows = configurator style (David, 2026-11-11: "參考 Tesla 官網")
+- Preview stage on the left (big name, spec, status chips), ONE question at a time on the right: segmented progress bars, `‹ Back`, big question title, **equal-size option cards** (same width and height, 68 px+), selected = gold outline, one full-width primary Next / Go button.
+- Never let option cards differ in size. Disabled options are dimmed, not removed. See `machine-picker.js` (Benchmark page).
+
 ## Before saying "done"
 `make export`, run the unit tests, curl every link you paste (localhost, LAN IP, live) and only paste the ones that return 200. Related skills: PF_Sync, PF_Bench.

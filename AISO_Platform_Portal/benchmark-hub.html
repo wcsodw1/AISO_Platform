@@ -14,7 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=50">
+  <link rel="stylesheet" href="gptoss-v2.css?v=51">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
@@ -35,7 +35,6 @@
       <button type="button" role="tab" data-tab="sota"><b>SOTA R&amp;D<small class="zhs">前沿研究</small></b><small>LMCache …</small></button>
     </nav>
     <section class="bh-panel" id="tabBenchmarking" role="tabpanel">
-      <div class="bh-flow"><span>① Vendor<small class="zhs">選廠商</small></span><i>→</i><span>② Machine<small class="zhs">選機型</small></span><i>→</i><span>③ Run<small class="zhs">實測</small></span><i>→</i><span>④ Result<small class="zhs">看結果</small></span></div>
       <div id="bhPicker"></div>
     </section>
     <section class="bh-panel" id="tabSota" role="tabpanel" hidden>
@@ -45,7 +44,7 @@
       <div class="sp-col bh-sota-col"><h3>Pending R&amp;D<small class="zhs">待 RD list</small></h3><div class="spm" id="rdTodo" aria-live="polite"></div></div>
     </section>
   </main>
-<script src="machine-picker.js?v=4"></script>
+<script src="machine-picker.js?v=5"></script>
 <script>
 (function(){
  MachinePicker.mount(document.getElementById("bhPicker"));
