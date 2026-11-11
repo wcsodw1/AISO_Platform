@@ -392,3 +392,12 @@ h1 .zhs,h2 .zhs,h3 .zhs{font-size:17px}
 .spv-sub{display:block;font-size:16px;color:var(--muted)}.sp-vendor .spv-sub .zhs{font-size:16px}
 .sp-tier .zhs{font-size:16px}.sp-model em .zhs{font-size:16px;color:var(--muted);font-weight:500}.sp-run .zhs{color:#3b3720;font-size:16px;font-weight:700}
 .bh-flow .zhs{color:var(--muted);font-size:16px}.bh-menu b .zhs{font-size:17px}
+
+/* View Result sits right beside Benchmarking in the menu bar */
+.bh-grp{display:flex;align-items:stretch;border:1px solid rgba(244,239,228,.2);border-radius:16px;overflow:hidden;background:rgba(5,8,14,.55)}
+.bh-grp>button{border:0;border-radius:0;background:transparent}.bh-grp>button.on{background:rgba(200,184,117,.16)}
+.bh-result{display:flex;align-items:center;gap:16px;padding:16px 24px;border-left:1px solid rgba(200,184,117,.55);background:rgba(200,184,117,.14);color:var(--ivory);text-decoration:none;transition:background .15s,color .15s}
+.bh-result b{display:block;font-size:24px}.bh-result span>small{display:block;font-size:17px;color:var(--muted);margin-top:4px}.bh-result i{font-style:normal;font-size:28px;color:var(--gold)}
+.bh-result:hover,.bh-result:focus-visible{background:#d8c779;color:#15171d}.bh-result:hover span>small,.bh-result:hover b .zhs,.bh-result:hover i,.bh-result:focus-visible span>small,.bh-result:focus-visible i{color:#3b3720}
+.bh-grp:hover{border-color:var(--gold)}
+@media(max-width:700px){.bh-grp{flex-direction:column;width:100%}.bh-result{border-left:0;border-top:1px solid rgba(200,184,117,.55)}}

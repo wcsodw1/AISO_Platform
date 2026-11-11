@@ -14,13 +14,13 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=49">
+  <link rel="stylesheet" href="gptoss-v2.css?v=50">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
@@ -31,13 +31,12 @@
       <p class="v2-sub">Proof, not specs.<span class="zh-i">先選機型，再實測，最後看結果</span></p>
     </section>
     <nav class="bh-menu" role="tablist" aria-label="Benchmark menu">
-      <button type="button" role="tab" data-tab="benchmarking" class="on"><b>Benchmarking<small class="zhs">實測</small></b><small>Machine → Run → Result</small></button>
+      <div class="bh-grp"><button type="button" role="tab" data-tab="benchmarking" class="on"><b>Benchmarking<small class="zhs">實測</small></b><small>Machine → Run → Result</small></button><a class="bh-result" href="stress-test-compare.html" title="Side-by-side results of the measured machines 並排結果"><span><b>View Result<small class="zhs">結果總覽</small></b><small>B60 · B70 · AISO1</small></span><i aria-hidden="true">→</i></a></div>
       <button type="button" role="tab" data-tab="sota"><b>SOTA R&amp;D<small class="zhs">前沿研究</small></b><small>LMCache …</small></button>
     </nav>
     <section class="bh-panel" id="tabBenchmarking" role="tabpanel">
       <div class="bh-flow"><span>① Vendor<small class="zhs">選廠商</small></span><i>→</i><span>② Machine<small class="zhs">選機型</small></span><i>→</i><span>③ Run<small class="zhs">實測</small></span><i>→</i><span>④ Result<small class="zhs">看結果</small></span></div>
       <div id="bhPicker"></div>
-      <a class="st-view bh-all" href="stress-test-compare.html"><b>View Result<small>結果總覽</small></b><em>B60 · B70 · AISO1 並排比對</em><i aria-hidden="true">→</i></a>
     </section>
     <section class="bh-panel" id="tabSota" role="tabpanel" hidden>
       <div class="sp-col bh-sota-col"><h3>Results<small class="zhs">已有結果</small></h3><div class="spm">
