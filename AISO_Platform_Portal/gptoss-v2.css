@@ -280,3 +280,8 @@
 
 .pt-only dl{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 20px}.pt-only dd{font-size:18px}
 .pt-fold{margin-top:12px;border:1px dashed rgba(224,160,64,.4);border-radius:12px;padding:10px 14px}.pt-fold summary{cursor:pointer;color:#e0a040;font-size:16px}.pt-fold .pt-wrap{margin-top:10px}
+
+.pt-main{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.pt-main .pt-same dl{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px 18px}
+.pt-ulist{margin:0;display:grid;gap:10px}.pt-u dt{font-size:14px;color:var(--muted)}.pt-u dd{margin:3px 0 0;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:16px;color:var(--ivory)}.pt-u dd i{font-style:normal;font-size:14px;color:var(--muted);margin-right:4px}
+.pt-u .pt-unk{color:#e0a040}
+@media(max-width:900px){.pt-main{grid-template-columns:1fr}}
