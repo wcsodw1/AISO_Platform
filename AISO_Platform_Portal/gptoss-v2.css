@@ -433,3 +433,6 @@ h1 .zhs,h2 .zhs,h3 .zhs{font-size:17px}
 .sp-model.rd .sp-name .zhs{font-size:16px}
 .sp-model.rd .rd-st.wait{color:#e0a040}.sp-model.rd .rd-st.prog{color:#7fb2ff}.sp-model.rd .rd-st.done{color:#6fdc9a}
 .sp-model.has.rd{gap:18px;padding:16px 22px;flex-wrap:wrap;align-items:center}.sp-model.has.rd .rd-st{margin-left:auto}
+
+.rd-month{margin:18px 0 10px;font-size:24px;color:#6fdc9a;letter-spacing:.04em}.rd-month:first-child{margin-top:0}.rd-month .zhs{font-size:17px}
+.rd-own{color:var(--ivory)}

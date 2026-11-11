@@ -14,7 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=53">
+  <link rel="stylesheet" href="gptoss-v2.css?v=54">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
@@ -52,8 +52,9 @@
  fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
   var S={wait:["Wait Select","待選擇","wait"],progress:["In progress","進行中","prog"],done:["Done","完成","done"]},day=function(v){return v?esc(String(v).replace(/-/g,"/")):"—"};
-  function row(x){var s=S[x.status||"wait"]||S.wait,body='<span class="sp-name">'+esc(x.task)+(x.zh?'<small class="zhs">'+esc(x.zh)+'</small>':'')+'</span><span class="sp-tier">Added<small class="zhs">加入</small> '+day(x.added)+'</span><span class="sp-tier">Completed<small class="zhs">完成時間</small> '+day(x.done)+'</span><em class="rd-st '+s[2]+'">'+s[0]+'<small class="zhs">'+s[1]+'</small></em>';return x.href?'<a class="sp-model has rd '+s[2]+'" href="'+esc(x.href)+'">'+body+'<i class="rd-go" aria-hidden="true">→</i></a>':'<div class="sp-model soon rd '+s[2]+'">'+body+'</div>'}
-  document.getElementById("rdDone").innerHTML=(d.results||[]).map(row).join("");
+  function row(x){var s=S[x.status||"wait"]||S.wait,body='<span class="sp-name">'+esc(x.task)+(x.zh?'<small class="zhs">'+esc(x.zh)+'</small>':'')+'</span><span class="sp-tier">Added<small class="zhs">加入</small> '+day(x.added)+'</span><span class="sp-tier">Completed<small class="zhs">完成時間</small> '+day(x.done)+'</span>'+((x.status!=="wait"||x.owner)?'<span class="sp-tier rd-own">Owner<small class="zhs">負責人</small> '+(x.owner?esc(x.owner):"—")+'</span>':"")+'<em class="rd-st '+s[2]+'">'+s[0]+'<small class="zhs">'+s[1]+'</small></em>';return x.href?'<a class="sp-model has rd '+s[2]+'" href="'+esc(x.href)+'">'+body+'<i class="rd-go" aria-hidden="true">→</i></a>':'<div class="sp-model soon rd '+s[2]+'">'+body+'</div>'}
+  var months={};(d.results||[]).forEach(function(x){var m=(x.done||"").slice(0,7)||"—";(months[m]=months[m]||[]).push(x)});
+  document.getElementById("rdDone").innerHTML=Object.keys(months).sort().reverse().map(function(m){return '<h4 class="rd-month">'+esc(m.replace("-","/"))+'<small class="zhs">完成 · '+months[m].length+'</small></h4>'+months[m].map(row).join("")}).join("");
   document.getElementById("rdTodo").innerHTML=d.items.map(row).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
  open((location.hash||"").slice(1)||"benchmarking");
  window.addEventListener("hashchange",function(){open((location.hash||"").slice(1))});
