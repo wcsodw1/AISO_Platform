@@ -71,26 +71,29 @@ window.AisoTerm=(function(){
      <button type="button" class="tm-btn" data-a="probe">Check machines<span class="bz">檢查可連線</span></button><button type="button" class="tm-btn" data-a="int">Ctrl+C</button><button type="button" class="tm-btn" data-a="clear">Clear<span class="bz">清除</span></button><button type="button" class="tm-btn" data-a="close">Close<span class="bz">關閉</span></button></div>
     <pre class="tm-screen tm-live" tabindex="0"></pre>
     ${(D&&D.presets&&D.presets.length)?`<div class="tm-presets"><b>Benchmark<span class="bz">一鍵帶入</span></b>${D.presets.map((p,i)=>`<button type="button" class="tm-btn${p.run?" run":""}" data-preset="${i}">${esc(p.label)}</button>`).join("")}<small>Fills the input only; press Send to run. 只帶入指令，按 Send 才會執行。</small></div>`:""}
-    <form class="tm-input"><span class="tm-prompt">$</span><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command"><button type="submit" class="tm-btn pri">Send<span class="bz">送出</span></button></form>
+    <form class="tm-input"><span class="tm-prompt">$</span><textarea rows="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command" placeholder="Paste or type commands · Enter = send, Shift+Enter = new line"></textarea><input type="password" class="tm-pw" autocomplete="off" aria-label="password" hidden><button type="submit" class="tm-btn pri">Send<span class="bz">送出</span></button></form>
     <p class="tm-note">Runs in the repository folder with a minimal environment (no AISO_* secrets). Idle shells are closed after 15 minutes. 閒置 15 分鐘會自動關閉。</p>`;
-   const scr=el.querySelector(".tm-live"),inp=el.querySelector(".tm-input input"),badge=el.querySelector("[data-s]");
+   const scr=el.querySelector(".tm-live"),inp=el.querySelector(".tm-input textarea"),pw=el.querySelector(".tm-pw"),badge=el.querySelector("[data-s]");
    let sid=null,since=0,stop=false,hist=[],hi=0;
    const setState=(t,ok)=>{badge.textContent=t;badge.className="tm-badge "+(ok?"ok":"warn")};
    try{const o=await api("open",{method:"POST",body:JSON.stringify({target:target||null}),headers:H});sid=o.sid;setState("connected "+(target?"ssh "+target:o.cwd.split("/").slice(-2).join("/")),true)}catch(e){setState(e.message,false);return}
    async function poll(){
     if(stop||!root.isConnected)return;
     try{const r=await api(`read?sid=${sid}&since=${since}`,{headers:H});since=r.next;
-     if(r.data){const atEnd=scr.scrollTop+scr.clientHeight>=scr.scrollHeight-8;scr.textContent+=r.data.replace(ANSI,"");inp.type=/(password|passphrase)[^\n]*:\s*$/i.test(scr.textContent.slice(-200))?"password":"text";if(atEnd)scr.scrollTop=scr.scrollHeight}
+     if(r.data){const atEnd=scr.scrollTop+scr.clientHeight>=scr.scrollHeight-8;scr.textContent+=r.data.replace(ANSI,"");{const ask=/(password|passphrase)[^\n]*:\s*$/i.test(scr.textContent.slice(-200));if(ask!==!pw.hidden){pw.hidden=!ask;inp.hidden=ask;(ask?pw:inp).focus()}}if(atEnd)scr.scrollTop=scr.scrollHeight}
      if(!r.alive){setState("shell ended",false);stop=true;return}}
     catch(e){setState(e.message,false);stop=true;return}
     setTimeout(poll,350);
    }
    poll();
    const send=d=>api("write",{method:"POST",body:JSON.stringify({sid,data:d}),headers:H}).catch(e=>setState(e.message,false));
-   el.querySelector(".tm-input").onsubmit=ev=>{ev.preventDefault();const v=inp.value;if(v.trim())hist.push(v);hi=hist.length;inp.value="";send(v+"\n")};
-   inp.addEventListener("keydown",e=>{if(e.key==="ArrowUp"&&hist.length){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault()}else if(e.key==="ArrowDown"){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||"";e.preventDefault()}else if(e.key==="c"&&e.ctrlKey){send("\x03");e.preventDefault()}});
+   const fit=()=>{inp.style.height="auto";inp.style.height=Math.min(180,inp.scrollHeight)+"px"};
+   inp.addEventListener("input",fit);
+   el.querySelector(".tm-input").onsubmit=ev=>{ev.preventDefault();if(!pw.hidden){const v=pw.value;pw.value="";send(v+"\n");return}const v=inp.value;if(v.trim())hist.push(v);hi=hist.length;inp.value="";fit();send(v.replace(/\r\n?/g,"\n").replace(/\n*$/,"")+"\n")};
+   inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();el.querySelector(".tm-input").requestSubmit()}});
+   inp.addEventListener("keydown",e=>{if(e.key==="ArrowUp"&&hist.length&&!/\n/.test(inp.value.slice(0,inp.selectionStart))){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault()}else if(e.key==="ArrowDown"&&!/\n/.test(inp.value.slice(inp.selectionStart))){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||"";e.preventDefault()}else if(e.key==="c"&&e.ctrlKey){send("\x03");e.preventDefault()}});
    el.querySelector('[data-a="probe"]').onclick=async()=>{try{const r=await api("probe",{method:"POST",body:"{}",headers:H});scr.textContent+=`\n[reachability] ${r.reachable}/${r.total} machines answer on SSH:\n`+r.targets.map(x=>`  ${x.reachable?"✓":"✗"} ${x.name}  ${x.user||""}@${x.host||"?"}:${x.port||""}`).join("\n")+"\n";scr.scrollTop=scr.scrollHeight}catch(e){setState(e.message,false)}};
-   el.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{const p=D.presets[+b.dataset.preset];inp.value=p.command;inp.focus()});
+   el.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{const p=D.presets[+b.dataset.preset];inp.value=p.command;fit();inp.focus()});
    el.querySelector('[data-a="int"]').onclick=()=>send("\x03");
    el.querySelector('[data-a="clear"]').onclick=()=>{scr.textContent=""};
    el.querySelector('[data-a="close"]').onclick=async()=>{stop=true;try{await api("close",{method:"POST",body:JSON.stringify({sid}),headers:H})}catch(e){}liveInit=false;el.innerHTML=`<p class="tm-empty">Shell closed<span class="bz">已關閉</span></p>`};

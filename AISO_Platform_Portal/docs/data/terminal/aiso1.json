@@ -13,17 +13,20 @@
  "target": "AISO1",
  "presets": [
   {
-   "label": "Checkpoint (read-only)",
+   "label": "Active runners (read-only)",
+   "command": "ps -eo pid,ppid,etime,args | grep -E \"[A]ISO1_B1024|[l]lama-server\" || true"
+  },
+  {
+   "label": "Original checkpoint (read-only)",
    "command": "python3 \"$HOME/aiso1_benchmark/retest_B1024_20261110/checkpoint_manifest.py\""
   },
   {
-   "label": "Follow log",
-   "command": "tail -n 40 -f \"$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433/AISO1_Remaining_36.log\""
+   "label": "Fastlane status (read-only)",
+   "command": "cat \"$HOME/aiso1_benchmark/retest_B1024_20261110/campaign_fastlane_np12.json\" 2>/dev/null || true"
   },
   {
-   "label": "Run remaining models",
-   "run": true,
-   "command": "python3 -u \"$HOME/aiso1_benchmark/retest_B1024_20261110/AISO1_B1024_remaining.py\" 2>&1 | tee -a \"$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433/AISO1_Remaining_36.log\""
+   "label": "Latest fastlane log (read-only)",
+   "command": "f=$(ls -t \"$HOME\"/aiso1_benchmark/retest_B1024_20261110/AISO1_Fastlane_*.log 2>/dev/null | head -1); [ -n \"$f\" ] && tail -n 20 \"$f\""
   }
  ],
  "manifest": null,
