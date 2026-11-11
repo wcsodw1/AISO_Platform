@@ -24,11 +24,16 @@
   "radix_cache": "OFF",
   "tp": 2,
   "gpu_count": 4,
-  "runtime": "lmsysorg/sglang:v0.5.22-xpu",
+  "runtime": "lmsysorg/sglang:v0.5.22-xpu (Docker image sha256:a66de2a4b337…)",
   "memory_fraction": "0.90",
   "vram_total_gb": 96,
   "vram_layout": "48 GB x 2",
-  "memory_fraction_note": "依 B60_Completed_Benchmark_20261104.xlsx 協定表（vLLM / SGLang 同為 0.90）；未於 B60 主機獨立查驗。"
+  "memory_fraction_note": "B60 SGLang 啟動命令（command.json）已核實：tp 2、context-length 18432、chunked-prefill-size 4096、max-running-requests 10、mem-fraction-static 0.90、disable-radix-cache。",
+  "image_sha256": "a66de2a4b337f4a5ac55fdb5d5b7f7ff2a33ff76b970ae4773caabf2795695b4",
+  "gpus_used": 2,
+  "attention_backend": "intel_xpu",
+  "page_size": 64,
+  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）"
  },
  "b60_runs": [
   {
@@ -636,7 +641,8 @@
   "常駐模型請求（Prefix Cache OFF），不含 Smoke；不是 process-cold 量測。每個模型第一個 case 的終端輸出多出一筆 R=1（已核對 vLLM Gemma31 NP1/4K 的平均值不含該筆），平均值只含 R1–R3。",
   "數值轉錄自 B60 終端輸出之 report.md（3 位小數），B60 原始 CSV 檔未被獨立重讀。",
   "SGLang Gemma31 NP5 8K/16K 的 Aggregate 與 TTFT/TPOT 推算值差距最大（已於該列標 ‡）。",
-  "2026-11-02 舊版 Full 的 Gemma31 NP5/8K 失敗與重跑紀錄保留於「失敗與重跑紀錄」；V4 重測同一情境 PASS，但不代表該 XPU 資源錯誤已永久解決。"
+  "2026-11-02 舊版 Full 的 Gemma31 NP5/8K 失敗與重跑紀錄保留於「失敗與重跑紀錄」；V4 重測同一情境 PASS，但不代表該 XPU 資源錯誤已永久解決。",
+  "啟動參數已由 RunnerManifest 內各模型／NP 的 command.json 核對（見 scripts/ingest_b60_commands.py）；主機路徑與環境變數不公開。"
  ],
  "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
  "metrics_version": "v4-pdf-e2e",

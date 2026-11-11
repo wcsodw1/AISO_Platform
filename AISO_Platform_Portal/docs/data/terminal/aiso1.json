@@ -1,0 +1,201 @@
+{
+ "title": "AISO1 · llama.cpp B1024",
+ "completed": false,
+ "summary": "In progress · 31/48 conditions complete (handoff 20261111_115737)",
+ "source": "Verbatim lines from the AISO1 terminal (partial) · manifest and runner hashes from the AISO1 handoff package. Not a completed run.",
+ "runner": {
+  "file": "AISO1_B1024_remaining.py (+ checkpoint_manifest.py)",
+  "where": "~/aiso1_benchmark/retest_B1024_20261110 on AISO1 (not copied here yet)",
+  "sha256": null,
+  "command": "S=\"$HOME/aiso1_benchmark/retest_B1024_20261110\"\nR=\"$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433\"\npython3 \"$S/checkpoint_manifest.py\"\npython3 -u \"$S/AISO1_B1024_remaining.py\" 2>&1 | tee \"$R/AISO1_Remaining_36.log\"",
+  "note": "Runner / manifest are archived on AISO1 (L0 copy on the Mac in Buffer/Benchmark/AISO1_evidence). Only hashes are published here.",
+  "files_sha256": {
+   "AISO1_B1024.py": "fb6d5944960d95cddcbdea052f5a2e3f94ef2744d6bb9c9f9b8c67017cd7391f",
+   "AISO1_B1024_remaining.py": "06899df428d3880aa1bfc21259dda8e78a5ffe6ddddf031b466f2bfd59cda56a",
+   "AISO1_B1024_fastlane.py": "440f6842c0652dade7fee84a7079e48cb33bc84004517a97fcea6eb04b34401b",
+   "checkpoint_manifest.py": "83776a2abc06133f2509e0bee2e37c042c4c93bdc4dc994abe35c9e1bef4571c",
+   "checkpoint_keeper.py": "446268f30c38ef25c2eab0af5d980522a081c2c2d1dd1155a5821bb63c35920b",
+   "AISO1_B1024_resume_20min.py": "7209ebfa0353b69bd9118295de65dfb681ae56ac6843fb2d23884ddd48446d3a",
+   "preflight.json": "a8251d8fcb7f438b9244f30d482ae5833157d8d8937382d1a1402aefd55ea109",
+   "campaign.json": "f347603f48c6321c80922242b51048ec602049683632e400425eb5ef3342a967",
+   "campaign_fastlane_np12.json": "b98b2b859d8e46a0eef9063bc74623241d1d0399ea6bfdfed7026fcd0fbbac1d"
+  }
+ },
+ "target": "AISO1",
+ "presets": [
+  {
+   "label": "Active runners (read-only)",
+   "command": "ps -eo pid,ppid,etime,args | grep -E \"[A]ISO1_B1024|[l]lama-server\" || true"
+  },
+  {
+   "label": "Original checkpoint (read-only)",
+   "command": "python3 \"$HOME/aiso1_benchmark/retest_B1024_20261110/checkpoint_manifest.py\""
+  },
+  {
+   "label": "Fastlane status (read-only)",
+   "command": "cat \"$HOME/aiso1_benchmark/retest_B1024_20261110/campaign_fastlane_np12.json\" 2>/dev/null || true"
+  },
+  {
+   "label": "Latest fastlane log (read-only)",
+   "command": "f=$(ls -t \"$HOME\"/aiso1_benchmark/retest_B1024_20261110/AISO1_Fastlane_*.log 2>/dev/null | head -1); [ -n \"$f\" ] && tail -n 20 \"$f\""
+  }
+ ],
+ "manifest": {
+  "schema_version": 1,
+  "machine": "AISO1",
+  "framework": "llamacpp",
+  "campaign_type": "B1024",
+  "generated_at": "20261111_115737",
+  "workload": {
+   "np": [
+    1,
+    2,
+    4,
+    5
+   ],
+   "input_tokens": [
+    4096,
+    8192,
+    16384
+   ],
+   "output_tokens": 1024,
+   "repeat": 3,
+   "batch_size": 1024,
+   "ubatch_size": 512,
+   "kv_type": "f16",
+   "flash_attention": "off"
+  },
+  "models": [
+   "gemma26",
+   "gemma31",
+   "laguna",
+   "nemotron"
+  ],
+  "counts": {
+   "PASS": 31,
+   "DEFERRED": 2,
+   "PARTIAL_PASS": 1,
+   "PENDING": 14
+  },
+  "complete_cases": 31,
+  "expected_cases": 48,
+  "cases_file": "aiso1_platform_cases.csv",
+  "validation": "CSV/raw/repeat/basic KPI checks; provenance pending",
+  "note": "Partial data; not equivalent to V4"
+ },
+ "manifest_note": null,
+ "transcript": [
+  {
+   "k": "dim",
+   "t": "# AISO1 llama.cpp B1024 · still running (snapshot of the terminal)"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 \"$S/checkpoint_manifest.py\""
+  },
+  {
+   "k": "out",
+   "t": "=== PRESERVED GEMMA26 ==="
+  },
+  {
+   "k": "out",
+   "t": "CHECKPOINT: 10 /48 cases; 31 /144 waves; NEXT: gemma31/NP1/Input4096/R1"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u \"$S/AISO1_B1024_remaining.py\" 2>&1 | tee \"$R/AISO1_Remaining_36.log\""
+  },
+  {
+   "k": "out",
+   "t": "AISO1 REMAINING MODELS: ('gemma31', 'laguna', 'nemotron')"
+  },
+  {
+   "k": "out",
+   "t": "MATRIX: 12 conditions/model"
+  },
+  {
+   "k": "warn",
+   "t": "Gemma26: SKIPPED / ORIGINAL DATA PRESERVED"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=4096 R=1 PASS agg=5.379930194751822 norm=5.379930194751822"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=4096 R=2 PASS agg=5.380228492720835 norm=5.380228492720835"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=4096 R=3 PASS agg=5.378816397648998 norm=5.378816397648998"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=8192 R=1 PASS agg=3.0230379357628587 norm=3.0230379357628587"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=8192 R=2 PASS agg=3.050341381023951 norm=3.050341381023951"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=8192 R=3 PASS agg=3.039389466332932 norm=3.039389466332932"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=16384 R=1 PASS agg=2.4105410597561217 norm=2.4105410597561217"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=16384 R=2 PASS agg=2.4132623510197964 norm=2.4132623510197964"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=1 input=16384 R=3 PASS agg=2.3968317971495248 norm=2.3968317971495248"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=4096 R=1 PASS agg=3.553258127491391 norm=1.7766290637456954"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=4096 R=2 PASS agg=3.5334248898822396 norm=1.7667124449411198"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=4096 R=3 PASS agg=4.173800761863721 norm=2.0869003809318607"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=8192 R=1 PASS agg=3.2078974970695278 norm=1.6039487485347639"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=8192 R=2 PASS agg=2.884315994516474 norm=1.442157997258237"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=8192 R=3 PASS agg=2.9355838740585862 norm=1.4677919370292931"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=16384 R=1 PASS agg=2.2657758983135188 norm=1.1328879491567594"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=16384 R=2 PASS agg=2.2034826531621423 norm=1.1017413265810712"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp/gemma31 NP=2 input=16384 R=3 PASS agg=2.2019685276529746 norm=1.1009842638264873"
+  },
+  {
+   "k": "warn",
+   "t": "llamacpp/gemma31 NP=4 input=4096 R=2 PASS agg=0.6383648445267487 norm=0.15959121113168717   ← very slow / outlier, kept as is"
+  },
+  {
+   "k": "dim",
+   "t": "… Runner still running (snapshot 2026-11-11 08:54: 19/48 conditions, Laguna and Nemotron not started)."
+  }
+ ]
+}

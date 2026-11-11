@@ -12,8 +12,10 @@
   <link rel="stylesheet" href="site-header.css?v=1.28.2">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="gptoss-v2.css?v=50">
+  <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
   <header class="site-header">
@@ -71,11 +73,14 @@
       <p class="v2-fn">「無資料」= 尚未測試或無法啟動，不是 0，也不是通過；不使用推估值填入。</p>
     </section>
 
+    <section class="report-section" id="secUnmatched" hidden></section>
+
     <section class="report-section">
       <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-report.html">壓測報告 →</a><a class="v2-dl" href="stress-test-b60.html">B60 完整測試 →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>資料登錄 JSON ↓</a></header>
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=6"></script><script src="repeat-chart.js?v=1"></script><script src="stress-test-compare.js?v=25"></script>
+  </main><script src="bench-viz.js?v=11"></script><script src="repeat-chart.js?v=1"></script><script src="hover-fold.js?v=1"></script><script src="stress-test-compare.js?v=35"></script>
+<script src="debug-notes.js?v=3"></script>
 </body>
 </html>

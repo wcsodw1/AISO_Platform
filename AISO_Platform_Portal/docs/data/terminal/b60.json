@@ -1,0 +1,244 @@
+{
+ "title": "Intel B60 · llama.cpp V4",
+ "completed": true,
+ "summary": "Completed 36/36 PASS (4 models × NP1/2/5 × 4K/8K/16K × 3 repeats)",
+ "source": "Reconstructed from the B60 evidence campaign B60_matrix_v4_20261104_201559_715039 (profile.json, summary.csv). Not a verbatim terminal capture; batch 4096 (before the batch-1024 decision).",
+ "runner": {
+  "file": "B60_Benchmark_matrix_v4_261104.py",
+  "where": "~/b60_benchmark on the B60 machine (copy in Buffer/Benchmark)",
+  "sha256": "cc7f78564360954b7b206d9f572ffead95bc981d3928049bd9c29ee21cd7f8b9",
+  "command": "python3 B60_Benchmark_matrix_v4_261104.py --root ~/b60_benchmark --run",
+  "note": "B60 has been returned to the vendor; this run cannot be repeated."
+ },
+ "manifest": {
+  "workload": {
+   "np": [
+    1,
+    2,
+    5
+   ],
+   "inputs": [
+    4096,
+    8192,
+    16384
+   ],
+   "output": 1024,
+   "repeat": 3,
+   "http": {
+    "tp": 2,
+    "context": 18432,
+    "capacity": 10,
+    "prefill": 4096,
+    "memory": 0.9,
+    "prefix_cache": false
+   },
+   "llamacpp": {
+    "slots": 10,
+    "per_slot": 18432,
+    "total_kv_by_np": {
+     "1": 18432,
+     "2": 36864,
+     "5": 92160
+    },
+    "batch": 4096,
+    "ubatch": 512,
+    "kv": "f16",
+    "split": "layer"
+   }
+  },
+  "metrics": {
+   "version": "v4-pdf-e2e",
+   "ttft": "first_content-start, seconds",
+   "tpot": "1000*(stream_done-first_content)/(actual_output_tokens-1), ms/token",
+   "aggregate": "sum actual output tokens/(last stream_done-first request_start), tokens/s",
+   "normalized": "aggregate/NP, tokens/s/user (one concurrent request per user)",
+   "decode": "(actual_output_tokens-1)/(stream_done-first_content), tokens/s",
+   "averaging": "arithmetic mean of 3 valid repetition wave metrics; failed case metrics null",
+   "streaming": "TTFT is first nonempty text SSE arrival; chunks may contain multiple tokens",
+   "cold_warm": "resident-model requests, prefix cache OFF; Smoke excluded; NOT process-cold measurements"
+  },
+  "script_sha256": "cc7f78564360954b7b206d9f572ffead95bc981d3928049bd9c29ee21cd7f8b9",
+  "machine": "sparkle-To-Be-Filled-By-O-E-M",
+  "images": {
+   "vllm": "sha256:95ac815038c4b3537b173798bfe3b89bdf525a52bd653cd14d4deb01f1062be7",
+   "sglang": "sha256:a66de2a4b337f4a5ac55fdb5d5b7f7ff2a33ff76b970ae4773caabf2795695b4",
+   "llamacpp": "sha256:f457e95a47354ec0fb904554bcfde45b229d8d858e52edeb32b6c6503af5b52c"
+  }
+ },
+ "target": null,
+ "presets": [],
+ "transcript": [
+  {
+   "k": "dim",
+   "t": "# Intel B60 Matrix V4 · llama.cpp · NP 1/2/5 × Input 4096/8192/16384 × Output 1024 × Repeat 3 · Smoke excluded"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 B60_Benchmark_matrix_v4_261104.py --root ~/b60_benchmark --run"
+  },
+  {
+   "k": "dim",
+   "t": "── gemma26 ──"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=1 input=4096 PASS  TTFT=4264.5 ms  TPOT=28.01 ms/token  Aggregate=31.111 tok/s  Normalized=31.111"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=1 input=8192 PASS  TTFT=8255.8 ms  TPOT=32.12 ms/token  Aggregate=24.907 tok/s  Normalized=24.907"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=1 input=16384 PASS  TTFT=16929.2 ms  TPOT=35.05 ms/token  Aggregate=19.401 tok/s  Normalized=19.401"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=2 input=4096 PASS  TTFT=10175.7 ms  TPOT=39.50 ms/token  Aggregate=40.545 tok/s  Normalized=20.272"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=2 input=8192 PASS  TTFT=17675.6 ms  TPOT=41.77 ms/token  Aggregate=33.888 tok/s  Normalized=16.944"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=2 input=16384 PASS  TTFT=33532.3 ms  TPOT=46.64 ms/token  Aggregate=25.190 tok/s  Normalized=12.595"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=5 input=4096 PASS  TTFT=23333.5 ms  TPOT=76.48 ms/token  Aggregate=50.363 tok/s  Normalized=10.073"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=5 input=8192 PASS  TTFT=39925.0 ms  TPOT=95.21 ms/token  Aggregate=37.243 tok/s  Normalized=7.449"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma26 NP=5 input=16384 PASS  TTFT=78824.4 ms  TPOT=134.97 ms/token  Aggregate=23.570 tok/s  Normalized=4.714"
+  },
+  {
+   "k": "dim",
+   "t": "── gemma31 ──"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=1 input=4096 PASS  TTFT=20732.6 ms  TPOT=66.62 ms/token  Aggregate=11.521 tok/s  Normalized=11.521"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=1 input=8192 PASS  TTFT=41281.3 ms  TPOT=78.74 ms/token  Aggregate=8.405 tok/s  Normalized=8.405"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=1 input=16384 PASS  TTFT=84438.3 ms  TPOT=87.97 ms/token  Aggregate=5.871 tok/s  Normalized=5.871"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=2 input=4096 PASS  TTFT=44172.3 ms  TPOT=78.46 ms/token  Aggregate=16.456 tok/s  Normalized=8.228"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=2 input=8192 PASS  TTFT=86869.7 ms  TPOT=85.97 ms/token  Aggregate=11.711 tok/s  Normalized=5.855"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=2 input=16384 PASS  TTFT=157363.1 ms  TPOT=115.94 ms/token  Aggregate=7.417 tok/s  Normalized=3.709"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=5 input=4096 PASS  TTFT=107887.7 ms  TPOT=175.61 ms/token  Aggregate=17.798 tok/s  Normalized=3.560"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=5 input=8192 PASS  TTFT=187529.7 ms  TPOT=250.02 ms/token  Aggregate=11.539 tok/s  Normalized=2.308"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp gemma31 NP=5 input=16384 PASS  TTFT=360286.1 ms  TPOT=414.29 ms/token  Aggregate=6.523 tok/s  Normalized=1.305"
+  },
+  {
+   "k": "dim",
+   "t": "── laguna ──"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=1 input=4096 PASS  TTFT=3193.4 ms  TPOT=16.65 ms/token  Aggregate=50.639 tok/s  Normalized=50.639"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=1 input=8192 PASS  TTFT=6783.7 ms  TPOT=19.29 ms/token  Aggregate=38.612 tok/s  Normalized=38.612"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=1 input=16384 PASS  TTFT=14621.7 ms  TPOT=23.94 ms/token  Aggregate=26.182 tok/s  Normalized=26.182"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=2 input=4096 PASS  TTFT=8951.6 ms  TPOT=34.76 ms/token  Aggregate=46.097 tok/s  Normalized=23.048"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=2 input=8192 PASS  TTFT=15190.0 ms  TPOT=37.45 ms/token  Aggregate=38.263 tok/s  Normalized=19.132"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=2 input=16384 PASS  TTFT=31108.3 ms  TPOT=45.76 ms/token  Aggregate=26.265 tok/s  Normalized=13.132"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=5 input=4096 PASS  TTFT=22761.6 ms  TPOT=73.60 ms/token  Aggregate=52.180 tok/s  Normalized=10.436"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=5 input=8192 PASS  TTFT=39862.5 ms  TPOT=95.89 ms/token  Aggregate=37.069 tok/s  Normalized=7.414"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp laguna NP=5 input=16384 PASS  TTFT=85052.7 ms  TPOT=146.68 ms/token  Aggregate=21.736 tok/s  Normalized=4.347"
+  },
+  {
+   "k": "dim",
+   "t": "── nemotron ──"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=1 input=4096 PASS  TTFT=3956.3 ms  TPOT=20.12 ms/token  Aggregate=41.722 tok/s  Normalized=41.722"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=1 input=8192 PASS  TTFT=7644.3 ms  TPOT=20.45 ms/token  Aggregate=35.845 tok/s  Normalized=35.845"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=1 input=16384 PASS  TTFT=15082.3 ms  TPOT=20.93 ms/token  Aggregate=28.060 tok/s  Normalized=28.060"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=2 input=4096 PASS  TTFT=8938.3 ms  TPOT=40.10 ms/token  Aggregate=40.991 tok/s  Normalized=20.496"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=2 input=8192 PASS  TTFT=15943.2 ms  TPOT=41.46 ms/token  Aggregate=35.087 tok/s  Normalized=17.543"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=2 input=16384 PASS  TTFT=29430.5 ms  TPOT=46.35 ms/token  Aggregate=26.636 tok/s  Normalized=13.318"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=5 input=4096 PASS  TTFT=20206.4 ms  TPOT=76.38 ms/token  Aggregate=52.024 tok/s  Normalized=10.405"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=5 input=8192 PASS  TTFT=36588.2 ms  TPOT=87.16 ms/token  Aggregate=40.669 tok/s  Normalized=8.134"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp nemotron NP=5 input=16384 PASS  TTFT=68435.7 ms  TPOT=115.25 ms/token  Aggregate=27.431 tok/s  Normalized=5.486"
+  },
+  {
+   "k": "ok",
+   "t": "llamacpp: 36/36 PASS · 4/4 models complete"
+  }
+ ]
+}

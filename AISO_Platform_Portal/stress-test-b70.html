@@ -12,8 +12,11 @@
   <link rel="stylesheet" href="site-header.css?v=1.28.2">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="terminal.css?v=9">
+  <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
   <header class="site-header">
@@ -58,6 +61,10 @@
       <p class="v2-fine" id="stErr"></p>
     </section>
 
-  </main><script src="bench-viz.js?v=6"></script><script src="stress-test-b70.js?v=4"></script>
+      <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
+
+  </main><script src="bench-viz.js?v=10"></script><script src="stress-test-b70.js?v=4"></script>
+<script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"b70"})</script>
+<script src="debug-notes.js?v=3"></script>
 </body>
 </html>

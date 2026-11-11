@@ -19,11 +19,11 @@
   "output_tokens": 1024,
   "repeat": 3,
   "gpu_count": 4,
-  "runtime": "UNVERIFIED",
+  "runtime": "llama.cpp commit e937b17a2 (build 11561) · SYCL (Docker image sha256:f457e95a4735…)",
   "vram_total_gb": 96,
   "vram_layout": "48 GB x 2",
   "context_length": 18432,
-  "split": "layer",
+  "split": "layer (tensor-split 1,1)",
   "slots": 10,
   "per_slot_context": 18432,
   "total_kv_by_np": {
@@ -34,7 +34,17 @@
   "batch": 4096,
   "ubatch": 512,
   "kv_cache_type": "f16",
-  "prefix_cache": "OFF"
+  "prefix_cache": "OFF",
+  "backend": "SYCL",
+  "image_sha256": "f457e95a47354ec0fb904554bcfde45b229d8d858e52edeb32b6c6503af5b52c",
+  "devices": "SYCL0, SYCL1",
+  "gpus_used": 2,
+  "unified_kv": "ON",
+  "cont_batching": "ON",
+  "context_shift": "OFF",
+  "gpu_layers": 999,
+  "cache_ram": "0",
+  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）"
  },
  "b60_runs": [
   {
@@ -1145,7 +1155,8 @@
   "數值轉錄自 B60 終端輸出之 report.md（3 位小數），B60 原始 CSV 檔未被獨立重讀。",
   "llama.cpp 啟動參數（V4 腳本）：10 slots、每 slot 18432、總 KV 依 NP（1→18432／2→36864／5→92160）、batch 4096、ubatch 512、KV f16、layer split；llama.cpp 版本／build 未取得（UNVERIFIED）。",
   "本批 llama.cpp 為 GGUF 量化（Q4_0／Q4_K_M／UD-Q4_K_M），與 vLLM／SGLang 的 W4A16／FP8 不同，框架間的差異不能全歸因於框架。",
-  "Gemma31 NP1/8192 執行中程序被中斷（終端顯示 ^\\Quit (core dumped)，疑為手動 Ctrl+\\ 送出 SIGQUIT，未由日誌確認），以 resume 腳本從已存結果續跑（備份 zip 已建立，該 case 重測）；表中為續跑後的最終值。"
+  "Gemma31 NP1/8192 執行中程序被中斷（終端顯示 ^\\Quit (core dumped)，疑為手動 Ctrl+\\ 送出 SIGQUIT，未由日誌確認），以 resume 腳本從已存結果續跑（備份 zip 已建立，該 case 重測）；表中為續跑後的最終值。",
+  "啟動參數已由 RunnerManifest 內各模型／NP 的 command.json 核對（見 scripts/ingest_b60_commands.py）；主機路徑與環境變數不公開。"
  ],
  "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
  "metrics_version": "v4-pdf-e2e",
