@@ -52,7 +52,7 @@ function renderMetrics(){
  const av=`<p class="v2-fine cmp-av">${availability()}</p>`+(nom.length?`<p class="v2-fine cmp-pending">${esc(nom.join("、"))}：TTFT／TPOT 待原始 summary.csv，目前只有 TPS（Aggregate／Normalized）；圖中以「—」表示。</p>`:"");
  if(!have.length){$s("stMetrics").innerHTML=av+'<p class="v2-fine st-empty">此框架、模型、NP 三台機器都還沒有資料。</p>';return}
  $s("stMetrics").innerHTML=av+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grpNow(),series:REG.machines.map(m=>({key:m.key,label:m.label,color:m.color})),get:(mk,g)=>{const r=get(mk,FW,MODEL,NP,g.i);return r&&Number.isFinite(r[k])?r:null},
-  baseline:have.length>1?base:null,width:w,context:`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}`,
+  baseline:have.length>1?base:null,summaryNote:(k==="tpot_ms"&&FW==="llamacpp")?"B70 的 TPOT 為 server 端計時，定義與其他機器不同":"",width:w,context:`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}`,
   message:have.length>1?"":`目前只有 ${have[0].label} 有「${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}」的資料，另外的機器登錄後會自動並排並計算差異`,
   tableNote:have.length>1?`差異以 ${have[0].label} 為基準；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二台機器可比較"})).join("");
 }
@@ -100,9 +100,8 @@ if(!OTHER){const mk=REG.machines.map(m=>m.label.replace(/^Intel /,"").replace(/ 
 function renderSetup(){
  const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
  const rng=(m,k)=>{const v=[...new Set(REG.frameworks.flatMap(f=>runsOf(m,f.key)).map(x=>x[k]))].sort((a,b)=>a-b);return v.length?v.join("/"):"待核"};
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">同一框架、同一模型下，並排比較 <b>${esc(REG.machines.map(m=>m.label).join("、"))}</b> 的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>。</p></section>
- <section class="v2-pane"><h2>測試參數<span>Key Parameters</span></h2>
- <dl class="v2-params">${r("Output 輸出","1,024 tokens")}${r("Repeat 重複","3 次取平均")}${r("Input 輸入","4K / 8K / 16K")}${r("NP 並發","1 / 2 / 4 / 5")}${r("TPS (Normalized)","Aggregate ÷ NP")}${r("基準 Baseline","有資料的第一台")}</dl>
+ $s("stSetup").innerHTML=`<section class="v2-pane"><h2>測試參數<span>Key Parameters</span></h2>
+ <dl class="v2-params">${r("Output 輸出","1,024 tokens")}${r("Repeat 重複","3 次取平均")}${r("Input 輸入","4K / 8K / 16K")}${r("NP 並發","1 / 2 / 4 / 5")}</dl>
  ${paramTable()}</section>`;
 }
 function renderConfig(){

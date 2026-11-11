@@ -212,7 +212,7 @@
 .st .v2-pane h2{color:var(--gold)}.st .v2-pane h2 span{color:var(--muted)}
 
 /* chart block: "full data" button at the bottom-right of the chart */
-.bv-foot{display:flex;justify-content:flex-end;margin:12px 2px 0}
+.bv-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:12px 2px 0}.bv-sum{margin:0;font-size:18px;font-weight:600;color:var(--ivory)}
 .bv-more{font:inherit;font-size:16px;font-weight:700;color:var(--gold);background:transparent;border:1px solid rgba(216,199,121,.55);border-radius:999px;padding:8px 18px;cursor:pointer}
 .bv-more:hover,.bv-more[aria-expanded="true"]{background:rgba(216,199,121,.14)}
 .bv-detail{margin-top:8px}

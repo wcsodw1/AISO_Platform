@@ -33,7 +33,7 @@ function renderPick(){
 function renderSetup(){
  const d=DATA[FW],p=d.profile,r=(k,v)=>v==null||v===""||v==="UNVERIFIED"?"":`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`,runs=cellRuns(),c=(d.config||{})[MODEL]||{};
  const lc=FW==="llamacpp",hist=!!(d.caveat&&d.caveat.level==="historical_unverified");
- $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">呈現 <b>AISO1（AMD Ryzen AI MAX+ 395）</b> 的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>：${esc(fwLabel(FW))} · ${esc(mName(MODEL))} · NP${NP}${hist?"（歷史診斷）":""}。</p></section>`;
+ $s("stSetup").innerHTML="";
  const ins=[...new Set(runs.map(x=>x.input))].map(kn).join(" / ");
  const gpu=p.gpu_evidence;
  $s("stParams").innerHTML=[r("Machine 機器","AISO1 · Radeon 8060S 統一記憶體"),r("Framework",fwLabel(FW)),r("Model 模型",`${mName(MODEL)}${runs[0]&&runs[0].format?" · "+runs[0].format:""}`),r("Input 輸入",ins),r("Output 輸出",p.output_tokens?tok(p.output_tokens)+" tokens":"1,024 tokens"),r("NP 並發",NP),r("Repeat 重複","3 次取平均"),
