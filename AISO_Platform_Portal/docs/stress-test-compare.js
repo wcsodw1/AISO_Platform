@@ -92,9 +92,9 @@ function paramTable(){
 if(!OTHER){const mk=REG.machines.map(m=>m.label.replace(/^Intel /,"").replace(/ AMD$/,""));
   const uRows=diff.map(([l,vs])=>`<div class="pt-u"><dt>${l}</dt><dd>${vs.map((v,n)=>`<span class="${bad(v)?"pt-unk":""}"><i>${esc(mk[n])}</i> ${esc(v==="UNVERIFIED"?"未核實":v)}</span>`).join("")}</dd></div>`).join("");
   const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>未匹配參數<span class="zh">Unmatched · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · 各機設定不同或未核實的項目（不屬於上方「相同參數」）。</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
-  return `<h3 class="pt-h">主要比對：${REG.machines.length===2?"兩機":"三機"}相同參數 <small>${esc(fwLabel(FW))} · Identical parameters</small></h3>${lead}<div class="pt-same pt-only"><h4>✓ 相同參數 <small>Identical · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div>`}
+  return `<h3 class="pt-h">${REG.machines.length===2?"兩機":"三機"}相同參數 <small>Identical · ${esc(fwLabel(FW))} · ${same.length} 項</small></h3><div class="pt-same pt-only">${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div>`}
  {const um=$s("secUnmatched");if(um){um.hidden=true;um.innerHTML=""}}
-  return `<h3 class="pt-h">${title}：各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ 相同參數 <small>Identical · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div><div class="pt-diffbox"><h4>⚠ 不同／未核實 <small>Different / Unverified · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數</th>${th}<th>判定</th></tr></thead><tbody>${dRows}</tbody></table></div>`:'<p class="pt-none">無</p>'}</div></div><p class="v2-fn">統一決定：llama.cpp batch = 1024。B60 llama.cpp 為 Legacy Campaign（batch 4096，已歸還廠商無法重測），與 B70 / AISO1 的 B1024 Campaign 分開保留，不能宣稱參數完全一致。vLLM 的 Max batched tokens、SGLang 的 Chunked prefill 與 llama.cpp 的 Batch size 是不同的調度參數，不互相比較。「總 Context」＝ 每槽 Context × NP（llama.cpp --ctx-size）。</p>`;
+  return `<h3 class="pt-h">${title}：各機參數對照 <small>${esc(fwLabel(FW))} · Machine parameters（只有硬體可以不同）</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ 相同參數 <small>Identical · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:'<p class="pt-none">目前沒有各機一致的參數</p>'}</div><div class="pt-diffbox"><h4>⚠ 不同／未核實 <small>Different / Unverified · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>參數</th>${th}<th>判定</th></tr></thead><tbody>${dRows}</tbody></table></div>`:'<p class="pt-none">無</p>'}</div></div>`;
 }
 function renderSetup(){
  const r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
@@ -102,8 +102,7 @@ function renderSetup(){
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">同一框架、同一模型下，並排比較 <b>${esc(REG.machines.map(m=>m.label).join("、"))}</b> 的 <b>TTFT</b>、<b>TPOT</b>、<b>TPS</b>。</p></section>
  <section class="v2-pane"><h2>測試參數<span>Key Parameters</span></h2>
  <dl class="v2-params">${r("Output 輸出","1,024 tokens")}${r("Repeat 重複","3 次取平均")}${r("Input 輸入","4K / 8K / 16K")}${r("NP 並發","1 / 2 / 4 / 5")}${r("TPS (Normalized)","Aggregate ÷ NP")}${r("基準 Baseline","有資料的第一台")}</dl>
- ${paramTable()}
- <p class="v2-fn">各機實測 NP：${REG.machines.map(m=>`${esc(m.label)} ${rng(m.key,"np")}`).join("、")}；NP 與 Input 相同才可比；設定差異與「歷史・未核實」見下方。</p></section>`;
+ ${paramTable()}</section>`;
 }
 function renderConfig(){
  const rows=[["來源 Repo","repo"],["格式／量化","format"],["後端","backend"],["TP／切分","tp"],["Max Context","max_context"],["Batch／Chunk","batch"],["Max Seqs／Slots","max_seqs"],["Memory Fraction","mem_fraction"],["Cache","cache"],["Run","run_id"],["測試日期","date"]];
