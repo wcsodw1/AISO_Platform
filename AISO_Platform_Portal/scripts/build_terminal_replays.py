@@ -53,7 +53,7 @@ def b70():
         m, np_, inp, *rs = l.split()
         for i, v in enumerate(rs, 1):
             tr.append({"k": "ok", "t": f"{m} NP={np_} input={inp} R={i} PASS Aggregate={v}"})
-    tr.append({"k": "out", "t": "RESULT_DIR: /home/sparkle/b70_benchmark/B70_V4_B1024/frameworks/llamacpp/results/sb_full_20261110_151623_117599"})
+    tr.append({"k": "out", "t": "RESULT_DIR: ~/b70_benchmark/B70_V4_B1024/frameworks/llamacpp/results/sb_full_20261110_151623_117599"})
     manifest = {"protocol": "B60 V4 + batch 1024", "campaign": "sb_full_20261110_151623_117599", "workload": {"np": [1, 2, 4, 5], "inputs": [4096, 8192, 16384], "output": 1024, "repeat": 3, "model_workers": 1},
                 "llamacpp_flags_verified_in_smoke": {"--parallel": 10, "--ctx-size": 18432, "--kv-unified-per-slot": 18432, "--batch-size": 1024, "--ubatch-size": 512, "--cache-type-k": "f16", "--cache-type-v": "f16", "--kv-unified": True, "--no-cache-prompt": True, "--no-context-shift": True},
                 "not_verified": ["image sha256 / build (B60 used SYCL build 11561, sha256:f457e95a…)", "GGUF SHA256 on the B70", "device / split-mode settings", "TTFT / TPOT (only Aggregate TPS was captured)"]}

@@ -695,7 +695,7 @@
   },
   {
    "k": "out",
-   "t": "RESULT_DIR: /home/sparkle/b70_benchmark/B70_V4_B1024/frameworks/llamacpp/results/sb_full_20261110_151623_117599"
+   "t": "RESULT_DIR: ~/b70_benchmark/B70_V4_B1024/frameworks/llamacpp/results/sb_full_20261110_151623_117599"
   }
  ]
 }
