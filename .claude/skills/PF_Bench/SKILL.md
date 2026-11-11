@@ -34,3 +34,6 @@ Branch from main → `make export` → `make check` (54 tests) → commit (`Co-A
 
 ## 6. Reply format
 Every reply ends with: live HOME https://wcsodw1.github.io/AISO_Platform/ + changed pages (curl 200 first; "未上線" before merge), localhost + LAN link (`ipconfig getifaddr en0`, preview `portal` on 8765), PR link, next step. Report what was ingested, what is UNVERIFIED, and any consistency warnings.
+
+## Links in every reply (David, 2026-11-11)
+Curl-verify each link immediately before pasting it (localhost, current LAN IP, live site). Start the local server first if it is down (`preview_start launcher`). Never paste a link that has not returned 200. See CLAUDE.md "never paste an unverified link".
