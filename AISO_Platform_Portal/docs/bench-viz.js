@@ -46,6 +46,40 @@ window.BV=(function(){
   });
   return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(def.short)}">${s}</svg></div>`;
  }
+
+ /* line chart: same data and axis as the bars; one line per series across the input lengths */
+ function lineSvg(o){
+  const {k,def,groups,series,get,width}=o,n=groups.length;
+  const L=68,R=30,T=50,B=80,H=364,ih=H-T-B,W=Math.max(width||0,n*150+L+R),gw=(W-L-R)/n;
+  const vals=groups.flatMap(g=>series.map(s=>get(s.key,g)).filter(Boolean).map(r=>r[k]));
+  if(!vals.length)return null;
+  const top=Math.max(...vals),st=step(top),y=v=>T+ih-v/top*ih,x=q=>L+gw*(q+.5);
+  let s="";
+  for(let v=0;v<=top+1e-9;v+=st){const yy=y(v);s+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,st<1?1:0)}</text>`}
+  s+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${esc(def.unit)}</text>`;
+  series.forEach((se,j)=>{
+   let d="",pen=false;
+   groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${x(q).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
+   if(d)s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+   groups.forEach((g,q)=>{const r=get(se.key,g);if(!r)return;const v=r[k],red=k==="ttft_s"&&r.ttft_over_180s,
+     close=series.some((o2,j2)=>{const r2=j2!==j&&get(o2.key,g);return r2&&y(r2[k])<y(v)&&y(v)-y(r2[k])<26}),above=!close;   // a point sitting right under another one labels below, so numbers never overlap
+    s+=`<circle cx="${x(q)}" cy="${y(v)}" r="5.5" fill="${se.color}" stroke="#0b0f17" stroke-width="2"><title>${esc(se.label)} · ${esc(g.label)}: ${fmt(k,v)} ${esc(def.unit)}</title></circle>`;
+    s+=`<text class="bl ${red?"dn":"up2"}" x="${x(q)}" y="${above?y(v)-12:y(v)+24}" text-anchor="middle">${fmt(k,v)}</text>`});
+  });
+  groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
+  return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
+ }
+ /* Bar | Line | Both switch, remembered per browser; one handler flips every chart block on the page */
+ const MODES=[["bar","Bar","長條"],["line","Line","折線"],["both","Both","兩者"]];
+ const getMode=()=>{try{const m=localStorage.getItem("bvMode");return MODES.some(x=>x[0]===m)?m:"both"}catch(e){return "both"}};
+ const modeBar=m=>`<div class="bv-mode" role="group" aria-label="Chart type">${MODES.map(([k,en,zh])=>`<button type="button" data-mode="${k}" class="${k===m?"on":""}" aria-pressed="${k===m}">${en}<small>${zh}</small></button>`).join("")}</div>`;
+ function charts(o){
+  const bar=svg(o),ln=lineSvg(o);if(!bar)return null;const m=getMode();
+  return `<div class="bv-charts" data-mode="${m}">${modeBar(m)}<div class="bv-bar">${bar}</div><div class="bv-line">${ln}</div></div>`;
+ }
+ document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".bv-mode button");if(!b)return;const m=b.dataset.mode;
+  try{localStorage.setItem("bvMode",m)}catch(err){}
+  document.querySelectorAll(".bv-charts").forEach(c=>{c.dataset.mode=m;c.querySelectorAll(".bv-mode button").forEach(x=>{const on=x.dataset.mode===m;x.classList.toggle("on",on);x.setAttribute("aria-pressed",String(on))})})});
  function message(o){
   const {k,def,groups,series,get,baseline}=o;
   if(!baseline)return o.message||"";
@@ -68,7 +102,7 @@ window.BV=(function(){
  }
  /* one metric block: title + (badge · conclusion · legend) + chart + table */
  function block(o){
-  const d=o.def,chart=svg(o);
+  const d=o.def,chart=charts(o);
   const legend=o.series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
   const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
@@ -79,5 +113,5 @@ window.BV=(function(){
  document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;
   const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
   const open=det.hidden;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.textContent=open?"收合數值 ▴":"完整數值 ▾"});
- return {block,esc,fmt,gain,pct};
+ return {block,esc,fmt,gain,pct,lineSvg,charts};
 })();
