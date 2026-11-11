@@ -101,7 +101,7 @@
   {
    "machine": "aiso1",
    "framework": "llamacpp",
-   "file": "data/benchmark-aiso1/AISO_AISO1_llamacpp_V4retest_20261109.json",
+   "file": "data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json",
    "runs_key": "aiso1_runs"
   }
  ]
