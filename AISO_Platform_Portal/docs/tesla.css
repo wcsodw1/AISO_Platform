@@ -33,3 +33,8 @@ h1,h2,h3{letter-spacing:-.01em}
 .v2-table th,.v2-table td{border-color:var(--t-line)!important}
 .mw-chip,.cmp-badge,.sp-on,.sp-off{box-shadow:none!important}
 @media print{.mw,.report-section{border-color:#ccc!important}}
+
+/* one panel level only: no box inside a box (Key parameters sit directly on the panel) */
+.v2-setup .v2-pane,.v2-setup .pt-same,.v2-setup .pt-only{border:0!important;background:transparent!important;box-shadow:none!important;padding-left:0;padding-right:0}
+.v2-setup{border:1px solid var(--t-line);border-radius:var(--t-r);background:var(--t-panel);padding:24px 28px}
+.v2-setup .v2-pane h2,.v2-setup .pt-h{color:var(--ivory)}

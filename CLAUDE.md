@@ -41,3 +41,7 @@ Before putting ANY URL in a reply, check it works *right then*: `curl -m 5 -s -o
 ## Standing instruction: ask about the AISO1 retest
 
 At the start of every task ask David, in one short line, **"AISO1 補測到哪？"**, then record his answer and any new missing data in `AISO_Platform_Portal/benchmark/DATA_GAPS.md`. The "只缺 AISO1" panel was removed from the pages (2026-11-11); gaps live in that file instead.
+
+## Standing instruction: secret scanning (GitGuardian) stays complete
+
+Never add `.gitguardian.yaml`, `.ggignore`, path excludes (including `tests/`) or any rule that lowers scanning coverage; false positives are marked one by one by David in the dashboard. Tests that need a password generate it at run time (`secrets.token_urlsafe`); no hard-coded passwords, also not for "wrong password" cases. Real passwords, SSH private keys and API tokens never go into Git, the frontend, the public export or logs. Do not rewrite Git history for alerts.
