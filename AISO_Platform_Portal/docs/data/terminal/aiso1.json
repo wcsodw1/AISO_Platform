@@ -10,6 +10,22 @@
   "command": "S=\"$HOME/aiso1_benchmark/retest_B1024_20261110\"\nR=\"$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433\"\npython3 \"$S/checkpoint_manifest.py\"\npython3 -u \"$S/AISO1_B1024_remaining.py\" 2>&1 | tee \"$R/AISO1_Remaining_36.log\"",
   "note": "Waiting for the runner and manifest from AISO1."
  },
+ "target": "AISO1",
+ "presets": [
+  {
+   "label": "Checkpoint (read-only)",
+   "command": "python3 \"$HOME/aiso1_benchmark/retest_B1024_20261110/checkpoint_manifest.py\""
+  },
+  {
+   "label": "Follow log",
+   "command": "tail -n 40 -f \"$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433/AISO1_Remaining_36.log\""
+  },
+  {
+   "label": "Run remaining models",
+   "run": true,
+   "command": "python3 -u \"$HOME/aiso1_benchmark/retest_B1024_20261110/AISO1_B1024_remaining.py\" 2>&1 | tee -a \"$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433/AISO1_Remaining_36.log\""
+  }
+ ],
  "manifest": null,
  "manifest_note": "The AISO1 manifest has not been provided yet (it is on the AISO1 machine).",
  "transcript": [

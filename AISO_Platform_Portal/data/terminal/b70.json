@@ -48,6 +48,18 @@
    "TTFT / TPOT (only Aggregate TPS was captured)"
   ]
  },
+ "target": null,
+ "presets": [
+  {
+   "label": "Plan only (no run)",
+   "command": "python3 -u \"$HOME/b70_benchmark/frameworks/llamacpp/scripts/B70_V4_B1024_llamacpp.py\" --platform intel --root \"$HOME/b70_benchmark/B70_V4_B1024\" --plan"
+  },
+  {
+   "label": "Run full 48 cases",
+   "run": true,
+   "command": "python3 -u \"$HOME/b70_benchmark/frameworks/llamacpp/scripts/B70_V4_B1024_llamacpp.py\" --platform intel --root \"$HOME/b70_benchmark/B70_V4_B1024\" --np 1,2,4,5 --ctx 18432 --model-workers 1 2>&1 | tee \"$HOME/b70_benchmark/B70_V4_B1024/B70_Full_48.log\""
+  }
+ ],
  "transcript": [
   {
    "k": "dim",

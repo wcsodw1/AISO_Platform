@@ -34,7 +34,10 @@ def b60(evidence):
             "source": "Reconstructed from the B60 evidence campaign B60_matrix_v4_20261104_201559_715039 (profile.json, summary.csv). Not a verbatim terminal capture; batch 4096 (before the batch-1024 decision).",
             "runner": {"file": "B60_Benchmark_matrix_v4_261104.py", "where": "~/b60_benchmark on the B60 machine (copy in Buffer/Benchmark)", "sha256": profile.get("script_sha256"),
                        "command": "python3 B60_Benchmark_matrix_v4_261104.py --root ~/b60_benchmark --run", "note": "B60 has been returned to the vendor; this run cannot be repeated."},
-            "manifest": keep, "transcript": tr}
+            "manifest": keep, "target": None, "presets": [], "transcript": tr}
+
+
+D70 = 'python3 -u "$HOME/b70_benchmark/frameworks/llamacpp/scripts/B70_V4_B1024_llamacpp.py" --platform intel --root "$HOME/b70_benchmark/B70_V4_B1024" --np 1,2,4,5 --ctx 18432 --model-workers 1 2>&1 | tee "$HOME/b70_benchmark/B70_V4_B1024/B70_Full_48.log"'
 
 
 def b70():
@@ -59,7 +62,7 @@ def b70():
             "runner": {"file": "B70_V4_B1024_llamacpp.py", "where": "~/b70_benchmark/frameworks/llamacpp/scripts on the B70 machine", "sha256": None,
                        "command": 'S="$HOME/b70_benchmark/frameworks/llamacpp/scripts"\nROOT="$HOME/b70_benchmark/B70_V4_B1024"\npython3 -u "$S/B70_V4_B1024_llamacpp.py" --platform intel --root "$ROOT" --np 1,2,4,5 --ctx 18432 --model-workers 1 2>&1 | tee "$ROOT/B70_Full_48.log"',
                        "note": "Derived from B70_Benchmark_matrix_v4_llamacpp.py (copy in Buffer/Benchmark); the B1024 runner file itself is on the B70 and has not been copied here."},
-            "manifest": manifest, "transcript": tr}
+            "manifest": manifest, "target": None, "presets": [{"label": "Plan only (no run)", "command": 'python3 -u "$HOME/b70_benchmark/frameworks/llamacpp/scripts/B70_V4_B1024_llamacpp.py" --platform intel --root "$HOME/b70_benchmark/B70_V4_B1024" --plan'}, {"label": "Run full 48 cases", "run": True, "command": D70}], "transcript": tr}
 
 
 def aiso1():
@@ -86,7 +89,7 @@ def aiso1():
             "runner": {"file": "AISO1_B1024_remaining.py (+ checkpoint_manifest.py)", "where": "~/aiso1_benchmark/retest_B1024_20261110 on AISO1 (not copied here yet)", "sha256": None,
                        "command": 'S="$HOME/aiso1_benchmark/retest_B1024_20261110"\nR="$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433"\npython3 "$S/checkpoint_manifest.py"\npython3 -u "$S/AISO1_B1024_remaining.py" 2>&1 | tee "$R/AISO1_Remaining_36.log"',
                        "note": "Waiting for the runner and manifest from AISO1."},
-            "manifest": None, "manifest_note": "The AISO1 manifest has not been provided yet (it is on the AISO1 machine).",
+            "target": "AISO1", "presets": [{"label": "Checkpoint (read-only)", "command": 'python3 "$HOME/aiso1_benchmark/retest_B1024_20261110/checkpoint_manifest.py"'}, {"label": "Follow log", "command": 'tail -n 40 -f "$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433/AISO1_Remaining_36.log"'}, {"label": "Run remaining models", "run": True, "command": 'python3 -u "$HOME/aiso1_benchmark/retest_B1024_20261110/AISO1_B1024_remaining.py" 2>&1 | tee -a "$HOME/aiso1_benchmark/campaigns/AISO1_llamacpp_B1024_20261110_094603_759433/AISO1_Remaining_36.log"'}], "manifest": None, "manifest_note": "The AISO1 manifest has not been provided yet (it is on the AISO1 machine).",
             "transcript": [{"k": k, "t": t} for k, t in lines]}
 
 
