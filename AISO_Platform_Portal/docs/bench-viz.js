@@ -73,9 +73,9 @@ window.BV=(function(){
  const MODES=[["bar","Bar","長條"],["line","Line","折線"],["both","Both","兩者"]];
  const getMode=()=>{try{const m=localStorage.getItem("bvMode");return MODES.some(x=>x[0]===m)?m:"both"}catch(e){return "both"}};
  const modeBar=m=>`<div class="bv-mode" role="group" aria-label="Chart type">${MODES.map(([k,en,zh])=>`<button type="button" data-mode="${k}" class="${k===m?"on":""}" aria-pressed="${k===m}">${en}<small>${zh}</small></button>`).join("")}</div>`;
- function charts(o){
-  const bar=svg(o),ln=lineSvg(o);if(!bar)return null;const m=getMode();
-  return `<div class="bv-charts" data-mode="${m}">${modeBar(m)}<div class="bv-bar">${bar}</div><div class="bv-line">${ln}</div></div>`;
+ function charts(o){   // line charts only (bars were replaced by lines)
+  const ln=lineSvg(o);if(!ln)return null;
+  return `<div class="bv-charts" data-mode="line"><div class="bv-line">${ln}</div></div>`;
  }
  document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".bv-mode button");if(!b)return;const m=b.dataset.mode;
   try{localStorage.setItem("bvMode",m)}catch(err){}

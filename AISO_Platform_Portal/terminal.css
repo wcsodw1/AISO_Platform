@@ -92,3 +92,8 @@ html.tm-noscroll{overflow:hidden}
 .tm-fly.full .tm-term .tm-live{height:auto}
 .tm-fly:not(.full) .tm-term .tm-live{height:clamp(300px,44vh,640px)}
 .tm-fly.full .tm-term{flex:1}
+
+/* the typing field must always be recognisable */
+.tm-term .tm-input textarea,.tm-term .tm-input .tm-pw{border:1px solid rgba(244,239,228,.22)!important;background:rgba(244,239,228,.05)!important;border-radius:10px;padding:8px 12px}
+.tm-term .tm-input textarea:focus,.tm-term .tm-input .tm-pw:focus{border-color:#d8c779!important}
+.tm-term .tm-input .tm-pw{border-color:rgba(232,161,90,.7)!important}
