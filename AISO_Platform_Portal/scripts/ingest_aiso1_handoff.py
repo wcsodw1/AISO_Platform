@@ -45,7 +45,7 @@ def main(d):
     zips = sorted(d.glob("AISO1_Runner_Manifest_Handoff_*.zip"))
     data = {
         "dataset": "AISO_AISO1_llamacpp_B1024_20261111", "evidence_until": "2026-11-11", "generated_on": "2026-11-11",
-        "note": f"AISO1 llama.cpp B1024（batch 1024 統一參數）：{len(runs)} / 48 條件完整（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 {stamp}；Runner 仍在執行，Laguna、Nemotron 與 NP5 尚未全部完成。",
+        "note": f"AISO1 llama.cpp B1024（batch 1024 統一參數）：{len(runs)} / 48 條件完整（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 {stamp}；Runner 仍在執行，Laguna、Nemotron 尚未全部完成；NP5 跑不動，已省略（不列為缺口）。",
         "comparability": {"level": "retest_unverified", "text": f"{man['note']}；驗證：{man['validation']}。參數：Batch 1024 / Ubatch 512 / Context 18432 每 slot / KV f16 / Flash Attention off。數值明顯低於 2026-11-09 重測，原因未查明（Gemma31 NP4 在原 log 標為 very slow／outlier，保留原值）。"},
         "profile": {"machine": "AISO1 AMD (Radeon 8060S · RADV GFX1151 · Vulkan0 97 GiB)", "framework": "llama.cpp", "np": man["workload"]["np"], "input_tokens": man["workload"]["input_tokens"], "output_tokens": man["workload"]["output_tokens"],
                     "repeat": man["workload"]["repeat"], "runtime": "UNVERIFIED", "batch": man["workload"]["batch_size"], "ubatch": man["workload"]["ubatch_size"], "per_slot_context": 18432, "kv_cache_type": man["workload"]["kv_type"], "flash_attention": man["workload"]["flash_attention"]},

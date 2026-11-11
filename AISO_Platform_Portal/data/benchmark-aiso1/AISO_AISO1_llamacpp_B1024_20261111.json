@@ -2,7 +2,7 @@
  "dataset": "AISO_AISO1_llamacpp_B1024_20261111",
  "evidence_until": "2026-11-11",
  "generated_on": "2026-11-11",
- "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）：31 / 48 條件完整（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 20261111_115737；Runner 仍在執行，Laguna、Nemotron 與 NP5 尚未全部完成。",
+ "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）：31 / 48 條件完整（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 20261111_115737；Runner 仍在執行，Laguna、Nemotron 尚未全部完成；NP5 跑不動，已省略（不列為缺口）。",
  "comparability": {
   "level": "retest_unverified",
   "text": "Partial data; not equivalent to V4；驗證：CSV/raw/repeat/basic KPI checks; provenance pending。參數：Batch 1024 / Ubatch 512 / Context 18432 每 slot / KV f16 / Flash Attention off。數值明顯低於 2026-11-09 重測，原因未查明（Gemma31 NP4 在原 log 標為 very slow／outlier，保留原值）。"

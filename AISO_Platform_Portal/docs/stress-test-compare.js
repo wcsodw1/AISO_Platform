@@ -87,11 +87,13 @@ function renderPairs(){
  const link=(k,t)=>`<a class="pair-btn${PAIR===k?" on":""}" href="stress-test-pair.html?pair=${k}"${PAIR===k?' aria-current="page"':""}>${t}</a>`;
  el.innerHTML=`<a class="pair-btn all${PAIR?"":" on"}" href="stress-test-compare.html"${PAIR?"":' aria-current="page"'}>AISO1 v.s B60 v.s B70</a>${link("aiso1-b70","AISO1 vs B70")}${link("aiso1-b60","AISO1 vs B60")}${link("b60-b70","B60 vs B70")}`;
 }
+const OMIT={aiso1:[5]};   // AISO1 cannot run NP5: never listed as missing
+const omitted=(mk,n)=>(OMIT[mk]||[]).includes(n);
 function renderGapPair(){
  const IN3=[4096,8192,16384],has=(m,fw,mod,np)=>IN3.every(i=>get(m,fw,mod,np,i)),[A,B]=REG.machines,map=new Map();
  REG.frameworks.forEach(f=>REG.models.forEach(m=>npsAll().forEach(n=>{
   const a=has(A.key,f.key,m.key,n),b=has(B.key,f.key,m.key,n),k=f.key+"|"+m.key,o=map.get(k)||{fw:f.key,model:m.key,both:[],onlyA:[],onlyB:[]};
-  if(a&&b)o.both.push(n);else if(a)o.onlyA.push(n);else if(b)o.onlyB.push(n);map.set(k,o)})));
+  if(a&&b)o.both.push(n);else if(a&&!omitted(B.key,n))o.onlyA.push(n);else if(b&&!omitted(A.key,n))o.onlyB.push(n);map.set(k,o)})));
  const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(mlabel(o.fw,o.model))} · NP${nps.join(" / NP")}</button>`;
  const list=key=>[...map.values()].filter(o=>o[key].length),box=(cls,h,sub,items,key,fn)=>`<div class="gap-box ${cls}"><h3>${h} <small>${sub}</small></h3><div class="gap-chips">${items.map(o=>chip(o,o[key])).join("")||'<span class="st-wait">無</span>'}</div>${fn?`<p class="v2-fn">${fn}</p>`:""}</div>`;
  const both=list("both"),oa=list("onlyA"),ob=list("onlyB"),ai=REG.machines.some(m=>m.key==="aiso1");
@@ -107,12 +109,12 @@ function renderGap(){
  REG.frameworks.forEach(f=>REG.models.forEach(m=>npsAll().forEach(n=>{
   const b60=has("b60",f.key,m.key,n),b70=has("b70",f.key,m.key,n),ai=has("aiso1",f.key,m.key,n);
   const k=f.key+"|"+m.key,o=key.get(k)||{fw:f.key,model:m.key,all:[],miss:[]};
-  if(b60&&b70&&ai)o.all.push(n);else if(b60&&b70&&!ai)o.miss.push(n);
+  if(b60&&b70&&ai)o.all.push(n);else if(b60&&b70&&!ai&&!omitted("aiso1",n))o.miss.push(n);
   key.set(k,o)})));
  const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(mlabel(o.fw,o.model))} · NP${nps.join(" / NP")}</button>`;
  const all=[...key.values()].filter(o=>o.all.length),miss=[...key.values()].filter(o=>o.miss.length);
- $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 11/09 重測，目前只有 TPS）。</p></div>
- <div class="gap-box miss"><h3>只缺 AISO1 <small>B60、B70 都有 · ${miss.length} 組，AISO1 重測後即可三機並排</small></h3><div class="gap-chips">${miss.map(o=>chip(o,o.miss)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60 測 NP1 / 2 / 5、B70 測 NP2 / 4，兩台共同的 NP 只有 2，所以三機比對以 NP2 為準。</p></div>`;
+ $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 B1024 重測，含 TTFT / TPOT）。</p></div>
+ <div class="gap-box miss"><h3>只缺 AISO1 <small>B60、B70 都有 · ${miss.length} 組，AISO1 重測後即可三機並排</small></h3><div class="gap-chips">${miss.map(o=>chip(o,o.miss)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">各機實測 NP：${REG.machines.map(m=>`${esc(m.label)} ${[...new Set(REG.frameworks.flatMap(f=>runsOf(m.key,f.key)).map(x=>x.np))].sort((a,b)=>a-b).join("/")||"待核"}`).join("、")}。AISO1 的 NP5 跑不動，已省略、不列為缺口。</p></div>`;
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 let RMET="norm_tps";
