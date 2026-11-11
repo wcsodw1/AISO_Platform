@@ -277,3 +277,6 @@
 .pt-diffbox .pt-tbl th,.pt-diffbox .pt-tbl td{padding:7px 10px}
 .cmp-other{margin-left:10px;border:1px dashed rgba(224,160,64,.6);background:transparent;color:#e0a040;border-radius:999px;padding:8px 16px;font-size:16px;cursor:pointer}.cmp-other.back{border-style:solid}
 @media(max-width:900px){.pt-split{grid-template-columns:1fr}}
+
+.pt-only dl{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 20px}.pt-only dd{font-size:18px}
+.pt-fold{margin-top:12px;border:1px dashed rgba(224,160,64,.4);border-radius:12px;padding:10px 14px}.pt-fold summary{cursor:pointer;color:#e0a040;font-size:16px}.pt-fold .pt-wrap{margin-top:10px}
