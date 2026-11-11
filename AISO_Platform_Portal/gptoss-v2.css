@@ -157,7 +157,6 @@
 /* compare page: caveat badge / unverified cells */
 .cmp-badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,184,77,.16);color:#ffb84d;border:1px solid rgba(255,184,77,.4)}
 .cmp-badge.bad{background:rgba(255,99,99,.14);color:#ff8a8a;border-color:rgba(255,99,99,.45)}
-.cmp-caveat ul{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
 .cmp-unv{color:#ffb84d;font-style:italic}
 .cmp-part{display:block;color:#ffb84d;font-size:11px}
 
@@ -257,3 +256,11 @@
 .st .rp-spread{margin:6px 0 0;font-size:16px}
 .st .rp-spread small{display:block;color:#a4a9b4;font-size:14px}
 .st .rp-miss{margin:0;color:#c9ccd3;font-size:16px;line-height:1.7}
+
+/* Bar | Line | Both switch for every chart block */
+.bv-mode{display:inline-flex;margin:0 0 10px;border:1px solid rgba(216,199,121,.5);border-radius:999px;overflow:hidden}
+.bv-mode button{font:inherit;font-size:15px;font-weight:700;padding:6px 16px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.bv-mode button small{margin-left:6px;font-size:14px;font-weight:500}
+.bv-mode button.on{background:rgba(216,199,121,.2);color:var(--gold)}
+.bv-charts[data-mode="bar"] .bv-line,.bv-charts[data-mode="line"] .bv-bar{display:none}
+.bv-charts[data-mode="both"] .bv-line{margin-top:18px;padding-top:14px;border-top:1px dashed rgba(244,239,228,.14)}
