@@ -88,3 +88,14 @@ Safety rules on resume (otherwise it refuses and asks for a new run):
 - every resume is logged in `resumes` (time, previous status, rounds kept, rows discarded) and rows measured afterwards carry `resumed: true`
 
 Caveat for reading results: the first repeat after a fresh server start is often slower (warm-up). A resumed round on a restarted server may look like Repeat 1 — check the `resumed` flag before treating a spread as hardware noise.
+
+## Terminal (Benchmark pages)
+
+Every machine page (B60 / B70 / AISO1) and the Run benchmark panel carry a **Terminal** component (`terminal.js`, `terminal.css`):
+
+- **Completed run / Runner / Manifest** are read-only and work on the public site. They replay a finished run from `data/terminal/<machine>.json` (built by `scripts/build_terminal_replays.py`; each file states whether its lines are verbatim or reconstructed from campaign files).
+- **Live shell** is an interactive PTY on the computer that runs the launcher. It is **localhost only** (loopback client *and* loopback `Host` header, same-origin JSON), **disabled unless `AISO_TERMINAL_PASSWORD` is set**, and asks for that password (a second layer on top of the site access code). The password is never passed to the child shell, logins are rate limited (5 failures → 60 s lock), tokens expire after 30 minutes, one shell at a time, idle shells close after 15 minutes. On the public static site it shows "Local only". Code: `benchmark/terminal.py`, routes in `launcher.py` (`/api/terminal/*`), tests `tests/test_terminal*.py`.
+
+```sh
+AISO_TERMINAL_PASSWORD='choose-a-long-password' make run
+```

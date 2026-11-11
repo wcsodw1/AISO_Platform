@@ -1,0 +1,689 @@
+{
+ "title": "Intel B70 · llama.cpp V4 · batch 1024",
+ "completed": true,
+ "summary": "Completed 48/48 PASS (4 models × NP1/2/4/5 × 4K/8K/16K × 3 repeats)",
+ "source": "Verbatim lines from the B70 terminal (Smoke config check and B70_Full_48.log). Only Aggregate TPS was printed; TTFT/TPOT are not in this log.",
+ "runner": {
+  "file": "B70_V4_B1024_llamacpp.py",
+  "where": "~/b70_benchmark/frameworks/llamacpp/scripts on the B70 machine",
+  "sha256": null,
+  "command": "S=\"$HOME/b70_benchmark/frameworks/llamacpp/scripts\"\nROOT=\"$HOME/b70_benchmark/B70_V4_B1024\"\npython3 -u \"$S/B70_V4_B1024_llamacpp.py\" --platform intel --root \"$ROOT\" --np 1,2,4,5 --ctx 18432 --model-workers 1 2>&1 | tee \"$ROOT/B70_Full_48.log\"",
+  "note": "Derived from B70_Benchmark_matrix_v4_llamacpp.py (copy in Buffer/Benchmark); the B1024 runner file itself is on the B70 and has not been copied here."
+ },
+ "manifest": {
+  "protocol": "B60 V4 + batch 1024",
+  "campaign": "sb_full_20261110_151623_117599",
+  "workload": {
+   "np": [
+    1,
+    2,
+    4,
+    5
+   ],
+   "inputs": [
+    4096,
+    8192,
+    16384
+   ],
+   "output": 1024,
+   "repeat": 3,
+   "model_workers": 1
+  },
+  "llamacpp_flags_verified_in_smoke": {
+   "--parallel": 10,
+   "--ctx-size": 18432,
+   "--kv-unified-per-slot": 18432,
+   "--batch-size": 1024,
+   "--ubatch-size": 512,
+   "--cache-type-k": "f16",
+   "--cache-type-v": "f16",
+   "--kv-unified": true,
+   "--no-cache-prompt": true,
+   "--no-context-shift": true
+  },
+  "not_verified": [
+   "image sha256 / build (B60 used SYCL build 11561, sha256:f457e95a…)",
+   "GGUF SHA256 on the B70",
+   "device / split-mode settings",
+   "TTFT / TPOT (only Aggregate TPS was captured)"
+  ]
+ },
+ "transcript": [
+  {
+   "k": "dim",
+   "t": "# Smoke config check against the B1024 protocol (output of the verification script)"
+  },
+  {
+   "k": "ok",
+   "t": "--parallel 10 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--ctx-size 18432 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--kv-unified-per-slot 18432 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--batch-size 1024 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--ubatch-size 512 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--cache-type-k f16 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--cache-type-v f16 OK"
+  },
+  {
+   "k": "ok",
+   "t": "--kv-unified OK"
+  },
+  {
+   "k": "ok",
+   "t": "--no-cache-prompt OK"
+  },
+  {
+   "k": "ok",
+   "t": "--no-context-shift OK"
+  },
+  {
+   "k": "ok",
+   "t": "SMOKE CONFIG VERIFIED"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u \"$S/B70_V4_B1024_llamacpp.py\" --platform intel --root \"$ROOT\" --np 1,2,4,5 --ctx 18432 --model-workers 1 2>&1 | tee \"$ROOT/B70_Full_48.log\""
+  },
+  {
+   "k": "out",
+   "t": "full: inputs=[4096, 8192, 16384], output=1024, R=3, NP=[1, 2, 4, 5], model-workers=1"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=4096 R=1 PASS Aggregate=28.679"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=4096 R=2 PASS Aggregate=31.662"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=4096 R=3 PASS Aggregate=31.832"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=8192 R=1 PASS Aggregate=25.229"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=8192 R=2 PASS Aggregate=24.552"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=8192 R=3 PASS Aggregate=25.063"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=16384 R=1 PASS Aggregate=19.178"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=16384 R=2 PASS Aggregate=19.223"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=1 input=16384 R=3 PASS Aggregate=19.144"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=4096 R=1 PASS Aggregate=33.373"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=4096 R=2 PASS Aggregate=32.638"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=4096 R=3 PASS Aggregate=32.429"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=8192 R=1 PASS Aggregate=27.175"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=8192 R=2 PASS Aggregate=26.120"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=8192 R=3 PASS Aggregate=26.590"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=16384 R=1 PASS Aggregate=20.533"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=16384 R=2 PASS Aggregate=19.363"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=2 input=16384 R=3 PASS Aggregate=19.378"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=4096 R=1 PASS Aggregate=45.140"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=4096 R=2 PASS Aggregate=39.170"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=4096 R=3 PASS Aggregate=39.199"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=8192 R=1 PASS Aggregate=31.406"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=8192 R=2 PASS Aggregate=30.186"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=8192 R=3 PASS Aggregate=29.835"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=16384 R=1 PASS Aggregate=22.202"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=16384 R=2 PASS Aggregate=20.572"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=4 input=16384 R=3 PASS Aggregate=20.723"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=4096 R=1 PASS Aggregate=47.857"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=4096 R=2 PASS Aggregate=40.731"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=4096 R=3 PASS Aggregate=40.282"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=8192 R=1 PASS Aggregate=31.727"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=8192 R=2 PASS Aggregate=30.050"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=8192 R=3 PASS Aggregate=30.478"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=16384 R=1 PASS Aggregate=22.146"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=16384 R=2 PASS Aggregate=21.046"
+  },
+  {
+   "k": "ok",
+   "t": "gemma26 NP=5 input=16384 R=3 PASS Aggregate=21.279"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=4096 R=1 PASS Aggregate=15.233"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=4096 R=2 PASS Aggregate=16.259"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=4096 R=3 PASS Aggregate=16.225"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=8192 R=1 PASS Aggregate=11.996"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=8192 R=2 PASS Aggregate=11.990"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=8192 R=3 PASS Aggregate=11.990"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=16384 R=1 PASS Aggregate=9.083"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=16384 R=2 PASS Aggregate=9.081"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=1 input=16384 R=3 PASS Aggregate=9.057"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=4096 R=1 PASS Aggregate=23.273"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=4096 R=2 PASS Aggregate=22.749"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=4096 R=3 PASS Aggregate=24.044"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=8192 R=1 PASS Aggregate=18.729"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=8192 R=2 PASS Aggregate=17.568"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=8192 R=3 PASS Aggregate=18.662"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=16384 R=1 PASS Aggregate=13.088"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=16384 R=2 PASS Aggregate=12.061"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=2 input=16384 R=3 PASS Aggregate=12.807"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=4096 R=1 PASS Aggregate=32.520"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=4096 R=2 PASS Aggregate=31.671"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=4096 R=3 PASS Aggregate=32.574"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=8192 R=1 PASS Aggregate=23.383"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=8192 R=2 PASS Aggregate=21.983"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=8192 R=3 PASS Aggregate=22.818"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=16384 R=1 PASS Aggregate=14.326"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=16384 R=2 PASS Aggregate=14.156"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=4 input=16384 R=3 PASS Aggregate=14.253"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=4096 R=1 PASS Aggregate=34.921"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=4096 R=2 PASS Aggregate=34.102"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=4096 R=3 PASS Aggregate=34.751"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=8192 R=1 PASS Aggregate=24.230"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=8192 R=2 PASS Aggregate=23.167"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=8192 R=3 PASS Aggregate=23.677"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=16384 R=1 PASS Aggregate=15.007"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=16384 R=2 PASS Aggregate=14.216"
+  },
+  {
+   "k": "ok",
+   "t": "gemma31 NP=5 input=16384 R=3 PASS Aggregate=15.016"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=4096 R=1 PASS Aggregate=33.646"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=4096 R=2 PASS Aggregate=38.703"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=4096 R=3 PASS Aggregate=38.408"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=8192 R=1 PASS Aggregate=34.203"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=8192 R=2 PASS Aggregate=34.005"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=8192 R=3 PASS Aggregate=33.784"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=16384 R=1 PASS Aggregate=26.790"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=16384 R=2 PASS Aggregate=26.786"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=1 input=16384 R=3 PASS Aggregate=26.945"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=4096 R=1 PASS Aggregate=38.417"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=4096 R=2 PASS Aggregate=33.841"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=4096 R=3 PASS Aggregate=34.075"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=8192 R=1 PASS Aggregate=30.404"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=8192 R=2 PASS Aggregate=28.568"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=8192 R=3 PASS Aggregate=36.259"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=16384 R=1 PASS Aggregate=28.570"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=16384 R=2 PASS Aggregate=21.095"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=2 input=16384 R=3 PASS Aggregate=28.371"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=4096 R=1 PASS Aggregate=54.072"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=4096 R=2 PASS Aggregate=37.871"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=4096 R=3 PASS Aggregate=42.623"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=8192 R=1 PASS Aggregate=40.598"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=8192 R=2 PASS Aggregate=30.599"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=8192 R=3 PASS Aggregate=30.369"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=16384 R=1 PASS Aggregate=26.237"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=16384 R=2 PASS Aggregate=20.176"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=4 input=16384 R=3 PASS Aggregate=19.559"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=4096 R=1 PASS Aggregate=56.241"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=4096 R=2 PASS Aggregate=37.708"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=4096 R=3 PASS Aggregate=46.978"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=8192 R=1 PASS Aggregate=36.294"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=8192 R=2 PASS Aggregate=29.721"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=8192 R=3 PASS Aggregate=41.446"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=16384 R=1 PASS Aggregate=25.054"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=16384 R=2 PASS Aggregate=19.767"
+  },
+  {
+   "k": "ok",
+   "t": "laguna NP=5 input=16384 R=3 PASS Aggregate=23.643"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=4096 R=1 PASS Aggregate=55.286"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=4096 R=2 PASS Aggregate=62.446"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=4096 R=3 PASS Aggregate=62.388"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=8192 R=1 PASS Aggregate=54.557"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=8192 R=2 PASS Aggregate=54.551"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=8192 R=3 PASS Aggregate=54.572"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=16384 R=1 PASS Aggregate=43.435"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=16384 R=2 PASS Aggregate=43.533"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=1 input=16384 R=3 PASS Aggregate=43.491"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=4096 R=1 PASS Aggregate=57.174"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=4096 R=2 PASS Aggregate=59.655"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=4096 R=3 PASS Aggregate=60.297"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=8192 R=1 PASS Aggregate=52.794"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=8192 R=2 PASS Aggregate=52.248"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=8192 R=3 PASS Aggregate=52.627"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=16384 R=1 PASS Aggregate=42.219"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=16384 R=2 PASS Aggregate=42.038"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=2 input=16384 R=3 PASS Aggregate=42.211"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=4096 R=1 PASS Aggregate=71.692"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=4096 R=2 PASS Aggregate=73.995"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=4096 R=3 PASS Aggregate=74.403"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=8192 R=1 PASS Aggregate=62.388"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=8192 R=2 PASS Aggregate=62.223"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=8192 R=3 PASS Aggregate=61.910"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=16384 R=1 PASS Aggregate=45.299"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=16384 R=2 PASS Aggregate=44.268"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=4 input=16384 R=3 PASS Aggregate=43.544"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=4096 R=1 PASS Aggregate=75.071"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=4096 R=2 PASS Aggregate=76.992"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=4096 R=3 PASS Aggregate=76.760"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=8192 R=1 PASS Aggregate=61.377"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=8192 R=2 PASS Aggregate=60.459"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=8192 R=3 PASS Aggregate=60.582"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=16384 R=1 PASS Aggregate=42.225"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=16384 R=2 PASS Aggregate=42.317"
+  },
+  {
+   "k": "ok",
+   "t": "nemotron NP=5 input=16384 R=3 PASS Aggregate=42.352"
+  },
+  {
+   "k": "out",
+   "t": "RESULT_DIR: /home/sparkle/b70_benchmark/B70_V4_B1024/frameworks/llamacpp/results/sb_full_20261110_151623_117599"
+  }
+ ]
+}

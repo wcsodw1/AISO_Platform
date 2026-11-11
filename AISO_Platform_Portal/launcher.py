@@ -22,6 +22,7 @@ from pathlib import Path
 from exporter import export_catalog
 from benchmark.benchmark_runner import JobManager, prepare
 from benchmark import api as machine_bench_api
+from benchmark.terminal import TerminalError, TerminalService
 
 BENCHMARK_JOBS = JobManager()
 BENCHMARK_BEARER_TOKEN = (
@@ -32,6 +33,7 @@ BENCHMARK_BEARER_TOKEN = (
 os.environ["AISO_BENCHMARK_TOKEN"] = BENCHMARK_BEARER_TOKEN
 
 BASE = Path(__file__).resolve().parent
+TERMINAL = TerminalService(BASE.parent)   # shell starts in the repository root; disabled unless AISO_TERMINAL_PASSWORD is set
 CONFIG_PATH = BASE / "config.json"
 CATALOG_PATH = BASE / "data" / "products.json"
 
@@ -231,6 +233,53 @@ class Handler(SimpleHTTPRequestHandler):
             return False
         return True
 
+    # ---- interactive terminal: loopback + loopback Host + same-origin JSON + separate password (see benchmark/terminal.py) ----
+    def terminal_guard(self, write):
+        host = (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]").lower()
+        if not self.is_admin_request() or host not in {"127.0.0.1", "localhost", "::1"}:
+            self.send_json({"error": "The terminal is available from this computer only (localhost)."}, 403)
+            return False
+        if write:
+            origin = self.headers.get("Origin", "")
+            if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+                self.send_json({"error": "application/json required"}, 415)
+                return False
+            if origin and urllib.parse.urlparse(origin).netloc != self.headers.get("Host"):
+                self.send_json({"error": "Same-origin request required"}, 403)
+                return False
+            if self.headers.get("Sec-Fetch-Site") == "cross-site" or int(self.headers.get("Content-Length", "0")) > 16384:
+                self.send_json({"error": "Request blocked"}, 403)
+                return False
+        return True
+
+    def handle_terminal(self, method):
+        if not self.terminal_guard(method == "POST"):
+            return
+        url = urllib.parse.urlparse(self.path)
+        token = self.headers.get("X-Terminal-Token", "")
+        try:
+            if method == "GET":
+                if url.path == "/api/terminal/status":
+                    return self.send_json(TERMINAL.status())
+                if url.path == "/api/terminal/read":
+                    q = urllib.parse.parse_qs(url.query)
+                    return self.send_json(TERMINAL.read(token, q.get("sid", [""])[0], int(q.get("since", ["0"])[0] or 0)))
+                return self.send_json({"error": "Unknown terminal endpoint."}, 404)
+            body = self.parse_json_body()
+            if url.path == "/api/terminal/login":
+                return self.send_json(TERMINAL.login(body.get("password", "")))
+            if url.path == "/api/terminal/open":
+                return self.send_json(TERMINAL.open(token))
+            if url.path == "/api/terminal/write":
+                return self.send_json(TERMINAL.write(token, body.get("sid", ""), body.get("data", "")))
+            if url.path == "/api/terminal/close":
+                return self.send_json(TERMINAL.close(token, body.get("sid")))
+            return self.send_json({"error": "Unknown terminal endpoint."}, 404)
+        except TerminalError as exc:
+            return self.send_json({"error": str(exc)}, exc.status)
+        except (ValueError, TypeError):
+            return self.send_json({"error": "Bad request."}, 400)
+
     def do_GET(self):
         url = urllib.parse.urlparse(self.path)
         query = urllib.parse.parse_qs(url.query)
@@ -243,6 +292,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(catalog() if self.is_admin_request() else published_catalog())
         if url.path.startswith("/api/") and not self.is_admin_request():
             return self.send_json({"error": "This operation requires localhost administrator access."}, 403)
+        if url.path.startswith("/api/terminal/"):
+            return self.handle_terminal("GET")
         if url.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")) and not self.require_benchmark_auth():
             return
         if url.path.startswith(machine_bench_api.PREFIX + "/"):
@@ -314,6 +365,8 @@ class Handler(SimpleHTTPRequestHandler):
             origin = self.headers.get("Origin", "")
             if origin and urllib.parse.urlparse(origin).hostname not in {"127.0.0.1", "localhost", "::1"}:
                 return self.send_json({"error": "Cross-origin management request blocked."}, 403)
+            if self.path.startswith("/api/terminal/"):
+                return self.handle_terminal("POST")
             if self.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")):
                 if not self.require_benchmark_auth():
                     return

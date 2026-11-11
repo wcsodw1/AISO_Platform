@@ -1,0 +1,40 @@
+/* Benchmark terminal component (see terminal.js) */
+.tm-root{margin:6px 0 4px;border:1px solid rgba(216,199,121,.38);border-radius:22px;background:rgba(10,14,21,.72);overflow:hidden}
+.tm-root .bz{margin-left:.55em;color:#aeb4c0;font-size:14px;font-weight:500;letter-spacing:0;text-transform:none;white-space:nowrap}
+.tm-tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid rgba(244,239,228,.14);background:rgba(244,239,228,.04)}
+.tm-tabs button{font:inherit;font-size:16px;font-weight:700;padding:13px 20px;border:0;border-right:1px solid rgba(244,239,228,.1);background:transparent;color:#c4c9d4;cursor:pointer}
+.tm-tabs button.on{background:rgba(216,199,121,.18);color:#d8c779;box-shadow:inset 0 -3px 0 #d8c779}
+.tm-tabs button:hover{background:rgba(216,199,121,.1)}
+.tm-panel{padding:16px 18px 14px}
+.tm-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:0 0 10px}
+.tm-bar b{font-size:18px;color:#f4efe4}
+.tm-sp{flex:1}
+.tm-btn{font:inherit;font-size:15px;font-weight:700;padding:7px 14px;border:1px solid rgba(216,199,121,.55);border-radius:999px;background:transparent;color:#d8c779;cursor:pointer}
+.tm-btn:hover{background:rgba(216,199,121,.16)}
+.tm-btn.pri{background:rgba(216,199,121,.22)}
+.tm-badge{padding:3px 12px;border-radius:999px;font-size:14px;font-weight:700;border:1px solid}
+.tm-badge.ok{color:#70d3a2;border-color:rgba(112,211,162,.55)}
+.tm-badge.warn{color:#e8a15a;border-color:rgba(232,161,90,.55)}
+.tm-screen{margin:0;padding:14px 16px;max-height:480px;overflow:auto;border:1px solid rgba(244,239,228,.12);border-radius:14px;background:#060a10;color:#d9dee8;font:15px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.tm-screen:focus{outline:2px solid rgba(216,199,121,.5)}
+.tm-screen div{min-height:1.55em}
+.tm-prompt{color:#70d3a2;font-weight:700}
+.tm-cmd{color:#f4efe4;font-weight:700}.tm-ok{color:#70d3a2}.tm-warn{color:#e8a15a}.tm-dim{color:#8b93a1}.tm-err{color:#ed786f}.tm-out{color:#d9dee8}
+.tm-note{margin:10px 2px 0;color:#9aa1ae;font-size:14px;line-height:1.55}
+.tm-note.bad{color:#ed786f}
+.tm-empty{margin:6px 0;padding:18px 20px;border:1px dashed rgba(244,239,228,.2);border-radius:14px;color:#c4c9d4;font-size:17px;line-height:1.7}
+.tm-empty small{color:#9aa1ae;font-size:14px}
+.tm-kv{display:grid;gap:8px;margin:0 0 14px}
+.tm-kv>div{display:grid;grid-template-columns:minmax(140px,200px) 1fr;gap:6px 14px}
+.tm-kv dt{color:#9aa1ae;font-size:15px}.tm-kv dd{margin:0;color:#f4efe4;font-size:16px;word-break:break-all}
+.tm-mono{font-family:ui-monospace,Menlo,monospace;font-size:14px!important}
+.tm-cmdbox{max-height:none;color:#f4efe4}
+.tm-json{color:#cfe3ff;font-size:14.5px}
+.tm-login{display:grid;gap:12px;max-width:520px}
+.tm-login label{display:grid;gap:6px;color:#c4c9d4;font-size:16px;font-weight:600}
+.tm-login input,.tm-input input{min-height:46px;padding:0 14px;border:1px solid rgba(244,239,228,.25);border-radius:12px;background:#0a0e15;color:#f4efe4;font:16px ui-monospace,Menlo,monospace}
+.tm-input{display:flex;align-items:center;gap:10px;margin-top:10px}
+.tm-input input{flex:1}
+.tm-live{min-height:260px}
+@media(max-width:700px){.tm-kv>div{grid-template-columns:1fr}.tm-tabs button{flex:1 1 45%}}
+.tm-pick{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;padding:12px 18px 0;color:#c4c9d4;font-size:16px;font-weight:600}.tm-pick select{min-height:40px;padding:0 12px;border:1px solid rgba(244,239,228,.25);border-radius:10px;background:#0a0e15;color:#f4efe4;font:16px inherit}

@@ -1,0 +1,102 @@
+"use strict";
+/* Benchmark terminal component.
+   Tabs:  Completed run (replay of a finished benchmark, works on the public site)  |  Runner  |  Manifest  |  Live shell
+   Live shell is an interactive PTY on THIS computer (launcher backend, see benchmark/terminal.py): it only works on localhost,
+   only when AISO_TERMINAL_PASSWORD is set, and always asks for that second password. On the public site it stays locked. */
+window.AisoTerm=(function(){
+ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const ANSI=/\x1b\[[0-9;?]*[ -\/]*[@-~]|\x1b\][^\x07]*\x07|\r(?!\n)/g;
+ const api=(path,opt={})=>fetch("api/terminal/"+path,{cache:"no-store",credentials:"same-origin",...opt,headers:{"Content-Type":"application/json",...(opt.headers||{})}}).then(async r=>{let b={};try{b=await r.json()}catch(e){}if(!r.ok)throw Object.assign(new Error(b.error||("HTTP "+r.status)),{status:r.status});return b});
+ const KIND={cmd:"tm-cmd",ok:"tm-ok",warn:"tm-warn",dim:"tm-dim",err:"tm-err",out:"tm-out"};
+ const line=(l)=>`<div class="${KIND[l.k]||"tm-out"}">${l.k==="cmd"?'<span class="tm-prompt">$ </span>':""}${esc(l.t)}</div>`;
+
+ function mount(root,opt){
+  let machine=opt.machine;
+  root.classList.add("tm-root");
+  const pick=opt.machines?`<label class="tm-pick">Example run<span class="bz">範例</span><select>${opt.machines.map(([k,l])=>`<option value="${k}"${k===machine?" selected":""}>${esc(l)}</option>`).join("")}</select></label>`:"";
+  root.innerHTML=pick+`<div class="tm-tabs" role="tablist">
+    <button type="button" role="tab" class="on" data-t="run">Completed run<span class="bz">已完成</span></button>
+    <button type="button" role="tab" data-t="runner">Runner<span class="bz">執行檔</span></button>
+    <button type="button" role="tab" data-t="manifest">Manifest<span class="bz">參數清單</span></button>
+    <button type="button" role="tab" data-t="live">Live shell<span class="bz">即時終端</span></button></div>
+   <div class="tm-panel" data-p="run"></div><div class="tm-panel" data-p="runner" hidden></div><div class="tm-panel" data-p="manifest" hidden></div><div class="tm-panel" data-p="live" hidden></div>`;
+  const P=k=>root.querySelector(`.tm-panel[data-p="${k}"]`);
+  let D=null,liveInit=false;
+  root.querySelector(".tm-tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-t]");if(!b)return;
+   root.querySelectorAll(".tm-tabs button").forEach(x=>x.classList.toggle("on",x===b));
+   root.querySelectorAll(".tm-panel").forEach(p=>p.hidden=p.dataset.p!==b.dataset.t);
+   if(b.dataset.t==="live"&&!liveInit){liveInit=true;initLive(P("live"))}});
+
+  /* ---- replay ---- */
+  function renderRun(){
+   const d=D,st=d.completed?`<span class="tm-badge ok">✓ ${esc(d.summary)}</span>`:`<span class="tm-badge warn">… ${esc(d.summary)}</span>`;
+   P("run").innerHTML=`<div class="tm-bar"><b>${esc(d.title)}</b>${st}<span class="tm-sp"></span><button type="button" class="tm-btn" data-a="replay">▶ Replay<span class="bz">重播</span></button></div>
+    <pre class="tm-screen" tabindex="0" aria-label="terminal output"></pre><p class="tm-note">${esc(d.source)}</p>`;
+   const scr=P("run").querySelector(".tm-screen");
+   const showAll=()=>{scr.innerHTML=d.transcript.map(line).join("");scr.scrollTop=scr.scrollHeight};
+   showAll();
+   let timer=null;
+   P("run").querySelector('[data-a="replay"]').onclick=()=>{
+    clearInterval(timer);scr.innerHTML="";let i=0;
+    timer=setInterval(()=>{const n=d.transcript[i++];if(!n){clearInterval(timer);return}scr.insertAdjacentHTML("beforeend",line(n));scr.scrollTop=scr.scrollHeight},n40(d))};
+  }
+  const n40=d=>Math.max(8,Math.min(60,Math.round(6000/Math.max(1,d.transcript.length))));
+  function renderRunner(){
+   const r=D.runner;
+   P("runner").innerHTML=`<dl class="tm-kv"><div><dt>Runner file<span class="bz">執行檔</span></dt><dd>${esc(r.file)}</dd></div><div><dt>Where<span class="bz">位置</span></dt><dd>${esc(r.where)}</dd></div>
+    ${r.sha256?`<div><dt>SHA256</dt><dd class="tm-mono">${esc(r.sha256)}</dd></div>`:""}${r.note?`<div><dt>Note<span class="bz">備註</span></dt><dd>${esc(r.note)}</dd></div>`:""}</dl>
+    <div class="tm-bar"><b>Command<span class="bz">指令</span></b><span class="tm-sp"></span><button type="button" class="tm-btn" data-a="copy">Copy<span class="bz">複製</span></button></div>
+    <pre class="tm-screen tm-cmdbox">${esc(r.command)}</pre>`;
+   P("runner").querySelector('[data-a="copy"]').onclick=e=>{const b=e.currentTarget;(navigator.clipboard?navigator.clipboard.writeText(r.command):Promise.reject()).then(()=>{b.firstChild.textContent="Copied ✓";setTimeout(()=>b.firstChild.textContent="Copy",1500)}).catch(()=>{})};
+  }
+  function renderManifest(){
+   const m=D.manifest;
+   P("manifest").innerHTML=m?`<pre class="tm-screen tm-json">${esc(JSON.stringify(m,null,2))}</pre>`:`<p class="tm-empty">Manifest not provided yet<span class="bz">尚未提供</span>${D.manifest_note?`<br><small>${esc(D.manifest_note)}</small>`:""}</p>`;
+  }
+
+  /* ---- live shell ---- */
+  async function initLive(el){
+   el.innerHTML=`<p class="tm-empty">Checking local backend…</p>`;
+   let st;
+   try{st=await api("status")}catch(e){el.innerHTML=`<p class="tm-empty">Local only<span class="bz">僅限本機</span><br><small>The live shell runs on the computer that hosts the launcher (localhost) and is not available on the public site. 公開網站不提供即時終端。</small></p>`;return}
+   if(!st.enabled){el.innerHTML=`<p class="tm-empty">Terminal disabled<span class="bz">未啟用</span><br><small>${esc(st.message)}<br>設定環境變數 AISO_TERMINAL_PASSWORD 後重新啟動 launcher。</small></p>`;return}
+   el.innerHTML=`<form class="tm-login"><label>Terminal password<span class="bz">終端密碼（第二層）</span><input type="password" autocomplete="off" required></label><button type="submit" class="tm-btn pri">Unlock<span class="bz">解鎖</span></button><p class="tm-note tm-msg" aria-live="polite">This opens a real shell on this computer. 這會在本機開啟真實的 shell。</p></form>`;
+   el.querySelector("form").onsubmit=async ev=>{ev.preventDefault();const f=ev.currentTarget,msg=f.querySelector(".tm-msg");
+    try{const r=await api("login",{method:"POST",body:JSON.stringify({password:f.querySelector("input").value})});f.querySelector("input").value="";startShell(el,r.token)}catch(e){msg.textContent=e.message;msg.classList.add("bad")}};
+  }
+  async function startShell(el,token){
+   const H={"X-Terminal-Token":token};
+   el.innerHTML=`<div class="tm-bar"><b>Live shell<span class="bz">即時終端</span></b><span class="tm-badge warn" data-s>connecting…</span><span class="tm-sp"></span>
+     <button type="button" class="tm-btn" data-a="int">Ctrl+C</button><button type="button" class="tm-btn" data-a="clear">Clear<span class="bz">清除</span></button><button type="button" class="tm-btn" data-a="close">Close<span class="bz">關閉</span></button></div>
+    <pre class="tm-screen tm-live" tabindex="0"></pre>
+    <form class="tm-input"><span class="tm-prompt">$</span><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command"><button type="submit" class="tm-btn pri">Send<span class="bz">送出</span></button></form>
+    <p class="tm-note">Runs in the repository folder with a minimal environment (no AISO_* secrets). Idle shells are closed after 15 minutes. 閒置 15 分鐘會自動關閉。</p>`;
+   const scr=el.querySelector(".tm-live"),inp=el.querySelector(".tm-input input"),badge=el.querySelector("[data-s]");
+   let sid=null,since=0,stop=false,hist=[],hi=0;
+   const setState=(t,ok)=>{badge.textContent=t;badge.className="tm-badge "+(ok?"ok":"warn")};
+   try{const o=await api("open",{method:"POST",body:"{}",headers:H});sid=o.sid;setState("connected "+o.cwd.split("/").slice(-2).join("/"),true)}catch(e){setState(e.message,false);return}
+   async function poll(){
+    if(stop||!root.isConnected)return;
+    try{const r=await api(`read?sid=${sid}&since=${since}`,{headers:H});since=r.next;
+     if(r.data){const atEnd=scr.scrollTop+scr.clientHeight>=scr.scrollHeight-8;scr.textContent+=r.data.replace(ANSI,"");if(atEnd)scr.scrollTop=scr.scrollHeight}
+     if(!r.alive){setState("shell ended",false);stop=true;return}}
+    catch(e){setState(e.message,false);stop=true;return}
+    setTimeout(poll,350);
+   }
+   poll();
+   const send=d=>api("write",{method:"POST",body:JSON.stringify({sid,data:d}),headers:H}).catch(e=>setState(e.message,false));
+   el.querySelector(".tm-input").onsubmit=ev=>{ev.preventDefault();const v=inp.value;if(v.trim())hist.push(v);hi=hist.length;inp.value="";send(v+"\n")};
+   inp.addEventListener("keydown",e=>{if(e.key==="ArrowUp"&&hist.length){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault()}else if(e.key==="ArrowDown"){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||"";e.preventDefault()}else if(e.key==="c"&&e.ctrlKey){send("\x03");e.preventDefault()}});
+   el.querySelector('[data-a="int"]').onclick=()=>send("\x03");
+   el.querySelector('[data-a="clear"]').onclick=()=>{scr.textContent=""};
+   el.querySelector('[data-a="close"]').onclick=async()=>{stop=true;try{await api("close",{method:"POST",body:JSON.stringify({sid}),headers:H})}catch(e){}liveInit=false;el.innerHTML=`<p class="tm-empty">Shell closed<span class="bz">已關閉</span></p>`};
+   inp.focus();
+  }
+
+  const load=()=>fetch(`data/terminal/${machine}.json`,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{D=d;renderRun();renderRunner();renderManifest()})
+   .catch(()=>{P("run").innerHTML=`<p class="tm-empty">Terminal data not available<span class="bz">尚無終端資料</span></p>`});
+  const sel=root.querySelector(".tm-pick select");if(sel)sel.onchange=()=>{machine=sel.value;load()};
+  load();
+ }
+ return {mount};
+})();
