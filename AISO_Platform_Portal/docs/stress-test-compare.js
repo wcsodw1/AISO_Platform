@@ -128,9 +128,7 @@ function renderGapPair(){
  const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(mlabel(o.fw,o.model))} · NP${nps.join(" / NP")}</button>`;
  const list=key=>[...map.values()].filter(o=>o[key].length),box=(cls,h,sub,items,key,fn)=>`<div class="gap-box ${cls}"><h3>${h} <small>${sub}</small></h3><div class="gap-chips">${items.map(o=>chip(o,o[key])).join("")||'<span class="st-wait">無</span>'}</div>${fn?`<p class="v2-fn">${fn}</p>`:""}</div>`;
  const both=list("both"),oa=list("onlyA"),ob=list("onlyB"),ai=REG.machines.some(m=>m.key==="aiso1");
- $s("stGap").innerHTML=box("ok","可直接並排",`${esc(A.label)}、${esc(B.label)} 都有 Input 4K / 8K / 16K · ${both.length} 組`,both,"both","點選任一組合會跳到下方圖表。")+
-  (ob.length?box("miss",`只缺 ${esc(A.label)}`,`${esc(B.label)} 有、${esc(A.label)} 沒有 · ${ob.length} 組`,ob,"onlyB",""):"")+
-  (oa.length?box("miss",`只缺 ${esc(B.label)}`,`${esc(A.label)} 有、${esc(B.label)} 沒有 · ${oa.length} 組`,oa,"onlyA",(B.key==="b70"||A.key==="b70")&&!ai?"B60、B70 需歸還廠商，缺的組合無法補測。":""):"");
+ $s("stGap").innerHTML=box("ok","可直接並排",`${esc(A.label)}、${esc(B.label)} 都有 Input 4K / 8K / 16K · ${both.length} 組`,both,"both","點選任一組合會跳到下方圖表。");
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;OTHER=FW!=="llamacpp";MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 function renderGap(){
@@ -144,8 +142,7 @@ function renderGap(){
   key.set(k,o)})));
  const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(mlabel(o.fw,o.model))} · NP${nps.join(" / NP")}</button>`;
  const all=[...key.values()].filter(o=>o.all.length),miss=[...key.values()].filter(o=>o.miss.length);
- $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 B1024 重測，含 TTFT / TPOT）。</p></div>
- <div class="gap-box miss"><h3>只缺 AISO1 <small>B60、B70 都有 · ${miss.length} 組，AISO1 重測後即可三機並排</small></h3><div class="gap-chips">${miss.map(o=>chip(o,o.miss)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">各機實測 NP：${REG.machines.map(m=>`${esc(m.label)} ${[...new Set(REG.frameworks.flatMap(f=>runsOf(m.key,f.key)).map(x=>x.np))].sort((a,b)=>a-b).join("/")||"待核"}`).join("、")}。AISO1 的 NP5 跑不動，已省略、不列為缺口。</p></div>`;
+ $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 B1024 重測，含 TTFT / TPOT）。</p></div>`;
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;OTHER=FW!=="llamacpp";MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 let RMET="norm_tps";

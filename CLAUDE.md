@@ -35,3 +35,7 @@ few lines before acting, and never overwrite or revert in-progress Codex files.
 ## Standing instruction: never paste an unverified link
 
 Before putting ANY URL in a reply, check it works *right then*: `curl -m 5 -s -o /dev/null -w '%{http_code}'` on the exact URL (localhost, the current LAN IP from `ipconfig getifaddr en0`, and the live site). If the local server is not running, start it first (`preview_start` with the `launcher` config in `.claude/launch.json`, port 8765) and re-check. The LAN IP changes with the network, so re-read it every time. Only paste links that returned 200; state plainly which ones failed or are not deployed. The Live shell needs `AISO_TERMINAL_PASSWORD` (David sets it himself) and only works on `localhost`, not the LAN address.
+
+## Standing instruction: ask about the AISO1 retest
+
+At the start of every task ask David, in one short line, **"AISO1 補測到哪？"**, then record his answer and any new missing data in `AISO_Platform_Portal/benchmark/DATA_GAPS.md`. The "只缺 AISO1" panel was removed from the pages (2026-11-11); gaps live in that file instead.
