@@ -1,4 +1,5 @@
 import os
+import secrets
 import sys
 import time
 import unittest
@@ -7,6 +8,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from benchmark.terminal import LOCK_AFTER_FAILS, PASSWORD_ENV, TerminalError, TerminalService  # noqa: E402
+
+
+PW = secrets.token_urlsafe(12)       # generated per run: no password literal in the repository
+BEARER = secrets.token_urlsafe(12)
 
 
 def read_until(svc, token, sid, needle, timeout=6.0):
@@ -23,13 +28,13 @@ def read_until(svc, token, sid, needle, timeout=6.0):
 class TerminalServiceTest(unittest.TestCase):
     def setUp(self):
         self._saved = {k: os.environ.get(k) for k in (PASSWORD_ENV, "AISO_BENCHMARK_TOKEN")}
-        os.environ[PASSWORD_ENV] = "s3cret-pass"
-        os.environ["AISO_BENCHMARK_TOKEN"] = "bearer-secret"
+        os.environ[PASSWORD_ENV] = PW
+        os.environ["AISO_BENCHMARK_TOKEN"] = BEARER
         self.svc = TerminalService(Path(__file__).resolve().parent)
 
     def tearDown(self):
         try:
-            tok = self.svc.login("s3cret-pass")["token"]
+            tok = self.svc.login(PW)["token"]
             self.svc.close(tok)
         except TerminalError:
             pass
@@ -52,7 +57,7 @@ class TerminalServiceTest(unittest.TestCase):
                 self.svc.login("nope")
             self.assertEqual(c.exception.status, 401)
         with self.assertRaises(TerminalError) as c:
-            self.svc.login("s3cret-pass")        # even the right password is refused while locked
+            self.svc.login(PW)        # even the right password is refused while locked
         self.assertEqual(c.exception.status, 429)
         self.svc._locked_until = 0                # unlock for tearDown
 
@@ -63,17 +68,17 @@ class TerminalServiceTest(unittest.TestCase):
             self.assertEqual(c.exception.status, 401)
 
     def test_shell_roundtrip_and_no_secret_leak(self):
-        tok = self.svc.login("s3cret-pass")["token"]
+        tok = self.svc.login(PW)["token"]
         sid = self.svc.open(tok)["sid"]
         self.svc.write(tok, sid, "echo MARK_$((6*7))\n")
         self.assertIn("MARK_42", read_until(self.svc, tok, sid, "MARK_42"))
         self.svc.write(tok, sid, "echo PW=[$AISO_TERMINAL_PASSWORD] BT=[$AISO_BENCHMARK_TOKEN]\n")
         out = read_until(self.svc, tok, sid, "BT=[")
         self.assertIn("PW=[] BT=[]", out)
-        self.assertNotIn("s3cret-pass", out.replace("echo", ""))
+        self.assertNotIn(PW, out.replace("echo", ""))
 
     def test_single_session_and_close(self):
-        tok = self.svc.login("s3cret-pass")["token"]
+        tok = self.svc.login(PW)["token"]
         first = self.svc.open(tok)["sid"]
         second = self.svc.open(tok)["sid"]
         self.assertNotEqual(first, second)
@@ -85,7 +90,7 @@ class TerminalServiceTest(unittest.TestCase):
             self.svc.read(tok, second)
 
     def test_input_size_limit(self):
-        tok = self.svc.login("s3cret-pass")["token"]
+        tok = self.svc.login(PW)["token"]
         sid = self.svc.open(tok)["sid"]
         with self.assertRaises(TerminalError) as c:
             self.svc.write(tok, sid, "x" * 5000)

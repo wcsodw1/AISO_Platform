@@ -23,6 +23,7 @@ from exporter import export_catalog
 from benchmark.benchmark_runner import JobManager, prepare
 from benchmark import api as machine_bench_api
 from benchmark.terminal import TerminalError, TerminalService
+from benchmark.run_auth import RunAuth, RunAuthError, is_run_request
 
 BENCHMARK_JOBS = JobManager()
 BENCHMARK_BEARER_TOKEN = (
@@ -33,6 +34,7 @@ BENCHMARK_BEARER_TOKEN = (
 os.environ["AISO_BENCHMARK_TOKEN"] = BENCHMARK_BEARER_TOKEN
 
 BASE = Path(__file__).resolve().parent
+RUN_AUTH = RunAuth()
 TERMINAL = TerminalService(BASE.parent)   # shell starts in the repository root; disabled unless AISO_TERMINAL_PASSWORD is set
 CONFIG_PATH = BASE / "config.json"
 CATALOG_PATH = BASE / "data" / "products.json"
@@ -369,6 +371,17 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.send_json({"error": "Cross-origin management request blocked."}, 403)
             if self.path.startswith("/api/terminal/"):
                 return self.handle_terminal("POST")
+            if self.path == "/api/run-auth":
+                if (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]").lower() not in {"127.0.0.1", "localhost", "::1"}:
+                    return self.send_json({"error": "Running benchmarks is available from this computer only (localhost)."}, 403)
+                if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+                    return self.send_json({"error": "application/json required"}, 415)
+                if origin and urllib.parse.urlparse(origin).netloc != self.headers.get("Host"):
+                    return self.send_json({"error": "Same-origin request required"}, 403)
+                try:
+                    return self.send_json(RUN_AUTH.issue(self.parse_json_body().get("password", "")))
+                except RunAuthError as error:
+                    return self.send_json({"error": str(error)}, error.status)
             if self.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")):
                 if not self.require_benchmark_auth():
                     return
@@ -381,6 +394,8 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json({"error": "Cross-site request blocked"}, 403)
                 if int(self.headers.get("Content-Length", "0")) > 16384:
                     return self.send_json({"error": "Manifest too large"}, 413)
+                if is_run_request("POST", self.path, machine_bench_api.PREFIX) and not RUN_AUTH.consume(self.headers.get("X-Run-Ticket", "")):
+                    return self.send_json({"error": "Test password required: enter it again to run a benchmark.", "code": "run-password-required"}, 401)
                 if self.path.startswith(machine_bench_api.PREFIX + "/"):
                     return self.send_machine_bench("POST", self.parse_json_body())
                 if self.path == "/api/benchmark/preflight":

@@ -1,6 +1,7 @@
 import http.client
 import json
 import os
+import secrets
 import sys
 import threading
 import time
@@ -9,7 +10,8 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-os.environ["AISO_TERMINAL_PASSWORD"] = "http-test-pass"
+HTTP_PW = secrets.token_urlsafe(12)
+os.environ["AISO_TERMINAL_PASSWORD"] = HTTP_PW
 import launcher  # noqa: E402
 
 
@@ -56,7 +58,7 @@ class TerminalHttpTest(unittest.TestCase):
         self.assertEqual(st, 401)
         st, _ = call(self.port, "POST", "/api/terminal/open", {})
         self.assertEqual(st, 401)                        # no token
-        st, body = call(self.port, "POST", "/api/terminal/login", {"password": "http-test-pass"})
+        st, body = call(self.port, "POST", "/api/terminal/login", {"password": HTTP_PW})
         self.assertEqual(st, 200)
         tok = {"X-Terminal-Token": body["token"]}
         st, op = call(self.port, "POST", "/api/terminal/open", {}, tok)
