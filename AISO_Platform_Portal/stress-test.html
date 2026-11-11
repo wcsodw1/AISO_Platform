@@ -14,7 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=40">
+  <link rel="stylesheet" href="gptoss-v2.css?v=43">
   <link rel="stylesheet" href="debug-notes.css?v=2">
 </head>
 <body>
@@ -28,10 +28,40 @@
     <section class="v2-hero">
       <a class="pg-back" href="./#benchmark"><span aria-hidden="true">←</span> 返回 Benchmark</a><p class="eyebrow">BENCHMARK / STRESS TEST</p>
       <h1>Stress Test｜壓力測試</h1>
-      <p class="v2-sub">依機型層級查看<span class="zh-i">同標準參數下，比較不同硬體與框架的 TTFT · TPOT · TPS</span></p>
+      <p class="v2-sub">先選廠商，再選機型<span class="zh-i">同標準參數下，比較不同硬體與框架的 TTFT · TPOT · TPS</span></p>
     </section>
-    <section class="st-tiers"><article class="st-tier"><header><span>01</span><h2>CONSUMER<small>消費級</small></h2></header><ul><li class="soon"><span><i class="amd"></i>ROG AI MAX 395<em>COMING SOON</em></span></li><li class="soon"><span><i class="amd"></i>TUF AI MAX 392<em>COMING SOON</em></span></li><li class="soon"><span><i class="intel"></i>Intel Arc B390<em>COMING SOON</em></span></li></ul></article><article class="st-tier"><header><span>02</span><h2>MINI-WORKSTATION<small>迷你工作站</small></h2></header><ul><li class="has"><a href="stress-test-compare.html"><i class="intel"></i>A · B60 vs B70 vs AISO1 比對<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-b60.html"><i class="intel"></i>B · Intel B60<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-b70.html"><i class="intel"></i>C · Intel B70<em>TTFT · TPOT · TPS →</em></a></li><li class="has"><a href="stress-test-aiso1.html"><i class="amd"></i>D · AISO1 · AI MAX+ 395<em>TTFT · TPOT · TPS →</em></a></li><li class="soon"><span><i class="amd"></i>AMD ASRock<em>COMING SOON</em></span></li></ul></article><article class="st-tier"><header><span>03</span><h2>SERVER<small>伺服器</small></h2></header><ul><li class="soon"><span><i class="nvidia"></i>NVIDIA RTX PRO 6000<em>COMING SOON</em></span></li><li class="soon"><span><i class="nvidia"></i>NVIDIA B300<em>COMING SOON</em></span></li><li class="soon"><span><i class="amd"></i>AMD Instinct MI350X<em>COMING SOON</em></span></li></ul></article></section>
+    <section class="sp" id="stPick" aria-label="依廠商與機型選擇">
+      <a class="sp-compare" href="stress-test-compare.html"><span><b>跨機比對<small>Compare</small></b><em>B60 vs B70 vs AISO1 · 同框架、同模型、同參數</em></span><i aria-hidden="true">→</i></a>
+      <div class="sp-cols">
+        <div class="sp-col sp-vendors"><h2>廠商<small>Vendor</small></h2><div id="spVendors" role="tablist" aria-label="Vendor"></div></div>
+        <div class="sp-arrow" aria-hidden="true">→</div>
+        <div class="sp-col sp-models"><h2>機型<small>Model</small></h2><div id="spModels" aria-live="polite"></div></div>
+      </div>
+    </section>
   </main>
+<script>
+(function(){
+ var T={c:"Consumer 消費級",m:"Mini-workstation 迷你工作站",s:"Server 伺服器"},TAG="TTFT · TPOT · TPS";
+ var V=[
+  {k:"nvidia",name:"NVIDIA",models:[{n:"H200",t:"s"},{n:"B300",t:"s"},{n:"RTX PRO 6000",t:"s"}]},
+  {k:"amd",name:"AMD",models:[{n:"AISO1 · AI MAX+ 395",t:"m",href:"stress-test-aiso1.html"},{n:"ROG AI MAX 395",t:"c"},{n:"TUF AI MAX 392",t:"c"},{n:"ASRock",t:"m"},{n:"Instinct MI350X",t:"s"}]},
+  {k:"intel",name:"INTEL",models:[{n:"Arc Pro B60",t:"m",href:"stress-test-b60.html"},{n:"Arc Pro B70",t:"m",href:"stress-test-b70.html"},{n:"Arc B390",t:"c"}]}];
+ var vEl=document.getElementById("spVendors"),mEl=document.getElementById("spModels"),cur=null,pinned=null;
+ function count(v){return v.models.filter(function(m){return m.href}).length}
+ function show(k){
+  cur=k;var v=V.filter(function(x){return x.k===k})[0];
+  [].forEach.call(vEl.children,function(b){var on=b.dataset.k===k;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});
+  mEl.innerHTML=v.models.map(function(m){
+   var body='<span class="sp-name">'+m.n+'</span><span class="sp-tier">'+T[m.t]+'</span>';
+   return m.href?'<div class="sp-model has"><a class="sp-open" href="'+m.href+'">'+body+'<em>'+TAG+' →</em></a><a class="sp-run" href="benchmark.html" title="先輸入測試密碼才會開始執行">Run 實測</a></div>':'<div class="sp-model soon">'+body+'<em>COMING SOON</em></div>'}).join("");
+ }
+ vEl.innerHTML=V.map(function(v){return '<button type="button" role="tab" data-k="'+v.k+'" class="sp-vendor"><b>'+v.name+'</b><small>'+(count(v)?count(v)+" 機型有資料":"即將推出")+'</small></button>'}).join("");
+ vEl.addEventListener("mouseover",function(e){var b=e.target.closest&&e.target.closest(".sp-vendor");if(b&&!pinned)show(b.dataset.k)});
+ vEl.addEventListener("click",function(e){var b=e.target.closest(".sp-vendor");if(!b)return;pinned=b.dataset.k;show(b.dataset.k)});
+ vEl.addEventListener("focusin",function(e){var b=e.target.closest(".sp-vendor");if(b)show(b.dataset.k)});
+ show((V.filter(function(v){return count(v)})[0]||V[0]).k);
+})();
+</script>
 <script src="debug-notes.js?v=3"></script>
 </body>
 </html>

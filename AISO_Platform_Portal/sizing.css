@@ -483,3 +483,9 @@ main .sz-break>div{border:0;border-right:1px solid rgba(244,239,228,.12);border-
 .sz-break>.cc-w{border-top-color:#7aaee8}.sz-break>.cc-k{border-top-color:var(--gold)}.sz-break>.cc-r{border-top-color:#70d3a2}.sz-break>.cc-h{border-top-color:#8a90a0}
 .sz-break>.cc-kr{position:relative}
 .sz-break>.cc-kr::before{content:"";position:absolute;left:0;top:-4px;width:56px;height:4px;background:repeating-linear-gradient(135deg,var(--gold) 0 4px,#3a3f4e 4px 8px)}
+
+/* STEP label and its title share one row; the label is larger */
+main .report-section > header > div:has(> .section-label){display:flex;align-items:baseline;column-gap:18px}
+@media(max-width:700px){main .report-section > header > div:has(> .section-label){flex-wrap:wrap}}
+main .report-section > header > div:has(> .section-label) > .section-label{font-size:26px;font-weight:800;letter-spacing:.1em;margin:0;white-space:nowrap;color:var(--gold)}
+main .report-section > header > div:has(> .section-label) > h2{margin:0;flex:1 1 0;min-width:0}
