@@ -96,10 +96,15 @@ window.BV=(function(){
   const b=series.find(x=>x.key===baseline),short=l=>esc(String(l).replace(/^Intel /,"").replace(/ AMD$/,"")),out=[];
   series.filter(x=>x.key!==baseline).forEach(x=>{
    const ds=groups.map(g=>{const a=get(x.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);
-   if(!ds.length){out.push(`${short(x.label)}: no data`);return}
-   const m=mean(ds.map(y=>y[0])),av=dtext(m,mean(ds.map(y=>y[1])),def.higher);
-   out.push(`${short(x.label)} ${m>=0?"better":"worse"} ${esc(av.t)}`)});
-  return `vs ${short(b.label)}: ${out.join("　·　")}<small class="zhs">平均，${def.higher?"越高":"越低"}越好</small>`+(o.summaryNote?`<br>⚠ ${esc(o.summaryNote[0])}<small class="zhs">${esc(o.summaryNote[1])}</small>`:"");
+   if(!ds.length){out.push({n:short(x.sum||x.label),none:true});return}
+   const m=mean(ds.map(y=>y[0])),ra=mean(ds.map(y=>y[1])),big=def.higher?m>=100:m<=-100;
+   out.push({n:short(x.sum||x.label),good:m>=0,big,v:Math.abs(m).toFixed(1),x:ra.toFixed(1)})});
+  const bn=short(b.sum||b.label),ok=out.filter(y=>!y.none);if(!ok.length)return "";
+  const word=y=>y.big?(def.higher?"faster":"slower"):(y.good?"better":"worse"),zh=y=>y.big?(def.higher?"快":"慢"):(y.good?"好":"差"),num=y=>y.big?`${y.x}×`:`${y.v}%`,znum=y=>y.big?`${y.x} 倍`:`${y.v}%`;
+  const same=ok.every(y=>word(y)===word(ok[0]));
+  const en=same?`${ok.map(y=>`${y.n} ${num(y)}`).join(" · ")} ${word(ok[0])} than ${bn}`:`${ok.map(y=>`${y.n} ${num(y)} ${word(y)}`).join(" · ")} than ${bn}`;
+  const zt=same?`比 ${bn} ${zh(ok[0])} ${ok.map(znum).join("／")}`:`${ok.map(y=>`${y.n} ${zh(y)} ${znum(y)}`).join("；")}（比 ${bn}）`;
+  return `${en}<small class="zhs">${zt}</small>`+(o.summaryNote?` <span class="bv-note">⚠ ${esc(o.summaryNote[0])}<small class="zhs">${esc(o.summaryNote[1])}</small></span>`:"");
  }
  function table(o){
   const {k,def,groups,series,get,baseline}=o,others=baseline?series.filter(s=>s.key!==baseline):[];
@@ -110,6 +115,16 @@ window.BV=(function(){
   const foot=others.length?`<tfoot><tr><td>All Scenario average differential<small>全情境平均差異</small></td>${series.map(()=>"<td></td>").join("")}${avg}</tr></tfoot>`:"";
   return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>${esc(o.rowHead||"Input")}</th>${series.map(s=>`<th class="l"><i class="v2-sw" style="background:${s.color}"></i>${esc(s.label)}<small>${esc(def.unit)}</small></th>`).join("")}${others.map(s=>`<th class="la">${esc(s.label)} vs ${esc(b.label)}<small>差異</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>${foot}</table></div>`;
  }
+ // trend check: with a longer input, latency (TTFT / TPOT) should not fall and throughput should not rise (> 25 %). Only for charts whose x axis is the input length (4K, 8K ...).
+ function anomalies(o){
+  const {k,def,groups,series,get}=o;if(!groups.every(g=>/^\d+K$/.test(g.label)))return "";
+  const out=[];
+  series.forEach(se=>{for(let i=1;i<groups.length;i++){
+   const a=get(se.key,groups[i-1]),b=get(se.key,groups[i]);if(!a||!b||!Number.isFinite(a[k])||!Number.isFinite(b[k]))continue;
+   const odd=def.higher?b[k]>a[k]*1.25:b[k]<a[k]*0.75;
+   if(odd)out.push(`<p class="bv-warn">⚠ ${esc(String(se.label).replace(/^Intel /,"").replace(/ AMD$/,""))}: ${esc(def.short)} at ${esc(groups[i].label)} (${fmt(k,b[k])}) is ${def.higher?"higher":"lower"} than at ${esc(groups[i-1].label)} (${fmt(k,a[k])}) — unexpected, check the repeats<small class="zhs">異常：${esc(groups[i].label)} 比 ${esc(groups[i-1].label)} 還${def.higher?"高":"低"}，請檢查逐次數值</small></p>`)}});
+  return out.join("");
+ }
  /* one metric block: title + (badge · conclusion · legend) + chart + table */
  function block(o){
   const d=o.def,chart=charts(o);
@@ -117,11 +132,24 @@ window.BV=(function(){
   const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${o.baseline?"":esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
   if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;
-  return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div><div class="bv-foot"><p class="bv-sum">${summary(o)}</p><button type="button" class="bv-more" aria-expanded="false">完整數值 ▾</button></div><div class="bv-detail" hidden><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div></div>`;
+  return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div>${o.noWarn?"":anomalies(o)}<div class="bv-foot">${o.noSummary?"<span></span>":`<p class="bv-sum">${summary(o)}</p>`}<button type="button" class="bv-more" aria-expanded="false">Full values<small class="zhs">完整數值</small> ▾</button></div><div class="bv-detail" hidden><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div></div>`;
+ }
+ function blocks(list){
+  const isTps=o=>/^(norm|normalized|aggregate)_tps$/.test(o.k),isLat=o=>o.k==="ttft_s"||o.k==="tpot_ms";
+  const tps=list.filter(isTps),iN=list.findIndex(o=>/^(norm|normalized)_tps$/.test(o.k)),iA=list.findIndex(o=>o.k==="aggregate_tps");
+  const sh=iN>=0&&iA>=0&&list[iN].baseline&&list[iA].baseline&&summary(list[iN])&&summary(list[iN])===summary(list[iA])?summary(list[iN]):null;
+  const grp=(title,zh,body,sum)=>`<div class="bv-group"><div class="bv-tps"><h3 class="bv-h">${title}<span class="zh-i">${zh}</span></h3>${sum?`<p class="bv-sum">${sum}</p>`:""}</div>${body}</div>`;
+  const lat=list.filter(isLat);
+  let out="",doneLat=false,doneTps=false;
+  list.forEach((o,i)=>{
+   if(isLat(o)){if(!doneLat){doneLat=true;out+=grp("Latency","延遲",lat.map(x=>block(x)).join(""))}}
+   else if(isTps(o)){if(!doneTps){doneTps=true;out+=grp("TPS","每秒輸出 token",tps.map((x,j)=>sh?block({...x,noSummary:true,noWarn:j>0}):block(x)).join(""),sh)}}
+   else out+=block(o)});
+  return out;
  }
  // one delegated handler for every chart block on the page: the button (bottom-right of the chart) shows / hides the data table
  document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;
   const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
-  const open=det.hidden;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.textContent=open?"收合數值 ▴":"完整數值 ▾"});
- return {block,esc,fmt,gain,pct,lineSvg,charts};
+  const open=det.hidden;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.innerHTML=open?'Hide values<small class="zhs">收合數值</small> ▴':'Full values<small class="zhs">完整數值</small> ▾'});
+ return {block,blocks,esc,fmt,gain,pct,lineSvg,charts};
 })();

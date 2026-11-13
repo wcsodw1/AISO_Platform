@@ -1,0 +1,3046 @@
+{
+ "dataset": "AISO_PRO6000_vLLM_VIS_20260825",
+ "evidence_until": "2026-08-25",
+ "generated_on": "2026-11-11",
+ "note": "PRO6000（TPI 8 GPU 系統）vLLM VIS Benchmark：GPT-OSS-120B（NP 1–32）與 Llama-3.3-70B（NP 16 / 32），Input 1K–16K，Output 1K / 2K；每個條件含 Without aiDAPTIV、Cold（Run1）、Warm（Run2/Run3 平均）。數值取自 2026-08-25 PDF 報告表格。 Without aiDAPTIV 的 3 次逐次 TTFT 取自 PRO6000 原始 vis 結果檔，平均與 PDF 一致（差 0.6% 內）；吞吐、TPOT 與 Cold／Warm 無可核對的逐次數值。",
+ "comparability": {
+  "level": "not_comparable",
+  "text": "此資料為 aiDAPTIV Cold／Warm 的 VIS 測法（vLLM、GPT-OSS-120B 與 Llama-3.3-70B），與 B60 / B70 / AISO1 的 llama.cpp 壓力測試（Gemma / Laguna / Nemotron、NP 1–5）模型與條件不同，不可直接比較。Without aiDAPTIV 為無快取基準。TPOT 為 median（120B）／報告定義 (E2E−TTFT)/(output−1)（Llama）；Llama 數值由 PDF 圖片表格人工讀取。"
+ },
+ "profile": {
+  "machine": "PRO6000 · NVIDIA RTX PRO 6000 Blackwell Server Edition（TPI 8 GPU 系統）",
+  "framework": "vLLM",
+  "gpu_count_system": 8,
+  "gpus_used": 4,
+  "gpu_evidence": "機器回報 nvidia-smi：NVIDIA RTX PRO 6000 Blackwell Server Edition，96 GB/GPU（2026-11-11 唯讀查詢）；POC 說明：8 卡系統啟用 4 張",
+  "np": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32
+  ],
+  "input_tokens": [
+   1024,
+   2048,
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": [
+   1024,
+   2048
+  ],
+  "repeat": "Cold = Run1；Warm = Run2/Run3 平均",
+  "aidaptiv_modes": [
+   "without",
+   "cold",
+   "warm"
+  ],
+  "runtime": "UNVERIFIED"
+ },
+ "pro6000_runs": [
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 1,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 77.0,
+    "cold": 208.0,
+    "warm": 62.0
+   },
+   "tpot_ms": {
+    "without": 5.43,
+    "cold": 5.6,
+    "warm": 5.6
+   },
+   "aggregate_tps": {
+    "without": 181.7,
+    "cold": 172.1,
+    "warm": 65.6
+   },
+   "normalized_tps": {
+    "without": 181.7,
+    "cold": 172.1,
+    "warm": 65.6
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0795,
+      0.0771,
+      0.0758
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 1,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 107.0,
+    "cold": 130.0,
+    "warm": 68.0
+   },
+   "tpot_ms": {
+    "without": 5.47,
+    "cold": 5.81,
+    "warm": 5.81
+   },
+   "aggregate_tps": {
+    "without": 179.5,
+    "cold": 168.5,
+    "warm": 170.3
+   },
+   "normalized_tps": {
+    "without": 179.5,
+    "cold": 168.5,
+    "warm": 170.3
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1092,
+      0.1032,
+      0.1088
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 1,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 197.0,
+    "cold": 258.0,
+    "warm": 85.0
+   },
+   "tpot_ms": {
+    "without": 5.82,
+    "cold": 6.12,
+    "warm": 6.11
+   },
+   "aggregate_tps": {
+    "without": 166.3,
+    "cold": 156.8,
+    "warm": 161.8
+   },
+   "normalized_tps": {
+    "without": 166.3,
+    "cold": 156.8,
+    "warm": 161.8
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1945,
+      0.2086,
+      0.189
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 1,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 381.0,
+    "cold": 506.0,
+    "warm": 118.0
+   },
+   "tpot_ms": {
+    "without": 6.73,
+    "cold": 6.56,
+    "warm": 6.48
+   },
+   "aggregate_tps": {
+    "without": 141.3,
+    "cold": 141.6,
+    "warm": 151.6
+   },
+   "normalized_tps": {
+    "without": 141.3,
+    "cold": 141.6,
+    "warm": 151.6
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.3919,
+      0.3752,
+      0.3767
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 1,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 800.0,
+    "cold": 957.0,
+    "warm": 191.0
+   },
+   "tpot_ms": {
+    "without": 7.39,
+    "cold": 7.67,
+    "warm": 7.84
+   },
+   "aggregate_tps": {
+    "without": 122.2,
+    "cold": 116.0,
+    "warm": 124.6
+   },
+   "normalized_tps": {
+    "without": 122.2,
+    "cold": 116.0,
+    "warm": 124.6
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.8125,
+      0.8031,
+      0.7849
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 2,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 73.0,
+    "cold": 95.0,
+    "warm": 63.0
+   },
+   "tpot_ms": {
+    "without": 6.69,
+    "cold": 7.18,
+    "warm": 7.18
+   },
+   "aggregate_tps": {
+    "without": 290.8,
+    "cold": 271.4,
+    "warm": 191.6
+   },
+   "normalized_tps": {
+    "without": 145.4,
+    "cold": 135.7,
+    "warm": 95.8
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0702,
+      0.0748,
+      0.0745
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 2,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 127.0,
+    "cold": 128.0,
+    "warm": 64.0
+   },
+   "tpot_ms": {
+    "without": 6.86,
+    "cold": 6.92,
+    "warm": 7.25
+   },
+   "aggregate_tps": {
+    "without": 285.1,
+    "cold": 282.9,
+    "warm": 272.3
+   },
+   "normalized_tps": {
+    "without": 142.55,
+    "cold": 141.45,
+    "warm": 136.15
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1346,
+      0.1283,
+      0.1194
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 2,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 227.0,
+    "cold": 296.0,
+    "warm": 79.0
+   },
+   "tpot_ms": {
+    "without": 7.12,
+    "cold": 7.6,
+    "warm": 7.48
+   },
+   "aggregate_tps": {
+    "without": 270.6,
+    "cold": 251.9,
+    "warm": 262.3
+   },
+   "normalized_tps": {
+    "without": 135.3,
+    "cold": 125.95,
+    "warm": 131.15
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.2231,
+      0.2309,
+      0.2283
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 2,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 635.0,
+    "cold": 807.0,
+    "warm": 129.0
+   },
+   "tpot_ms": {
+    "without": 7.71,
+    "cold": 8.1,
+    "warm": 8.07
+   },
+   "aggregate_tps": {
+    "without": 237.6,
+    "cold": 222.9,
+    "warm": 241.6
+   },
+   "normalized_tps": {
+    "without": 118.8,
+    "cold": 111.45,
+    "warm": 120.8
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.6308,
+      0.6327,
+      0.6414
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 2,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 1147.0,
+    "cold": 1467.0,
+    "warm": 200.0
+   },
+   "tpot_ms": {
+    "without": 9.21,
+    "cold": 9.02,
+    "warm": 9.21
+   },
+   "aggregate_tps": {
+    "without": 190.1,
+    "cold": 187.6,
+    "warm": 206.7
+   },
+   "normalized_tps": {
+    "without": 95.05,
+    "cold": 93.8,
+    "warm": 103.35
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.1561,
+      1.1431,
+      1.1431
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 4,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 80.0,
+    "cold": 108.0,
+    "warm": 44.0
+   },
+   "tpot_ms": {
+    "without": 7.57,
+    "cold": 7.88,
+    "warm": 7.66
+   },
+   "aggregate_tps": {
+    "without": 511.1,
+    "cold": 489.8,
+    "warm": 505.3
+   },
+   "normalized_tps": {
+    "without": 127.775,
+    "cold": 122.45,
+    "warm": 126.325
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0817,
+      0.0787,
+      0.0792
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 4,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 105.0,
+    "cold": 108.0,
+    "warm": 58.0
+   },
+   "tpot_ms": {
+    "without": 7.61,
+    "cold": 8.11,
+    "warm": 7.78
+   },
+   "aggregate_tps": {
+    "without": 455.7,
+    "cold": 419.8,
+    "warm": 449.6
+   },
+   "normalized_tps": {
+    "without": 113.925,
+    "cold": 104.95,
+    "warm": 112.4
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1058,
+      0.1054,
+      0.1039
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 4,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 204.0,
+    "cold": 292.0,
+    "warm": 84.0
+   },
+   "tpot_ms": {
+    "without": 7.83,
+    "cold": 8.26,
+    "warm": 8.02
+   },
+   "aggregate_tps": {
+    "without": 479.7,
+    "cold": 454.2,
+    "warm": 459.0
+   },
+   "normalized_tps": {
+    "without": 119.925,
+    "cold": 113.55,
+    "warm": 114.75
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.2071,
+      0.2053,
+      0.1997
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 4,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 884.0,
+    "cold": 1121.0,
+    "warm": 110.0
+   },
+   "tpot_ms": {
+    "without": 8.34,
+    "cold": 8.88,
+    "warm": 8.68
+   },
+   "aggregate_tps": {
+    "without": 420.4,
+    "cold": 387.4,
+    "warm": 437.1
+   },
+   "normalized_tps": {
+    "without": 105.1,
+    "cold": 96.85,
+    "warm": 109.275
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.8833,
+      0.8887,
+      0.8815
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 4,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 1497.0,
+    "cold": 1899.0,
+    "warm": 221.0
+   },
+   "tpot_ms": {
+    "without": 9.98,
+    "cold": 10.6,
+    "warm": 9.77
+   },
+   "aggregate_tps": {
+    "without": 327.9,
+    "cold": 303.4,
+    "warm": 367.5
+   },
+   "normalized_tps": {
+    "without": 81.975,
+    "cold": 75.85,
+    "warm": 91.875
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.4914,
+      1.5046,
+      1.4941
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 8,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 108.0,
+    "cold": 152.0,
+    "warm": 49.0
+   },
+   "tpot_ms": {
+    "without": 7.77,
+    "cold": 8.11,
+    "warm": 7.83
+   },
+   "aggregate_tps": {
+    "without": 833.7,
+    "cold": 817.2,
+    "warm": 833.8
+   },
+   "normalized_tps": {
+    "without": 104.213,
+    "cold": 102.15,
+    "warm": 104.225
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.104,
+      0.1147,
+      0.1065
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 8,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 152.0,
+    "cold": 134.0,
+    "warm": 59.0
+   },
+   "tpot_ms": {
+    "without": 8.2,
+    "cold": 8.41,
+    "warm": 8.07
+   },
+   "aggregate_tps": {
+    "without": 912.6,
+    "cold": 900.9,
+    "warm": 918.1
+   },
+   "normalized_tps": {
+    "without": 114.075,
+    "cold": 112.612,
+    "warm": 114.763
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1535,
+      0.1492,
+      0.1531
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 8,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 514.0,
+    "cold": 720.0,
+    "warm": 84.0
+   },
+   "tpot_ms": {
+    "without": 8.48,
+    "cold": 9.11,
+    "warm": 8.44
+   },
+   "aggregate_tps": {
+    "without": 847.5,
+    "cold": 770.0,
+    "warm": 841.3
+   },
+   "normalized_tps": {
+    "without": 105.938,
+    "cold": 96.25,
+    "warm": 105.162
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.501,
+      0.5546,
+      0.4865
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 8,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 1552.0,
+    "cold": 1937.0,
+    "warm": 167.0
+   },
+   "tpot_ms": {
+    "without": 9.34,
+    "cold": 10.14,
+    "warm": 9.03
+   },
+   "aggregate_tps": {
+    "without": 715.0,
+    "cold": 648.1,
+    "warm": 835.1
+   },
+   "normalized_tps": {
+    "without": 89.375,
+    "cold": 81.013,
+    "warm": 104.388
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.5476,
+      1.5511,
+      1.5567
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 8,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 3043.0,
+    "cold": 3800.0,
+    "warm": 234.0
+   },
+   "tpot_ms": {
+    "without": 11.81,
+    "cold": 13.17,
+    "warm": 10.89
+   },
+   "aggregate_tps": {
+    "without": 503.7,
+    "cold": 432.5,
+    "warm": 673.8
+   },
+   "normalized_tps": {
+    "without": 62.962,
+    "cold": 54.062,
+    "warm": 84.225
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      3.0517,
+      3.0375,
+      3.0406
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 16,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 114.0,
+    "cold": 177.0,
+    "warm": 50.0
+   },
+   "tpot_ms": {
+    "without": 10.49,
+    "cold": 10.69,
+    "warm": 10.27
+   },
+   "aggregate_tps": {
+    "without": 1393.3,
+    "cold": 1368.1,
+    "warm": 1397.9
+   },
+   "normalized_tps": {
+    "without": 87.081,
+    "cold": 85.506,
+    "warm": 87.369
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1139,
+      0.1141,
+      0.1132
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 16,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 492.0,
+    "cold": 282.0,
+    "warm": 57.0
+   },
+   "tpot_ms": {
+    "without": 10.52,
+    "cold": 10.61,
+    "warm": 10.29
+   },
+   "aggregate_tps": {
+    "without": 1366.9,
+    "cold": 1380.1,
+    "warm": 1468.8
+   },
+   "normalized_tps": {
+    "without": 85.431,
+    "cold": 86.256,
+    "warm": 91.8
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.4886,
+      0.4907,
+      0.4973
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 16,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 1141.0,
+    "cold": 1495.0,
+    "warm": 101.0
+   },
+   "tpot_ms": {
+    "without": 11.51,
+    "cold": 12.38,
+    "warm": 10.96
+   },
+   "aggregate_tps": {
+    "without": 1170.9,
+    "cold": 1112.0,
+    "warm": 1378.9
+   },
+   "normalized_tps": {
+    "without": 73.181,
+    "cold": 69.5,
+    "warm": 86.181
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.1348,
+      1.1467,
+      1.1425
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 16,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 2678.0,
+    "cold": 3347.0,
+    "warm": 193.0
+   },
+   "tpot_ms": {
+    "without": 13.08,
+    "cold": 13.82,
+    "warm": 11.59
+   },
+   "aggregate_tps": {
+    "without": 979.1,
+    "cold": 869.8,
+    "warm": 1266.9
+   },
+   "normalized_tps": {
+    "without": 61.194,
+    "cold": 54.362,
+    "warm": 79.181
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.674,
+      2.6757,
+      2.6852
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 16,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 5775.0,
+    "cold": 6983.0,
+    "warm": 535.0
+   },
+   "tpot_ms": {
+    "without": 17.77,
+    "cold": 19.16,
+    "warm": 13.95
+   },
+   "aggregate_tps": {
+    "without": 655.2,
+    "cold": 581.1,
+    "warm": 1032.9
+   },
+   "normalized_tps": {
+    "without": 40.95,
+    "cold": 36.319,
+    "warm": 64.556
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      5.7676,
+      5.7692,
+      5.7882
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 32,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 382.0,
+    "cold": 614.0,
+    "warm": 52.0
+   },
+   "tpot_ms": {
+    "without": 13.43,
+    "cold": 13.43,
+    "warm": 13.22
+   },
+   "aggregate_tps": {
+    "without": 2205.9,
+    "cold": 2069.8,
+    "warm": 2174.0
+   },
+   "normalized_tps": {
+    "without": 68.934,
+    "cold": 64.681,
+    "warm": 67.938
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.3831,
+      0.3776,
+      0.3858
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 32,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 980.0,
+    "cold": 681.0,
+    "warm": 85.0
+   },
+   "tpot_ms": {
+    "without": 14.2,
+    "cold": 14.4,
+    "warm": 13.69
+   },
+   "aggregate_tps": {
+    "without": 1991.6,
+    "cold": 1985.5,
+    "warm": 2183.2
+   },
+   "normalized_tps": {
+    "without": 62.237,
+    "cold": 62.047,
+    "warm": 68.225
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.9781,
+      0.9818,
+      0.9788
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 32,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 2285.0,
+    "cold": 2828.0,
+    "warm": 129.0
+   },
+   "tpot_ms": {
+    "without": 16.11,
+    "cold": 17.71,
+    "warm": 14.8
+   },
+   "aggregate_tps": {
+    "without": 1644.2,
+    "cold": 1488.9,
+    "warm": 1999.1
+   },
+   "normalized_tps": {
+    "without": 51.381,
+    "cold": 46.528,
+    "warm": 62.472
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.2841,
+      2.2845,
+      2.2871
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 32,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 5165.0,
+    "cold": 6369.0,
+    "warm": 424.0
+   },
+   "tpot_ms": {
+    "without": 19.86,
+    "cold": 21.06,
+    "warm": 16.38
+   },
+   "aggregate_tps": {
+    "without": 1226.5,
+    "cold": 1134.4,
+    "warm": 1814.0
+   },
+   "normalized_tps": {
+    "without": 38.328,
+    "cold": 35.45,
+    "warm": 56.688
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      5.1645,
+      5.157,
+      5.1737
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 1024,
+   "np": 32,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 11787.0,
+    "cold": 14058.0,
+    "warm": 1661.0
+   },
+   "tpot_ms": {
+    "without": 29.55,
+    "cold": 32.87,
+    "warm": 20.38
+   },
+   "aggregate_tps": {
+    "without": 763.7,
+    "cold": 669.6,
+    "warm": 1418.8
+   },
+   "normalized_tps": {
+    "without": 23.866,
+    "cold": 20.925,
+    "warm": 44.337
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      11.7988,
+      11.7798,
+      11.7809
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 1,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 70.0,
+    "cold": 113.0,
+    "warm": 56.0
+   },
+   "tpot_ms": {
+    "without": 5.4,
+    "cold": 5.93,
+    "warm": 5.99
+   },
+   "aggregate_tps": {
+    "without": 163.9,
+    "cold": 167.1,
+    "warm": 166.4
+   },
+   "normalized_tps": {
+    "without": 163.9,
+    "cold": 167.1,
+    "warm": 166.4
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0761,
+      0.0712,
+      0.063
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 1,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 111.0,
+    "cold": 151.0,
+    "warm": 77.0
+   },
+   "tpot_ms": {
+    "without": 5.51,
+    "cold": 5.69,
+    "warm": 5.7
+   },
+   "aggregate_tps": {
+    "without": 179.7,
+    "cold": 173.4,
+    "warm": 174.5
+   },
+   "normalized_tps": {
+    "without": 179.7,
+    "cold": 173.4,
+    "warm": 174.5
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1061,
+      0.1184,
+      0.109
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 1,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 191.0,
+    "cold": 264.0,
+    "warm": 84.0
+   },
+   "tpot_ms": {
+    "without": 5.76,
+    "cold": 5.8,
+    "warm": 5.87
+   },
+   "aggregate_tps": {
+    "without": 170.7,
+    "cold": 168.7,
+    "warm": 169.4
+   },
+   "normalized_tps": {
+    "without": 170.7,
+    "cold": 168.7,
+    "warm": 169.4
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1892,
+      0.1938,
+      0.1899
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 1,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 381.0,
+    "cold": 467.0,
+    "warm": 117.0
+   },
+   "tpot_ms": {
+    "without": 6.35,
+    "cold": 6.51,
+    "warm": 6.44
+   },
+   "aggregate_tps": {
+    "without": 153.0,
+    "cold": 148.3,
+    "warm": 154.1
+   },
+   "normalized_tps": {
+    "without": 153.0,
+    "cold": 148.3,
+    "warm": 154.1
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.3824,
+      0.3795,
+      0.3806
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 1,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 808.0,
+    "cold": 949.0,
+    "warm": 188.0
+   },
+   "tpot_ms": {
+    "without": 7.4,
+    "cold": 7.69,
+    "warm": 7.63
+   },
+   "aggregate_tps": {
+    "without": 96.5,
+    "cold": 122.5,
+    "warm": 129.6
+   },
+   "normalized_tps": {
+    "without": 96.5,
+    "cold": 122.5,
+    "warm": 129.6
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.8094,
+      0.8108,
+      0.8049
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 2,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 74.0,
+    "cold": 96.0,
+    "warm": 46.0
+   },
+   "tpot_ms": {
+    "without": 6.81,
+    "cold": 7.11,
+    "warm": 6.95
+   },
+   "aggregate_tps": {
+    "without": 291.6,
+    "cold": 278.9,
+    "warm": 286.4
+   },
+   "normalized_tps": {
+    "without": 145.8,
+    "cold": 139.45,
+    "warm": 143.2
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0777,
+      0.0715,
+      0.0735
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 2,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 111.0,
+    "cold": 145.0,
+    "warm": 63.0
+   },
+   "tpot_ms": {
+    "without": 6.92,
+    "cold": 6.98,
+    "warm": 7.17
+   },
+   "aggregate_tps": {
+    "without": 279.2,
+    "cold": 276.4,
+    "warm": 270.4
+   },
+   "normalized_tps": {
+    "without": 139.6,
+    "cold": 138.2,
+    "warm": 135.2
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1075,
+      0.1105,
+      0.1153
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 2,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 192.0,
+    "cold": 229.0,
+    "warm": 78.0
+   },
+   "tpot_ms": {
+    "without": 7.13,
+    "cold": 7.52,
+    "warm": 7.25
+   },
+   "aggregate_tps": {
+    "without": 274.2,
+    "cold": 260.0,
+    "warm": 271.0
+   },
+   "normalized_tps": {
+    "without": 137.1,
+    "cold": 130.0,
+    "warm": 135.5
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1925,
+      0.1913,
+      0.1909
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 2,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 389.0,
+    "cold": 458.0,
+    "warm": 119.0
+   },
+   "tpot_ms": {
+    "without": 8.54,
+    "cold": 9.36,
+    "warm": 9.02
+   },
+   "aggregate_tps": {
+    "without": 214.9,
+    "cold": 198.2,
+    "warm": 206.8
+   },
+   "normalized_tps": {
+    "without": 107.45,
+    "cold": 99.1,
+    "warm": 103.4
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.3871,
+      0.3871,
+      0.3925
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 2,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 977.0,
+    "cold": 1228.0,
+    "warm": 199.0
+   },
+   "tpot_ms": {
+    "without": 8.81,
+    "cold": 9.16,
+    "warm": 8.87
+   },
+   "aggregate_tps": {
+    "without": 196.6,
+    "cold": 201.2,
+    "warm": 172.4
+   },
+   "normalized_tps": {
+    "without": 98.3,
+    "cold": 100.6,
+    "warm": 86.2
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.9721,
+      0.9906,
+      0.9687
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 4,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 72.0,
+    "cold": 91.0,
+    "warm": 47.0
+   },
+   "tpot_ms": {
+    "without": 7.39,
+    "cold": 9.8,
+    "warm": 7.73
+   },
+   "aggregate_tps": {
+    "without": 484.1,
+    "cold": 371.4,
+    "warm": 419.2
+   },
+   "normalized_tps": {
+    "without": 121.025,
+    "cold": 92.85,
+    "warm": 104.8
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0722,
+      0.0729,
+      0.0709
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 4,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 126.0,
+    "cold": 186.0,
+    "warm": 63.0
+   },
+   "tpot_ms": {
+    "without": 7.57,
+    "cold": 7.88,
+    "warm": 7.81
+   },
+   "aggregate_tps": {
+    "without": 488.4,
+    "cold": 465.9,
+    "warm": 475.7
+   },
+   "normalized_tps": {
+    "without": 122.1,
+    "cold": 116.475,
+    "warm": 118.925
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1226,
+      0.1318,
+      0.1242
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 4,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 222.0,
+    "cold": 271.0,
+    "warm": 81.0
+   },
+   "tpot_ms": {
+    "without": 7.87,
+    "cold": 8.14,
+    "warm": 7.88
+   },
+   "aggregate_tps": {
+    "without": 438.2,
+    "cold": 421.6,
+    "warm": 452.9
+   },
+   "normalized_tps": {
+    "without": 109.55,
+    "cold": 105.4,
+    "warm": 113.225
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.2265,
+      0.2193,
+      0.2214
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 4,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 893.0,
+    "cold": 1116.0,
+    "warm": 108.0
+   },
+   "tpot_ms": {
+    "without": 8.44,
+    "cold": 8.43,
+    "warm": 8.54
+   },
+   "aggregate_tps": {
+    "without": 431.4,
+    "cold": 437.5,
+    "warm": 455.3
+   },
+   "normalized_tps": {
+    "without": 107.85,
+    "cold": 109.375,
+    "warm": 113.825
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.8851,
+      0.9026,
+      0.8919
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 4,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 1860.0,
+    "cold": 2305.0,
+    "warm": 268.0
+   },
+   "tpot_ms": {
+    "without": 9.68,
+    "cold": 10.17,
+    "warm": 9.77
+   },
+   "aggregate_tps": {
+    "without": 341.7,
+    "cold": 349.3,
+    "warm": 373.7
+   },
+   "normalized_tps": {
+    "without": 85.425,
+    "cold": 87.325,
+    "warm": 93.425
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.8576,
+      1.8497,
+      1.8713
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 8,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 89.0,
+    "cold": 123.0,
+    "warm": 48.0
+   },
+   "tpot_ms": {
+    "without": 7.75,
+    "cold": 8.27,
+    "warm": 8.04
+   },
+   "aggregate_tps": {
+    "without": 929.5,
+    "cold": 912.9,
+    "warm": 939.3
+   },
+   "normalized_tps": {
+    "without": 116.188,
+    "cold": 114.112,
+    "warm": 117.412
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.0862,
+      0.092,
+      0.0899
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 8,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 291.0,
+    "cold": 411.0,
+    "warm": 56.0
+   },
+   "tpot_ms": {
+    "without": 7.49,
+    "cold": 7.73,
+    "warm": 7.42
+   },
+   "aggregate_tps": {
+    "without": 1034.9,
+    "cold": 871.8,
+    "warm": 1002.5
+   },
+   "normalized_tps": {
+    "without": 129.363,
+    "cold": 108.975,
+    "warm": 125.312
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.2916,
+      0.289,
+      0.2927
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 8,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 440.0,
+    "cold": 563.0,
+    "warm": 82.0
+   },
+   "tpot_ms": {
+    "without": 8.26,
+    "cold": 8.97,
+    "warm": 8.39
+   },
+   "aggregate_tps": {
+    "without": 909.6,
+    "cold": 762.5,
+    "warm": 858.9
+   },
+   "normalized_tps": {
+    "without": 113.7,
+    "cold": 95.312,
+    "warm": 107.362
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.4399,
+      0.4373,
+      0.4421
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 8,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 1475.0,
+    "cold": 1907.0,
+    "warm": 131.0
+   },
+   "tpot_ms": {
+    "without": 8.95,
+    "cold": 9.6,
+    "warm": 8.94
+   },
+   "aggregate_tps": {
+    "without": 792.8,
+    "cold": 727.5,
+    "warm": 836.0
+   },
+   "normalized_tps": {
+    "without": 99.1,
+    "cold": 90.938,
+    "warm": 104.5
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.47,
+      1.49,
+      1.4651
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 8,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 3155.0,
+    "cold": 3882.0,
+    "warm": 282.0
+   },
+   "tpot_ms": {
+    "without": 10.96,
+    "cold": 11.87,
+    "warm": 10.34
+   },
+   "aggregate_tps": {
+    "without": 557.0,
+    "cold": 542.7,
+    "warm": 730.8
+   },
+   "normalized_tps": {
+    "without": 69.625,
+    "cold": 67.838,
+    "warm": 91.35
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      3.1501,
+      3.1543,
+      3.1591
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 16,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 108.0,
+    "cold": 204.0,
+    "warm": 45.0
+   },
+   "tpot_ms": {
+    "without": 9.49,
+    "cold": 9.8,
+    "warm": 9.61
+   },
+   "aggregate_tps": {
+    "without": 1577.0,
+    "cold": 1522.7,
+    "warm": 1590.9
+   },
+   "normalized_tps": {
+    "without": 98.562,
+    "cold": 95.169,
+    "warm": 99.431
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1054,
+      0.1136,
+      0.1035
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 16,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 437.0,
+    "cold": 617.0,
+    "warm": 55.0
+   },
+   "tpot_ms": {
+    "without": 10.82,
+    "cold": 10.93,
+    "warm": 10.53
+   },
+   "aggregate_tps": {
+    "without": 1391.3,
+    "cold": 1383.8,
+    "warm": 1412.4
+   },
+   "normalized_tps": {
+    "without": 86.956,
+    "cold": 86.487,
+    "warm": 88.275
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.4328,
+      0.4379,
+      0.4396
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 16,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 713.0,
+    "cold": 1000.0,
+    "warm": 79.0
+   },
+   "tpot_ms": {
+    "without": 10.91,
+    "cold": 11.27,
+    "warm": 10.84
+   },
+   "aggregate_tps": {
+    "without": 1244.9,
+    "cold": 1210.3,
+    "warm": 1243.0
+   },
+   "normalized_tps": {
+    "without": 77.806,
+    "cold": 75.644,
+    "warm": 77.688
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.709,
+      0.7119,
+      0.718
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 16,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 2582.0,
+    "cold": 3216.0,
+    "warm": 158.0
+   },
+   "tpot_ms": {
+    "without": 12.02,
+    "cold": 13.51,
+    "warm": 11.8
+   },
+   "aggregate_tps": {
+    "without": 1142.6,
+    "cold": 965.4,
+    "warm": 1296.7
+   },
+   "normalized_tps": {
+    "without": 71.412,
+    "cold": 60.337,
+    "warm": 81.044
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.5944,
+      2.5822,
+      2.5699
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 16,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 5781.0,
+    "cold": 6961.0,
+    "warm": 375.0
+   },
+   "tpot_ms": {
+    "without": 15.02,
+    "cold": 16.08,
+    "warm": 13.8
+   },
+   "aggregate_tps": {
+    "without": 869.3,
+    "cold": 799.0,
+    "warm": 1110.8
+   },
+   "normalized_tps": {
+    "without": 54.331,
+    "cold": 49.938,
+    "warm": 69.425
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      5.7766,
+      5.7612,
+      5.8042
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 32,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 309.0,
+    "cold": 518.0,
+    "warm": 67.0
+   },
+   "tpot_ms": {
+    "without": 12.47,
+    "cold": 12.81,
+    "warm": 12.71
+   },
+   "aggregate_tps": {
+    "without": 2410.1,
+    "cold": 2330.7,
+    "warm": 2342.1
+   },
+   "normalized_tps": {
+    "without": 75.316,
+    "cold": 72.834,
+    "warm": 73.191
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.3155,
+      0.3034,
+      0.3079
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 32,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 1080.0,
+    "cold": 1405.0,
+    "warm": 89.0
+   },
+   "tpot_ms": {
+    "without": 13.18,
+    "cold": 13.71,
+    "warm": 12.88
+   },
+   "aggregate_tps": {
+    "without": 2173.9,
+    "cold": 2097.3,
+    "warm": 2257.5
+   },
+   "normalized_tps": {
+    "without": 67.934,
+    "cold": 65.541,
+    "warm": 70.547
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.0774,
+      1.0903,
+      1.0716
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 32,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 2174.0,
+    "cold": 2684.0,
+    "warm": 128.0
+   },
+   "tpot_ms": {
+    "without": 15.21,
+    "cold": 15.96,
+    "warm": 14.5
+   },
+   "aggregate_tps": {
+    "without": 1863.2,
+    "cold": 1764.9,
+    "warm": 2045.0
+   },
+   "normalized_tps": {
+    "without": 58.225,
+    "cold": 55.153,
+    "warm": 63.906
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.1761,
+      2.1773,
+      2.1677
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 32,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 5429.0,
+    "cold": 6583.0,
+    "warm": 696.0
+   },
+   "tpot_ms": {
+    "without": 17.05,
+    "cold": 18.8,
+    "warm": 15.47
+   },
+   "aggregate_tps": {
+    "without": 1552.4,
+    "cold": 1416.0,
+    "warm": 1961.6
+   },
+   "normalized_tps": {
+    "without": 48.513,
+    "cold": 44.25,
+    "warm": 61.3
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      5.4345,
+      5.4281,
+      5.4255
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-120B",
+   "output": 2048,
+   "np": 32,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 11664.0,
+    "cold": 13898.0,
+    "warm": 1471.0
+   },
+   "tpot_ms": {
+    "without": 23.19,
+    "cold": 26.39,
+    "warm": 20.46
+   },
+   "aggregate_tps": {
+    "without": 1076.2,
+    "cold": 927.2,
+    "warm": 1478.0
+   },
+   "normalized_tps": {
+    "without": 33.631,
+    "cold": 28.975,
+    "warm": 46.188
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      11.634,
+      11.7066,
+      11.6502
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 16,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 2254,
+    "cold": 2728,
+    "warm": 157
+   },
+   "tpot_ms": {
+    "without": 38.74,
+    "cold": 39.06,
+    "warm": 38.02
+   },
+   "aggregate_tps": {
+    "without": 412.96,
+    "cold": 409.6,
+    "warm": 420.8
+   },
+   "normalized_tps": {
+    "without": 25.81,
+    "cold": 25.6,
+    "warm": 26.3
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.2559,
+      2.2545,
+      2.2516
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 16,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 4932,
+    "cold": 3292,
+    "warm": 319
+   },
+   "tpot_ms": {
+    "without": 41.15,
+    "cold": 39.92,
+    "warm": 39.09
+   },
+   "aggregate_tps": {
+    "without": 388.8,
+    "cold": 400.8,
+    "warm": 409.36
+   },
+   "normalized_tps": {
+    "without": 24.3,
+    "cold": 25.05,
+    "warm": 25.585
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      4.9413,
+      4.9308,
+      4.9241
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 16,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 9373,
+    "cold": 10412,
+    "warm": 749
+   },
+   "tpot_ms": {
+    "without": 47.42,
+    "cold": 48.64,
+    "warm": 41.92
+   },
+   "aggregate_tps": {
+    "without": 337.44,
+    "cold": 328.96,
+    "warm": 381.68
+   },
+   "normalized_tps": {
+    "without": 21.09,
+    "cold": 20.56,
+    "warm": 23.855
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      9.372,
+      9.3774,
+      9.3707
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 16,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 18780,
+    "cold": 20777,
+    "warm": 1739
+   },
+   "tpot_ms": {
+    "without": 58.18,
+    "cold": 60.31,
+    "warm": 45.21
+   },
+   "aggregate_tps": {
+    "without": 274.99,
+    "cold": 265.28,
+    "warm": 353.92
+   },
+   "normalized_tps": {
+    "without": 17.187,
+    "cold": 16.58,
+    "warm": 22.12
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      18.7605,
+      18.781,
+      18.7995
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 16,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 37406,
+    "cold": 41238,
+    "warm": 3312
+   },
+   "tpot_ms": {
+    "without": 87.82,
+    "cold": 92.34,
+    "warm": 58.17
+   },
+   "aggregate_tps": {
+    "without": 182.19,
+    "cold": 173.28,
+    "warm": 275.04
+   },
+   "normalized_tps": {
+    "without": 11.387,
+    "cold": 10.83,
+    "warm": 17.19
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      37.3825,
+      37.3949,
+      37.4417
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 32,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 4668,
+    "cold": 5210,
+    "warm": 293
+   },
+   "tpot_ms": {
+    "without": 47.88,
+    "cold": 48.52,
+    "warm": 45.56
+   },
+   "aggregate_tps": {
+    "without": 668.37,
+    "cold": 659.52,
+    "warm": 702.4
+   },
+   "normalized_tps": {
+    "without": 20.887,
+    "cold": 20.61,
+    "warm": 21.95
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      4.6689,
+      4.6672,
+      4.6677
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 32,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 8825,
+    "cold": 5585,
+    "warm": 604
+   },
+   "tpot_ms": {
+    "without": 53.13,
+    "cold": 50.45,
+    "warm": 47.43
+   },
+   "aggregate_tps": {
+    "without": 602.35,
+    "cold": 634.24,
+    "warm": 674.72
+   },
+   "normalized_tps": {
+    "without": 18.823,
+    "cold": 19.82,
+    "warm": 21.085
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      8.8307,
+      8.8097,
+      8.8359
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 32,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 17331,
+    "cold": 19235,
+    "warm": 1386
+   },
+   "tpot_ms": {
+    "without": 65.09,
+    "cold": 67.34,
+    "warm": 51.92
+   },
+   "aggregate_tps": {
+    "without": 491.63,
+    "cold": 475.2,
+    "warm": 616.32
+   },
+   "normalized_tps": {
+    "without": 15.363,
+    "cold": 14.85,
+    "warm": 19.26
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      17.3224,
+      17.3334,
+      17.3379
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 32,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 35064,
+    "cold": 39011,
+    "warm": 3622
+   },
+   "tpot_ms": {
+    "without": 89.47,
+    "cold": 94.16,
+    "warm": 60.15
+   },
+   "aggregate_tps": {
+    "without": 357.65,
+    "cold": 339.84,
+    "warm": 532.0
+   },
+   "normalized_tps": {
+    "without": 11.177,
+    "cold": 10.62,
+    "warm": 16.625
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      35.0543,
+      35.0881,
+      35.0486
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 32,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 73009,
+    "cold": 79655,
+    "warm": 7632
+   },
+   "tpot_ms": {
+    "without": 332.23,
+    "cold": 150.38,
+    "warm": 79.71
+   },
+   "aggregate_tps": {
+    "without": 96.32,
+    "cold": 212.8,
+    "warm": 401.44
+   },
+   "normalized_tps": {
+    "without": 3.01,
+    "cold": 6.65,
+    "warm": 12.545
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      73.1019,
+      72.9879,
+      72.9361
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 16,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 2554,
+    "cold": 2938,
+    "warm": 153
+   },
+   "tpot_ms": {
+    "without": 38.43,
+    "cold": 38.93,
+    "warm": 38.28
+   },
+   "aggregate_tps": {
+    "without": 416.32,
+    "cold": 411.04,
+    "warm": 418.0
+   },
+   "normalized_tps": {
+    "without": 26.02,
+    "cold": 25.69,
+    "warm": 26.125
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.5281,
+      2.5278,
+      2.6053
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 16,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 4857,
+    "cold": 5392,
+    "warm": 303
+   },
+   "tpot_ms": {
+    "without": 42.24,
+    "cold": 42.72,
+    "warm": 41.39
+   },
+   "aggregate_tps": {
+    "without": 378.83,
+    "cold": 374.56,
+    "warm": 386.56
+   },
+   "normalized_tps": {
+    "without": 23.677,
+    "cold": 23.41,
+    "warm": 24.16
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      4.8534,
+      4.8568,
+      4.8605
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 16,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 8995,
+    "cold": 10034,
+    "warm": 433
+   },
+   "tpot_ms": {
+    "without": 44.22,
+    "cold": 45.02,
+    "warm": 41.91
+   },
+   "aggregate_tps": {
+    "without": 361.81,
+    "cold": 355.36,
+    "warm": 381.76
+   },
+   "normalized_tps": {
+    "without": 22.613,
+    "cold": 22.21,
+    "warm": 23.86
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      9.0083,
+      8.9814,
+      8.9951
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 16,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 18667,
+    "cold": 20750,
+    "warm": 1612
+   },
+   "tpot_ms": {
+    "without": 52.47,
+    "cold": 53.94,
+    "warm": 46.02
+   },
+   "aggregate_tps": {
+    "without": 304.96,
+    "cold": 296.64,
+    "warm": 347.68
+   },
+   "normalized_tps": {
+    "without": 19.06,
+    "cold": 18.54,
+    "warm": 21.73
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      18.6307,
+      18.6739,
+      18.697
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 16,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 37429,
+    "cold": 41162,
+    "warm": 3276
+   },
+   "tpot_ms": {
+    "without": 67.83,
+    "cold": 70.52,
+    "warm": 54.64
+   },
+   "aggregate_tps": {
+    "without": 235.89,
+    "cold": 226.88,
+    "warm": 292.8
+   },
+   "normalized_tps": {
+    "without": 14.743,
+    "cold": 14.18,
+    "warm": 18.3
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      37.4368,
+      37.4233,
+      37.4267
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 32,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 4604,
+    "cold": 5157,
+    "warm": 274
+   },
+   "tpot_ms": {
+    "without": 47.36,
+    "cold": 47.85,
+    "warm": 46.36
+   },
+   "aggregate_tps": {
+    "without": 675.63,
+    "cold": 668.8,
+    "warm": 680.24
+   },
+   "normalized_tps": {
+    "without": 21.113,
+    "cold": 20.9,
+    "warm": 21.258
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      4.6031,
+      4.6047,
+      4.6045
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 32,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 8904,
+    "cold": 9901,
+    "warm": 732
+   },
+   "tpot_ms": {
+    "without": 51.03,
+    "cold": 51.87,
+    "warm": 48.01
+   },
+   "aggregate_tps": {
+    "without": 627.09,
+    "cold": 616.96,
+    "warm": 666.56
+   },
+   "normalized_tps": {
+    "without": 19.597,
+    "cold": 19.28,
+    "warm": 20.83
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      8.902,
+      8.9057,
+      8.9031
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 32,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 17238,
+    "cold": 19124,
+    "warm": 1259
+   },
+   "tpot_ms": {
+    "without": 58.67,
+    "cold": 60.28,
+    "warm": 52.49
+   },
+   "aggregate_tps": {
+    "without": 545.39,
+    "cold": 530.88,
+    "warm": 609.6
+   },
+   "normalized_tps": {
+    "without": 17.043,
+    "cold": 16.59,
+    "warm": 19.05
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      17.2419,
+      17.2324,
+      17.241
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 32,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 35305,
+    "cold": 38960,
+    "warm": 3511
+   },
+   "tpot_ms": {
+    "without": 75.0,
+    "cold": 77.82,
+    "warm": 60.75
+   },
+   "aggregate_tps": {
+    "without": 426.67,
+    "cold": 411.2,
+    "warm": 526.72
+   },
+   "normalized_tps": {
+    "without": 13.333,
+    "cold": 12.85,
+    "warm": 16.46
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      35.3192,
+      35.2918,
+      35.3026
+     ]
+    }
+   }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 32,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 72699,
+    "cold": 79712,
+    "warm": 6935
+   },
+   "tpot_ms": {
+    "without": 491.8,
+    "cold": 119.33,
+    "warm": 82.92
+   },
+   "aggregate_tps": {
+    "without": 65.07,
+    "cold": 268.16,
+    "warm": 385.92
+   },
+   "normalized_tps": {
+    "without": 2.033,
+    "cold": 8.38,
+    "warm": 12.06
+   },
+   "status": "PASS",
+   "source": "pdf_table",
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      72.8681,
+      72.5343,
+      72.6941
+     ]
+    }
+   }
+  }
+ ],
+ "not_run": [
+  {
+   "model": "Llama-3.3-70B",
+   "reason": "報告只涵蓋 NP16 / NP32（NP1–8 無資料）"
+  }
+ ],
+ "config_by_model": {
+  "GPT-OSS-120B": {
+   "repo": null,
+   "format": null,
+   "backend": "vLLM（Docker aidaptiv 映像）",
+   "tp": null,
+   "max_context": null,
+   "batch": null,
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "Without / Cold / Warm aiDAPTIV",
+   "run_id": "vis 2026-08-19 ~ 08-20",
+   "date": "2026-08-25"
+  },
+  "Llama-3.3-70B": {
+   "repo": null,
+   "format": null,
+   "backend": "vLLM（Docker aidaptiv 映像）",
+   "tp": null,
+   "max_context": null,
+   "batch": null,
+   "max_seqs": null,
+   "mem_fraction": null,
+   "cache": "Without / Cold / Warm aiDAPTIV",
+   "run_id": "vis 2026-08-12 ~ 08-20",
+   "date": "2026-08-25"
+  }
+ },
+ "source_file": "GPT-OSS-120B_VIS_Benchmark_Cold_Warm_NP1to32_2026-08-25_v9.pdf; Llama-3.3-70B_VIS_Benchmark_Cold_Warm_NP16_NP32_2026-08-25_v6.pdf",
+ "provenance": {
+  "vis_without_runs_sha256": {
+   "gpt-oss-120b_without_vis_20260819_143138.txt": "baac21379389d45fd5c1dedcbcac81ed12310e779c0f748221ab3f4c97a3d2e5",
+   "llama-3.3-70b_without_vis_20260820_114117.txt": "b6792a11c4cfce5bf644020b4a284a38b0b221b8ab28639cfeb3b7389004a8e3"
+  }
+ }
+}

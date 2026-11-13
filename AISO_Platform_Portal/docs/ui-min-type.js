@@ -18,7 +18,7 @@
   function schedule() { if (queued) return; queued = true; setTimeout(() => { queued = false; lift(document.body); }, 120); }
   function start() {
     lift(document.body);
-    new MutationObserver(m => { if (m.some(x => x.addedNodes.length || x.type === "characterData")) schedule(); }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    new MutationObserver(m => { if (m.some(x => x.addedNodes.length || x.type === "characterData" || (x.type === "attributes" && x.attributeName === "hidden"))) schedule(); }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden"] });   // also when a hidden panel is opened
     window.addEventListener("resize", schedule);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

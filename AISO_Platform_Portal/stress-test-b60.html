@@ -17,11 +17,12 @@
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="tesla.css?v=28">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
@@ -38,7 +39,7 @@
     <section class="report-section gd" id="secDash" aria-label="Dashboard"></section>
 
     <section class="report-section" id="secFwCmp">
-      <header><h2>同參數框架比對<span class="zh">不同推論框架 · 同機器、同模型、同 NP / Input · TTFT · TPOT · TPS 四項指標</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
+      <header><h2>Framework comparison<span class="zh">同參數框架比對</span></h2><div class="st-tabs" id="stTabs" role="tablist" aria-label="NP"></div></header>
       <p class="v2-fine" id="stFwNote"></p>
       <div id="stFwCmp"></div>
       <p class="v2-fn">比較的是「不同推論框架」，不是模型互相比較；每個區塊只放同一個模型，並隨上方 NP 分頁切換。只放該框架已有成績的情境，沒有成績的框架不畫、不補值。圖上綠色 + ／紅色 − 為相對基準框架的差異，綠色表示較佳、紅色表示較差；TPS (Normalized) = Aggregate ÷ NP。已相同：B60 硬體、Context 18,432、Max 並發 10、Cache 關閉、Input／Output／NP／Repeat。不同：vLLM／SGLang 為 safetensors（Gemma31 W4A16、Laguna FP8），llama.cpp 為 GGUF（Q4_0 / Q4_K_M）且為 layer split 而非 TP 2，量化與切分方式不同，差異不能全歸因於框架；runtime 映像／build 尚未核實。</p>
@@ -52,22 +53,22 @@
     </section>
 
     <section class="report-section" id="secRetry">
-      <header><h2>失敗與重跑紀錄<span class="zh">Original Full vs Retry</span></h2></header>
+      <header><h2>Original Full vs Retry<span class="zh">失敗與重跑紀錄</span></h2></header>
       <p class="v2-fine" id="stRetry"></p>
     </section>
 
     <section class="report-section" id="secTrouble" data-machine="Intel B60"></section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh" id="stDataTitle"></span></h2><a class="v2-dl" id="stDl" href="data/benchmark-b60/AISO_B60_SGLang_V4_20261105.json" download>JSON ↓</a><a class="v2-dl" href="data/benchmark-troubleshooting/AISO_Troubleshooting_20261104.json" download>Troubleshooting JSON ↓</a></header>
+      <header><h2>Data<span class="zh" id="stDataTitle"></span></h2><a class="v2-dl" id="stDl" href="data/benchmark-b60/AISO_B60_SGLang_V4_20261105.json" download>JSON ↓</a><a class="v2-dl" href="data/benchmark-troubleshooting/AISO_Troubleshooting_20261104.json" download>Download .JSON · Troubleshooting<small class="zhs">下載</small> ↓</a></header>
       <p class="v2-fine" id="stErr"></p>
     </section>
 
       <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
 
-  </main><script src="bench-viz.js?v=10"></script><script src="bench-dash.js?v=2"></script><script src="troubleshooting.js?v=3"></script><script src="stress-test-b60.js?v=15"></script>
+  </main><script src="bench-viz.js?v=19"></script><script src="bench-dash.js?v=3t"></script><script src="troubleshooting.js?v=3tx"></script><script src="stress-test-b60.js?v=15t"></script>
 <script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"b60"})</script>
 <script src="debug-notes.js?v=3"></script>
-<script src="ui-min-type.js?v=1" defer></script>
+<script src="ui-min-type.js?v=2" defer></script>
 </body>
 </html>

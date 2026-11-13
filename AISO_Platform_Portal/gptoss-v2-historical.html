@@ -15,11 +15,12 @@
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=7">
+  <link rel="stylesheet" href="tesla.css?v=18">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
@@ -63,13 +64,13 @@
       <div class="v2-evid" id="evid"></div>
       <div class="v2-wcards" id="wCards"></div>
       <p class="v2-hint">← 左右滑動 →</p><div id="wCharts"></div>
-      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>CSV ↓</a></div>
+      <div class="v2-filters"><div class="v2-seg" id="wMetric" role="group" aria-label="Metric"></div><a class="v2-dl" href="data/benchmark-v2/AISO_FvR_repeated_vs_own_first_24.csv" download>Download .CSV<small class="zhs">下載</small> ↓</a></div>
       <p class="v2-hint">← 左右滑動 →</p>
       <div class="table-wrap"><table class="v2-table v2-sc" id="tWithin"></table></div>
     </section>
 
     <section class="report-section">
-      <header><div><p class="section-label">RAW RUNS</p><h2>72 Raw Runs<span class="zh">原始明細 R1／R2／R3</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_Benchmark_Valid72.csv" download>CSV ↓</a></header>
+      <header><div><p class="section-label">RAW RUNS</p><h2>72 Raw Runs<span class="zh">原始明細 R1／R2／R3</span></h2></div><a class="v2-dl" href="data/benchmark-v2/AISO_Benchmark_Valid72.csv" download>Download .CSV<small class="zhs">下載</small> ↓</a></header>
       <div class="v2-filters v2-rawf"><label>Model<select id="rModel"></select></label><label>Mode<select id="rMode"></select></label><label>C<select id="rC"></select></label><label>Input<select id="rInput"></select></label><label>Run<select id="rRun"></select></label></div>
       <p class="v2-count" id="rCount"></p>
       <p class="v2-hint">← 左右滑動 · Swipe →</p><div class="table-wrap v2-rawwrap"><table class="v2-table" id="tRaw"></table></div>
@@ -79,5 +80,5 @@
       <details class="v2-details" id="v2Method"><summary><span>Notes &amp; Downloads<span class="zh-i">說明與下載</span></span></summary><div id="v2MethodBody"></div></details>
     </section>
   </main><script src="gptoss-v2-historical.js?v=1"></script>
-<script src="ui-min-type.js?v=1" defer></script>
+<script src="ui-min-type.js?v=2" defer></script>
 </body></html>

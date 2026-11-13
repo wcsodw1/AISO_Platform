@@ -1,0 +1,172 @@
+/* Tesla-style refinement layer (David, 2026-11-11: "整個網頁都參考Tesla微調 UI"). Loaded LAST on every page; only fine-tunes, never changes content.
+   Principles: flat dark surfaces, no glow / spotlight / drop shadows, thin 1px lines, equal-size cards, calm type, one filled primary action, generous space. */
+:root{--t-bg:#0b0c0f;--t-panel:#13151a;--t-line:rgba(244,239,228,.12);--t-line2:rgba(244,239,228,.26);--t-r:14px}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.cursor-glow{display:none!important}
+/* no spotlight / gradient fills / shadows on panels */
+.report-section,.job-section,.bm-side,.bm-workspace,.machine-card,.connection-card,.issue-card,.v2-pane,.v2-card,.st-tier,.picker-console,.picker-column,.gap-box,.pt-same,.pt-diffbox,.mw,.bh-grp,.v2-verdict{background-image:none!important;box-shadow:none!important}
+.report-section:hover,.job-section:hover,.bm-side:hover,.bm-workspace:hover,.machine-card:hover,.connection-card:hover,.issue-card:hover,.chart-grid article:hover,.model-facts div:hover{background-image:none!important}
+.report-section,.job-section,.st-tier,.v2-pane,.gap-box,.pt-same,.pt-diffbox{border:1px solid var(--t-line)!important;border-radius:var(--t-r)!important}
+.v2 .report-section,.v2 .st-tier,.v2 .v2-pane{background:var(--t-panel)!important}
+.mw{background:var(--t-panel)!important;border-color:var(--t-line)!important}
+/* header: quiet, solid, thin line */
+.site-header{background:rgba(11,12,15,.88)!important;backdrop-filter:blur(14px);border-bottom:1px solid var(--t-line)!important;box-shadow:none!important}
+.site-nav>a,.site-nav .nav-menu>a,.site-nav button{font-weight:500;letter-spacing:.01em}
+/* type: calmer hierarchy */
+h1,h2,h3{letter-spacing:-.01em}
+.eyebrow,.section-label{letter-spacing:.12em!important;font-weight:600}
+.v2-hero{padding-top:8px}
+/* buttons: one filled primary, outlined secondary, same radius everywhere */
+.button,.pg-back,.v2-dl,.bh-menu button,.mw-back{border-radius:10px}
+.button.primary,.mw-next,.sp-run,.bh-enter{background:var(--gold,#d8c779)!important;color:#14161b!important;border:0!important;box-shadow:none!important;font-weight:700}
+.button:not(.primary),.v2-dl{border:1px solid var(--t-line2);background:transparent}
+.pg-back{border:1px solid var(--t-line2);background:transparent}
+/* selections: thin gold outline, never a glow */
+.mw-opt.sel,.sp-vendor.on,.bh-menu button.on,.cmp-tabs button.on{box-shadow:none!important;outline:1px solid var(--gold);outline-offset:-1px}
+.mw-opt,.mw-opt:hover{transition:border-color .15s,background .15s}
+/* equal-size option cards inside the wizard: title on top, status caption below, both left aligned */
+.mw-opt{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;min-height:80px;padding:12px 24px}
+.mw-l,.mw-l b{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.mw-r{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;justify-content:flex-start;text-align:left}
+.mw-q{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+/* tables and chips: hairlines only */
+.v2-table th,.v2-table td{border-color:var(--t-line)!important}
+.mw-chip,.cmp-badge,.sp-on,.sp-off{box-shadow:none!important}
+@media print{.mw,.report-section{border-color:#ccc!important}}
+
+/* one panel level only: no box inside a box (Key parameters sit directly on the panel) */
+.v2-setup .v2-pane,.v2-setup .pt-same,.v2-setup .pt-only{border:0!important;background:transparent!important;box-shadow:none!important;padding-left:0;padding-right:0}
+.v2-setup{border:1px solid var(--t-line);border-radius:var(--t-r);background:var(--t-panel);padding:24px 28px}
+.v2-setup .v2-pane h2,.v2-setup .pt-h{color:var(--ivory)}
+
+/* Notes bar: compact when closed, clear that it can be clicked */
+.hv-fold.hv-closed{padding-top:16px!important;padding-bottom:16px!important}
+.hv-fold.hv-closed>header{margin:0!important;min-height:0!important;padding-top:0!important;padding-bottom:0!important}
+.hv-fold>header{cursor:pointer}.hv-fold>header:hover h2{color:var(--gold)}
+.hv-fold>header .hv-hint{position:absolute;right:48px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);pointer-events:none}
+.hv-fold.hv-pinned>header .hv-hint,.hv-fold:not(.hv-closed)>header .hv-hint{display:none}
+.hv-fold.hv-closed>header h2{margin:0}
+.hv-fold.hv-closed>header .zh{margin-left:10px}
+/* Chinese label sits right beside the English heading (not under it) */
+.v2 header h2 .zh{display:inline!important;margin-left:12px;font-size:18px;font-weight:500}
+.v2 header h2 .zh{white-space:nowrap}.v2 header h2{white-space:nowrap}
+
+/* Data menu: sits at the right end of the pair row, slides out on hover */
+.pair-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.pair-row .pair-nav{margin:0}
+.data-menu{position:relative}
+.dm-btn{display:inline-flex;align-items:baseline;gap:10px;padding:10px 20px;border:1px solid var(--t-line2);border-radius:999px;background:transparent;color:var(--ivory);font:inherit;font-size:19px;font-weight:700;cursor:pointer}
+.dm-btn .zhs{font-size:16px}.dm-caret{font-size:16px;color:var(--gold)}.data-menu:hover .dm-btn,.data-menu.open .dm-btn,.dm-btn:focus-visible{border-color:var(--gold);background:rgba(200,184,117,.12)}
+.dm-fly{position:absolute;right:0;top:100%;z-index:60;min-width:340px;padding:10px 12px 12px;margin-top:0;border:1px solid var(--t-line2);border-radius:14px;background:#14161b;display:none}
+.dm-fly::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}   /* hover bridge so the pointer can travel from the button */
+.data-menu:hover .dm-fly,.data-menu:focus-within .dm-fly,.data-menu.open .dm-fly{display:block}
+.dm-h{margin:6px 8px 8px;font-size:17px;color:var(--muted)}.dm-fly a{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 14px;border-radius:10px;color:var(--ivory);text-decoration:none;font-size:19px;font-weight:600}
+.dm-fly a:hover,.dm-fly a:focus-visible{background:rgba(200,184,117,.14)}.dm-fly a i{font-style:normal;color:var(--gold)}.dm-foot{margin:8px 8px 2px;font-size:16px}
+@media(max-width:700px){.dm-fly{left:0;right:auto;min-width:0;width:100%}}
+
+/* Comparison Detail: configurator cards (equal size, one question per block, clear spacing) */
+.st #secPick .gap-box{border:0!important;padding:0;background:none;margin:0}
+.st #secPick .gap-sub{margin:30px 0 14px;font-size:22px}
+.st #secPick #stGap .gap-sub{margin-top:8px}
+.st #secPick .gap-sel{padding-top:26px;border-top:1px solid var(--t-line,rgba(244,239,228,.12))}
+.st #secPick .gap-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.st #secPick .gap-chip{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:92px;padding:14px 20px;border-radius:12px;text-align:left;background:transparent;border:1px solid rgba(244,239,228,.28);font-size:17px}
+.st #secPick .gap-chip b{font-size:22px;line-height:1.2}.st #secPick .gap-chip span{color:var(--ivory);font-size:18px}.st #secPick .gap-chip small{color:var(--muted);font-size:16px}
+.st #secPick .gap-chip:hover{border-color:rgba(200,184,117,.8);background:rgba(200,184,117,.06)}
+.st #secPick .cmp-pick{display:block;margin:26px 0 0}
+.st #secPick .cmp-pick>span{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;color:var(--ivory);font-size:20px;font-weight:700}
+.st #secPick .cmp-pick>span em{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);font-size:16px;font-style:normal}
+.st #secPick .cmp-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:0}
+.st #secPick #cmpNp{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.st #secPick .cmp-tabs button{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:64px;padding:10px 20px;border-radius:12px;border:1px solid rgba(244,239,228,.28);background:transparent;color:var(--ivory);font-size:18px;font-weight:700;text-align:left;opacity:1}
+.st #secPick .cmp-tabs button:not(.has){opacity:.35}.st #secPick .cmp-tabs button:disabled{text-decoration:none}
+.st #secPick .cmp-tabs button.has:hover{border-color:rgba(200,184,117,.8)}
+.st #secPick .cmp-tabs button.on{background:rgba(200,184,117,.12);color:var(--ivory);border-color:var(--gold)}
+.st #secPick .cmp-other{margin:0;border-style:dashed}
+.st #secPick .v2-fn{text-align:left;margin-top:22px}
+.st #secPick .gap-fw{margin:0 0 22px}.st #secPick .gap-fw h4{margin:0 0 12px;font-size:22px;color:var(--gold)}.st #secPick .gap-fw h4 small{margin-left:10px;font-size:17px;color:var(--muted);font-weight:400}
+.st #secPick .gap-chip{min-height:76px;justify-content:center}.st #secPick .gap-chip span{font-size:20px;font-weight:700}
+.st #secPick .gap-fwsel{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:0 0 16px}
+.st #secPick .gap-fwb{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:68px;padding:10px 20px;border-radius:12px;border:1px solid rgba(244,239,228,.28);background:transparent;color:var(--ivory);font:inherit;text-align:left;cursor:pointer}
+.st #secPick .gap-fwb b{font-size:22px}.st #secPick .gap-fwb small{font-size:16px;color:var(--muted)}
+.st #secPick .gap-fwb:hover{border-color:rgba(200,184,117,.8)}.st #secPick .gap-fwb.on{border-color:var(--gold);background:rgba(200,184,117,.12)}
+.st #secPick .cmp-tabs button small{font-size:16px;font-weight:400;color:var(--muted)}
+.st #secPick #cmpFw{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.st #secPick .cmp-pick:first-of-type{margin-top:8px}
+.gpu-pick{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px;margin-top:16px}.gpu-pick-l{align-self:center;color:var(--muted,#aab);font-size:16px}
+.gpu-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:110px;padding:10px 18px;border:1px solid rgba(244,239,228,.28);border-radius:12px;background:transparent;color:var(--ivory,#f4efe4);font:inherit;text-align:left;cursor:pointer}
+.gpu-chip b{font-size:26px;line-height:1.1}.gpu-chip small{font-size:16px;color:var(--muted,#aab)}.gpu-chip:hover{border-color:rgba(200,184,117,.8);background:rgba(200,184,117,.08)}
+.st #secPick .cmp-two{border-style:dashed!important;border-color:rgba(224,160,64,.6)!important}.st #secPick .cmp-two.on{background:rgba(224,160,64,.12)!important}.st #secPick .cmp-two>span{display:flex;align-items:baseline;gap:8px;font-size:18px;font-weight:700}
+.st #secPick a.cmp-two{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:64px;padding:10px 20px;border-radius:12px;border:1px dashed rgba(224,160,64,.6);color:var(--ivory);text-decoration:none}
+.st #secPick a.cmp-two>span{font-size:20px;font-weight:700}.st #secPick a.cmp-two small{font-size:16px;font-weight:400;color:var(--muted)}.st #secPick a.cmp-two:hover{border-color:var(--gold);background:rgba(224,160,64,.08)}
+.st #secPick #cmpMode{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}.st #secPick #cmpMode button>span{display:flex;align-items:baseline;gap:8px}
+.st #secPick .cmp-pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:14px 0 0}.st #secPick .cmp-pairs:empty{display:none}
+.st #secPick .cmp-pick[hidden]{display:none}
+.bv-tps{margin:26px 0 4px;padding-top:22px;border-top:1px solid rgba(244,239,228,.1)}.bv-tps .bv-h{margin:0 0 8px}.bv-tps .bv-sum{margin:0}
+.mw-r{white-space:normal;overflow-wrap:anywhere}
+.st .pair-nav{flex-direction:column;align-items:stretch;gap:12px}.st .pair-tier{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.st .pair-tl{min-width:170px;color:var(--muted,#9aa6b8);font-size:18px;font-weight:700}.st .pair-tl .zhs{margin-left:8px;font-weight:500}
+.bv-warn{margin:10px 2px 0;padding:10px 14px;border:1px solid rgba(224,160,64,.55);border-radius:10px;background:rgba(224,160,64,.08);color:#e0a040;font-size:16px;line-height:1.6}.bv-warn .zhs{color:#e0a040;opacity:.85}
+.st .rp-shared{margin:0 0 14px}.st .rp-shared .rp-legend{margin:0 0 4px}.st .rp-shared .rp-cap{margin:0;font-size:16px}.st .rp-shared .rp-cap small{margin-left:10px;color:#a4a9b4;font-size:15px}
+.st .rp-card>.rp-legend{display:none}
+/* Tesla-style controls: flat rounded rectangles (radius 12) with a gold outline when selected — no pills, no filled gold */
+.st .pair-nav{gap:14px}.st .pair-tier{display:grid;grid-template-columns:minmax(170px,auto) repeat(auto-fill,minmax(220px,1fr));gap:12px;align-items:stretch}
+.st .pair-tl{align-self:center}
+.st .pair-btn,.st .pair-btn.all{display:flex;align-items:center;min-height:60px;padding:10px 20px;border:1px solid rgba(244,239,228,.28)!important;border-radius:12px!important;background:transparent!important;color:var(--ivory)!important;font-size:18px;font-weight:700;border-style:solid!important}
+.st .pair-btn:hover{border-color:rgba(200,184,117,.8)!important;background:rgba(200,184,117,.06)!important}
+.st .pair-btn.on,.st .pair-btn.all.on{border-color:var(--gold)!important;background:rgba(200,184,117,.12)!important;color:var(--ivory)!important}
+.st .st-tabs:not(.cmp-tabs) button,.st .bv-more,.st .bv-mode button{border-radius:12px!important;background:transparent;color:var(--ivory);border:1px solid rgba(244,239,228,.28);min-height:48px}
+.st .st-tabs:not(.cmp-tabs) button.on,.st .st-tabs:not(.cmp-tabs) button[aria-selected=true],.st .bv-mode button.on{background:rgba(200,184,117,.12)!important;border-color:var(--gold)!important;color:var(--ivory)!important}
+.st .st-tabs:not(.cmp-tabs) button:hover,.st .bv-more:hover{border-color:rgba(200,184,117,.8)}
+.st .pair-tier{grid-template-columns:190px repeat(3,minmax(0,260px))}
+@media(max-width:900px){.st .pair-tier{grid-template-columns:1fr}.st .pair-tl{min-width:0}}
+/* clean hero of the compare / pair pages */
+.st .v2-hero h1{margin:6px 0 0}.st .v2-hero h1 .zhs{display:block;margin:8px 0 0;font-size:20px;letter-spacing:.02em;font-weight:500}
+.st .pair-row{margin-top:30px}.st .pair-nav{margin:0}
+/* section titles of the benchmark pages: gold English title, muted Chinese beside it (same on every page) */
+main.v2 .report-section>header h2,main.v2 .v2-pane>h2,main.v2 .v2-pane h2,main.v2 .job-section>header h2,main.v2 .bv-tps .bv-h{color:var(--gold,#d8c779)}
+main.v2 .report-section>header h2 .zh,main.v2 .report-section>header h2 span,main.v2 .v2-pane h2 span,main.v2 .v2-pane h2 small,main.v2 .bv-tps .bv-h .zh-i{color:var(--muted,#9aa6b8)}
+/* same accent title on the remaining benchmark pages (Run page, LMCache, aiDAPTIV) and the parameter sub-titles */
+main h2:not(.mw-big):not(.mw-q),main h3.pt-h{color:var(--gold,#d8c779)}
+main h2:not(.mw-big):not(.mw-q) .zh,main h2:not(.mw-big):not(.mw-q) .zhs,main h2:not(.mw-big):not(.mw-q) small,main h3.pt-h .zhs,main h3.pt-h small{color:var(--muted,#9aa6b8)}
+.v2-setup .v2-pane h2,.v2-setup .pt-h{color:var(--gold,#d8c779)}
+.mw-back-s{align-self:flex-start;margin-top:6px;font-size:22px;color:var(--muted);background:none;border:0;cursor:pointer;padding:4px 2px}.mw-back-s small{font-size:16px;margin-left:6px;color:var(--muted)}.mw-back-s:hover{color:var(--gold)}
+/* two framed groups: Latency (TTFT + TPOT) and TPS (Normalized + Aggregate) */
+.bv-group{margin:22px 0;padding:22px 26px 6px;border:1px solid rgba(244,239,228,.16);border-radius:16px}
+.bv-group>.bv-tps{margin:0 0 6px;padding:0;border:0}.bv-group .bv-block:first-of-type{margin-top:14px}
+.bv-group .bv-h{margin-bottom:8px}.bv-note{margin-left:14px;color:#e0a040;font-size:16px;white-space:nowrap}.bv-note .zhs{color:#e0a040;opacity:.85}
+/* curtain: an opened fold panel reveals its content from left to right */
+@keyframes hvCurtain{from{clip-path:inset(0 100% 0 0);opacity:.15}to{clip-path:inset(0 0 0 0);opacity:1}}
+.hv-fold:not(.hv-closed)>:not(header):not(.hv-head){animation:hvCurtain .6s cubic-bezier(.22,.8,.3,1) both}
+@media(prefers-reduced-motion:reduce){.hv-fold:not(.hv-closed)>:not(header):not(.hv-head){animation:none}}
+/* workflow status page */
+.wf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:22px;margin-top:8px}.wf-actions{display:flex;align-items:center;gap:16px;margin-top:14px}
+.wf-panel{margin:0}.wf-item{margin:0 0 16px;padding:18px 20px;border:1px solid rgba(244,239,228,.16);border-radius:14px}
+.wf-item>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.wf-item h3{margin:0;font-size:22px;color:var(--ivory)}
+.wf-where{margin:0 0 12px;font-size:17px;line-height:1.6;color:var(--ivory)}
+.wf-chip{padding:4px 14px;border:1px solid currentColor;border-radius:10px;font-size:17px;font-weight:700;white-space:nowrap}
+.wf-chip.ok,.wf-steps li.ok i{color:#6fdc9a}.wf-chip.warn,.wf-steps li.warn i{color:#e0a040}.wf-chip.fail,.wf-steps li.fail i{color:#ed786f}.wf-chip.blocked,.wf-steps li.blocked i,.wf-chip.todo,.wf-steps li.todo i{color:#9197a3}
+.wf-item.fail{border-color:rgba(237,120,111,.5)}.wf-item.warn{border-color:rgba(224,160,64,.5)}.wf-item.ok{border-color:rgba(111,220,154,.4)}
+.wf-steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}.wf-steps li{display:grid;grid-template-columns:22px minmax(150px,auto) 1fr;gap:10px;align-items:baseline;font-size:16px}.wf-steps li i{font-style:normal;font-weight:800}.wf-steps li span{color:var(--muted)}
+.bh-wf{display:inline-block;margin:14px 0 0;padding:12px 20px;border:1px solid rgba(244,239,228,.28);border-radius:12px;color:var(--ivory);text-decoration:none;font-size:19px;font-weight:700}.bh-wf small{margin-left:8px;font-weight:400;color:var(--muted)}.bh-wf:hover{border-color:var(--gold)}.bh-wf[hidden]{display:none}
+
+/* test-password dialog (run-gate.js) - same rules as gptoss-v2.css, so every page that asks for the password is styled */
+.rg-back{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(5,7,12,.72);backdrop-filter:blur(6px)}
+.rg-box{width:min(440px,92vw);padding:28px;border-radius:18px;background:#171b25;border:1px solid rgba(216,199,121,.5);color:#f3efe4;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.rg-box h3{margin:0 0 10px;font-size:26px}.rg-box h3 small{font-size:18px;margin-left:10px;opacity:.7}.rg-box p{margin:0 0 14px;font-size:17px;line-height:1.5}.rg-box p span{font-size:15px;opacity:.7}
+.rg-box input{width:100%;box-sizing:border-box;padding:13px 14px;font-size:18px;border-radius:10px;border:1px solid rgba(216,199,121,.6);background:#0d1018;color:#f3efe4}
+.rg-err{min-height:22px;margin:10px 0 0!important;color:#ff8a7a;font-size:16px!important}.rg-row{display:flex;justify-content:flex-end;gap:12px;margin-top:8px}
+.rg-row button{font:inherit;font-size:17px;padding:10px 20px;border-radius:999px;cursor:pointer;border:1px solid rgba(216,199,121,.6);background:transparent;color:#f3efe4}.rg-row .rg-go{background:#d8c779;color:#15171d;font-weight:700}.rg-row button:disabled{opacity:.5}
+/* TRY & Benchmark IT: hover = text glows and the button grows */
+.bh-enter{transition:transform .25s ease,box-shadow .25s ease,filter .25s ease}
+.bh-enter b,.bh-enter .bh-arrow{transition:text-shadow .25s ease,transform .25s ease}
+.bh-enter:hover,.bh-enter:focus-visible{transform:scale(1.08);filter:brightness(1.08);box-shadow:0 0 28px rgba(216,199,121,.65),0 0 60px rgba(216,199,121,.35)!important}
+.bh-enter:hover b,.bh-enter:focus-visible b{text-shadow:0 0 10px rgba(255,255,255,.9),0 0 22px rgba(255,240,180,.8)}
+.bh-enter:hover .bh-arrow,.bh-enter:focus-visible .bh-arrow{transform:translateX(5px);text-shadow:0 0 10px rgba(255,255,255,.9)}
+@media (prefers-reduced-motion:reduce){.bh-enter:hover,.bh-enter:focus-visible{transform:none}}
+/* home section heroes (Applications / Products / Consulting): big title = ivory, the small note under it = gold (David 2026-11-13) */
+div:has(>.home-title-zh)>h2{color:var(--fashion-ivory,#f3efe5)!important}
+.home-title-zh,.home-title-zh .copy-zh{color:var(--fashion-sand,#c8b875)!important}
+/* home section heroes, kept simple (David 2026-11-13 "不要複雜"): only two layers = big ivory title + one small gold note line (English, Chinese beside it). No eyebrow, no extra tag. */
+.home-section-heading>div:has(>.home-title-zh)>.eyebrow,.home-section-heading>div:has(>.home-title-zh)>h2 .proof-title-tag{display:none!important}
+.home-title-zh{letter-spacing:.01em!important}
+.home-title-zh .copy-zh{display:inline!important;margin:0 0 0 12px!important;letter-spacing:0!important}

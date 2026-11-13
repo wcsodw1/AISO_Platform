@@ -557,6 +557,9 @@
       "positioning": "Professional GPU Workstation",
       "status": "Research Available",
       "summary": "SPARKLE Intel Arc Pro B70（Intel Xe2／Battlemage）AI 工作站 GPU 研究已建立；官方規格與第三方公開 Benchmark 可查閱，AISO 內部正式結果仍待實測。",
+      "image": "assets/products/sparkle-arc-pro-b70-blower.webp",
+      "image_alt": "SPARKLE Intel Arc Pro B70 32GB Blower 官方產品照",
+      "image_note": "SPARKLE 官方 SBP70W-32G Blower 產品素材；AISO 實測機的 Blower／Passive Part Number 仍待確認。",
       "folder": "Workstation-Server/INTEL-ARC-PRO-B70",
       "hardware": {
         "GPU": "Intel Arc Pro B70",
@@ -707,6 +710,27 @@
       },
       "publish": {
         "enabled": true
+      },
+      "family": {
+        "name": "PRO6000",
+        "positioning": "NVIDIA RTX PRO 6000 Blackwell Server · 2 / 4 / 8 GPU",
+        "gpus": [
+          {
+            "n": 2,
+            "id": "pro6000-hpe-2gpu",
+            "zh": "HPE · SOP 文件"
+          },
+          {
+            "n": 4,
+            "id": "pro6000-tpi-8gpu",
+            "zh": "半導體 POC · 8 卡機啟用 4 張 · Benchmark"
+          },
+          {
+            "n": 8,
+            "id": "pro6000-tpi-8gpu",
+            "zh": "TPI · 8 卡規格"
+          }
+        ]
       }
     },
     {
@@ -793,6 +817,9 @@
       },
       "publish": {
         "enabled": true
+      },
+      "family": {
+        "name": "PRO6000"
       }
     },
     {

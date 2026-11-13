@@ -1,6 +1,6 @@
 {
   "version": 15,
-  "updated_at": "2026-11-11T12:14:33+08:00",
+  "updated_at": "2026-11-13T10:29:11+08:00",
   "access_policy": {
     "tiers": [
       {
@@ -533,9 +533,9 @@
       "positioning": "Professional GPU Workstation",
       "status": "Research Available",
       "summary": "SPARKLE Intel Arc Pro B70（Intel Xe2／Battlemage）AI 工作站 GPU 研究已建立；官方規格與第三方公開 Benchmark 可查閱，AISO 內部正式結果仍待實測。",
-      "image": "",
-      "image_alt": "",
-      "image_note": "",
+      "image": "assets/products/sparkle-arc-pro-b70-blower.webp",
+      "image_alt": "SPARKLE Intel Arc Pro B70 32GB Blower 官方產品照",
+      "image_note": "SPARKLE 官方 SBP70W-32G Blower 產品素材；AISO 實測機的 Blower／Passive Part Number 仍待確認。",
       "image_count": "",
       "preview_3d": {},
       "model_3d": "",

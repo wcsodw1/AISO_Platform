@@ -9,15 +9,18 @@ window.MachinePicker = (function () {
   /* online = reachable and can run (David, 2026-11-11: NVIDIA RTX PRO 6000 and AMD AISO1 only; Intel B60 / B70 are returned or about to be shut down: results stay, Run is off) */
   const V = [
     { k: "nvidia", name: "NVIDIA", stack: "CUDA", models: [
-      { id: "pro6000", n: "RTX PRO 6000", t: "s", online: true, spec: "8 × RTX PRO 6000 Blackwell · 96 GB / GPU", fw: "vLLM · llama.cpp", run: "benchmark.html#/pick/nvidia/pro6000-tpi" },
+      { id: "pro6000", n: "RTX PRO 6000", t: "s", online: true, spec: "8 × RTX PRO 6000 Blackwell · 96 GB / GPU", fw: "vLLM · llama.cpp", result: "stress-test-pro6000.html", run: "benchmark.html#/pick/nvidia/pro6000-tpi" },
       { id: "h200", n: "H200", t: "s" }, { id: "b300", n: "B300", t: "s" }] },
     { k: "amd", name: "AMD", stack: "Vulkan · ROCm", models: [
-      { id: "aiso1", n: "AISO1 · AI MAX+ 395", t: "m", online: true, spec: "Ryzen AI Max+ 395 · Radeon iGPU (gfx1151)", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-aiso1.html", run: "benchmark.html#/pick/amd/aiso1-amd" },
+      { id: "aiso1", compare: true, n: "AISO1 · AI MAX+ 395", t: "m", online: true, spec: "Ryzen AI Max+ 395 · Radeon iGPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-aiso1.html", run: "benchmark.html#/pick/amd/aiso1-amd" },
       { id: "rog395", n: "ROG AI MAX 395", t: "c" }, { id: "tuf392", n: "TUF AI MAX 392", t: "c" }, { id: "asrock", n: "ASRock", t: "m" }, { id: "mi350x", n: "Instinct MI350X", t: "s" }] },
     { k: "intel", name: "INTEL", stack: "SYCL · XPU", models: [
-      { id: "b70", n: "Arc Pro B70", t: "m", online: false, note: "Shutting down 即將關閉", spec: "2 × Arc Pro B70 · 32 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b70.html" },
-      { id: "b60", n: "Arc Pro B60", t: "m", online: false, note: "Returned 已歸還", spec: "Arc Pro B60 · 24 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b60.html" },
+      { id: "b70", compare: true, n: "Arc Pro B70", t: "m", online: false, note: "Shutting down 即將關閉", spec: "2 × Arc Pro B70 · 32 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b70.html" },
+      { id: "b60", compare: true, n: "Arc Pro B60", t: "m", online: false, note: "Returned 已歸還", spec: "Arc Pro B60 · 24 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b60.html" },
       { id: "b390", n: "Arc B390", t: "c" }] }];
+  // machines that take part in the cross-machine comparison — read from the list above, so a new machine with compare:true extends this line by itself
+  const SHORT = { aiso1: "AISO1", b70: "B70", b60: "B60" };
+  const compareNames = () => V.flatMap(v => v.models).filter(x => x.compare).map(x => SHORT[x.id] || x.n).join(" · ");
   const known = m => m.online !== undefined || !!m.result;
   const onlineN = v => v.models.filter(m => m.online).length, resultN = v => v.models.filter(m => m.result).length;
 
@@ -43,26 +46,23 @@ window.MachinePicker = (function () {
       if (!st.action) st.action = runOk ? "run" : (resOk ? "result" : null);
       return { title: bi("What would you like to do?", "接下來要做什麼"), body:
         opt("run", `<b>${bi("Run benchmark", "實測")}</b>`, runOk ? bi("Password asked first", "先輸入測試密碼") : bi("Offline", "離線"), st.action === "run", !runOk) +
-        opt("result", `<b>${bi("View result", "查看結果")}</b>`, resOk ? "TTFT · TPOT · TPS" : bi("No result yet", "尚無結果"), st.action === "result", !resOk), ok: !!st.action, next: bi("Go", "前往") + " →" };
+        opt("result", `<b>${bi("View results", "查看結果")}</b>`, resOk ? (m.compare ? compareNames() : "TTFT · TPOT · TPS") : bi("No result yet", "尚無結果"), st.action === "result", !resOk), ok: !!st.action, next: bi("Go", "前往") + " →" };
     }
     function render() {
       const q = question(), bars = [1, 2, 3].map(i => `<span class="${i <= st.step ? "on" : ""}"></span>`).join("");
       root.innerHTML = `<div class="mw"><div class="mw-stage">${stage()}</div><div class="mw-panel"><div class="mw-bars" aria-label="Step ${st.step} of 3">${bars}</div>
-        <button type="button" class="mw-back"${st.step === 1 ? " hidden" : ""}>‹ ${bi("Back", "返回")}</button><h3 class="mw-q">${q.title}</h3><div class="mw-opts" role="listbox">${q.body}</div>
-        <button type="button" class="mw-next"${q.ok ? "" : " disabled"}>${q.next}</button></div></div>`;
+        <h3 class="mw-q">${q.title}</h3><div class="mw-opts" role="listbox">${q.body}</div>
+        <button type="button" class="mw-back mw-back-s" aria-label="Back 返回"${st.step === 1 ? " hidden" : ""}>← <small>${bi("Back", "返回")}</small></button></div></div>`;
     }
+    // one click = one answer: choosing an option goes straight to the next step (the last step opens the page); a small back arrow sits under the options
+    function go() { const m = machine(); location.href = st.action === "run" ? m.run : (m.compare ? "stress-test-compare.html" : m.result); }
     root.addEventListener("click", e => {
-      const o = e.target.closest(".mw-opt"), b = e.target.closest(".mw-back"), n = e.target.closest(".mw-next");
+      const o = e.target.closest(".mw-opt"), b = e.target.closest(".mw-back");
       if (o && o.getAttribute("aria-disabled") !== "true") {
-        if (st.step === 1) { st.vendor = o.dataset.id; st.machine = null; st.action = null; }
-        else if (st.step === 2) { st.machine = o.dataset.id; st.action = null; }
-        else st.action = o.dataset.id;
-        render();
+        if (st.step === 1) { st.vendor = o.dataset.id; st.machine = null; st.action = null; st.step = 2; const f = vendor().models.find(known); st.machine = f ? f.id : null; render(); }
+        else if (st.step === 2) { st.machine = o.dataset.id; st.action = null; st.step = 3; render(); }
+        else { st.action = o.dataset.id; go(); }
       } else if (b) { st.step = Math.max(1, st.step - 1); if (st.step < 3) st.action = null; render(); }
-      else if (n && !n.disabled) {
-        if (st.step < 3) { st.step++; if (st.step === 2 && !st.machine) { const f = vendor().models.find(known); st.machine = f ? f.id : null; } render(); }
-        else { const m = machine(); location.href = st.action === "run" ? m.run : m.result; }
-      }
     });
     root.addEventListener("mouseover", e => {            // hover previews the vendor on the left stage without changing the choice
       const o = e.target.closest(".mw-opt");

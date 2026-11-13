@@ -17,11 +17,12 @@
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="tesla.css?v=28">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
@@ -35,7 +36,7 @@
     </section>
 
     <section class="report-section st-same" id="secSame">
-      <header><h2>測試參數<span class="zh">Key Parameters</span></h2></header>
+      <header><h2>Key Parameters<span class="zh">測試參數</span></h2></header>
       <dl class="st-params" id="stParams"></dl>
       <p class="v2-fn">測試參數參照群聯提供之 benchmark 腳本</p>
     </section>
@@ -46,7 +47,7 @@
     </section>
 
     <section class="report-section" id="secTable">
-      <header><h2>逐情境數值<span class="zh">B70 · llama.cpp GGUF</span></h2></header>
+      <header><h2>B70 · llama.cpp GGUF<span class="zh">逐情境數值</span></h2></header>
       <p class="v2-fine" id="stTableSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
           </section>
@@ -57,15 +58,15 @@
     </section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">B70 已驗證實測 35 筆</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 比對 →</a><a class="v2-dl" href="data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json" download>JSON ↓</a></header>
+      <header><h2>Data<span class="zh">B70 已驗證實測 35 筆</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 比對 →</a><a class="v2-dl" href="data/benchmark-b70/AISO_B70_vs_AISO1_20261030.json" download>Download .JSON<small class="zhs">下載</small> ↓</a></header>
       <p class="v2-fine" id="stErr"></p>
     </section>
 
       <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
 
-  </main><script src="bench-viz.js?v=10"></script><script src="stress-test-b70.js?v=4"></script>
+  </main><script src="bench-viz.js?v=19"></script><script src="stress-test-b70.js?v=4t"></script>
 <script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"b70"})</script>
 <script src="debug-notes.js?v=3"></script>
-<script src="ui-min-type.js?v=1" defer></script>
+<script src="ui-min-type.js?v=2" defer></script>
 </body>
 </html>

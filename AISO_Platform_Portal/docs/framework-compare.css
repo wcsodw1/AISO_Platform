@@ -1,0 +1,95 @@
+/* Framework comparison: same model, vLLM vs SGLang vs llama.cpp, four indices */
+.fc .fc-pick{display:grid;gap:12px;margin:0 0 26px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.2)}
+.fc .fc-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.fc .fc-lab{flex:0 0 120px;color:var(--muted);font-size:17px;font-weight:700}
+.fc .fc-lab small{margin-left:8px}
+.fc .fc-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.fc .fc-tabs button{padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ivory);font:inherit;font-size:17px;font-weight:600;cursor:pointer}
+.fc .fc-tabs button small{margin-left:8px;color:var(--muted);font-size:16px;font-weight:500}
+.fc .fc-tabs button.on{border-color:var(--s3);background:rgba(138,180,255,.18)}
+.fc .fc-tabs button[disabled]{opacity:.45;cursor:not-allowed}
+.fc .fc-box{margin:0 0 30px;padding:18px 20px;border:1px solid var(--s3);border-radius:20px;background:linear-gradient(180deg,rgba(138,180,255,.08),rgba(0,0,0,.22))}
+.fc #fcParity.fc-box{border-color:var(--gold);background:linear-gradient(180deg,rgba(217,203,143,.08),rgba(0,0,0,.22))}
+.fc .fc-idx{margin-bottom:12px}
+.fc .fc-idx button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border-radius:14px}
+.fc .fc-idx button b{font-size:19px}
+.fc .fc-idx button span{color:var(--muted);font-size:16px;font-weight:500}
+.fc .fc-sub{margin:0 0 14px;color:var(--muted);font-size:17px}
+.fc .fc-sub b{color:var(--ivory)}
+.fc .fc-grp{display:grid;grid-template-columns:110px 1fr;gap:6px 16px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.fc .fc-grp:first-child{border-top:0}
+.fc .fc-np{font-size:22px;font-weight:800;color:var(--ivory)}
+.fc .fc-np small{display:block;color:var(--muted);font-size:16px;font-weight:500}
+.fc .fc-bars{display:grid;gap:8px}
+.fc .fc-bar{display:grid;grid-template-columns:110px 1fr 150px;gap:12px;align-items:center;font-size:17px}
+.fc .fc-fw{font-weight:700}
+.fc .fc-track{position:relative;display:block;height:16px;border-radius:999px;background:rgba(255,255,255,.07);overflow:visible}
+.fc .fc-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;opacity:.9}
+.fc .fc-thr{position:absolute;top:-5px;bottom:-5px;width:2px;background:#ff8a76}
+.fc .fc-bar b{font-size:20px;color:var(--ivory);white-space:nowrap}
+.fc .fc-bar b small{margin-left:5px;color:var(--muted);font-size:16px;font-weight:500}
+.fc .fc-bar b em{margin-left:6px;color:var(--gold);font-style:normal}
+.fc .fc-bar.best b{color:var(--gold)}
+.fc .fc-bar.slow b{color:#ff8a76}
+.fc .fc-bar.none b{color:var(--muted)}
+.fc .fc-best{margin:14px 0 0}
+.fc table.fc-t{width:100%;min-width:720px;border-collapse:collapse}
+.fc table.fc-t th,.fc table.fc-t td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:17px}
+.fc table.fc-t thead th{color:var(--muted);font-size:16px}
+.fc table.fc-t td.best{color:var(--gold);font-weight:800}
+.fc table.fc-t td.slow{color:#ff8a76}
+.fc table.fc-t th small{display:block;color:var(--muted);font-size:16px;font-weight:500}
+.fc .fc-par td.diff{color:#ff8a4c}
+.fc .fc-par td small{display:block;color:var(--muted);font-size:16px}
+.fc .fc-par th{color:var(--gold)}
+.fc .fc-sd{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:16px}
+.fc .fc-sd h4{margin:0 0 6px;font-size:21.5px}
+.fc .fc-sd .same h4{color:#4fd1b0}.fc .fc-sd .diff h4{color:#ff8a4c}
+@media(max-width:760px){.fc .fc-grp{grid-template-columns:1fr}.fc .fc-bar{grid-template-columns:90px 1fr 130px}.fc .fc-lab{flex-basis:100%}}
+
+/* hero (David 2026-11-13): big title = ivory, the small note under it = gold */
+.fc .v2-hero h1{color:var(--ivory)}
+main.fc .v2-hero h1 .zhs{display:inline;margin:0 0 0 18px;font-size:22px;font-weight:500;letter-spacing:.02em;color:var(--muted);vertical-align:baseline}
+main.fc .v2-hero .v2-sub{margin-top:10px}
+.fc .v2-hero .v2-sub,.fc .v2-hero .v2-sub .zh-i{color:var(--gold);font-size:20px}
+
+/* which weight file each framework ran (visible next to the chart) */
+.fc .fc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.fc .fc-chip{display:inline-block;padding:4px 12px;border:1px solid var(--line);border-radius:999px;font-size:16px;color:var(--ivory)}
+
+/* machine picker (same pattern as the Benchmark hub): machine name + picture on the left, the three machines on the right */
+.fc .fc-mw{margin:0 0 22px;min-height:420px}
+.fc .fc-img{display:block;height:120px;max-width:100%;margin:0 0 18px;object-fit:contain;object-position:left center}
+.fc .fc-mw .mw-big{font-size:clamp(40px,4.4vw,64px)}
+.fc .fc-mw .mw-opt{flex-direction:column;align-items:flex-start;justify-content:center;min-height:84px;padding:12px 24px}
+.fc .fc-mw .mw-opt.off{pointer-events:auto}
+.fc .fc-mw .mw-r{text-align:left;font-size:16px}
+/* one-line conclusion on top of each comparison */
+.fc .fc-concl{margin:0 0 18px;padding:14px 18px;border-left:4px solid var(--gold);border-radius:8px;background:rgba(200,184,117,.08);color:var(--ivory);font-size:20px;line-height:1.5}
+.fc .fc-concl .fc-cl{margin-right:14px;color:var(--gold)}.fc .fc-concl .fc-cm{color:var(--muted);font-size:16px}
+/* Same or different: same parameters only, large; differences in a hover "Notes" corner */
+.fc #fcParity{position:relative}
+.fc .fc-same{display:grid;grid-template-columns:minmax(200px,max-content) 1fr;gap:14px 36px;margin:6px 0 0;font-size:20px}
+.fc .fc-same dt{color:var(--muted);font-weight:600}.fc .fc-same dt small{margin-left:10px;font-size:16px}
+.fc .fc-same dd{margin:0;color:var(--ivory);font-weight:700}
+.fc .fc-notes{position:absolute;top:0;right:0;z-index:5}
+.fc .fc-nb{display:inline-block;padding:6px 14px;border:1px solid rgba(244,239,228,.28);border-radius:10px;color:var(--muted);font-size:16px;cursor:default}
+.fc .fc-nf{display:block;visibility:hidden;clip-path:inset(0 0 100% 100% round 14px);transition:clip-path .35s ease,visibility 0s linear .35s;position:absolute;right:0;top:100%;margin-top:8px;width:min(760px,90vw);padding:16px 18px;border:1px solid rgba(200,184,117,.5);border-radius:14px;background:#14161b;box-shadow:0 18px 50px rgba(0,0,0,.5);font-size:16px}
+.fc .fc-nf::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.fc .fc-notes:hover .fc-nf,.fc .fc-notes:focus-visible .fc-nf{visibility:visible;clip-path:inset(0 0 0 0 round 14px);transition:clip-path .35s ease,visibility 0s}
+@media (prefers-reduced-motion:reduce){.fc .fc-nf{transition:none}}
+.fc .fc-notes:hover .fc-nb,.fc .fc-notes:focus-visible .fc-nb{border-color:var(--gold);color:var(--ivory)}
+.fc .fc-nf table{width:100%;border-collapse:collapse}.fc .fc-nf th,.fc .fc-nf td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid rgba(244,239,228,.1);color:var(--ivory)}
+.fc .fc-nf th small{display:block;color:var(--muted);font-weight:400}.fc .fc-nf p{margin:12px 0 0;color:var(--muted)}
+.fc #fcParity .fc-concl{margin-right:130px}
+@media(max-width:760px){.fc .fc-same{grid-template-columns:1fr;gap:4px}.fc .fc-same dd{margin-bottom:10px}.fc #fcParity .fc-concl{margin-right:0;margin-top:44px}}
+/* speed conclusion: big, short lines; exceptions in the hover Notes corner */
+.fc .fc-speed{position:relative;padding:18px 22px}
+.fc .fc-speed .fc-cl{display:block;margin:0 0 8px;font-size:18px;font-weight:700}
+.fc .fc-cbig{margin:4px 130px 4px 0;font-size:28px;line-height:1.35;font-weight:700;color:var(--ivory)}
+.fc .fc-speed .fc-cm{margin:8px 0 0;font-size:16px}
+.fc .fc-speed .fc-notes{top:16px;right:16px}
+@media(max-width:760px){.fc .fc-cbig{margin-right:0;font-size:22px}.fc .fc-speed .fc-notes{position:static;margin-bottom:10px}}
+.fc .fc-one{margin:14px 0 4px;font-size:20px;color:var(--ivory)}
+.fc .fc-nf h5{margin:4px 0 10px;font-size:18px;color:var(--gold)}.fc .fc-nf h5 small{margin-left:8px}.fc .fc-nf ul+h5{margin-top:16px}.fc .fc-nf .fc-t{font-size:16px}.fc .fc-nf .fc-def{font-size:15px}
+.fc .fc-speed .fc-nf{width:min(860px,92vw)}

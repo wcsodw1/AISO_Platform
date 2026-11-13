@@ -15,24 +15,23 @@
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=18">
+  <link rel="stylesheet" href="tesla.css?v=18">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
   <main class="v2">
     <section class="v2-hero">
-      <a class="pg-back" href="./#benchmark"><span aria-hidden="true">←</span> 返回 Benchmark</a><p class="eyebrow">BENCHMARK / V2 · GPT-OSS-20B · 2026-10-29</p>
-      <h1 id="v2Title">TPI Benchmark V2｜GPU Inference Comparison</h1>
-      <p class="v2-sub">Baseline · aiDAPTIV · LMCache<span class="zh-i">3 模式 × 8 情境 × 4 次 ＝ 96 筆</span></p>
+      <a class="pg-back" href="./#benchmark"><span aria-hidden="true">←</span> 返回 Benchmark</a><h1 id="v2Title">LMCache v.s aiDAPTIV <small class="zhs">Benchmark</small></h1>
       <div class="v2-setup" id="v2Setup" aria-label="Purpose and method"></div>
     </section>
 
     <section class="report-section" id="secConclusion">
-      <header><h2>結論｜KV Warm<span class="zh">KV Cache reuse</span></h2></header>
+      <header><h2>KV Cache reuse<span class="zh">結論｜KV Warm</span></h2></header>
       <div id="v2Sum"></div>
       <p class="v2-take" id="v2Take"></p>
     </section>
@@ -54,10 +53,10 @@
     </section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">原始資料：3 模式 × 8 情境 × 4 次 ＝ 96 筆</span></h2><a class="v2-dl" href="data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json" download>JSON ↓</a></header>
+      <header><h2>Data<span class="zh">原始資料：3 模式 × 8 情境 × 4 次 ＝ 96 筆</span></h2><a class="v2-dl" href="data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json" download>Download .JSON<small class="zhs">下載</small> ↓</a></header>
       <p class="v2-fine" id="v2Err"></p>
     </section>
 
-  </main><script src="gptoss-v2.js?v=19"></script>
-<script src="ui-min-type.js?v=1" defer></script>
+  </main><script src="bench-viz.js?v=19"></script><script src="gptoss-v2.js?v=22t"></script>
+<script src="ui-min-type.js?v=2" defer></script>
 </body></html>

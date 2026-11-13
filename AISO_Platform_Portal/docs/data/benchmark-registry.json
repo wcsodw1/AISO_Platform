@@ -104,5 +104,16 @@
    "file": "data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json",
    "runs_key": "aiso1_runs"
   }
+ ],
+ "single_machines": [
+  {
+   "machine": "pro6000",
+   "label": "PRO6000",
+   "framework": "vllm",
+   "file": "data/benchmark-pro6000/AISO_PRO6000_vLLM_VIS_20260825.json",
+   "runs_key": "pro6000_runs",
+   "page": "stress-test-pro6000.html",
+   "comparable": false
+  }
  ]
 }

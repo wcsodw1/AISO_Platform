@@ -30,7 +30,7 @@
   root.querySelector(".tb-tabs").innerHTML=tabs;
   root.querySelectorAll(".tb-tabs button").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;render()});
  }
- root.innerHTML=`<header><h2>疑難排解<span class="zh">Troubleshooting · ${esc(MACHINE)}</span></h2><div class="st-tabs tb-tabs" role="tablist" aria-label="Framework"></div></header><div class="tb-sum"></div><div class="tb-body"></div><p class="v2-fn">由執行 benchmark 的 session 提供，依實際日誌整理；標示「假設」的原因不是已確認的根因，「未解決」表示目前沒有已驗證的修復方式。不要把「已繞過」讀成已修復。</p>`;
+ root.innerHTML=`<header><h2>Troubleshooting · ${esc(MACHINE)}<span class="zh">疑難排解</span></h2><div class="st-tabs tb-tabs" role="tablist" aria-label="Framework"></div></header><div class="tb-sum"></div><div class="tb-body"></div><p class="v2-fn">由執行 benchmark 的 session 提供，依實際日誌整理；標示「假設」的原因不是已確認的根因，「未解決」表示目前沒有已驗證的修復方式。不要把「已繞過」讀成已修復。</p>`;
  fetch(FILE,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
   DATA=d;FW=(fwOrder.find(f=>{const e=entry(f);return e&&e.issues.length})||"SGLang");
   const all=DATA.entries.filter(e=>e.machine===MACHINE).flatMap(e=>e.issues),cnt=k=>all.filter(i=>i.outcome===k&&!gap(i)).length,gaps=all.filter(gap).length;

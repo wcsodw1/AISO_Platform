@@ -1,0 +1,7 @@
+{
+ "smoke": {
+  "status": "PASS",
+  "at": "2026-11-11 21:15-21:21",
+  "detail": "Platform smoke (NP1, Input 4096, 1 request each, started from the Run page): gemma26 PASS 25.56 tok/s, gemma31 PASS 5.38 tok/s, laguna PASS 29.21 tok/s, nemotron PASS 49.02 tok/s · scope smoke only, not formal"
+ }
+}
