@@ -52,7 +52,7 @@ window.MachinePicker = (function () {
       const q = question(), bars = [1, 2, 3].map(i => `<span class="${i <= st.step ? "on" : ""}"></span>`).join("");
       root.innerHTML = `<div class="mw"><div class="mw-stage">${stage()}</div><div class="mw-panel"><div class="mw-bars" aria-label="Step ${st.step} of 3">${bars}</div>
         <h3 class="mw-q">${q.title}</h3><div class="mw-opts" role="listbox">${q.body}</div>
-        <button type="button" class="mw-back mw-back-s" aria-label="Back 返回"${st.step === 1 ? " hidden" : ""}>← <small>${bi("Back", "返回")}</small></button></div></div>`;
+        <button type="button" class="mw-back mw-back-s" aria-label="Back 返回">← <small>${bi("Back", "返回")}</small></button></div></div>`;
     }
     // one click = one answer: choosing an option goes straight to the next step (the last step opens the page); a small back arrow sits under the options
     function go() { const m = machine(); location.href = st.action === "run" ? m.run : (m.compare ? "stress-test-compare.html" : m.result); }
@@ -62,7 +62,9 @@ window.MachinePicker = (function () {
         if (st.step === 1) { st.vendor = o.dataset.id; st.machine = null; st.action = null; st.step = 2; const f = vendor().models.find(known); st.machine = f ? f.id : null; render(); }
         else if (st.step === 2) { st.machine = o.dataset.id; st.action = null; st.step = 3; render(); }
         else { st.action = o.dataset.id; go(); }
-      } else if (b) { st.step = Math.max(1, st.step - 1); if (st.step < 3) st.action = null; render(); }
+      } else if (b) {
+        if (st.step === 1) { try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { history.back(); return; } } catch (_) {} location.href = "./"; return; }   // first step: back = the page we came from (Home)
+        st.step = Math.max(1, st.step - 1); if (st.step < 3) st.action = null; render(); }
     });
     root.addEventListener("mouseover", e => {            // hover previews the vendor on the left stage without changing the choice
       const o = e.target.closest(".mw-opt");

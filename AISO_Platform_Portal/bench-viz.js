@@ -61,10 +61,16 @@ window.BV=(function(){
    let d="",pen=false;
    groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${x(q).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
    if(d)s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
-   groups.forEach((g,q)=>{const r=get(se.key,g);if(!r)return;const v=r[k],red=k==="ttft_s"&&r.ttft_over_180s,
-     close=series.some((o2,j2)=>{const r2=j2!==j&&get(o2.key,g);return r2&&y(r2[k])<y(v)&&y(v)-y(r2[k])<26}),above=!close;   // a point sitting right under another one labels below, so numbers never overlap
-    s+=`<circle cx="${x(q)}" cy="${y(v)}" r="5.5" fill="${se.color}" stroke="#0b0f17" stroke-width="2"><title>${esc(se.label)} · ${esc(g.label)}: ${fmt(k,v)} ${esc(def.unit)}</title></circle>`;
-    s+=`<text class="bl ${red?"dn":"up2"}" x="${x(q)}" y="${above?y(v)-12:y(v)+24}" text-anchor="middle">${fmt(k,v)}</text>`});
+  });
+  /* points + number labels, one input at a time: a point right under another labels below it, and then the labels of ALL series at this input
+     are pushed apart (>= 20 px) so two or three close values never print on top of each other (the "2:69" bug David saw) */
+  groups.forEach((g,q)=>{
+   const pts=series.map(se=>{const r=get(se.key,g);return r?{se,r,v:r[k],py:y(r[k])}:null}).filter(Boolean);
+   pts.forEach(p=>{const close=pts.some(o=>o!==p&&o.py<p.py&&p.py-o.py<26);p.ly=close?p.py+24:p.py-12});
+   let last=-1e9;pts.slice().sort((a,b)=>a.ly-b.ly||a.py-b.py).forEach(p=>{p.ly=Math.max(p.ly,last+20);last=p.ly});
+   pts.forEach(p=>{const red=k==="ttft_s"&&p.r.ttft_over_180s;
+    s+=`<circle cx="${x(q)}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2"><title>${esc(p.se.label)} · ${esc(g.label)}: ${fmt(k,p.v)} ${esc(def.unit)}</title></circle>`;
+    s+=`<text class="bl ${red?"dn":"up2"}" x="${x(q)}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
   });
   groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
   return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;

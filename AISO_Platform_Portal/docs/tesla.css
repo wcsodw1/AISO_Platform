@@ -223,3 +223,7 @@ div:has(>.home-title-zh)>h2{color:var(--fashion-ivory,#f3efe5)!important}
   .fc .fc-bar{grid-template-columns:76px minmax(0,1fr) 96px!important;gap:8px!important}
   .fc .fc-bar b{font-size:17px!important;white-space:nowrap}.fc .fc-bar b small{font-size:13px}
 }
+/* home Benchmark hero follows the home rule (David 2026-11-13 「顏色不是改回來了嗎」): big title ivory, gold note = "PROOF, NOT SPECS.", no eyebrow.
+   Needed because "main h2{color:gold}" above also matches this title. */
+.bh-copy h2{color:var(--fashion-ivory,#f3efe5)!important}
+.bh-copy>.eyebrow{display:none!important}
