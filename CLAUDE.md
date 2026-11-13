@@ -74,3 +74,7 @@ Every reply ends with the **NT 筆記** block (also whenever David types `NT`), 
 3. Viola 確認專案進度
 
 Update this list when David adds or removes items.
+
+## Standing instruction: busy machine = hands off (David, 2026-11-13)
+
+If someone else is using a machine or GPU (e.g. PRO6000 GPU 1), do not start, stop or change anything on it — read-only checks only. The executor start paths refuse while busy; never bypass them. Report it and hand David the question for the owner.

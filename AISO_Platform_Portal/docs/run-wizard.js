@@ -118,8 +118,8 @@
 
   function question() {
     const id = S()[st.step][0];
-    if (WEB && !EXEC.on && HUBCARD[machineId()]) return { title: bi("Contact us to run a test", "請與客服人員聯繫"), ok: false, auto: true, next: "",
-      body: `<p class="rw-msg">${bi("Live tests run on AISO's machines. Our team will arrange one for you.", "實機測試在 AISO 的機器上進行，請與客服人員聯繫安排。")}</p>` };
+    if (WEB && !EXEC.on && HUBCARD[machineId()]) return { title: bi("Contact us to get a License", "請與客服人員聯繫取得 License"), ok: false, auto: true, next: "",
+      body: `<p class="rw-msg">${bi("A License is needed to run a live test. Our team will set it up for you.", "實機測試需要 License，請與客服人員聯繫取得。")}</p>` };
     if (!EXEC.on && !EXEC.loading && HUBCARD[machineId()]) {     // the executor did not answer: say so, instead of showing the old "Detect models" flow that cannot work here
       const base = machineId(), other = EXEC.execId && EXEC.execId !== base;
       const why = EXEC.needLocal ? `${bi("Tests can only be started from the local page. Open", "測試只能從本機頁面啟動，請改開")} <a href="${esc("http://localhost:8765/benchmark.html" + location.hash)}">localhost:8765</a>` : esc(EXEC.msg || "") || bi("The platform did not get an answer from this machine's test service. If the platform was just updated, restart the server.", "平台沒有收到這台機器測試服務的回應；若剛更新過平台，請重啟伺服器。");
