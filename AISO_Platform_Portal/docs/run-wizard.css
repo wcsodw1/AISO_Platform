@@ -146,3 +146,6 @@ body.rw-on .bm-auth{display:none!important}
 .rw-mount .mw-opt{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;min-height:80px;padding:12px 24px}
 .rw-mount .mw-r{text-align:left}
 .rw-mount .rw-opts-cols .mw-opt{min-height:64px;padding:10px 18px}
+
+/* website version: no connect bar, no terminal / logs (only "contact us") */
+.rw-web #liveConnect,.rw-web #rwConnectSlot,.rw-web #aisoTermRun,.rw-web .bm-auth,.rw-web #exportLogs,.rw-web #terminalToggle{display:none!important}

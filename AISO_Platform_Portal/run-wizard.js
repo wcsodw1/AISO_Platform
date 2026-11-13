@@ -6,6 +6,9 @@
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const bi = (en, zh) => `${en}<small class="zhs">${zh}</small>`;
+  /* website version (GitHub Pages, not this computer / LAN): no machine connection, no token box, no logs - just "contact us" (David 2026-11-13) */
+  const WEB = !/^(localhost|127\.0\.0\.1|\[::1\]|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname) || /[?&]web=1\b/.test(location.search);
+  document.documentElement.classList.toggle("rw-web", WEB);
   const STEPS = [["engine", "Inference engine", "推論引擎"], ["model", "Model", "模型"], ["test", "Test type", "測試方式"], ["load", "Workload", "工作負載"], ["run", "Run", "開始"]];
   const STEPS_EXEC = [["engine", "Inference engine", "推論引擎"], ["model", "Models", "模型"], ["run", "Run", "開始"]];
   const EXEC = { kind: "smoke", on: false, machine: null, models: [], version: "", device: "", status: null, timer: null, msg: "", unavailable: false };
@@ -104,7 +107,7 @@
     const hub = HUBCARD[machineId()];
     if (hub) {      // the same left side as the Benchmark hub (vendor · scale, name, spec, chips), so going from one screen to the next only changes the right side; the first chip is the machine state instead of "Online"
       const busy = EXEC.status && EXEC.status.busy;
-      const state = !EXEC.on && !EXEC.loading ? `<span class="mw-chip off">${bi("● Not loaded", "未載入")}</span>` : !EXEC.status ? `<span class="mw-chip wait">${bi("● Checking", "檢查中")}</span>` : busy ? `<span class="mw-chip busy">${bi("● Busy", "忙碌中")}</span>` : EXEC.status.external ? `<span class="mw-chip busy">${bi("● In use by others", "他人使用中")}</span>` : `<span class="mw-chip on">${bi("● Idle", "閒置")}</span>`;
+      const state = WEB && !EXEC.on ? "" : !EXEC.on && !EXEC.loading ? `<span class="mw-chip off">${bi("● Not loaded", "未載入")}</span>` : !EXEC.status ? `<span class="mw-chip wait">${bi("● Checking", "檢查中")}</span>` : busy ? `<span class="mw-chip busy">${bi("● Busy", "忙碌中")}</span>` : EXEC.status.external ? `<span class="mw-chip busy">${bi("● In use by others", "他人使用中")}</span>` : `<span class="mw-chip on">${bi("● Idle", "閒置")}</span>`;
       return `<p class="mw-kicker">${esc(hub.vendor)} · ${bi(hub.tier[0], hub.tier[1])}</p><h2 class="mw-big">${esc(hub.name)}</h2><p class="mw-spec">${esc(hub.spec)}</p>
       <div class="mw-chips">${state}${engChip}${EXEC.needLocal ? `<span class="mw-chip off">${bi("View only", "僅檢視")}</span>` : ""}</div>${kindsHtml()}`;
     }
@@ -115,6 +118,8 @@
 
   function question() {
     const id = S()[st.step][0];
+    if (WEB && !EXEC.on && HUBCARD[machineId()]) return { title: bi("Contact us to run a test", "請與客服人員聯繫"), ok: false, auto: true, next: "",
+      body: `<p class="rw-msg">${bi("Live tests run on AISO's machines. Our team will arrange one for you.", "實機測試在 AISO 的機器上進行，請與客服人員聯繫安排。")}</p>` };
     if (!EXEC.on && !EXEC.loading && HUBCARD[machineId()]) {     // the executor did not answer: say so, instead of showing the old "Detect models" flow that cannot work here
       const base = machineId(), other = EXEC.execId && EXEC.execId !== base;
       const why = EXEC.needLocal ? `${bi("Tests can only be started from the local page. Open", "測試只能從本機頁面啟動，請改開")} <a href="${esc("http://localhost:8765/benchmark.html" + location.hash)}">localhost:8765</a>` : esc(EXEC.msg || "") || bi("The platform did not get an answer from this machine's test service. If the platform was just updated, restart the server.", "平台沒有收到這台機器測試服務的回應；若剛更新過平台，請重啟伺服器。");
@@ -241,7 +246,7 @@
     clearInterval(EXEC.timer); if (EXEC.poll) { clearInterval(EXEC.poll); EXEC.poll = null; }
     Object.assign(EXEC, { execId: id, on: false, status: null, models: [], formal: null, pick: "all", ready: false, kindSet: false, kind: "smoke", unavailable: false, msg: "", seen: null, lastShown: false, hinted: false, loading: true });
     document.body.classList.remove("rw-exec"); render();
-    if (!primeFromCache()) EXEC.loading = true;
+    if (!WEB && !primeFromCache()) EXEC.loading = true;
     detectExec().then(() => { EXEC.loading = false; render(); });
   }
   const machineId = () => { const m = location.hash.match(/^#\/pick\/[a-z]+\/([a-z0-9-]+)/); return m ? ({ "aiso1-amd": "aiso1", "pro6000-tpi": "pro6000" }[m[1]] || null) : null; };
@@ -443,6 +448,7 @@
   // The machine answers over SSH, which takes a few seconds. The last answer is kept in the browser: the flow is drawn from it at once and refreshed when the live answer arrives.
   const useModels = (id, d) => { Object.assign(EXEC, { on: true, machine: id, models: d.models, version: d.version || "", device: d.device || "", framework: d.framework || "", spec: d.params || null, stdspec: d.standard || null, tier: d.tier || "" }); document.body.classList.add("rw-exec"); };
   function primeFromCache() {
+    if (WEB) return false;
     const id = execId(); if (!id) return false;
     try {
       const c = JSON.parse(localStorage.getItem("rw-exec-" + id) || "null");
@@ -452,6 +458,7 @@
   }
   async function detectExec() {
     const id = execId(); if (!id) return;
+    if (WEB) { EXEC.on = false; EXEC.loading = false; return; }     // website version: never contacts a machine
     try {
       const r = await fetch("/api/benchmark/executor/models?machine=" + id, { cache: "no-store" });
       const d = await r.json();
@@ -523,7 +530,7 @@
     ["frameworkSelect", "liveService", "liveModel", "liveStatus", "liveStart", "accessBadge", "selectedUnitTitle", "liveModeRow", "liveConnect", "machineCard"].forEach(id => {
       const e = $(id); if (e) new MutationObserver(again).observe(e, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["class", "style", "hidden"] });
     });
-    EXEC.loading = !primeFromCache() && !!machineId();      // nothing remembered: a short "checking the machine" panel instead of a blank page
+    EXEC.loading = !primeFromCache() && !!machineId() && !WEB;      // nothing remembered: a short "checking the machine" panel instead of a blank page
     const reveal = () => document.documentElement.classList.remove("rw-boot");       // the page stays invisible until the real flow is drawn: no flash of the old screen
     const tryDetect = (n) => detectExec().then(() => { EXEC.loading = false; render(); if (EXEC.unavailable && n < 4) setTimeout(() => tryDetect(n + 1), 3000); });   // the server may still be (re)starting: ask again before showing a notice for good
     render(); requestAnimationFrame(reveal);      // drawn at once (from the remembered answer, or the loading panel); the live answer updates it
