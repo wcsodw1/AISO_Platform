@@ -170,3 +170,56 @@ div:has(>.home-title-zh)>h2{color:var(--fashion-ivory,#f3efe5)!important}
 .home-section-heading>div:has(>.home-title-zh)>.eyebrow,.home-section-heading>div:has(>.home-title-zh)>h2 .proof-title-tag{display:none!important}
 .home-title-zh{letter-spacing:.01em!important}
 .home-title-zh .copy-zh{display:inline!important;margin:0 0 0 12px!important;letter-spacing:0!important}
+
+/* ===== Phone layout (RWD, David 2026-11-13 「手機版視覺很慘」) — one layer for every page ===== */
+@media (max-width:640px){
+  html,body{overflow-x:clip}
+  /* header: one compact row, nav scrolls sideways instead of wrapping */
+  .site-header{padding:10px 16px!important;gap:8px!important}
+  .site-header .site-nav{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;max-width:100%}
+  .site-header .site-nav::-webkit-scrollbar{display:none}
+  .site-header .site-nav>a,.site-header .nav-menu>a,.site-header .site-nav button{padding:8px 10px!important;white-space:nowrap}
+  .site-header .bm-auth{display:none}
+  /* page frame: 16px gutters, lighter nested panels */
+  main.v2,main{padding-left:16px!important;padding-right:16px!important}
+  .report-section,.fc-box,.bs-step,.bv-group,.v2-pane{padding:16px 14px!important;border-radius:16px!important}
+  .mw{padding:20px 16px!important;gap:20px!important;border-radius:18px!important}
+  .mw-big{font-size:34px!important;line-height:1.1}
+  .mw-q{font-size:24px!important}
+  .v2-hero h1{font-size:34px!important;line-height:1.15}
+  /* charts and tables never push the page wider */
+  .v2-chartwrap svg,.rp-svg{width:100%!important;height:auto!important;max-width:100%}
+  .bv-foot{flex-direction:column;align-items:flex-start}.bv-foot>*{min-width:0;max-width:100%}
+  .bv-sum{overflow-wrap:anywhere}
+  .bs-wrap,.v2-tablewrap{overflow-x:auto;max-width:100%}
+  /* Build System */
+  .bs .bs-dgrid,.bs ul.bs-notel{grid-template-columns:minmax(0,1fr)!important}
+  .bs .bs-dgrid>*{min-width:0}
+  /* Framework Comparison: notes flyout fits the screen */
+  .fc .fc-nf,.fc .fc-speed .fc-nf{width:calc(100vw - 40px)!important;max-width:calc(100vw - 40px)}
+  .fc .fc-nf .bs-wrap{overflow-x:auto}
+  .fc .fc-cbig{font-size:22px!important;margin-right:0!important}
+  .fc .fc-same{font-size:18px}
+  /* tab / option grids: two equal columns */
+  .fc .fc-tabs.fc-idx{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
+  /* nothing is cut off: Chinese glosses may wrap, wide tables scroll inside their own box */
+  .zhs,.zh,.bv-note,.bs .bs-dtbl small,.bs .bs-matrix small{white-space:normal!important}
+  .bs .bs-dtbl,.bs .bs-matrix,.lm-verdict,.st table,main table:not(.fc-t){display:block;max-width:100%;overflow-x:auto}
+  .bm-hero{grid-template-columns:minmax(0,1fr)!important}.bm-back{width:100%!important;justify-self:stretch!important}
+  .sz-form header{flex-wrap:wrap}.sz-result{flex-wrap:wrap;min-width:0;max-width:100%;text-align:left}
+  .lm-segs{flex-wrap:wrap!important;display:flex!important}.lm-segs>*{min-width:0}
+  .bz{white-space:normal!important}
+  .sz-modes{flex-wrap:wrap}.sz-modes>button{flex:1 1 140px}
+  .sz-form header{flex-direction:column;align-items:flex-start}.sz-form header>*{max-width:100%;min-width:0}
+  .sz-jump{white-space:normal;flex-wrap:wrap;max-width:100%}
+  /* section header rows (title + side figure) stack on phones */
+  .report-section>header{flex-wrap:wrap!important;gap:10px!important}.report-section>header>*{max-width:100%;min-width:0}
+  .sz-result{flex-direction:column;align-items:flex-start!important}
+  .lm-segs{max-width:100%}
+  /* charts get the full width: fewer nested paddings around them */
+  .bv-group{padding:14px 8px!important}.bv-block{padding-left:0!important;padding-right:0!important}
+  .v2-chart,.v2-chartwrap{padding:6px!important;border-radius:12px!important}
+  .pair-btn,.st .pair-btn{width:100%}
+  .fc .fc-bar{grid-template-columns:76px minmax(0,1fr) 96px!important;gap:8px!important}
+  .fc .fc-bar b{font-size:17px!important;white-space:nowrap}.fc .fc-bar b small{font-size:13px}
+}

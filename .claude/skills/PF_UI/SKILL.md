@@ -78,5 +78,10 @@ const out={};for(const e of document.body.querySelectorAll('*')){if(e.closest('[
 - **Differences go into a small "Notes 備註" button in the top-right corner**; on mouse-over the panel unrolls like a curtain toward the bottom-left (clip-path from the top-right corner), and rolls back up as soon as the mouse leaves. No click-to-open. Never in the main view.
 - Reference: `framework-compare.html` section 3 (`.fc-same`, `.fc-notes`), same idea as the benchmark pages' Notes panel.
 
+## Phone layout (RWD, David 2026-11-13 「手機版視覺很慘」)
+- One shared phone layer at the end of `tesla.css` (`@media (max-width:640px)`), loaded by every page. Add phone fixes there, not per page.
+- Rules: 16px side gutters; header nav is one row that scrolls sideways; nested panels get light padding; charts (SVG) scale to 100% width; wide tables scroll inside their own box; Chinese glosses may wrap; section header rows stack; nothing may make the page wider than the screen.
+- Check every changed page at 375px: `document.documentElement.scrollWidth` must equal the viewport width and no visible element may end past the right edge.
+
 ## Before saying "done"
 `make export`, run the unit tests, curl every link you paste (localhost, LAN IP, live) and only paste the ones that return 200. Related skills: PF_Sync, PF_Bench.

@@ -16,7 +16,14 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=56">
   <link rel="stylesheet" href="debug-notes.css?v=2">
-  <link rel="stylesheet" href="tesla.css?v=34">
+  <link rel="stylesheet" href="tesla.css?v=45">
+<style>
+/* pending R&D: grouped by category, owner + priority (P0 red / P1 amber / P2 green), description on hover */
+.rd-cat{margin:22px 0 8px;font-size:20px;color:var(--ivory,#f3efe5)}.rd-cat small{margin-left:8px}.rd-cat .rd-n{margin-left:10px;font-size:15px;color:var(--muted,#9aa6b8)}
+.rd-pr{margin-left:auto;padding:3px 10px;border-radius:8px;font-style:normal;font-weight:800;font-size:16px}
+.rd-pr.p0{color:#ff6b6b;background:rgba(255,107,107,.12)}.rd-pr.p1{color:#e0a040;background:rgba(224,160,64,.12)}.rd-pr.p2{color:#6fdc9a;background:rgba(111,220,154,.12)}
+.rd-pr+.rd-st{margin-left:10px}
+</style>
 </head>
 <body>
   <header class="site-header">
@@ -40,11 +47,13 @@
 (function(){
  fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
   var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
-  var S={wait:["Wait Select","待選擇","wait"],progress:["In progress","進行中","prog"],done:["Done","完成","done"]},day=function(v){return v?esc(String(v).replace(/-/g,"/")):"—"};
+  var S={todo:["To Do","待辦","wait"],wait:["Wait Select","待選擇","wait"],progress:["In progress","進行中","prog"],done:["Done","完成","done"]},day=function(v){return v?esc(String(v).replace(/-/g,"/")):"—"};
   function row(x){var s=S[x.status||"wait"]||S.wait,body='<span class="sp-name">'+esc(x.task)+(x.zh?'<small class="zhs">'+esc(x.zh)+'</small>':'')+'</span><span class="sp-tier">Added<small class="zhs">加入</small> '+day(x.added)+'</span><span class="sp-tier">Completed<small class="zhs">完成時間</small> '+day(x.done)+'</span>'+((x.status!=="wait"||x.owner)?'<span class="sp-tier rd-own">Owner<small class="zhs">負責人</small> '+(x.owner?esc(x.owner):"—")+'</span>':"")+'<em class="rd-st '+s[2]+'">'+s[0]+'<small class="zhs">'+s[1]+'</small></em>';return x.href?'<a class="sp-model has rd '+s[2]+'" href="'+esc(x.href)+'">'+body+'<i class="rd-go">Benchmark Result<small class="zhs">測試結果</small> →</i></a>':'<div class="sp-model soon rd '+s[2]+'">'+body+'</div>'}
   var months={};(d.results||[]).forEach(function(x){var m=(x.done||"").slice(0,7)||"—";(months[m]=months[m]||[]).push(x)});
   document.getElementById("rdDone").innerHTML=Object.keys(months).sort().reverse().map(function(m){var MN=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],p=m.split("-"),lab=p.length===2&&MN[+p[1]-1]?p[0]+" "+MN[+p[1]-1]:esc(m);return '<h4 class="rd-month">'+lab+'<small class="zhs">完成 · '+months[m].length+'</small></h4>'+months[m].map(row).join("")}).join("");
-  document.getElementById("rdTodo").innerHTML=d.items.map(row).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
+  function todoRow(x){var s=S[x.status||"todo"]||S.todo,pr=x.priority||"";return '<div class="sp-model soon rd '+s[2]+'"'+(x.desc?' title="'+esc(x.desc)+'"':'')+'><span class="sp-name">'+esc(x.task)+'</span><span class="sp-tier rd-own">Owner<small class="zhs">負責人</small> '+(x.owner?esc(x.owner):"—")+'</span>'+(pr?'<em class="rd-pr '+esc(pr.toLowerCase())+'">'+esc(pr)+'</em>':'')+'<em class="rd-st '+s[2]+'">'+s[0]+'<small class="zhs">'+s[1]+'</small></em></div>'}
+  var cats=[],byCat={};d.items.forEach(function(x){var c=x.category||"Other";if(!byCat[c]){byCat[c]=[];cats.push(c)}byCat[c].push(x)});
+  document.getElementById("rdTodo").innerHTML=cats.map(function(c){var f=byCat[c][0];return '<h4 class="rd-cat">'+esc(f.category_en||c)+'<small class="zhs">'+esc(c)+'</small><span class="rd-n">'+byCat[c].length+'</span></h4>'+byCat[c].map(todoRow).join("")}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
 })();
 </script>
 <script src="debug-notes.js?v=3"></script>
