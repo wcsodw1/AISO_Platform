@@ -27,6 +27,14 @@
 .rd-wk{display:inline-flex;gap:3px;margin-left:14px}.rd-wk i{width:14px;height:14px;border-radius:3px;background:rgba(244,239,228,.08)}.rd-wk i.on{background:#7fb2ff}.rd-wk i.now{outline:2px solid var(--gold,#d8c779);outline-offset:1px}
 .rd-legend{margin:4px 0 6px;font-size:16px;color:var(--muted,#9aa6b8)}.rd-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin:0 6px 0 14px}.rd-legend .on{background:#7fb2ff}.rd-legend .now{outline:2px solid var(--gold,#d8c779)}
 .rd-who{min-width:130px;margin-left:18px;text-align:right;font-size:17px;font-weight:700;color:var(--ivory,#f3efe5)}
+/* name left · schedule centred · owner right (David 2026-11-13: 時程放中間) */
+.sp-model.rd-sch{display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:16px}
+.rd-sch .rd-mid{display:flex;align-items:center;gap:14px}.rd-sch .rd-pr{margin-left:0}.rd-sch .rd-wk{margin-left:0}.rd-sch .rd-date{min-width:170px;text-align:center}
+.rd-sch .rd-who{justify-self:end;margin-left:0}
+.rd-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;padding:6px 28px 2px 24px;position:sticky;top:64px;z-index:2;background:rgba(8,10,14,.92);font-size:17px;font-weight:700;color:var(--gold,#d8c779)}
+.rd-head span:nth-child(2){width:420px;text-align:center}.rd-head span:last-child{text-align:right}
+@media(max-width:640px){.rd-head{display:none}}
+@media(max-width:640px){.sp-model.rd-sch{grid-template-columns:1fr}.rd-sch .rd-mid{flex-wrap:wrap}.rd-sch .rd-date{min-width:0;text-align:left}.rd-sch .rd-who{justify-self:start}}
 @media(max-width:640px){.rd-date{min-width:0;text-align:left}.rd-wk{margin-left:0}.rd-who{min-width:0;margin-left:0;text-align:left}}
 </style>
 </head>
@@ -61,9 +69,9 @@
   var wk=function(v){return Math.floor((new Date(v+"T00:00:00")-W0)/DAY/7)},md=function(v){return v?v.slice(5).replace("-","/"):"—"};
   var wlab=function(n){var a=new Date(+W0+n*7*DAY),b=new Date(+a+4*DAY),f=function(t){return (t.getMonth()+1)+"/"+t.getDate()};return "W"+(n+1)+" "+f(a)+"–"+f(b)};
   function strip(x){if(!x.start)return "";var a=wk(x.start),b=wk(x.end),h="";for(var n=0;n<8;n++)h+='<i class="'+(n>=a&&n<=b?"on":"")+(n===NOWW?" now":"")+'" title="'+wlab(n)+'"></i>';return '<span class="rd-wk" aria-label="'+wlab(a)+" to "+wlab(b)+'">'+h+"</span>"}
-  function todoRow(x){var pr=x.priority||"",live=x.start&&wk(x.start)<=NOWW&&wk(x.end)>=NOWW;return '<div class="sp-model soon rd '+(live?"prog":"wait")+'"'+(x.desc?' title="'+esc(x.desc+(x.deliverable?" · "+x.deliverable:""))+'"':'')+'><span class="sp-name">'+esc(x.task)+'</span>'+(pr?'<em class="rd-pr '+esc(pr.toLowerCase())+'">'+esc(pr)+'</em>':'')+'<span class="rd-date">'+md(x.start)+" → "+md(x.end)+(x.days?'<small>'+x.days+'d</small>':'')+'</span>'+strip(x)+'<span class="rd-who">'+(x.owner?esc(x.owner):"—")+'</span></div>'}
+  function todoRow(x){var pr=x.priority||"",live=x.start&&wk(x.start)<=NOWW&&wk(x.end)>=NOWW;return '<div class="sp-model soon rd rd-sch '+(live?"prog":"wait")+'"'+(x.desc?' title="'+esc(x.desc+(x.deliverable?" · "+x.deliverable:""))+'"':'')+'><span class="sp-name">'+esc(x.task)+'</span><span class="rd-mid">'+(pr?'<em class="rd-pr '+esc(pr.toLowerCase())+'">'+esc(pr)+'</em>':'')+'<span class="rd-date">'+md(x.start)+" → "+md(x.end)+(x.days?'<small>'+x.days+'d</small>':'')+'</span>'+strip(x)+'</span><span class="rd-who">'+(x.owner?esc(x.owner):"—")+'</span></div>'}
   var cats=[],byCat={};d.items.forEach(function(x){var c=x.category||"Other";if(!byCat[c]){byCat[c]=[];cats.push(c)}byCat[c].push(x)});
-  document.getElementById("rdTodo").innerHTML='<p class="rd-legend">Plan<small class="zhs">排程</small> '+wlab(0).slice(3)+' → '+wlab(7).slice(3)+'<i class="on"></i>planned week<small class="zhs">排定週</small><i class="now"></i>this week<small class="zhs">本週</small></p>'+cats.map(function(c){var f=byCat[c][0];return '<h4 class="rd-cat">'+esc(f.category_en||c)+'<small class="zhs">'+esc(c)+'</small><span class="rd-n">'+byCat[c].length+'</span></h4>'+byCat[c].map(todoRow).join("")}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
+  document.getElementById("rdTodo").innerHTML='<p class="rd-legend">Plan<small class="zhs">排程</small> '+wlab(0).slice(3)+' → '+wlab(7).slice(3)+'<i class="on"></i>planned week<small class="zhs">排定週</small><i class="now"></i>this week<small class="zhs">本週</small></p><div class="rd-head"><span>Item<small class="zhs">項目</small></span><span>Timeline<small class="zhs">時程</small></span><span>Owner<small class="zhs">負責人</small></span></div>'+cats.map(function(c){var f=byCat[c][0];return '<h4 class="rd-cat">'+esc(f.category_en||c)+'<small class="zhs">'+esc(c)+'</small><span class="rd-n">'+byCat[c].length+'</span></h4>'+byCat[c].map(todoRow).join("")}).join("")}).catch(function(){document.getElementById("rdTodo").innerHTML='<div class="sp-model soon"><span class="sp-name">Could not load the list</span></div>'});
 })();
 </script>
 <script src="debug-notes.js?v=3"></script>
