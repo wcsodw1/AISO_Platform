@@ -26,6 +26,7 @@ const EN_COPY = {
   "UI 美感設計 Agent：從需求到有質感、可直接使用的介面": "From a brief to a coherent, responsive interface.",
   "以對話描述場景需求，由本地 AI 產生 Blender Python、執行並根據 traceback 自動修復。此為公開安全的錄製展示，不連接內網模型。": "Describe a scene, generate Blender Python and review the repair workflow. This curated demo does not connect to a private model endpoint.",
   "依工作需求選擇合適算力": "Match the system to the workload.",
+  "建造屬於您的方案．依工作需求選擇合適算力": "Match the system to the workload.",
   "將滑鼠移至 Consumer、Workstation 或 Server，即可展開該類別的現有機型；不同設備對應不同模型規模、使用人數、Context 與部署情境。": "Explore systems by category, then compare model capacity, concurrency, context and deployment fit.",
   "從需求定義到 AI 真正進入應用": "From requirements to working AI.",
   "AISO 不只提供硬體。": "More than hardware.",
@@ -447,7 +448,17 @@ function renderCategory(id){
   grid.className="device-grid";
   const products=productsFor(id);
   if(!products.length){grid.innerHTML='<div class="empty-state">No systems in this category yet.</div>'}
+  const seenFam=new Set();
   products.forEach(product=>{
+    const fm=product.family;
+    if(fm){   // same machine family sold in several GPU counts: ONE card, with a 2 / 4 / 8 chooser
+      if(seenFam.has(fm.name))return;seenFam.add(fm.name);
+      const head=products.find(x=>x.family&&x.family.name===fm.name&&x.family.gpus)||product,opts=(head.family.gpus||[]);
+      const fc=document.createElement("div");fc.className="device-card device-family";
+      fc.innerHTML=`${productMedia(head,category)}<div class="device-card-body"><p class="eyebrow">${esc(category.name)}</p><h3>${esc(fm.name)}</h3><p>${esc(head.family.positioning||"")}</p><div class="gpu-pick" role="group" aria-label="GPU count 卡數"><span class="gpu-pick-l">GPUs<small class="zhs">卡數</small></span>${opts.map(o=>`<button type="button" class="gpu-chip" data-id="${esc(o.id)}"><b>${o.n}</b><small>${esc(o.zh)}</small></button>`).join("")}</div></div>`;
+      fc.querySelectorAll(".gpu-chip").forEach(b=>b.onclick=()=>renderDevice(b.dataset.id));
+      grid.appendChild(fc);return;
+    }
     const card=document.createElement("button");card.className="device-card";
     card.innerHTML=`${productMedia(product,category)}<div class="device-card-body"><p class="eyebrow">${esc(category.name)}</p><h3>${esc(product.name)}</h3><p>${bi(product.summary||product.positioning)}</p><div class="device-meta"><span>${esc(product.status)}</span><span>View Product →</span></div></div>`;
     card.onclick=()=>renderDevice(product.id);grid.appendChild(card);

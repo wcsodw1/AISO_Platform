@@ -23,7 +23,8 @@ const runs = k => k === "a" ? [4096, 8192, 16384].map(i => ({ np: 1, input: i, r
 const out = RC.html({ machines: [{ key: "a", label: "A", color: "#fff" }, { key: "b", label: "B", color: "#fff" }, { key: "c", label: "C", color: "#fff" }],
   runsFor: runs, metric: "aggregate_tps", inputs: [4096, 8192, 16384], np: 1, title: "Gemma26 / NP1" });
 assert.strictEqual((out.match(/class="rp-line"/g) || []).length, 3, "three repeat lines");
-assert.ok(out.includes("各輸入長度均已完成 Repeat 3"));
+assert.ok(out.includes("Repeat 3") && out.includes("rp-shared"), "shared legend once");
+assert.strictEqual((out.match(/class="rp-legend"/g) || []).length, 1, "one legend only");
 assert.ok(out.includes("沒有逐次 Repeat"), "machine with averages only");
 assert.ok(out.includes("此組合沒有資料"), "machine without data");
 console.log("repeat-chart: all assertions passed");

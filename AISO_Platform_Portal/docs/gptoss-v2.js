@@ -39,8 +39,8 @@ const c5=(k,key)=>mean(SC.filter(([,c])=>c===5).map(([i,c])=>at(TW,k,i,c)[key]))
 
 function renderSetup(){
  const s=V.scope,row=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
- $v("v2Setup").innerHTML=`<section class="v2-pane"><h2>實驗目的<span>Purpose</span></h2><p class="v2-goal">比較 <b>aiDAPTIV</b>、<b>LMCache</b> 相對 <b>Baseline</b>（無 KV 快取），以及 <b>LMCache 相對 aiDAPTIV</b> 的 TTFT、TPOT、TPS 差異。</p></section>
- <section class="v2-pane"><h2>測試方式及參數<span>Method &amp; Parameters</span></h2>
+ $v("v2Setup").innerHTML=`<section class="v2-pane"><h2>Purpose<span>實驗目的</span></h2><p class="v2-goal">比較 <b>aiDAPTIV</b>、<b>LMCache</b> 相對 <b>Baseline</b>（無 KV 快取），以及 <b>LMCache 相對 aiDAPTIV</b> 的 TTFT、TPOT、TPS 差異。</p></section>
+ <section class="v2-pane"><h2>Method &amp; Parameters<span>測試方式及參數</span></h2>
  <p class="v2-goal">每個情境送<b>同一組 Prompt</b>：<b>KV Cold</b> 1 次（快取空）→ <b>KV Warm</b> 3 次（快取已有）；測試 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出。</p>
  <dl class="v2-params">${row("Model 模型",vEsc(s.model))}${row("Context 上限",`${tok(s.max_model_len)} tokens`)}${row("Input 輸入",`${s.input_tokens.map(tok).join(" / ")} tokens<small class="v2-approx">約等於 4K / 8K / 16K</small>`)}${row("Output 輸出",`${s.output_tokens} tokens`)}${row("Concurrency 並發",s.concurrency.join(" / "))}</dl><p class="v2-fn">測試參數參照群聯提供之 benchmark 腳本</p></section>`;
 }
@@ -64,49 +64,19 @@ function renderCold(){
  $v("v2ColdTake").innerHTML=`<b>第一次請求需 offload 到 DRAM 與 SSD，各項數據慢於 Baseline 屬正常現象；即便如此，LMCache 平均在 TPOT、TPS 的表現仍皆優於 Baseline 與 aiDAPTIV。</b>`;
 }
 
-function msg(k){
- const d=METRICS[k],la=avg(TW,k,"la","Reuse");
- if(k==="tpot_ms")return `高 Concurrency（C5）比較中，LMCache 與 aiDAPTIV 各自優於 Baseline ${f1(c5(k,"lb"))}%, ${f1(c5(k,"ab"))}%；LMCache 優於 aiDAPTIV ${f1(c5(k,"la"))}%`;
- if(k==="output_tps"){const pi=i0=>mean(SC.filter(([i])=>i===i0).map(([i,c])=>at(TW,k,i,c).la));return `LMCache 平均 TPS 在 4K、8K、16K 分別較 aiDAPTIV 快出 ${f1(pi(3950))}%、${f1(pi(7950))}%、${f1(pi(15950))}%`}
- return `開啟 aiDAPTIV 或 LMCache 後效果皆遠優於 Baseline，同時 LMCache 平均優於 aiDAPTIV ${f1(la)}%`;
-}
-function niceStep(range){const raw=(range||1)/4,mag=10**Math.floor(Math.log10(raw));return [1,2,2.5,5,10].find(s=>s*mag>=raw)*mag}
-// Y axis runs 0..tallest bar; green/red % over each non-Baseline bar = improvement over Baseline.
-function chart(k,width){
- const d=METRICS[k],n=SC.length;
- // Drawn at 1:1 pixels (no viewBox scaling) so axis and label text stays the same size as the tables.
- const L=64,R=12,T=42,B=62,H=328,ih=H-T-B,W=Math.max(width,n*96+L+R),gw=(W-L-R)/n,bw=Math.min(40,(gw-10)/3),dec=bw>=34?1:0;
- const top=Math.max(...SC.flatMap(([i,c])=>MODES.map(m=>at(TW,k,i,c).v[m]))),step=niceStep(top),y=v=>T+ih-v/top*ih;
- let g="";
- for(let v=0;v<=top+1e-9;v+=step){const yy=y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,step<1?1:0)}</text>`}
- g+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${d.unit}</text>`;
- SC.forEach(([i,c],q)=>{
-  const x0=L+gw*q+(gw-bw*3-4)/2,t=at(TW,k,i,c);
-  MODES.forEach((m,j)=>{const v=t.v[m],x=x0+j*(bw+2),y1=y(v);
-   g+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1,y(0)-y1)}" rx="2" fill="${COL[m]}"><title>${NAME[m]} · ${i} · C${c}: ${num(v,d.dec)} ${d.unit}</title></rect>`;
-   if(m!=="baseline"){
-    const gv=m==="aidaptiv"?t.ab:t.lb,txt=`${gv>0?"+":"−"}${Math.abs(gv).toFixed(dec)}%`,lift=m==="lmcache"?14:0;  // LMCache labels sit higher so neighbours do not collide
-    g+=`<text class="bl ${gv>0?"up":"dn"}" x="${x+bw/2}" y="${y1-5-lift}" text-anchor="middle">${txt}</text>`}});
-  g+=`<text x="${L+gw*q+gw/2}" y="${H-34}" text-anchor="middle" class="xl">${tok(i)}</text><text x="${L+gw*q+gw/2}" y="${H-16}" text-anchor="middle" class="xl2">C${c}</text>`;
- });
- return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.short}">${g}</svg></div>`;
-}
-function metricTable(k){
- const d=METRICS[k];
- const rows=SC.map(([i,c])=>{const t=at(TW,k,i,c);return `<tr><td>${tok(i)}</td><td>C${c}</td><td>${num(t.v.baseline,d.dec)}</td><td class="a"><b>${num(t.v.aidaptiv,d.dec)}</b></td><td>${pct(t.ab)}</td><td class="l"><b>${num(t.v.lmcache,d.dec)}</b></td><td>${pct(t.lb)}</td><td class="la">${pct(t.la)}</td></tr>`}).join("");
- const foot=`<tr><td colspan="3">All Scenario average differential<small>全情境平均差異</small></td><td></td><td>${pct(avg(TW,k,"ab","Reuse"))}</td><td></td><td>${pct(avg(TW,k,"lb","Reuse"))}</td><td class="la">${pct(avg(TW,k,"la","Reuse"))}</td></tr>`;
- return `<p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Input</th><th>C</th><th class="b">Baseline</th><th class="a">aiDAPTIV ON</th><th>vs Baseline</th><th class="l">LMCache</th><th>vs Baseline</th><th class="la">LMCache vs aiDAPTIV</th></tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>`;
-}
+let CUR=null;   // selected concurrency (C1 / C2 / C5): one line chart per metric across the input lengths, like the NP selector on the B60 / B70 pages
 function renderMetrics(){
- const width=Math.max(0,($v("v2Metrics").clientWidth||900)-100);
- const legend=MODES.map(m=>`<span><i style="background:${COL[m]}"></i>${NAME[m]}</span>`).join("");
- $v("v2Metrics").innerHTML=Object.entries(METRICS).map(([k,d])=>`<section class="report-section v2-metric">
-  <header><h2>${d.short}<span class="zh">${d.zh}｜KV Warm</span></h2></header>
-  <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${msg(k)}</span><span class="v2-legend2">${legend}</span></p>
-  <div class="v2-chart">${chart(k,width)}</div>
-  <h3 class="v2-sub3">KV Warm 數據<span class="zh-i">${d.short} 比較中 LMCache 平均優於 aiDAPTIV ${f1(avg(TW,k,"la","Reuse"))}%</span></h3>
-  ${metricTable(k)}
+ // Same approach as the Intel B60 / B70 pages: shared line charts (bench-viz.js), one-sentence summary beside "full values".
+ const width=Math.max(320,($v("v2Metrics").clientWidth||900)-100),kk=i=>`${Math.round(i/1000)}K`,cs=[...new Set(SC.map(([,c])=>c))].sort((a,b)=>a-b);
+ if(!cs.includes(CUR))CUR=cs[0];
+ const groups=SC.filter(([,c])=>c===CUR).map(([i,c])=>({label:kk(i),sub:`${tok(i)} tokens`,i:`${i}/${c}`}));
+ const series=MODES.map(m=>({key:m,label:NAME[m],color:COL[m]}));
+ const pick=`<div class="cmp-pick v2-pick"><span>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" role="tablist" aria-label="Concurrency">${cs.map(c=>`<button type="button" role="tab" class="${c===CUR?"on":""} has" aria-selected="${c===CUR}" data-c="${c}">C${c}</button>`).join("")}</div></div>`;
+ $v("v2Metrics").innerHTML=pick+Object.entries(METRICS).map(([k,d])=>`<section class="report-section v2-metric">
+  ${BV.block({k,def:d,groups,series,baseline:"baseline",width,context:`GPT-OSS-20B · KV Warm · C${CUR}`,rowHead:"Input",tableNote:`差異以 Baseline 為基準；C${CUR} 下 LMCache vs aiDAPTIV 平均 ${f1(mean(SC.filter(([,c])=>c===CUR).map(([i,c])=>at(TW,k,i,c).la)))}%`,
+   get:(m,g)=>{const [i,c]=g.i.split("/").map(Number);const v=at(TW,k,i,c).v[m];return Number.isFinite(v)?{[k]:v}:null}})}
  </section>`).join("");
+ $v("v2Metrics").querySelectorAll(".v2-pick button").forEach(b=>b.onclick=()=>{CUR=+b.dataset.c;renderMetrics()});
 }
 function renderHits(){
  const r=(m,i,c)=>batch(m,i,c,"Reuse_1").external_hit_tokens,rate=(n,t)=>`${(n/t*100).toFixed(1)}%`,dl=[];

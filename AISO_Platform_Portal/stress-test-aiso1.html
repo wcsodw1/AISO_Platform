@@ -17,11 +17,12 @@
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="tesla.css?v=28">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
@@ -30,51 +31,51 @@
       <a class="pg-back" href="benchmark-hub.html"><span aria-hidden="true">←</span> 返回 Benchmark</a><p class="eyebrow">BENCHMARK / STRESS TEST / MINI-WORKSTATION · 2026-11-09</p>
       <h1>Stress Test｜AISO1 · AI MAX+ 395</h1>
       <div id="tmAnchor" class="tm-anchor"></div>
-      <p class="v2-sub">同機器 · 不同框架與模型<span class="zh-i">選擇框架、模型、NP 查看 AISO1 的 TTFT · TPOT · TPS</span></p>
+      <p class="v2-sub">One machine · every framework and model<span class="zh-i">同機器、不同框架與模型：AISO1 的 TTFT · TPOT · TPS</span></p>
       <div class="v2-setup" id="stSetup" aria-label="Purpose"></div>
       <aside class="v2-verdict" role="note" id="secVerdict" hidden><b>資料註記</b><p id="stNote"></p></aside>
     </section>
 
     <section class="report-section" id="secPick">
-      <header><h2>選擇條件<span class="zh">Framework · Model · NP</span></h2></header>
-      <div class="cmp-pick"><span>框架</span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
-      <div class="cmp-pick"><span>模型</span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
-      <div class="cmp-pick"><span>並發</span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
+      <header><h2>Select conditions<span class="zh">選擇條件</span></h2></header>
+      <div class="cmp-pick"><span>Framework<small class="zhs">框架</small></span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
+      <div class="cmp-pick"><span>Model<small class="zhs">模型</small></span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
+      <div class="cmp-pick"><span>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
     </section>
 
     <section class="report-section st-same" id="secSame">
-      <header><h2>測試參數<span class="zh">Key Parameters</span></h2></header>
+      <header><h2>Key parameters<span class="zh">測試參數</span></h2></header>
       <dl class="st-params" id="stParams"></dl><div id="stPend"></div>
     </section>
 
     <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh">AISO1 · 隨上方框架、模型、NP 切換</span></h2></header>
+      <header><h2>TTFT · TPOT · TPS<span class="zh">AISO1 · 四項指標</span></h2></header>
       <div id="stMetrics"></div>
     </section>
 
     <section class="report-section" id="secTable">
-      <header><h2>逐情境數值<span class="zh">AISO1 · 隨上方選擇切換</span></h2></header>
+      <header><h2>Values by scenario<span class="zh">逐情境數值</span></h2></header>
       <p class="v2-fine" id="stTableSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
     </section>
 
     <section class="report-section" id="secCover">
-      <header><h2>資料覆蓋<span class="zh">框架 × 模型（AISO1）</span></h2></header>
+      <header><h2>Coverage<span class="zh">資料覆蓋</span></h2></header>
       <div class="table-wrap"><table class="v2-table v2-sc" id="stCover"></table></div>
     </section>
 
     <section class="report-section" id="secTrouble" data-machine="AISO1"></section>
 
     <section class="report-section">
-      <header><h2>Data<span class="zh">AISO1 各框架資料</span></h2><a class="v2-dl" href="stress-test-compare.html">B60 vs B70 vs AISO1 比對 →</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json" download>llama.cpp JSON ↓</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_vLLM_20261015.json" download>vLLM JSON ↓</a></header>
+      <header><h2>Data<span class="zh">AISO1 各框架資料</span></h2><a class="v2-dl" href="stress-test-compare.html">Compare<small class="zhs">B60 vs B70 vs AISO1 比對</small> →</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json" download>Download .JSON · llama.cpp<small class="zhs">下載</small> ↓</a><a class="v2-dl" href="data/benchmark-aiso1/AISO_AISO1_vLLM_20261015.json" download>Download .JSON · vLLM<small class="zhs">下載</small> ↓</a></header>
       <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
     </section>
 
       <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
 
-  </main><script src="bench-viz.js?v=10"></script><script src="troubleshooting.js?v=3"></script><script src="stress-test-aiso1.js?v=4"></script>
+  </main><script src="bench-viz.js?v=19"></script><script src="troubleshooting.js?v=3tx"></script><script src="stress-test-aiso1.js?v=4v"></script>
 <script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"aiso1"})</script>
 <script src="debug-notes.js?v=3"></script>
-<script src="ui-min-type.js?v=1" defer></script>
+<script src="ui-min-type.js?v=2" defer></script>
 </body>
 </html>

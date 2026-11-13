@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Same model, three inference frameworks (vLLM, SGLang, llama.cpp) compared on TTFT, TPOT, Aggregate TPS and normalized TPS.">
+  <title>AISO — Framework Comparison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.3">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="tesla.css?v=28">
+  <link rel="stylesheet" href="build-system.css?v=36">
+  <link rel="stylesheet" href="run-wizard.css?v=29">
+  <link rel="stylesheet" href="framework-compare.css?v=12">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    
+  </header>
+
+  <main class="v2 st bs fc">
+    <section class="v2-hero">
+      <a class="pg-back" href="benchmark-hub.html#benchmarking"><span aria-hidden="true">←</span> 返回 Benchmark</a>
+      <h1>Framework Comparison<small class="zhs">框架比較</small></h1>
+      <p class="v2-sub">Same Model, Three Frameworks<span class="zh-i">同一模型・三種推論框架：vLLM、SGLang、llama.cpp</span></p>
+    </section>
+
+    <section class="report-section" id="fcMain">
+      <p class="bs-stp s1"><i>1</i><span>Machine<small class="zhs">機器</small></span></p>
+      <div class="mw fc-mw" id="fcMw"></div>
+      <div class="fc-pick">
+        <div class="fc-row"><span class="fc-lab">Input<small class="zhs">輸入長度</small></span><div class="fc-tabs" id="fcInput" role="tablist" aria-label="Input length"></div></div>
+      </div>
+
+      <p class="bs-stp s2"><i>2</i><span>Result<small class="zhs">結果</small></span></p>
+      <div class="fc-box">
+        <div class="fc-concl fc-speed" id="fcConcl"></div>
+        <div class="fc-tabs fc-idx" id="fcMetric" role="tablist" aria-label="Index"></div>
+        <p class="fc-sub" id="fcSub"></p>
+        <div class="fc-chart" id="fcChart"></div>
+      </div>
+
+      <p class="bs-stp s3"><i>3</i><span>Test parameters<small class="zhs">測試參數</small></span></p>
+      <div class="fc-box" id="fcParity"></div>
+    </section>
+  </main>
+  <script src="framework-compare.js?v=17"></script>
+  <script src="ui-min-type.js?v=2" defer></script>
+</body>
+</html>

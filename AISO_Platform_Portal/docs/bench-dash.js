@@ -26,7 +26,7 @@ function statusRow(){
   let cls="gd-ok",txt=`${rs.length}/${total} PASS`;
   if(rs.length<total){const r=(nr&&nr.reason)||"待測";const skip=/^SKIP/i.test(r),fail=!skip&&/STARTUP|FAIL/i.test(r);cls=fail?"gd-bad":"gd-off";txt=fail?"STARTUP_FAIL":skip?"SKIP_SOURCE":"待測"}
   return `<div class="gd-tile ${cls}" title="${esc(nr?nr.reason:txt)}"><b>${esc(f.label)}</b><span>${esc(m.name)}</span><em>${esc(txt)}</em></div>`}));
- return `<section class="gd-panel gd-wide"><header><h3>測試狀態（框架 × 模型）</h3><i class="gd-info" title="綠 = 9/9 個情境 PASS；紅 = 啟動失敗，沒有成績；灰 = 跳過或待測。">ⓘ</i></header><div class="gd-tiles">${tiles.join("")}</div></section>`;
+ return `<section class="gd-panel gd-wide"><header><h3>Test status<small class="zhs">測試狀態（框架 × 模型）</small></h3><i class="gd-info" title="綠 = 9/9 個情境 PASS；紅 = 啟動失敗，沒有成績；灰 = 跳過或待測。">ⓘ</i></header><div class="gd-tiles">${tiles.join("")}</div></section>`;
 }
 
 function barPanel(k,title,tip,thr){

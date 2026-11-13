@@ -232,7 +232,8 @@ $("exportPng").onclick=()=>exportCharts();
 $("exportPdf").onclick=()=>window.print();
 $("exportLogs").onclick=()=>state.jobs[0]&&downloadApi(`/exports/logs?job_id=${encodeURIComponent(state.jobs[0].job_id)}`,`${state.jobs[0].job_id}-logs.zip`).catch(error=>{$("runStatus").textContent=error.message});
 document.addEventListener("click",event=>{const button=event.target.closest(".tip");if(!button){$("tooltip").hidden=true;return}const box=button.getBoundingClientRect();$("tooltip").textContent=button.dataset.tip;$("tooltip").style.left=`${Math.min(innerWidth-300,box.left)}px`;$("tooltip").style.top=`${box.bottom+8}px`;$("tooltip").hidden=false});
-setInterval(()=>{if(state.token&&!document.hidden)refreshJobs()},1500);
+const pollActive=()=>{try{return !!liveSnapshot.active}catch{return false}};   // liveSnapshot is declared further down
+(function tickJobs(){if(state.token&&!document.hidden)refreshJobs();setTimeout(tickJobs,pollActive()?1500:8000)})();
 (function placeholders(){
   const defaults=[4096,8192,16384,32768,65536];
   $("inputTokens").innerHTML=defaults.map(token=>`<label><input type="checkbox" value="${token}" checked>${token/1024}K</label>`).join("");
@@ -340,7 +341,7 @@ async function refreshLive(){
       seen.rows=job.rows.length;
       if(job.status!==seen.status){tlog(`job ${job.id.slice(0,8)} ${job.status}`,job.status==="completed"?"ok":job.status==="running"?"":"err");seen.status=job.status}
     });
-    $("termState").textContent=liveSnapshot.active?"running":"idle";
+    $("termState").textContent=(liveSnapshot.active||window.__rwBusy)?"running":"idle";
     $("liveJobs").innerHTML=liveSnapshot.jobs.filter(job=>job.machine_id===machine()?.machine_id&&job.framework===framework()).map(job=>`<article class="job-card"><b>${esc(job.machine_id)} · ${esc(job.config.model)} · ${esc(job.status)}</b><p>MEASURED EXPLORATORY · ${job.rows.length}/${job.total_requests} requests${job.progress?` · ${job.progress.rounds_done}/${job.progress.rounds_total} 輪已存檔`:""}${(job.resumes||[]).length?` · 已續跑 ${job.resumes.length} 次`:""}${job.error?` · ${esc(job.error)}`:""}</p>${canResume(job)?`<button type="button" class="live-resume" data-job="${esc(job.id)}">從中斷處繼續（已完成 ${job.progress?job.progress.rounds_done:0}/${job.progress?job.progress.rounds_total:"?"} 輪，只補未完成的輪次）</button>`:""}${job.summary?sweepTable(job):""}${job.summary?"":job.rows.map(r=>`<p>Repeat ${r.repeat} / Request ${r.request}: ${r.valid?"Measured":"Failed"} · Input ${r.input_tokens_actual??"—"} · Output ${r.output_tokens_actual??"—"} · TTFT ${num(r.ttft_ms)} ms · TPOT ${num(r.tpot_ms)} ms · Aggregate ${num(r.aggregate_tps)} tok/s${r.error?` · ${esc(r.error)}`:""}</p>`).join("")}</article>`).join("");
   }catch(error){$("liveStatus").textContent=error.message}
 }
@@ -373,12 +374,12 @@ $("liveStart").onclick=async()=>{
 };
 $("liveStop").onclick=async()=>{try{const result=await post("/live/stop");$("liveStatus").textContent=result.message}catch(error){$("liveStatus").textContent=error.message}};
 $("liveExport").onclick=()=>saveBlob("live-benchmark-results.json",new Blob([JSON.stringify(liveSnapshot,null,2)],{type:"application/json"}));
-setInterval(refreshLive,1500);
+(function tickLive(){if(!document.hidden)refreshLive();setTimeout(tickLive,pollActive()?1500:8000)})();
 
 // Public-safe navigation catalog; real service details arrive only after authentication.
 const unitCatalog=[
   {id:"pro6000-tpi",vendor:"nvidia",name:"NVIDIA RTX PRO6000",tier:"Server-Workstation",detail:"TPI · 8 × RTX PRO 6000 Blackwell · 96 GB / GPU",gpu:"RTX PRO 6000 Blackwell Server Edition",count:8,vram:96,frameworks:["vllm","llamacpp"]},
-  {id:"aiso1-amd",vendor:"amd",name:"AISO1",tier:"Mini-workstation",detail:"AMD Ryzen AI Max+ 395 · 服務連線待設定",gpu:"Radeon iGPU (gfx1151)",count:1,vram:null,frameworks:["llamacpp","vllm","sglang"]},
+  {id:"aiso1-amd",vendor:"amd",name:"AISO1",tier:"Mini-workstation",detail:"AMD Ryzen AI Max+ 395 · 服務連線待設定",gpu:"Radeon iGPU",count:1,vram:null,frameworks:["llamacpp","vllm","sglang"]},
   {id:"intel-b70",vendor:"intel",name:"Intel Arc Pro B70",tier:"Mini-workstation",detail:"2 × Arc Pro B70 · 32 GB / GPU",gpu:"Arc Pro B70",count:2,vram:32,frameworks:["vllm","sglang","llamacpp"]}
 ];
 if(!state.meta){
@@ -499,3 +500,4 @@ function liveReady(kind){
   return true;
 }
 if(tokenStore.get()){state.token=tokenStore.get();$("connectButton").click()}
+else if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){state.token="local";$("connectButton").click()}   // opened on this computer: the server accepts it without a token

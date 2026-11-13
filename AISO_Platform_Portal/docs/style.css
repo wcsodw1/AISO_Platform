@@ -3380,3 +3380,23 @@ textarea{
 .case-stage.is-example em{border-color:rgba(243,239,229,.3);color:rgba(243,239,229,.6)}
 .bh-enter{display:inline-flex;align-items:center;gap:12px;margin:14px 0 6px}.bh-enter small{font-size:16px;opacity:.75}
 .bh-enter b{font-size:24px}.bh-enter{padding:16px 30px}
+
+/* Interface previews (Local AI / Interfaces): transparent, lighter glass instead of solid blue-grey panels */
+.interface-showcase{background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.04));-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-color:rgba(255,255,255,.24);box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.interface-showcase-head{border-bottom-color:rgba(255,255,255,.14)}
+.interface-mock{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22)}
+.interface-windowbar{background:rgba(255,255,255,.08)}
+.interface-app aside{background:rgba(255,255,255,.05);color:#c3ccd8}
+.interface-user{background:rgba(139,172,206,.24);border-color:rgba(139,172,206,.38)}
+.interface-answer{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18)}
+.interface-composer{background:rgba(255,255,255,.07)}
+.llama-clean{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22)}
+.llama-clean .interface-windowbar{background:rgba(255,255,255,.08)}
+.llama-message-user{background:rgba(255,255,255,.13)}
+
+/* home: "Build your own system" is the main entry of the products section: solid, large, right under the heading */
+.button.bs-entry{display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px 14px;width:auto;height:auto;margin-top:26px;padding:16px 34px;border-radius:999px;background:#d9cb8f;color:#05050a;text-decoration:none;border:0;box-shadow:0 10px 34px rgba(217,203,143,.25)}
+.button.bs-entry b{font-size:clamp(22px,2vw,26px);font-weight:800;line-height:1.2;letter-spacing:-.01em;white-space:nowrap}
+.button.bs-entry .copy-zh{display:inline;margin:0;font-size:clamp(20px,1.8vw,22px);font-weight:700;color:#05050a;opacity:1}
+.button.bs-entry i{font-style:normal;font-size:26px;line-height:1}
+.button.bs-entry:hover{filter:brightness(1.08);transform:translateY(-1px)}

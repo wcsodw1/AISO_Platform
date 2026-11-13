@@ -1,7 +1,7 @@
 {
  "title": "AISO1 · llama.cpp B1024",
  "completed": false,
- "summary": "In progress · 31/48 conditions complete (handoff 20261111_115737)",
+ "summary": "In progress · 37/48 conditions with values (handoff 20261111_115737)",
  "source": "Verbatim lines from the AISO1 terminal (partial) · manifest and runner hashes from the AISO1 handoff package. Not a completed run.",
  "runner": {
   "file": "AISO1_B1024_remaining.py (+ checkpoint_manifest.py)",

@@ -14,32 +14,39 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=50">
+  <link rel="stylesheet" href="gptoss-v2.css?v=51">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="tesla.css?v=28">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
-    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="benchmark-hub.html#sota">SOTA R&amp;D<small>前沿研究：LMCache …</small></a></div></div><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
     <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
   </header>
 
   <main class="v2 st">
     <section class="v2-hero">
-      <a class="pg-back" href="benchmark-hub.html"><span aria-hidden="true">←</span> 返回 Benchmark</a><p class="eyebrow">BENCHMARK / STRESS TEST / MINI-WORKSTATION · 2026-11-04</p>
-      <h1 id="pgTitle">Stress Test｜B60 vs B70 vs AISO1</h1>
-      <p class="v2-sub" id="pgSub">同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較三台機器的 TTFT · TPOT · TPS</span></p>
-      <nav class="pair-nav" id="stPairs" aria-label="兩兩比對"></nav>
+      <a class="pg-back" href="benchmark-hub.html"><span aria-hidden="true">←</span> 返回 Benchmark</a>
+      <h1 id="pgTitle">B60 vs B70 vs AISO1 <small class="zhs">Stress Test</small></h1>
+      <div class="pair-row"><nav class="pair-nav" id="stPairs" aria-label="Pairs 兩兩比對"></nav>
+      <div class="data-menu" id="dataMenu"><button type="button" class="dm-btn" aria-haspopup="true" aria-expanded="false">Data<small class="zhs">資料</small><span class="dm-caret" aria-hidden="true">▾</span></button>
+        <div class="dm-fly" role="menu" aria-label="Single-machine data"><p class="dm-h">Full Test Data<small class="zhs">各機完整測試資料</small></p>
+          <a role="menuitem" href="stress-test-report.html"><span>Full Report<small class="zhs">完整數據</small></span><i>→</i></a>
+          <a role="menuitem" href="stress-test-b60.html"><span>Intel B60<small class="zhs">完整測試</small></span><i>→</i></a>
+          <a role="menuitem" href="stress-test-b70.html"><span>Intel B70<small class="zhs">完整測試</small></span><i>→</i></a>
+          <a role="menuitem" href="stress-test-aiso1.html"><span>AISO1<small class="zhs">完整測試</small></span><i>→</i></a>
+          <a role="menuitem" href="data/benchmark-registry.json" download><span>Download .JSON<small class="zhs">下載資料</small></span><i>↓</i></a>
+          <p class="dm-foot v2-fine" id="stFoot"></p></div></div></div>
       <div class="v2-setup" id="stSetup" aria-label="Purpose and baseline"></div>
     </section>
 
     <section class="report-section" id="secPick">
-      <header><h2>Comparison Detail<span class="zh">比對細節</span></h2></header>
+      <header><h2>Compare<span class="zh">選擇比對</span></h2></header>
       <div id="stGap"></div>
-      <h3 class="gap-sub">選擇比對條件<small>Framework · Model · NP</small></h3>
-      <div class="cmp-pick"><span>框架</span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
-      <div class="cmp-pick"><span>模型</span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
-      <div class="cmp-pick"><span>並發</span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
+                  <div class="cmp-pick"><span><em>1</em>Framework<small class="zhs">框架</small></span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
+      <div class="cmp-pick"><span><em>2</em>Model<small class="zhs">模型</small></span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
+      <div class="cmp-pick"><span><em>3</em>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
       <p class="v2-fn">有資料的選項以實心標示；沒有任何機器資料的選項仍可點選，圖表會顯示為空。</p>
     </section>
 
@@ -51,7 +58,7 @@
     <section class="report-section" id="secRepeat">
       <header><h2>Repeat stability<span class="zh">Repeat 穩定度</span></h2><div class="st-tabs" id="rpMetric" role="tablist" aria-label="Repeat metric"></div></header>
       <div id="stRepeat"></div>
-      <p class="v2-fn">每條線是同一情境重複測試的一次（Repeat 1 / 2 / 3）；三條線越貼近，代表這台機器自己越穩定。只畫有逐次原始數值的資料：目前 B60（vLLM / SGLang / llama.cpp）、B70 llama.cpp（V4 batch 1024）與 AISO1 llama.cpp 重測有 TPS，TTFT / TPOT 逐次目前只有 B60。沒有逐次數值的機器顯示原因，不用平均值補。TPS (Normalized) = 每次 Aggregate ÷ NP。</p>
+      <p class="v2-fn">每條線是同一情境重複測試的一次；三條線越貼近，這台機器自己越穩定。沒有逐次數值的機器不畫，也不用平均值補。</p>
     </section>
 
     <section class="report-section" id="secTable">
@@ -74,14 +81,10 @@
     </section>
 
     <section class="report-section" id="secUnmatched" hidden></section>
+    <p class="v2-fine" id="stErr"></p>
 
-    <section class="report-section">
-      <header><h2>Data<span class="zh">各機器獨立頁</span></h2><a class="v2-dl" href="stress-test-report.html">Report<small class="zhs">壓測報告</small> →</a><a class="v2-dl" href="stress-test-b60.html">B60<small class="zhs">完整測試</small> →</a><a class="v2-dl" href="stress-test-b70.html">B70 →</a><a class="v2-dl" href="stress-test-aiso1.html">AISO1 →</a><a class="v2-dl" href="data/benchmark-registry.json" download>Registry JSON<small class="zhs">資料登錄</small> ↓</a></header>
-      <p class="v2-fine" id="stFoot"></p><p class="v2-fine" id="stErr"></p>
-    </section>
-
-  </main><script src="bench-viz.js?v=11"></script><script src="repeat-chart.js?v=1"></script><script src="hover-fold.js?v=1"></script><script src="stress-test-compare.js?v=35"></script>
+  </main><script src="bench-viz.js?v=19"></script><script src="repeat-chart.js?v=2"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-compare.js?v=56"></script>
 <script src="debug-notes.js?v=3"></script>
-<script src="ui-min-type.js?v=1" defer></script>
+<script src="ui-min-type.js?v=2" defer></script>
 </body>
 </html>

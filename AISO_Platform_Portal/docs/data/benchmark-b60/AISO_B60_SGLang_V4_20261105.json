@@ -620,7 +620,7 @@
  ],
  "retry": {
   "run_id": "B60_Gemma31_NP5_Retry_20261102_203122_3471357",
-  "log": "/home/sparkle/b60_benchmark/B60_Gemma31_NP5_Retry_20261102_203122.log",
+  "log": "B60_Gemma31_NP5_Retry_20261102_203122.log",
   "only_cases": [
    [
     5,

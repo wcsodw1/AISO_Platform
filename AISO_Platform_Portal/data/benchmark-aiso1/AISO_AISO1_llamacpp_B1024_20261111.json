@@ -2,13 +2,13 @@
  "dataset": "AISO_AISO1_llamacpp_B1024_20261111",
  "evidence_until": "2026-11-11",
  "generated_on": "2026-11-11",
- "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）：31 / 48 條件完整（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 20261111_115737；Runner 仍在執行，Laguna、Nemotron 尚未全部完成；NP5 跑不動，已省略（不列為缺口）。",
+ "note": "AISO1 llama.cpp B1024（batch 1024 統一參數）：36 / 48 條件有數值（TTFT／TPOT／Aggregate／Normalized 皆有），交接包 20261111_115737；Runner 仍在執行，Laguna、Nemotron 尚未全部完成；NP5 跑不動，已省略（不列為缺口）。 NP4（Laguna、Nemotron 各 3 個 Input × 3 次）取自 AISO1 的逐次結果檔，含 TTFT／TPOT。",
  "comparability": {
   "level": "retest_unverified",
   "text": "Partial data; not equivalent to V4；驗證：CSV/raw/repeat/basic KPI checks; provenance pending。參數：Batch 1024 / Ubatch 512 / Context 18432 每 slot / KV f16 / Flash Attention off。數值明顯低於 2026-11-09 重測，原因未查明（Gemma31 NP4 在原 log 標為 very slow／outlier，保留原值）。"
  },
  "profile": {
-  "machine": "AISO1 AMD (Radeon 8060S · RADV GFX1151 · Vulkan0 97 GiB)",
+  "machine": "AISO1 AMD (Radeon 8060S · 128 GB UMA: GPU 64 GB / system ~64 GB)",
   "framework": "llama.cpp",
   "np": [
    1,
@@ -23,7 +23,7 @@
   ],
   "output_tokens": 1024,
   "repeat": 3,
-  "runtime": "llama.cpp commit e937b17 · Vulkan (RADV GFX1151)",
+  "runtime": "llama.cpp 0.6.0-dev (build 1, commit e937b17) · Vulkan0 · Radeon 8060S (RADV GFX1151, 97499 MiB)",
   "slots": 10,
   "per_slot_context": 18432,
   "total_kv_by_np": {
@@ -53,7 +53,8 @@
   },
   "batch": 1024,
   "ubatch": 512,
-  "gpu_evidence": "機器回報 Radeon 8060S（RADV GFX1151）"
+  "gpu_evidence": "機器回報（llama-server）Vulkan0 · Radeon 8060S Graphics (RADV GFX1151) · 97499 MiB；preflight 2026-11-10",
+  "binary_sha256": "3392ba571bc32d7a1ab0889209a56bbfccb96d45874b0dbca8c1856fc1353f51"
  },
  "aiso1_runs": [
   {
@@ -957,6 +958,114 @@
    }
   },
   {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 129.008,
+   "tpot_ms": 105.929,
+   "aggregate_tps": 18.916,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "NP4_20261111_144405",
+   "valid_repeats": 3,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     29.963,
+     223.04,
+     134.02
+    ],
+    "tpot_ms": [
+     120.136,
+     99.59,
+     98.061
+    ],
+    "aggregate_tps": [
+     26.71,
+     12.588,
+     17.451
+    ],
+    "norm_tps": [
+     6.677,
+     3.147,
+     4.363
+    ]
+   }
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 509.911,
+   "tpot_ms": 135.614,
+   "aggregate_tps": 6.464,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "NP4_20261111_144405",
+   "valid_repeats": 3,
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     469.108,
+     655.926,
+     404.699
+    ],
+    "tpot_ms": [
+     136.417,
+     135.024,
+     135.401
+    ],
+    "aggregate_tps": [
+     6.716,
+     5.151,
+     7.525
+    ],
+    "norm_tps": [
+     1.679,
+     1.288,
+     1.881
+    ]
+   }
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 993.058,
+   "tpot_ms": 572.748,
+   "aggregate_tps": 3.261,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "NP4_20261111_144405",
+   "valid_repeats": 3,
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     1178.393,
+     244.638,
+     1556.142
+    ],
+    "tpot_ms": [
+     217.852,
+     516.071,
+     984.322
+    ],
+    "aggregate_tps": [
+     2.915,
+     5.274,
+     1.596
+    ],
+    "norm_tps": [
+     0.729,
+     1.318,
+     0.399
+    ]
+   }
+  },
+  {
    "model": "Nemotron",
    "format": "GGUF UD-Q4_K_M",
    "np": 1,
@@ -1171,6 +1280,114 @@
      10.237
     ]
    }
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 13.912,
+   "tpot_ms": 52.83,
+   "aggregate_tps": 60.241,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "NP4_20261111_144405",
+   "valid_repeats": 3,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     10.288,
+     15.732,
+     15.717
+    ],
+    "tpot_ms": [
+     52.016,
+     53.242,
+     53.233
+    ],
+    "aggregate_tps": [
+     64.315,
+     58.193,
+     58.214
+    ],
+    "norm_tps": [
+     16.079,
+     14.548,
+     14.553
+    ]
+   }
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 37.648,
+   "tpot_ms": 78.428,
+   "aggregate_tps": 34.655,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "NP4_20261111_144405",
+   "valid_repeats": 3,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     32.285,
+     41.266,
+     39.394
+    ],
+    "tpot_ms": [
+     78.421,
+     80.015,
+     76.846
+    ],
+    "aggregate_tps": [
+     36.25,
+     33.139,
+     34.576
+    ],
+    "norm_tps": [
+     9.062,
+     8.285,
+     8.644
+    ]
+   }
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 255.036,
+   "tpot_ms": 188.461,
+   "aggregate_tps": 10.498,
+   "decode_tps": null,
+   "status": "PASS",
+   "campaign": "NP4_20261111_144405",
+   "valid_repeats": 3,
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     94.693,
+     336.203,
+     334.212
+    ],
+    "tpot_ms": [
+     147.176,
+     208.551,
+     209.656
+    ],
+    "aggregate_tps": [
+     16.612,
+     7.436,
+     7.447
+    ],
+    "norm_tps": [
+     4.153,
+     1.859,
+     1.862
+    ]
+   }
   }
  ],
  "partial_runs": [
@@ -1201,23 +1418,13 @@
    "model": "Gemma31",
    "reason": "待測（Runner 執行中）",
    "conditions": 2
-  },
-  {
-   "model": "Laguna",
-   "reason": "待測（Runner 執行中）",
-   "conditions": 6
-  },
-  {
-   "model": "Nemotron",
-   "reason": "待測（Runner 執行中）",
-   "conditions": 6
   }
  ],
  "config_by_model": {
   "Gemma26": {
-   "repo": null,
+   "repo": "google/gemma-4-26B-A4B-it-qat-q4_0-gguf",
    "format": "GGUF Q4_0",
-   "backend": "llama.cpp（版本未核實）",
+   "backend": "llama.cpp commit e937b17 · Vulkan",
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
@@ -1225,12 +1432,16 @@
    "mem_fraction": null,
    "cache": "KV f16 · Flash Attention off",
    "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
-   "date": "2026-11-10 ~ 11"
+   "date": "2026-11-10 ~ 11",
+   "revision": "d1c082be9cf3c8a514acf63b8761f4b41935842e",
+   "file": "gemma-4-26B_q4_0-it.gguf",
+   "sha256": "3eca3b8f6d7baf218a7dd6bba5fb59a56ee25fe2d567b6f5f589b4f697eca51d",
+   "bytes": 14439363584
   },
   "Gemma31": {
-   "repo": null,
+   "repo": "google/gemma-4-31B-it-qat-q4_0-gguf",
    "format": "GGUF Q4_0",
-   "backend": "llama.cpp（版本未核實）",
+   "backend": "llama.cpp commit e937b17 · Vulkan",
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
@@ -1238,12 +1449,16 @@
    "mem_fraction": null,
    "cache": "KV f16 · Flash Attention off",
    "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
-   "date": "2026-11-10 ~ 11"
+   "date": "2026-11-10 ~ 11",
+   "revision": "59dde24573e7e61570dba08b18a2e1fe246955ed",
+   "file": "gemma-4-31B_q4_0-it.gguf",
+   "sha256": "179cfb99212709597eae5929112cfca677e1bbf566178b479ae1da0c4772874b",
+   "bytes": 17651001568
   },
   "Laguna": {
-   "repo": null,
+   "repo": "poolside/Laguna-XS-2.1-GGUF",
    "format": "GGUF Q4_K_M",
-   "backend": "llama.cpp（版本未核實）",
+   "backend": "llama.cpp commit e937b17 · Vulkan",
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
@@ -1251,12 +1466,16 @@
    "mem_fraction": null,
    "cache": "KV f16 · Flash Attention off",
    "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
-   "date": "2026-11-10 ~ 11"
+   "date": "2026-11-10 ~ 11",
+   "revision": "1a37c0a5fb8c7a18e6106decb6be6327d1b63fa6",
+   "file": "Laguna-XS-2.1-Q4_K_M.gguf",
+   "sha256": "1ac7079101fca5a6df8c5a7523a3c30ea7d1c0e4b1258090e7d6d4039287f6cb",
+   "bytes": 20274300032
   },
   "Nemotron": {
-   "repo": null,
+   "repo": "unsloth/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-GGUF",
    "format": "GGUF UD-Q4_K_M",
-   "backend": "llama.cpp（版本未核實）",
+   "backend": "llama.cpp commit e937b17 · Vulkan",
    "tp": null,
    "max_context": "18432 / slot",
    "batch": "batch 1024 / ubatch 512",
@@ -1264,7 +1483,11 @@
    "mem_fraction": null,
    "cache": "KV f16 · Flash Attention off",
    "run_id": "AISO1_llamacpp_B1024 (handoff 20261111_115737)",
-   "date": "2026-11-10 ~ 11"
+   "date": "2026-11-10 ~ 11",
+   "revision": "f2d3fe3694501008786e81e5f20360cbf715496a",
+   "file": "NVIDIA-Nemotron-3.5-Lightning-30B-A3B-UD-Q4_K_M.gguf",
+   "sha256": "edcb5d4650796ed2fb412498de6f83b585862312c747ddb74f0ea04b22206181",
+   "bytes": 25266255936
   }
  },
  "source_file": "AISO1 handoff 20261111_115737: aiso1_platform_cases.csv, aiso1_manifest.json",
@@ -1289,6 +1512,9 @@
   },
   "cases_csv_sha256": "6b6c4fbab2b865d69cfc9467e0dd8a92ec66e8e7ce11f0b807b025c3e6500fee",
   "manifest_sha256": "bb04006d609d0b7debfd5ce84fe51b5206a2604dbb7e668f7e118aba3d19b94e",
-  "repeats_csv_sha256": "61d5b3ae9bb49efe6ef643b9bd4e32c04931cd5b556c4ecb62df23e799eb45fb"
+  "repeats_csv_sha256": "61d5b3ae9bb49efe6ef643b9bd4e32c04931cd5b556c4ecb62df23e799eb45fb",
+  "np4_wave_lines_sha256": "f2c8f9a11bda2e27f07b2f83b08368fd05c3c9d4ecc2245be4a445db5151485f",
+  "np4_repeats_csv_sha256": "6cd436e7014a3358bda766baffac08684f539fd977d7fe95c9a3afc118d59855",
+  "profile_source": "AISO1 campaign profile.json (NP4_20261111_144405), public-safe fields only; model sha256 / revision / binary sha256 recorded"
  }
 }

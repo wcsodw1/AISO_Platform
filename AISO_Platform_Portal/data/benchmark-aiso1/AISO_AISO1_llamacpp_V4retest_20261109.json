@@ -8,7 +8,7 @@
     "text": "AISO1 llama.cpp 為 2026-11-09 重測（b11561，與 B60 V4 同版本，4 個 GGUF 皆 SHA 驗證通過）。輸出格式、驗證函式與案例矩陣和 B60 V4 腳本一致，且每個 NP 重啟伺服器、36 組原始資料已重新驗證（ORIGINAL_36_RAW_VERIFIED=PASS）；但測試程式原始碼與伺服器啟動參數（Context／Slots／Batch）尚未逐項比對，NP4 的 TTFT／TPOT 尚缺，因此仍標為待核實。"
   },
   "profile": {
-    "machine": "AISO1 AMD (Radeon 8060S · RADV GFX1151 · Vulkan0 97 GiB)",
+    "machine": "AISO1 AMD (Radeon 8060S · 128 GB UMA: GPU 64 GB / system ~64 GB)",
     "framework": "llama.cpp",
     "np": [
       1,

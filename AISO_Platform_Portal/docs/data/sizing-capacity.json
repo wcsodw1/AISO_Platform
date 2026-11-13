@@ -1,0 +1,2300 @@
+{
+ "per_slot_context": 18432,
+ "weights_gb_source": "AISO1 dataset config_by_model.bytes (GGUF files, llama.cpp rows only)",
+ "threshold_tps": 15.0,
+ "metric": "e2e",
+ "rule": "highest tested NP whose per-user speed >= threshold; '-' when even the smallest tested NP is below it",
+ "rows": [
+  {
+   "machine": "B60",
+   "framework": "vLLM",
+   "role": "main",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "W4A16",
+   "weights_gb": null,
+   "dataset": "benchmark-b60/AISO_B60_vLLM_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 18.27,
+       "ttft_s": 11.8
+      },
+      {
+       "np": 2,
+       "tps": 14.28,
+       "ttft_s": 17.7
+      },
+      {
+       "np": 5,
+       "tps": 7.43,
+       "ttft_s": 42.4
+      }
+     ],
+     "np": 1,
+     "tps": 18.27,
+     "ttft_s": 11.8,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 11.47,
+       "ttft_s": 38.5
+      },
+      {
+       "np": 2,
+       "tps": 7.59,
+       "ttft_s": 58.0
+      },
+      {
+       "np": 5,
+       "tps": 3.6,
+       "ttft_s": 118.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 5.1,
+       "ttft_s": 140.5
+      },
+      {
+       "np": 2,
+       "tps": 2.86,
+       "ttft_s": 211.0
+      },
+      {
+       "np": 5,
+       "tps": 1.17,
+       "ttft_s": 460.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "vLLM",
+   "role": "main",
+   "model": "Laguna",
+   "arch": "MoE",
+   "format": "FP8",
+   "weights_gb": null,
+   "dataset": "benchmark-b60/AISO_B60_vLLM_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 57.96,
+       "ttft_s": 0.9
+      },
+      {
+       "np": 2,
+       "tps": 52.72,
+       "ttft_s": 1.4
+      },
+      {
+       "np": 5,
+       "tps": 40.0,
+       "ttft_s": 3.2
+      }
+     ],
+     "np": 5,
+     "tps": 40.0,
+     "ttft_s": 3.2,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": true
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 54.62,
+       "ttft_s": 1.8
+      },
+      {
+       "np": 2,
+       "tps": 47.5,
+       "ttft_s": 2.8
+      },
+      {
+       "np": 5,
+       "tps": 33.08,
+       "ttft_s": 6.1
+      }
+     ],
+     "np": 5,
+     "tps": 33.08,
+     "ttft_s": 6.1,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": true
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 48.51,
+       "ttft_s": 3.9
+      },
+      {
+       "np": 2,
+       "tps": 39.16,
+       "ttft_s": 5.9
+      },
+      {
+       "np": 5,
+       "tps": 24.17,
+       "ttft_s": 12.2
+      }
+     ],
+     "np": 5,
+     "tps": 24.17,
+     "ttft_s": 12.2,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": true
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "SGLang",
+   "role": "main",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "W4A16",
+   "weights_gb": null,
+   "dataset": "benchmark-b60/AISO_B60_SGLang_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 11.88,
+       "ttft_s": 4.0
+      },
+      {
+       "np": 2,
+       "tps": 11.19,
+       "ttft_s": 6.0
+      },
+      {
+       "np": 5,
+       "tps": 9.91,
+       "ttft_s": 12.0
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 11.63,
+       "ttft_s": 8.1
+      },
+      {
+       "np": 2,
+       "tps": 10.27,
+       "ttft_s": 12.3
+      },
+      {
+       "np": 5,
+       "tps": 4.88,
+       "ttft_s": 25.0
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 10.61,
+       "ttft_s": 17.1
+      },
+      {
+       "np": 2,
+       "tps": 8.67,
+       "ttft_s": 25.8
+      },
+      {
+       "np": 5,
+       "tps": 3.09,
+       "ttft_s": 117.6
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "SGLang",
+   "role": "main",
+   "model": "Laguna",
+   "arch": "MoE",
+   "format": "FP8",
+   "weights_gb": null,
+   "dataset": "benchmark-b60/AISO_B60_SGLang_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 8.34,
+       "ttft_s": 2.4
+      },
+      {
+       "np": 2,
+       "tps": 8.22,
+       "ttft_s": 3.7
+      },
+      {
+       "np": 5,
+       "tps": 7.83,
+       "ttft_s": 7.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 8.29,
+       "ttft_s": 4.8
+      },
+      {
+       "np": 2,
+       "tps": 7.84,
+       "ttft_s": 7.4
+      },
+      {
+       "np": 5,
+       "tps": 6.68,
+       "ttft_s": 15.6
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 8.0,
+       "ttft_s": 9.6
+      },
+      {
+       "np": 2,
+       "tps": 7.31,
+       "ttft_s": 14.6
+      },
+      {
+       "np": 5,
+       "tps": 6.03,
+       "ttft_s": 29.7
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Gemma26",
+   "arch": "MoE",
+   "format": "GGUF Q4_0",
+   "weights_gb": 14.4,
+   "dataset": "benchmark-b60/AISO_B60_llamacpp_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 31.11,
+       "ttft_s": 4.3
+      },
+      {
+       "np": 2,
+       "tps": 20.27,
+       "ttft_s": 10.2
+      },
+      {
+       "np": 5,
+       "tps": 10.07,
+       "ttft_s": 23.3
+      }
+     ],
+     "np": 2,
+     "tps": 20.27,
+     "ttft_s": 10.2,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 24.91,
+       "ttft_s": 8.3
+      },
+      {
+       "np": 2,
+       "tps": 16.94,
+       "ttft_s": 17.7
+      },
+      {
+       "np": 5,
+       "tps": 7.45,
+       "ttft_s": 39.9
+      }
+     ],
+     "np": 2,
+     "tps": 16.94,
+     "ttft_s": 17.7,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 19.4,
+       "ttft_s": 16.9
+      },
+      {
+       "np": 2,
+       "tps": 12.6,
+       "ttft_s": 33.5
+      },
+      {
+       "np": 5,
+       "tps": 4.71,
+       "ttft_s": 78.8
+      }
+     ],
+     "np": 1,
+     "tps": 19.4,
+     "ttft_s": 16.9,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "GGUF Q4_0",
+   "weights_gb": 17.7,
+   "dataset": "benchmark-b60/AISO_B60_llamacpp_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 11.52,
+       "ttft_s": 20.7
+      },
+      {
+       "np": 2,
+       "tps": 8.23,
+       "ttft_s": 44.2
+      },
+      {
+       "np": 5,
+       "tps": 3.56,
+       "ttft_s": 107.9
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 8.4,
+       "ttft_s": 41.3
+      },
+      {
+       "np": 2,
+       "tps": 5.86,
+       "ttft_s": 86.9
+      },
+      {
+       "np": 5,
+       "tps": 2.31,
+       "ttft_s": 187.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 5.87,
+       "ttft_s": 84.4
+      },
+      {
+       "np": 2,
+       "tps": 3.71,
+       "ttft_s": 157.4
+      },
+      {
+       "np": 5,
+       "tps": 1.3,
+       "ttft_s": 360.3
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Laguna",
+   "arch": "MoE",
+   "format": "GGUF Q4_K_M",
+   "weights_gb": 20.3,
+   "dataset": "benchmark-b60/AISO_B60_llamacpp_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 50.64,
+       "ttft_s": 3.2
+      },
+      {
+       "np": 2,
+       "tps": 23.05,
+       "ttft_s": 9.0
+      },
+      {
+       "np": 5,
+       "tps": 10.44,
+       "ttft_s": 22.8
+      }
+     ],
+     "np": 2,
+     "tps": 23.05,
+     "ttft_s": 9.0,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 38.61,
+       "ttft_s": 6.8
+      },
+      {
+       "np": 2,
+       "tps": 19.13,
+       "ttft_s": 15.2
+      },
+      {
+       "np": 5,
+       "tps": 7.41,
+       "ttft_s": 39.9
+      }
+     ],
+     "np": 2,
+     "tps": 19.13,
+     "ttft_s": 15.2,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 26.18,
+       "ttft_s": 14.6
+      },
+      {
+       "np": 2,
+       "tps": 13.13,
+       "ttft_s": 31.1
+      },
+      {
+       "np": 5,
+       "tps": 4.35,
+       "ttft_s": 85.1
+      }
+     ],
+     "np": 1,
+     "tps": 26.18,
+     "ttft_s": 14.6,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B60",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Nemotron",
+   "arch": "MoE (hybrid)",
+   "format": "GGUF UD-Q4_K_M",
+   "weights_gb": 25.3,
+   "dataset": "benchmark-b60/AISO_B60_llamacpp_V4_20261105.json",
+   "comparability": null,
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 41.72,
+       "ttft_s": 4.0
+      },
+      {
+       "np": 2,
+       "tps": 20.5,
+       "ttft_s": 8.9
+      },
+      {
+       "np": 5,
+       "tps": 10.4,
+       "ttft_s": 20.2
+      }
+     ],
+     "np": 2,
+     "tps": 20.5,
+     "ttft_s": 8.9,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 35.84,
+       "ttft_s": 7.6
+      },
+      {
+       "np": 2,
+       "tps": 17.54,
+       "ttft_s": 15.9
+      },
+      {
+       "np": 5,
+       "tps": 8.13,
+       "ttft_s": 36.6
+      }
+     ],
+     "np": 2,
+     "tps": 17.54,
+     "ttft_s": 15.9,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 28.06,
+       "ttft_s": 15.1
+      },
+      {
+       "np": 2,
+       "tps": 13.32,
+       "ttft_s": 29.4
+      },
+      {
+       "np": 5,
+       "tps": 5.49,
+       "ttft_s": 68.4
+      }
+     ],
+     "np": 1,
+     "tps": 28.06,
+     "ttft_s": 15.1,
+     "tested_nps": [
+      1,
+      2,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B70",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Gemma26",
+   "arch": "MoE",
+   "format": "GGUF Q4_0",
+   "weights_gb": 14.4,
+   "dataset": "benchmark-b70/AISO_B70_llamacpp_V4B1024_20261110.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 30.72,
+       "ttft_s": 8.4
+      },
+      {
+       "np": 2,
+       "tps": 16.41,
+       "ttft_s": 16.1
+      },
+      {
+       "np": 4,
+       "tps": 10.29,
+       "ttft_s": 30.9
+      },
+      {
+       "np": 5,
+       "tps": 8.59,
+       "ttft_s": 38.2
+      }
+     ],
+     "np": 2,
+     "tps": 16.41,
+     "ttft_s": 16.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 24.95,
+       "ttft_s": 12.5
+      },
+      {
+       "np": 2,
+       "tps": 13.31,
+       "ttft_s": 26.9
+      },
+      {
+       "np": 4,
+       "tps": 7.62,
+       "ttft_s": 54.6
+      },
+      {
+       "np": 5,
+       "tps": 6.15,
+       "ttft_s": 68.8
+      }
+     ],
+     "np": 1,
+     "tps": 24.95,
+     "ttft_s": 12.5,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 19.18,
+       "ttft_s": 23.2
+      },
+      {
+       "np": 2,
+       "tps": 9.88,
+       "ttft_s": 47.2
+      },
+      {
+       "np": 4,
+       "tps": 5.29,
+       "ttft_s": 95.2
+      },
+      {
+       "np": 5,
+       "tps": 4.3,
+       "ttft_s": 112.9
+      }
+     ],
+     "np": 1,
+     "tps": 19.18,
+     "ttft_s": 23.2,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B70",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "GGUF Q4_0",
+   "weights_gb": 17.7,
+   "dataset": "benchmark-b70/AISO_B70_llamacpp_V4B1024_20261110.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 15.91,
+       "ttft_s": 15.2
+      },
+      {
+       "np": 2,
+       "tps": 11.68,
+       "ttft_s": 26.6
+      },
+      {
+       "np": 4,
+       "tps": 8.06,
+       "ttft_s": 42.8
+      },
+      {
+       "np": 5,
+       "tps": 6.92,
+       "ttft_s": 50.9
+      }
+     ],
+     "np": 1,
+     "tps": 15.91,
+     "ttft_s": 15.2,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 11.99,
+       "ttft_s": 23.7
+      },
+      {
+       "np": 2,
+       "tps": 9.16,
+       "ttft_s": 41.4
+      },
+      {
+       "np": 4,
+       "tps": 5.68,
+       "ttft_s": 71.9
+      },
+      {
+       "np": 5,
+       "tps": 4.74,
+       "ttft_s": 87.9
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 9.07,
+       "ttft_s": 44.3
+      },
+      {
+       "np": 2,
+       "tps": 6.33,
+       "ttft_s": 76.7
+      },
+      {
+       "np": 4,
+       "tps": 3.56,
+       "ttft_s": 130.3
+      },
+      {
+       "np": 5,
+       "tps": 2.95,
+       "ttft_s": 155.6
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B70",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Laguna",
+   "arch": "MoE",
+   "format": "GGUF Q4_K_M",
+   "weights_gb": 20.3,
+   "dataset": "benchmark-b70/AISO_B70_llamacpp_V4B1024_20261110.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 36.92,
+       "ttft_s": 7.2
+      },
+      {
+       "np": 2,
+       "tps": 17.72,
+       "ttft_s": 20.1
+      },
+      {
+       "np": 4,
+       "tps": 11.21,
+       "ttft_s": 44.4
+      },
+      {
+       "np": 5,
+       "tps": 9.4,
+       "ttft_s": 54.7
+      }
+     ],
+     "np": 2,
+     "tps": 17.72,
+     "ttft_s": 20.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 34.0,
+       "ttft_s": 8.6
+      },
+      {
+       "np": 2,
+       "tps": 15.87,
+       "ttft_s": 24.1
+      },
+      {
+       "np": 4,
+       "tps": 8.46,
+       "ttft_s": 62.0
+      },
+      {
+       "np": 5,
+       "tps": 7.16,
+       "ttft_s": 72.9
+      }
+     ],
+     "np": 2,
+     "tps": 15.87,
+     "ttft_s": 24.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 26.84,
+       "ttft_s": 15.1
+      },
+      {
+       "np": 2,
+       "tps": 13.01,
+       "ttft_s": 34.0
+      },
+      {
+       "np": 4,
+       "tps": 5.5,
+       "ttft_s": 110.8
+      },
+      {
+       "np": 5,
+       "tps": 4.56,
+       "ttft_s": 128.0
+      }
+     ],
+     "np": 1,
+     "tps": 26.84,
+     "ttft_s": 15.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B70",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Nemotron",
+   "arch": "MoE (hybrid)",
+   "format": "GGUF UD-Q4_K_M",
+   "weights_gb": 25.3,
+   "dataset": "benchmark-b70/AISO_B70_llamacpp_V4B1024_20261110.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 60.04,
+       "ttft_s": 3.0
+      },
+      {
+       "np": 2,
+       "tps": 29.52,
+       "ttft_s": 5.1
+      },
+      {
+       "np": 4,
+       "tps": 18.34,
+       "ttft_s": 8.4
+      },
+      {
+       "np": 5,
+       "tps": 15.25,
+       "ttft_s": 9.8
+      }
+     ],
+     "np": 5,
+     "tps": 15.25,
+     "ttft_s": 9.8,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": true
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 54.56,
+       "ttft_s": 4.3
+      },
+      {
+       "np": 2,
+       "tps": 26.28,
+       "ttft_s": 7.8
+      },
+      {
+       "np": 4,
+       "tps": 15.54,
+       "ttft_s": 13.3
+      },
+      {
+       "np": 5,
+       "tps": 12.16,
+       "ttft_s": 17.3
+      }
+     ],
+     "np": 4,
+     "tps": 15.54,
+     "ttft_s": 13.3,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 43.49,
+       "ttft_s": 8.5
+      },
+      {
+       "np": 2,
+       "tps": 21.08,
+       "ttft_s": 14.2
+      },
+      {
+       "np": 4,
+       "tps": 11.09,
+       "ttft_s": 27.2
+      },
+      {
+       "np": 5,
+       "tps": 8.46,
+       "ttft_s": 33.8
+      }
+     ],
+     "np": 2,
+     "tps": 21.08,
+     "ttft_s": 14.2,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B70",
+   "framework": "vLLM",
+   "role": "historical",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "QAT W4A16",
+   "weights_gb": null,
+   "dataset": "benchmark-b70/AISO_B70_vLLM_20261019.json",
+   "comparability": "historical",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 10.21,
+       "ttft_s": 10.6
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 7.45,
+       "ttft_s": 38.0
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 3.63,
+       "ttft_s": 146.6
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "B70",
+   "framework": "SGLang",
+   "role": "historical",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "QAT W4A16",
+   "weights_gb": null,
+   "dataset": "benchmark-b70/AISO_B70_SGLang_20261022.json",
+   "comparability": "historical",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 12.27,
+       "ttft_s": 2.3
+      },
+      {
+       "np": 4,
+       "tps": 12.37,
+       "ttft_s": 3.7
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 12.28,
+       "ttft_s": 4.6
+      },
+      {
+       "np": 4,
+       "tps": 11.41,
+       "ttft_s": 8.0
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 10.99,
+       "ttft_s": 9.7
+      },
+      {
+       "np": 4,
+       "tps": 10.05,
+       "ttft_s": 16.7
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2,
+      4
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Gemma26",
+   "arch": "MoE",
+   "format": "GGUF Q4_0",
+   "weights_gb": 14.4,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 25.69,
+       "ttft_s": 6.8
+      },
+      {
+       "np": 2,
+       "tps": 7.16,
+       "ttft_s": 18.0
+      },
+      {
+       "np": 4,
+       "tps": 2.35,
+       "ttft_s": 598.4
+      },
+      {
+       "np": 5,
+       "tps": 1.74,
+       "ttft_s": 1144.3
+      }
+     ],
+     "np": 1,
+     "tps": 25.69,
+     "ttft_s": 6.8,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 15.21,
+       "ttft_s": 11.9
+      },
+      {
+       "np": 2,
+       "tps": 5.94,
+       "ttft_s": 31.2
+      },
+      {
+       "np": 4,
+       "tps": 1.47,
+       "ttft_s": 986.8
+      }
+     ],
+     "np": 1,
+     "tps": 15.21,
+     "ttft_s": 11.9,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 10.64,
+       "ttft_s": 24.7
+      },
+      {
+       "np": 2,
+       "tps": 4.56,
+       "ttft_s": 55.8
+      },
+      {
+       "np": 4,
+       "tps": 1.87,
+       "ttft_s": 217.1
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "GGUF Q4_0",
+   "weights_gb": 17.7,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 5.38,
+       "ttft_s": 29.7
+      },
+      {
+       "np": 2,
+       "tps": 1.88,
+       "ttft_s": 78.4
+      },
+      {
+       "np": 4,
+       "tps": 0.59,
+       "ttft_s": 2608.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 3.04,
+       "ttft_s": 53.7
+      },
+      {
+       "np": 2,
+       "tps": 1.5,
+       "ttft_s": 129.6
+      },
+      {
+       "np": 4,
+       "tps": 0.44,
+       "ttft_s": 3225.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 2.41,
+       "ttft_s": 111.4
+      },
+      {
+       "np": 2,
+       "tps": 1.11,
+       "ttft_s": 260.4
+      },
+      {
+       "np": 4,
+       "tps": 0.27,
+       "ttft_s": 3099.3
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Laguna",
+   "arch": "MoE",
+   "format": "GGUF Q4_K_M",
+   "weights_gb": 20.3,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 29.45,
+       "ttft_s": 7.3
+      },
+      {
+       "np": 2,
+       "tps": 10.42,
+       "ttft_s": 16.5
+      },
+      {
+       "np": 4,
+       "tps": 4.73,
+       "ttft_s": 129.0
+      }
+     ],
+     "np": 1,
+     "tps": 29.45,
+     "ttft_s": 7.3,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 20.94,
+       "ttft_s": 15.4
+      },
+      {
+       "np": 2,
+       "tps": 7.12,
+       "ttft_s": 37.2
+      },
+      {
+       "np": 4,
+       "tps": 1.62,
+       "ttft_s": 509.9
+      }
+     ],
+     "np": 1,
+     "tps": 20.94,
+     "ttft_s": 15.4,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 13.2,
+       "ttft_s": 34.2
+      },
+      {
+       "np": 2,
+       "tps": 4.15,
+       "ttft_s": 83.7
+      },
+      {
+       "np": 4,
+       "tps": 0.82,
+       "ttft_s": 993.1
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp",
+   "role": "main",
+   "model": "Nemotron",
+   "arch": "MoE (hybrid)",
+   "format": "GGUF UD-Q4_K_M",
+   "weights_gb": 25.3,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_B1024_20261111.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 49.0,
+       "ttft_s": 2.7
+      },
+      {
+       "np": 2,
+       "tps": 28.27,
+       "ttft_s": 5.8
+      },
+      {
+       "np": 4,
+       "tps": 15.06,
+       "ttft_s": 13.9
+      }
+     ],
+     "np": 4,
+     "tps": 15.06,
+     "ttft_s": 13.9,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": true
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 40.77,
+       "ttft_s": 5.7
+      },
+      {
+       "np": 2,
+       "tps": 20.31,
+       "ttft_s": 12.6
+      },
+      {
+       "np": 4,
+       "tps": 8.66,
+       "ttft_s": 37.6
+      }
+     ],
+     "np": 2,
+     "tps": 20.31,
+     "ttft_s": 12.6,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 29.95,
+       "ttft_s": 12.7
+      },
+      {
+       "np": 2,
+       "tps": 10.48,
+       "ttft_s": 39.8
+      },
+      {
+       "np": 4,
+       "tps": 2.62,
+       "ttft_s": 255.0
+      }
+     ],
+     "np": 1,
+     "tps": 29.95,
+     "ttft_s": 12.7,
+     "tested_nps": [
+      1,
+      2,
+      4
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "vLLM",
+   "role": "historical",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": null,
+   "weights_gb": null,
+   "dataset": "benchmark-aiso1/AISO_AISO1_vLLM_20261015.json",
+   "comparability": "historical_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 4.84,
+       "ttft_s": 44.3
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 3.38,
+       "ttft_s": 102.0
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 2,
+       "tps": 1.88,
+       "ttft_s": 268.4
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      2
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp (11/09 retest, parameters not matched)",
+   "role": "reference",
+   "model": "Gemma26",
+   "arch": "MoE",
+   "format": "GGUF Q4_0",
+   "weights_gb": 14.4,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_V4retest_20261109.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 50.98,
+       "ttft_s": 2.8
+      },
+      {
+       "np": 2,
+       "tps": 31.6,
+       "ttft_s": 5.8
+      },
+      {
+       "np": 4,
+       "tps": 18.97,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 14.58,
+       "ttft_s": 15.3
+      }
+     ],
+     "np": 4,
+     "tps": 18.97,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 41.58,
+       "ttft_s": 5.8
+      },
+      {
+       "np": 2,
+       "tps": 26.0,
+       "ttft_s": 12.1
+      },
+      {
+       "np": 4,
+       "tps": 14.26,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 11.07,
+       "ttft_s": 27.7
+      }
+     ],
+     "np": 2,
+     "tps": 26.0,
+     "ttft_s": 12.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 30.65,
+       "ttft_s": 13.2
+      },
+      {
+       "np": 2,
+       "tps": 18.26,
+       "ttft_s": 24.6
+      },
+      {
+       "np": 4,
+       "tps": 9.47,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 7.29,
+       "ttft_s": 50.9
+      }
+     ],
+     "np": 2,
+     "tps": 18.26,
+     "ttft_s": 24.6,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp (11/09 retest, parameters not matched)",
+   "role": "reference",
+   "model": "Gemma31",
+   "arch": "Dense",
+   "format": "GGUF Q4_0",
+   "weights_gb": 17.7,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_V4retest_20261109.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 9.34,
+       "ttft_s": 13.7
+      },
+      {
+       "np": 2,
+       "tps": 7.26,
+       "ttft_s": 27.8
+      },
+      {
+       "np": 4,
+       "tps": 4.79,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 3.92,
+       "ttft_s": 65.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 7.86,
+       "ttft_s": 29.1
+      },
+      {
+       "np": 2,
+       "tps": 5.72,
+       "ttft_s": 57.9
+      },
+      {
+       "np": 4,
+       "tps": 3.34,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 2.65,
+       "ttft_s": 125.3
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 5.94,
+       "ttft_s": 66.8
+      },
+      {
+       "np": 2,
+       "tps": 3.73,
+       "ttft_s": 123.8
+      },
+      {
+       "np": 4,
+       "tps": 1.86,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 1.5,
+       "ttft_s": 272.5
+      }
+     ],
+     "np": null,
+     "tps": null,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp (11/09 retest, parameters not matched)",
+   "role": "reference",
+   "model": "Laguna",
+   "arch": "MoE",
+   "format": "GGUF Q4_K_M",
+   "weights_gb": 20.3,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_V4retest_20261109.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 63.89,
+       "ttft_s": 3.3
+      },
+      {
+       "np": 2,
+       "tps": 40.43,
+       "ttft_s": 6.8
+      },
+      {
+       "np": 4,
+       "tps": 22.36,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 18.61,
+       "ttft_s": 17.1
+      }
+     ],
+     "np": 5,
+     "tps": 18.61,
+     "ttft_s": 17.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": true
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 47.27,
+       "ttft_s": 8.0
+      },
+      {
+       "np": 2,
+       "tps": 27.38,
+       "ttft_s": 16.5
+      },
+      {
+       "np": 4,
+       "tps": 13.97,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 10.73,
+       "ttft_s": 42.5
+      }
+     ],
+     "np": 2,
+     "tps": 27.38,
+     "ttft_s": 16.5,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 24.52,
+       "ttft_s": 26.8
+      },
+      {
+       "np": 2,
+       "tps": 12.53,
+       "ttft_s": 49.7
+      },
+      {
+       "np": 4,
+       "tps": 5.88,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 4.23,
+       "ttft_s": 122.6
+      }
+     ],
+     "np": 1,
+     "tps": 24.52,
+     "ttft_s": 26.8,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  },
+  {
+   "machine": "AISO1",
+   "framework": "llama.cpp (11/09 retest, parameters not matched)",
+   "role": "reference",
+   "model": "Nemotron",
+   "arch": "MoE (hybrid)",
+   "format": "GGUF UD-Q4_K_M",
+   "weights_gb": 25.3,
+   "dataset": "benchmark-aiso1/AISO_AISO1_llamacpp_V4retest_20261109.json",
+   "comparability": "retest_unverified",
+   "by_input": {
+    "4096": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 51.39,
+       "ttft_s": 2.6
+      },
+      {
+       "np": 2,
+       "tps": 34.48,
+       "ttft_s": 5.4
+      },
+      {
+       "np": 4,
+       "tps": 21.19,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 17.68,
+       "ttft_s": 12.4
+      }
+     ],
+     "np": 5,
+     "tps": 17.68,
+     "ttft_s": 12.4,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": true
+    },
+    "8192": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 44.71,
+       "ttft_s": 5.3
+      },
+      {
+       "np": 2,
+       "tps": 28.81,
+       "ttft_s": 10.8
+      },
+      {
+       "np": 4,
+       "tps": 16.71,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 13.68,
+       "ttft_s": 22.4
+      }
+     ],
+     "np": 4,
+     "tps": 16.71,
+     "ttft_s": null,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    },
+    "16384": {
+     "cells": [
+      {
+       "np": 1,
+       "tps": 35.42,
+       "ttft_s": 11.1
+      },
+      {
+       "np": 2,
+       "tps": 21.12,
+       "ttft_s": 20.1
+      },
+      {
+       "np": 4,
+       "tps": 11.48,
+       "ttft_s": null
+      },
+      {
+       "np": 5,
+       "tps": 9.29,
+       "ttft_s": 43.3
+      }
+     ],
+     "np": 2,
+     "tps": 21.12,
+     "ttft_s": 20.1,
+     "tested_nps": [
+      1,
+      2,
+      4,
+      5
+     ],
+     "reached_top": false
+    }
+   }
+  }
+ ]
+}

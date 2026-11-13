@@ -87,13 +87,14 @@
       if (!have.length) return `<article class="rp-card rp-none">${head}<p class="rp-miss">已有成績，但這個資料集沒有逐次 Repeat 的${esc(M.short)}原始數值（目前只有平均）。需要 raw / waves 檔才能畫出，不會用平均值或估算補上。</p></article>`;
       const nRep = Math.max(...have.map(p => p.values.length)), full = have.length === points.length && have.every(p => p.values.length === nRep);
       const sp = spread(points), uid = `${m.key}`;
-      const cap = full ? `各輸入長度均已完成 Repeat ${nRep}` : `${have.length} / ${points.length} 個輸入長度有逐次 Repeat 資料（缺的不補值）`;
-      const legend = Array.from({ length: nRep }, (_, r) => `<span><i style="background:${REPEAT_COLORS[r % REPEAT_COLORS.length]}"></i>Repeat ${r + 1}</span>`).join("");
-      return `<article class="rp-card" data-uid="${uid}" data-points='${esc(JSON.stringify(points))}'>${head}<div class="rp-chart">${svgChart(points, cfg.metric, uid, W, H)}<div class="rp-tip" hidden></div></div><div class="rp-legend">${legend}</div>` +
-        `<p class="rp-cap">${esc(cfg.title)}，${cap}</p>` +
-        `<p class="rp-spread">${sp ? `Repeat 間最大差距 <b>${fmt(sp.pct * 100, 1)}%</b>（${kn(sp.input)}）` : "只有單次數值，無法計算差距"}<small>(最大 − 最小) ÷ 平均；越小代表越穩定</small></p></article>`;
+      const cap = full ? "" : `<p class="rp-cap">${have.length} / ${points.length} 個輸入長度有逐次 Repeat 資料（缺的不補值）</p>`;
+      return `<article class="rp-card" data-uid="${uid}" data-points='${esc(JSON.stringify(points))}'>${head}<div class="rp-chart">${svgChart(points, cfg.metric, uid, W, H)}<div class="rp-tip" hidden></div></div>${cap}` +
+        `<p class="rp-spread">${sp ? `Spread 差距 <b>${fmt(sp.pct * 100, 1)}%</b>（${kn(sp.input)}）` : "只有單次數值，無法計算差距"}</p></article>`;
     }).join("");
-    return `<div class="rp-grid-cards" data-metric="${cfg.metric}">${cards}</div>`;
+    const nAll = Math.max(0, ...cfg.machines.map(m => { const rs = cfg.runsFor(m.key) || []; return Math.max(0, ...rs.map(r => (repeatsOf(r, cfg.metric) || []).length)); }));
+    const legendAll = Array.from({ length: nAll }, (_, r) => `<span><i style="background:${REPEAT_COLORS[r % REPEAT_COLORS.length]}"></i>Repeat ${r + 1}</span>`).join("");
+    const shared = nAll ? `<div class="rp-shared"><div class="rp-legend">${legendAll}</div><p class="rp-cap">${esc(cfg.title)}<small>Spread 差距 = (最大 − 最小) ÷ 平均；越小越穩定</small></p></div>` : "";
+    return `${shared}<div class="rp-grid-cards" data-metric="${cfg.metric}">${cards}</div>`;
   }
 
   /* hover tooltip via delegation (browser only) */

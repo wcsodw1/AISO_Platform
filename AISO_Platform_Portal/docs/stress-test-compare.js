@@ -28,33 +28,43 @@ const npsAll=()=>[...new Set(REG.machines.flatMap(m=>REG.frameworks.flatMap(f=>r
 
 const grpNow=()=>inputsNow().map(i=>({label:kn(i),sub:tok(i),i}));
 const cav=(mach,fw)=>{const ds=DATA[mach]&&DATA[mach][fw];return ds&&ds.caveat?ds.caveat:null};
-const availability=()=>REG.machines.map(m=>{const n=cellRuns(m.key).length,c=n?cav(m.key,FW):null;return n?`<span><i style="background:${m.color}"></i>${esc(m.label)}（${n} 筆）${cellRuns(m.key).every(r=>!Number.isFinite(r.ttft_s)&&!Number.isFinite(r.tpot_ms))?'<b class="cmp-badge bad" title="這台機器此組合只記錄了 Aggregate TPS，沒有 TTFT / TPOT 原始資料，所以 TTFT / TPOT 圖沒有它的線">只有 TPS・無 TTFT/TPOT</b>':""}${c?`<b class="cmp-badge${c.level==="historical_unverified"?" bad":""}" title="${esc(c.text)}">${c.level==="historical_unverified"?"歷史・未核實":c.level==="retest_unverified"?"重測・待核實":"歷史"}</b>`:""}</span>`:`<span class="st-wait"><i style="background:${m.color};opacity:.35"></i>${esc(m.label)}：此組合無資料</span>`}).join("");
+const availability=()=>REG.machines.map(m=>{const n=cellRuns(m.key).length,c=n?cav(m.key,FW):null;return n?`<span><i style="background:${m.color}"></i>${esc(m.label)}（${n} 筆）${cellRuns(m.key).every(r=>!Number.isFinite(r.ttft_s)&&!Number.isFinite(r.tpot_ms))?'<b class="cmp-badge bad" title="這台機器此組合只記錄了 Aggregate TPS，沒有 TTFT / TPOT 原始資料，所以 TTFT / TPOT 圖沒有它的線">只有 TPS・無 TTFT/TPOT</b>':""}</span>`:`<span class="st-wait"><i style="background:${m.color};opacity:.35"></i>${esc(m.label)}：此組合無資料</span>`}).join("");
 function btn(group,items,cur){return items.map(([k,l,has])=>`<button type="button" role="tab" class="${String(k)===String(cur)?"on":""}${has?" has":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}"${has?"":" disabled aria-disabled=\"true\" title=\"沒有資料\""}>${esc(l)}</button>`).join("")}
 const anyData=(fw,m,np)=>REG.machines.some(x=>runsOf(x.key,fw).some(r=>(!m||r.model===m)&&(!np||r.np===np)));
-function fixPick(){   // keep FW / model / NP on a combination that has data (combinations without data are not selectable)
- if(!OTHER&&anyData("llamacpp"))FW="llamacpp";
- if(OTHER&&FW==="llamacpp")FW=(REG.frameworks.find(f=>f.key!=="llamacpp"&&anyData(f.key))||{key:"llamacpp"}).key;
- if(!anyData(FW))FW=(REG.frameworks.find(f=>anyData(f.key))||REG.frameworks[0]).key;
- if(!anyData(FW,MODEL))MODEL=(REG.models.find(m=>anyData(FW,m.key))||REG.models[0]).key;
- if(!anyData(FW,MODEL,NP))NP=npsAll().find(n=>anyData(FW,MODEL,n))||NP;
+const FULL_IN=[4096,8192,16384];
+let TWO=false;   // (unused toggle kept false)   // false: only combinations ALL machines have; true: combinations at least TWO machines have (right-hand "Two machines" option)
+const needM=()=>TWO?2:REG.machines.length;
+const fullData=(fw,m,np)=>REG.models.some(mod=>(!m||mod.key===m)&&npsAll().some(n=>(!np||n===np)&&REG.machines.filter(x=>FULL_IN.every(i=>get(x.key,fw,mod.key,n,i))).length>=needM()));
+function fixPick(){   // keep FW / model / NP on a combination that has data
+ if(!fullData(FW))FW=(REG.frameworks.find(f=>fullData(f.key))||REG.frameworks[0]).key;
+ OTHER=FW!=="llamacpp";
+ if(!fullData(FW,MODEL))MODEL=(REG.models.find(m=>fullData(FW,m.key))||REG.models[0]).key;
+ if(!fullData(FW,MODEL,NP))NP=npsAll().find(n=>fullData(FW,MODEL,n))||NP;
 }
+let MODE2=false;   // false = three-machine comparison (default); true = pick a two-machine pair
 function renderControls(){
  fixPick();
- const fws=REG.frameworks.filter(f=>OTHER?f.key!=="llamacpp":f.key==="llamacpp");
- $s("cmpFw").innerHTML=btn("fw",fws.map(f=>[f.key,f.label,anyData(f.key)]),FW)+(OTHER?`<button type="button" class="cmp-other back" data-g="other" data-k="0">◂ 回主要比對 llama.cpp（三機參數相同）</button>`:`<button type="button" class="cmp-other" data-g="other" data-k="1">其餘框架測試（含不同參數）▸</button>`);
- $s("cmpModel").innerHTML=btn("model",REG.models.map(m=>[m.key,anyData(FW,m.key)?mlabel(FW,m.key):m.name,anyData(FW,m.key)]),MODEL);
- $s("cmpNp").innerHTML=btn("np",npsAll().map(n=>["" +n,"NP"+n,anyData(FW,MODEL,n)]),NP);
- document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.disabled)return;const g=b.dataset.g;if(g==="other")OTHER=b.dataset.k==="1";if(g==="fw")FW=b.dataset.k;if(g==="model")MODEL=b.dataset.k;if(g==="np")NP=+b.dataset.k;renderAll()});
+ const md=$s("cmpMode");
+ if(md){const three=REG.machines.length>2;
+  md.innerHTML=three?`<button type="button" role="tab" class="has${MODE2?"":" on"}" aria-selected="${!MODE2}" data-g="mode" data-k="3"><span>Three machines<small class="zhs">三機比對</small></span><small>B60 · B70 · AISO1</small></button><button type="button" role="tab" class="has${MODE2?" on":""}" aria-selected="${MODE2}" data-g="mode" data-k="2"><span>Two machines<small class="zhs">兩機比對</small></span><small>AISO1 v.s B70 · AISO1 v.s B60 · B60 v.s B70</small></button>`:"";
+  $s("cmpPairs").innerHTML=three&&MODE2?[["aiso1-b70","AISO1 v.s B70"],["aiso1-b60","AISO1 v.s B60"],["b60-b70","B60 v.s B70"]].map(([k,t])=>`<a class="cmp-two has" href="stress-test-pair.html?pair=${k}"><span>${t}</span><small>Open<span class="zhs">開啟</span> →</small></a>`).join(""):"";
+  document.querySelectorAll("#secPick .cmp-pick:not(.cmp-modepick)").forEach(e=>e.hidden=three&&MODE2);
+  md.querySelectorAll("button").forEach(b=>b.onclick=()=>{MODE2=b.dataset.k==="2";renderControls()})}
+ const sh=m=>m.label.replace(/^Intel /,"").replace(/ AMD$/,""),sub=f=>{const have=REG.machines.filter(m=>runsOf(m.key,f.key).length),miss=REG.machines.filter(m=>!runsOf(m.key,f.key).length);return have.map(sh).join(" · ")+(miss.length?` · 缺 ${miss.map(sh).join("、")}`:"")};
+ $s("cmpFw").innerHTML=REG.frameworks.filter(f=>fullData(f.key)).sort((x,y)=>(y.key==="llamacpp")-(x.key==="llamacpp")).map(f=>`<button type="button" role="tab" class="has${f.key===FW?" on":""}" aria-selected="${f.key===FW}" data-g="fw" data-k="${f.key}"><span>${esc(f.label)}</span><small>${esc(sub(f))}</small></button>`).join("");
+ $s("cmpModel").innerHTML=btn("model",REG.models.filter(m=>fullData(FW,m.key)).map(m=>[m.key,mlabel(FW,m.key),true]),MODEL);
+ $s("cmpNp").innerHTML=btn("np",npsAll().filter(n=>fullData(FW,MODEL,n)).map(n=>["" +n,"NP"+n,true]),NP);
+ document.querySelectorAll("#secPick .cmp-tabs:not(#cmpMode) button").forEach(b=>b.onclick=()=>{if(b.disabled)return;const g=b.dataset.g;if(g==="fw")FW=b.dataset.k;if(g==="model")MODEL=b.dataset.k;if(g==="np")NP=+b.dataset.k;renderAll()});
 }
 function renderMetrics(){
  const w=Math.max(320,($s("stMetrics").clientWidth||860)-100),have=REG.machines.filter(m=>cellRuns(m.key).length),base=(have.find(m=>m.key==="aiso1")||have[0]||{}).key||null,baseLabel=(REG.machines.find(m=>m.key===base)||{}).label;   // AISO1 is always the reference when it has data
  const nom=have.filter(m=>cellRuns(m.key).every(r=>!Number.isFinite(r.ttft_s)||!Number.isFinite(r.tpot_ms))).map(m=>m.label);
  const av=`<p class="v2-fine cmp-av">${availability()}</p>`+(nom.length?`<p class="v2-fine cmp-pending">${esc(nom.join("、"))}：TTFT／TPOT 待原始 summary.csv，目前只有 TPS（Aggregate／Normalized）；圖中以「—」表示。</p>`:"");
  if(!have.length){$s("stMetrics").innerHTML=av+'<p class="v2-fine st-empty">此框架、模型、NP 三台機器都還沒有資料。</p>';return}
- $s("stMetrics").innerHTML=av+Object.entries(METRICS).map(([k,d])=>BV.block({k,def:d,groups:grpNow(),series:REG.machines.map(m=>({key:m.key,label:m.label,color:m.color})),get:(mk,g)=>{const r=get(mk,FW,MODEL,NP,g.i);return r&&Number.isFinite(r[k])?r:null},
-  baseline:have.length>1?base:null,summaryNote:(k==="tpot_ms"&&FW==="llamacpp")?["B70 TPOT is server-side timing, not the same definition","B70 的 TPOT 為 server 端計時，定義與其他機器不同"]:null,width:w,context:`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}`,
+ $s("stMetrics").innerHTML=av+BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:grpNow(),series:REG.machines.map(m=>({key:m.key,label:m.label,color:m.color})),get:(mk,g)=>{const r=get(mk,FW,MODEL,NP,g.i);return r&&Number.isFinite(r[k])?r:null},
+  baseline:have.length>1?base:null,summaryNote:(k==="tpot_ms"&&FW==="llamacpp")?["TPOT basis differs: B70 server-side · B60 / AISO1 client-side stream. Values are real; the gap is not all GPU.","TPOT 計時口徑不同：B70 伺服器端；B60、AISO1 客戶端串流。數值為實測，差距不全是 GPU 效能。"]:null,width:w,context:`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}`,
   message:have.length>1?"":`目前只有 ${have[0].label} 有「${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP}」的資料，另外的機器登錄後會自動並排並計算差異`,
-  tableNote:have.length>1?`差異以 ${baseLabel} 為基準；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二台機器可比較"})).join("");
+  tableNote:have.length>1?`差異以 ${baseLabel} 為基準；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二台機器可比較"})));
 }
 function renderTable(){
  const ins=inputsNow(),c=(r,k)=>`<td>${r?(k==="aggregate_tps"?num(r[k],1):val(k,r[k])):"—"}</td>`;
@@ -95,10 +105,11 @@ function paramTable(){
  const lead=OTHER?`<p class="pt-lead warn">⚠ ${esc(fwLabel(FW))}: ${bi("parameters differ, do not compare as equal conditions","各機參數不同，不可當成同條件比較")}</p>`:"";
  if(!OTHER){const mk=REG.machines.map(m=>m.label.replace(/^Intel /,"").replace(/ AMD$/,""));
   const uRows=diff.map(([l,vs])=>`<div class="pt-u"><dt>${lab(l)}</dt><dd>${vs.map((v,n)=>`<span class="${bad(v)?"pt-unk":""}"><i>${esc(mk[n])}</i> ${dispVal(v)}</span>`).join("")}</dd></div>`).join("");
-  const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>Unmatched parameters<span class="zh">未匹配參數 · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · ${bi("Differing or unverified settings (not in the identical list above)","各機設定不同或未核實的項目")}</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
+  const um=$s("secUnmatched");if(um){um.hidden=!diff.length;um.innerHTML=diff.length?`<header><h2>Notes<span class="zh">備註 · ${diff.length}</span></h2></header><p class="v2-fn">${esc(fwLabel(FW))} · ${bi("Differing or unverified settings (not in the identical list above)","各機設定不同或未核實的項目")}</p><div class="pt-diffbox"><dl class="pt-ulist pt-ucols">${uRows}</dl></div>`:""}
   return `<h3 class="pt-h">Identical parameters<small class="zhs">${REG.machines.length===2?"兩機":"三機"}相同參數 · ${esc(fwLabel(FW))} · ${same.length}</small></h3><div class="pt-same pt-only">${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("No parameter is identical across the machines","目前沒有各機一致的參數")}</p>`}</div>`}
  {const um=$s("secUnmatched");if(um){um.hidden=true;um.innerHTML=""}}
-  return `<h3 class="pt-h">Other frameworks: machine parameters<small class="zhs">其餘框架測試 · ${esc(fwLabel(FW))}</small></h3>${lead}<div class="pt-split"><div class="pt-same"><h4>✓ Identical<small class="zhs">相同 · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("None","沒有")}</p>`}</div><div class="pt-diffbox"><h4>⚠ Different / unverified<small class="zhs">不同／未核實 · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>${bi("Parameter","參數")}</th>${th}<th>${bi("Verdict","判定")}</th></tr></thead><tbody>${dRows}</tbody></table></div>`:`<p class="pt-none">${bi("None","無")}</p>`}</div></div>`;
+ {const inner=`${lead}<div class="pt-split"><div class="pt-same"><h4>✓ Identical<small class="zhs">相同 · ${same.length}</small></h4>${sRows?`<dl>${sRows}</dl>`:`<p class="pt-none">${bi("None","沒有")}</p>`}</div><div class="pt-diffbox"><h4>⚠ Different / unverified<small class="zhs">不同／未核實 · ${diff.length}</small></h4>${diff.length?`<div class="pt-wrap"><table class="pt-tbl"><thead><tr><th>${bi("Parameter","參數")}</th>${th}<th>${bi("Verdict","判定")}</th></tr></thead><tbody>${dRows}</tbody></table></div>`:`<p class="pt-none">${bi("None","無")}</p>`}</div></div>`;
+  const um=$s("secUnmatched");if(um){um.hidden=false;um.innerHTML=`<header><h2>Notes<span class="zh">備註 · ${esc(fwLabel(FW))} ${bi("machine parameters","各機參數")}</span></h2></header>${inner}`}return ""}
 }
 function renderSetup(){
  const r=(k,v)=>`<div><dt>${lab(k)}</dt><dd>${v}</dd></div>`;
@@ -118,7 +129,7 @@ function renderConfig(){
 function renderPairs(){
  const el=$s("stPairs");if(!el)return;
  const link=(k,t)=>`<a class="pair-btn${PAIR===k?" on":""}" href="stress-test-pair.html?pair=${k}"${PAIR===k?' aria-current="page"':""}>${t}</a>`;
- el.innerHTML=`<a class="pair-btn all${PAIR?"":" on"}" href="stress-test-compare.html"${PAIR?"":' aria-current="page"'}>AISO1 v.s B60 v.s B70</a>${link("aiso1-b70","AISO1 vs B70")}${link("aiso1-b60","AISO1 vs B60")}${link("b60-b70","B60 vs B70")}`;
+ el.innerHTML=`<div class="pair-tier"><span class="pair-tl">Multi-Tool<small class="zhs">多機比對</small></span><a class="pair-btn all${PAIR?"":" on"}" href="stress-test-compare.html"${PAIR?"":' aria-current="page"'}>AISO1 v.s B60 v.s B70</a></div><div class="pair-tier"><span class="pair-tl">Single-Tool<small class="zhs">兩機比對</small></span>${link("aiso1-b70","AISO1 vs B70")}${link("aiso1-b60","AISO1 vs B60")}${link("b60-b70","B60 vs B70")}</div>`;
 }
 const OMIT={aiso1:[5]};   // AISO1 cannot run NP5: never listed as missing
 const omitted=(mk,n)=>(OMIT[mk]||[]).includes(n);
@@ -127,14 +138,16 @@ function renderGapPair(){
  REG.frameworks.forEach(f=>REG.models.forEach(m=>npsAll().forEach(n=>{
   const a=has(A.key,f.key,m.key,n),b=has(B.key,f.key,m.key,n),k=f.key+"|"+m.key,o=map.get(k)||{fw:f.key,model:m.key,both:[],onlyA:[],onlyB:[]};
   if(a&&b)o.both.push(n);else if(a&&!omitted(B.key,n))o.onlyA.push(n);else if(b&&!omitted(A.key,n))o.onlyB.push(n);map.set(k,o)})));
- const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(mlabel(o.fw,o.model))} · NP${nps.join(" / NP")}</button>`;
+ const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b><span>${esc(mlabel(o.fw,o.model))}</span><small>NP${nps.join(" / NP")}</small></button>`;
  const list=key=>[...map.values()].filter(o=>o[key].length),box=(cls,h,sub,items,key,fn)=>`<div class="gap-box ${cls}"><h3>${h} <small>${sub}</small></h3><div class="gap-chips">${items.map(o=>chip(o,o[key])).join("")||'<span class="st-wait">無</span>'}</div>${fn?`<p class="v2-fn">${fn}</p>`:""}</div>`;
  const both=list("both"),oa=list("onlyA"),ob=list("onlyB"),ai=REG.machines.some(m=>m.key==="aiso1");
  $s("stGap").innerHTML=box("ok","可直接並排",`${esc(A.label)}、${esc(B.label)} 都有 Input 4K / 8K / 16K · ${both.length} 組`,both,"both","點選任一組合會跳到下方圖表。");
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;OTHER=FW!=="llamacpp";MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
+let GAPFW=null;
 function renderGap(){
  if(PAIR)return renderGapPair();
+ if(true){$s("stGap").innerHTML="";return}
  const IN3=[4096,8192,16384],has=(m,fw,mod,np)=>IN3.every(i=>get(m,fw,mod,np,i));
  const key=new Map();   // fw|model -> {all:[np], miss:[np]}
  REG.frameworks.forEach(f=>REG.models.forEach(m=>npsAll().forEach(n=>{
@@ -142,9 +155,10 @@ function renderGap(){
   const k=f.key+"|"+m.key,o=key.get(k)||{fw:f.key,model:m.key,all:[],miss:[]};
   if(b60&&b70&&ai)o.all.push(n);else if(b60&&b70&&!ai&&!omitted("aiso1",n))o.miss.push(n);
   key.set(k,o)})));
- const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><b>${esc(fwLabel(o.fw))}</b> · ${esc(mlabel(o.fw,o.model))} · NP${nps.join(" / NP")}</button>`;
+ const chip=(o,nps)=>`<button type="button" class="gap-chip" title="${esc(mtitle(o.fw,o.model))}" data-fw="${o.fw}" data-model="${o.model}" data-np="${nps[0]}"><span>${esc(mlabel(o.fw,o.model))}</span><small>NP${nps.join(" / NP")}</small></button>`;
  const all=[...key.values()].filter(o=>o.all.length),miss=[...key.values()].filter(o=>o.miss.length);
- $s("stGap").innerHTML=`<div class="gap-box ok"><h3>Full Test Data <small>${all.length} 組</small></h3><div class="gap-chips">${all.map(o=>chip(o,o.all)).join("")||'<span class="st-wait">無</span>'}</div><p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 B1024 重測，含 TTFT / TPOT）。</p></div>`;
+ $s("stGap").innerHTML=`<div class="gap-box ok"><h3 class="gap-sub">Ready to compare<small class="zhs">可直接比對 · ${all.length} 組</small></h3>${(()=>{const fl=REG.frameworks.filter(f=>all.some(o=>o.fw===f.key)).sort((x,y)=>(y.key==="llamacpp")-(x.key==="llamacpp"));if(!fl.length)return'<span class="st-wait">無</span>';if(!fl.some(f=>f.key===GAPFW))GAPFW=fl[0].key;return`<div class="gap-fwsel" role="tablist" aria-label="Framework">${fl.map(f=>`<button type="button" role="tab" class="gap-fwb${f.key===GAPFW?" on":""}" aria-selected="${f.key===GAPFW}" data-gfw="${f.key}"><b>${esc(f.label)}</b><small>${all.filter(o=>o.fw===f.key).length} 組 · 推論框架</small></button>`).join("")}</div><div class="gap-chips">${all.filter(o=>o.fw===GAPFW).map(o=>chip(o,o.all)).join("")}</div>`})()}<p class="v2-fn">B60、B70、AISO1 三台都有 Input 4K / 8K / 16K 的數值（AISO1 vLLM 為歷史・未核實；llama.cpp 為 B1024 重測，含 TTFT / TPOT）。</p></div>`;
+ $s("stGap").querySelectorAll(".gap-fwb").forEach(b=>b.onclick=()=>{GAPFW=b.dataset.gfw;renderGap()});
  $s("stGap").querySelectorAll(".gap-chip").forEach(b=>b.onclick=()=>{FW=b.dataset.fw;OTHER=FW!=="llamacpp";MODEL=b.dataset.model;NP=+b.dataset.np;renderAll();$s("secMetrics").scrollIntoView({behavior:"smooth",block:"start"})});
 }
 let RMET="norm_tps";
@@ -171,18 +185,24 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  const best=combos.find(full)||combos.find(c=>cnt(c)>=REG.machines.length)||combos.find(c=>cnt(c)>=2)||combos.find(c=>cnt(c)>=1)||combos[0];
  [FW,MODEL,NP]=best;OTHER=FW!=="llamacpp";
  if(PAIR){const t=PAIR_TITLE[PAIR],lb=REG.machines.map(m=>m.label).join(" · ");
-  document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").textContent=`Stress Test｜${t}`;$s("pgSub").innerHTML=`同推論框架 · 同模型比對<span class="zh-i">選定框架與模型後，並排比較兩台機器的 TTFT · TPOT · TPS</span>`;
+  document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").innerHTML=`${esc(t)} <small class="zhs">Stress Test</small>`;
   $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
  renderPairs();renderGap();renderCover();renderAll();
- (function(){   // one collapsible "Detail" panel with tabs; the five detail sections live inside it
-  const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Unmatched","未匹配參數"]].filter(([id])=>$s(id));
+ (function(){   // Data menu: opens on hover / focus (CSS) and on click or tap
+  const m=$s("dataMenu");if(!m)return;const b=m.querySelector(".dm-btn");
+  b.addEventListener("click",e=>{e.preventDefault();const o=m.classList.toggle("open");b.setAttribute("aria-expanded",String(o))});
+  document.addEventListener("click",e=>{if(!m.contains(e.target)){m.classList.remove("open");b.setAttribute("aria-expanded","false")}});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){m.classList.remove("open");b.setAttribute("aria-expanded","false")}});
+ })();
+ (function(){   // one collapsible "Evidence" panel with tabs; the five detail sections live inside it
+  const parts=[["secRepeat","Repeat stability","穩定度"],["secTable","Full values","完整數值"],["secCfg","Config diff","設定差異"],["secCover","Coverage","資料覆蓋"],["secUnmatched","Notes","備註"]].filter(([id])=>$s(id));
   const first=$s(parts[0][0]),det=document.createElement("section");det.className="report-section sec-detail hv-fold hv-closed";det.id="secDetail";
-  det.innerHTML='<header><h2>Detail<span class="zh">細節</span></h2></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
+  det.innerHTML='<header><h2>Evidence<span class="zh">佐證資料</span></h2><span class="hv-hint" aria-hidden="true">Click to pin <small class="zhs">點一下固定</small></span></header><div class="dt-tabs st-tabs" role="tablist"></div><div class="dt-body"></div>';
   first.parentNode.insertBefore(det,first);
   const tabs=det.querySelector(".dt-tabs"),body=det.querySelector(".dt-body");
   parts.forEach(([id,label,zh],n)=>{const sec=$s(id);sec.classList.remove("sec-fold","sec-closed");body.appendChild(sec);const b=document.createElement("button");b.type="button";b.dataset.id=id;b.innerHTML=label+'<small class="zhs">'+zh+"</small>";b.onclick=()=>pick(id);tabs.appendChild(b)});
   function pick(id){tabs.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.id===id));parts.forEach(([i])=>$s(i).classList.toggle("dt-off",i!==id));if(id==="secRepeat")renderRepeats()}
-  HoverFold.bind(det);det.addEventListener("hvopen",()=>renderRepeats());
+  if(window.HoverFold)HoverFold.bind(det);det.addEventListener("hvopen",()=>renderRepeats());
   pick(parts[0][0]);
  })();
  const last=Object.values(DATA).flatMap(o=>Object.values(o)).map(d=>d.evidence_until).sort().pop();

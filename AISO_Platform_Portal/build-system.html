@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Build your own AI system: which machine fits which model, context and number of concurrent users, from measured results.">
+  <title>AISO — Build Your Own System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.3">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="tesla.css?v=28">
+  <link rel="stylesheet" href="build-system.css?v=38">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    
+  </header>
+
+  <main class="v2 st bs">
+    <section class="v2-hero">
+      <a class="pg-back" href="./#products"><span aria-hidden="true">←</span> 返回</a>
+      <p class="eyebrow">BUILD YOUR OWN SYSTEM</p>
+      <h1>Build Your Own System<small class="zhs">建造屬於您的方案</small></h1>
+      <p class="v2-sub">Which machine fits your team?<span class="zh-i">哪台機器適合你的團隊？</span></p>
+    </section>
+
+    <section class="report-section" id="secArch">
+      <header class="bs-sech"><h2>Machines<small class="zhs">機器</small></h2></header>
+      
+      <div class="bs-dgrid">
+        <div class="bs-left">
+          <p class="bs-stp s1"><i>1</i><span>Select a model<small class="zhs">選模型</small></span></p>
+          <div class="bs-setlist" id="bsPk"></div>
+          <div class="bs-quant" title="Tested: Q4-class GGUF (llama.cpp), FP8 and W4A16 (vLLM). The others are not tested yet."><span>Quantization<small class="zhs">量化</small></span><b class="on">Q4</b><b class="soon">Q8<small>soon</small></b><b class="soon">INT8<small>soon</small></b><b class="soon">INT4<small>soon</small></b></div>
+          <p class="bs-stp s2"><i>2</i><span>Select a scenario<small class="zhs">選使用情境</small></span></p>
+          <div class="bs-rc">
+            <div class="bs-rc-row bs-rc-head"><span class="bs-rc-lab">Tested length<small class="zhs">測試長度</small></span>
+              <div class="bs-rc-plot"><input id="bsLen" type="range" min="0" max="16" step="1" value="8" aria-label="Input length in K tokens">
+                <div class="bs-scale"><span class="bs-tk z" style="left:0%"><b>0</b></span><button type="button" class="bs-tk" data-k="4" style="left:25%"><b>4K</b></button><button type="button" class="bs-tk" data-k="8" style="left:50%"><b>8K</b></button><button type="button" class="bs-tk r" data-k="16" style="left:100%"><b>16K</b></button></div></div></div>
+            <div id="bsScn"></div>
+          </div>
+        </div>
+        <aside class="bs-dash" aria-label="Dashboard">
+          <p class="bs-stp s3"><i>3</i><span>Result<small class="zhs">結果</small></span></p>
+          <div class="bs-dashbox">
+          <div class="bs-setsum" id="bsSetSum"></div>
+          <div class="bs-insum" id="bsInSum"></div>
+          <div class="bs-dwrap"><div class="bs-dtable" id="bsShare" role="group" aria-label="Machines needed"></div><div class="bs-spd" id="bsSpdPanel" hidden></div></div>
+          <div class="bs-acts"><button type="button" id="bsSpd" class="bs-spdbtn" aria-pressed="false">Speed<small class="zhs">速度</small></button><button type="button" id="bsCalc" class="bs-calcbtn" aria-expanded="false" aria-controls="bsCalcPanel">How it is calculated<small class="zhs">計算邏輯</small></button></div>
+          <p class="bs-foot"><input type="checkbox" id="bsHA" hidden><span class="bs-foot2">⚠ TPS &lt; 15 tok/s<small class="zhs">TPS 低於 15 tok/s</small></span></p>
+          <div id="bsCalcPanel" class="bs-dlg bs-calcin" role="region" aria-label="How it is calculated" hidden><div class="bs-dlg-h"><h3>How it is calculated<small class="zhs">計算邏輯</small></h3><button type="button" id="bsCalcX" class="bs-ha" aria-label="Close">✕</button></div><div id="bsCalcBody"></div></div>
+          </div>
+        </aside>
+      </div>
+      <div id="bsMachines" class="bs-vendors"></div>
+      <details class="bs-notes"><summary>Notes<small class="zhs">註記</small></summary><div id="bsArchNote"></div></details>
+    </section>
+
+    <section class="report-section" id="secEvidence">
+      <header class="bs-sech"><h2>Evidence<small class="zhs">實測依據</small></h2><a class="bs-calcbtn" href="framework-compare.html">Compare frameworks<small class="zhs">框架比較</small> →</a></header>
+      <div class="st-tabs cmp-tabs bs-evtabs" id="bsEvTabs" role="tablist"></div>
+      <div class="bs-pane" data-pane="matrix">
+        <p class="v2-sub bs-def">Can one machine carry the load?<span class="zh-i">一台撐得住嗎？</span></p>
+        <div class="cmp-pick"><span>Input length<small class="zhs">輸入長度</small></span><div class="st-tabs cmp-tabs" id="bsMxInput"></div></div>
+        <div class="bs-headline" id="bsMxHead"></div>
+        <div class="bs-wrap"><table class="bs-matrix" id="bsMatrix"></table></div>
+        <p class="v2-fine" id="bsMxNote"></p>
+      </div>
+      <div class="bs-pane" data-pane="why" hidden>
+        <p class="v2-sub bs-def">Why this answer.<span class="zh-i">為什麼是這個答案。</span></p>
+        <div class="cmp-pick"><span>Machine<small class="zhs">機型</small></span><div class="st-tabs cmp-tabs" id="bsWhyMachine"></div></div>
+      <div class="cmp-pick"><span>Type<small class="zhs">架構</small></span><div class="st-tabs cmp-tabs" id="bsWhyType"></div></div>
+      <div class="cmp-pick"><span>Model<small class="zhs">模型</small></span><div class="st-tabs cmp-tabs" id="bsWhyModel"></div></div>
+      <div id="bsWhy" class="bs-why"></div>
+      <a class="v2-dl" href="sizing.html">Other models or contexts: open Sizing<small class="zhs">其他模型、Context：開啟 Sizing</small> →</a>
+      </div>
+      <div class="bs-pane" data-pane="all" hidden>
+        <p class="v2-sub bs-def">Highest NP at 15+ tok/s per request.<span class="zh-i">每個請求 15 tok/s 以上時的最高 NP。</span></p>
+      <div class="cmp-pick"><span>Machine<small class="zhs">機型</small></span><div class="st-tabs cmp-tabs" id="bsMachine"></div></div>
+      <div class="cmp-pick"><span>Architecture<small class="zhs">架構</small></span><div class="st-tabs cmp-tabs" id="bsArchTab"></div></div>
+      <div class="bs-wrap"><table class="v2-table bs-table" id="bsCap"><thead><tr>
+        <th>Machine<small>機型</small></th><th>Framework<small>框架</small></th><th>Model<small>模型</small></th><th>Type<small>架構</small></th><th>Quant<small>量化</small></th><th>Input 4K</th><th>Input 8K</th><th>Input 16K</th></tr></thead><tbody id="bsCapBody"></tbody></table></div>
+      <p class="v2-fine" id="bsCapNote"></p>
+      </div>
+      <details class="bs-notes"><summary>Not covered yet<small class="zhs">尚未涵蓋</small></summary><ol class="bs-gates" id="bsGates"></ol></details>
+    </section>
+  </main>
+  <script src="build-system.js?v=42"></script>
+  <script src="ui-min-type.js?v=2" defer></script>
+</body>
+</html>
