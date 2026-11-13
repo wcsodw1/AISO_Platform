@@ -11,7 +11,10 @@
    "status": "todo",
    "desc": "測試大型 Coding 模型的部署、生成速度、長上下文及多人使用表現",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 14,
+   "start": "2026-11-23",
+   "end": "2026-12-10"
   },
   {
    "category": "推論引擎與加速",
@@ -22,7 +25,10 @@
    "status": "todo",
    "desc": "透過快取重用、批次處理等方式，提升大模型推論效能",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-11-12",
+   "end": "2026-11-18"
   },
   {
    "category": "推論引擎與加速",
@@ -33,7 +39,10 @@
    "status": "todo",
    "desc": "草稿模型預測多個 Token，再由主模型驗證，加速文字生成",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 6,
+   "start": "2026-11-23",
+   "end": "2026-11-30"
   },
   {
    "category": "推論引擎與加速",
@@ -44,7 +53,10 @@
    "status": "todo",
    "desc": "地端大型模型推論引擎，提供管理介面與相容 API",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 4,
+   "start": "2026-12-07",
+   "end": "2026-12-10"
   },
   {
    "category": "推論引擎與加速",
@@ -55,7 +67,10 @@
    "status": "todo",
    "desc": "跨平台推論引擎，直接使用 GPU 核心執行模型，減少環境依賴",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-12-14",
+   "end": "2026-12-18"
   },
   {
    "category": "推論引擎與加速",
@@ -66,7 +81,10 @@
    "status": "todo",
    "desc": "基於 ExLlamaV3，目標是在桌機執行大型量化模型",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 4,
+   "start": "2026-12-21",
+   "end": "2026-12-24"
   },
   {
    "category": "記憶體與 MoE 優化",
@@ -77,7 +95,10 @@
    "status": "todo",
    "desc": "搭配 GPU、CPU 記憶體與磁碟執行大模型，偏重批次吞吐量",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-11-23",
+   "end": "2026-11-27"
   },
   {
    "category": "記憶體與 MoE 優化",
@@ -88,7 +109,10 @@
    "status": "todo",
    "desc": "細粒度管理與卸載 MoE 專家權重，降低顯存需求",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-11-30",
+   "end": "2026-12-04"
   },
   {
    "category": "記憶體與 MoE 優化",
@@ -99,7 +123,10 @@
    "status": "todo",
    "desc": "融合 MoE 專家計算與多 GPU 通訊，降低執行開銷",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-11-30",
+   "end": "2026-12-04"
   },
   {
    "category": "記憶體與 MoE 優化",
@@ -110,7 +137,10 @@
    "status": "todo",
    "desc": "從 SSD 按需載入專家權重，並預測下一步需求，降低記憶體用量",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 10,
+   "start": "2026-11-13",
+   "end": "2026-11-26"
   },
   {
    "category": "記憶體與 MoE 優化",
@@ -121,7 +151,10 @@
    "status": "todo",
    "desc": "將專家權重分放 GPU、RAM、NVMe，執行超出顯存容量的模型",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-11-23",
+   "end": "2026-11-27"
   },
   {
    "category": "部署與服務管理",
@@ -132,7 +165,10 @@
    "status": "todo",
    "desc": "協調分散式推論，管理請求路由、KV Cache 與 Prefill / Decode 分離",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 10,
+   "start": "2026-12-07",
+   "end": "2026-12-18"
   },
   {
    "category": "部署與服務管理",
@@ -143,7 +179,10 @@
    "status": "todo",
    "desc": "模型服務部署平台，處理多模型管理、負載平衡及自動擴縮",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 6,
+   "start": "2026-11-13",
+   "end": "2026-11-20"
   },
   {
    "category": "部署與服務管理",
@@ -154,7 +193,10 @@
    "status": "todo",
    "desc": "統一雲端與地端模型 API，集中管理金鑰、用量、成本與備援",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 3,
+   "start": "2026-11-12",
+   "end": "2026-11-16"
   },
   {
    "category": "Agent 與開發工具",
@@ -165,7 +207,10 @@
    "status": "todo",
    "desc": "大量建立與管理 Agent 執行環境，方便平行執行及重現任務",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 4,
+   "start": "2026-11-17",
+   "end": "2026-11-20"
   },
   {
    "category": "Agent 與開發工具",
@@ -176,7 +221,10 @@
    "status": "todo",
    "desc": "管理 Coding Agent 的技能、記憶、規則與工作流程",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 2,
+   "start": "2026-11-23",
+   "end": "2026-11-24"
   },
   {
    "category": "Agent 與開發工具",
@@ -187,7 +235,10 @@
    "status": "todo",
    "desc": "將程式碼與文件轉成知識圖譜，協助理解程式關係及修改影響",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 3,
+   "start": "2026-11-30",
+   "end": "2026-12-02"
   },
   {
    "category": "Agent 與開發工具",
@@ -198,7 +249,10 @@
    "status": "todo",
    "desc": "讓 Agent 透過系統無障礙樹，操作桌面按鈕、輸入框與應用程式",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 3,
+   "start": "2026-12-07",
+   "end": "2026-12-09"
   },
   {
    "category": "Agent 與開發工具",
@@ -209,7 +263,10 @@
    "status": "todo",
    "desc": "Harness 架構研究",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 4,
+   "start": "2026-12-14",
+   "end": "2026-12-17"
   },
   {
    "category": "Agent 與開發工具",
@@ -220,7 +277,10 @@
    "status": "todo",
    "desc": "學習過往任務經驗，減少不必要工具及重複失敗，降低 Token 成本",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 3,
+   "start": "2026-12-21",
+   "end": "2026-12-23"
   },
   {
    "category": "OCR 與文件應用",
@@ -231,7 +291,10 @@
    "status": "todo",
    "desc": "CPU 可執行的輕量 OCR，將 PDF、圖片轉成文字；繁中支援需確認",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 3,
+   "start": "2026-12-14",
+   "end": "2026-12-16"
   },
   {
    "category": "OCR 與文件應用",
@@ -242,7 +305,10 @@
    "status": "todo",
    "desc": "文件與合約分析平台，提供標註、欄位擷取、問答及原文引用",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 6,
+   "start": "2026-11-13",
+   "end": "2026-11-20"
   },
   {
    "category": "語音辨識",
@@ -253,7 +319,10 @@
    "status": "todo",
    "desc": "離線語音模型，支援轉錄、翻譯、說話者歸屬、時間戳及音訊問答",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 5,
+   "start": "2026-11-16",
+   "end": "2026-11-20"
   },
   {
    "category": "視覺定位",
@@ -264,7 +333,10 @@
    "status": "todo",
    "desc": "根據文字指令，在圖片或螢幕中定位物件、文字及介面元素",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 6,
+   "start": "2026-11-19",
+   "end": "2026-11-26"
   },
   {
    "category": "AMD 平台",
@@ -275,7 +347,11 @@
    "status": "todo",
    "desc": "AMD GPU 的 AI 軟體平台，驗證模型部署、硬體相容性及推論效能",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 6,
+   "start": "2026-11-23",
+   "end": "2026-11-30",
+   "deliverable": "產出 share"
   },
   {
    "category": "內部專案開發",
@@ -286,7 +362,10 @@
    "status": "todo",
    "desc": "",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 3,
+   "start": "2026-11-12",
+   "end": "2026-11-16"
   },
   {
    "category": "內部專案開發",
@@ -297,7 +376,10 @@
    "status": "todo",
    "desc": "",
    "added": "2026-11-13",
-   "done": null
+   "done": null,
+   "days": 10,
+   "start": "2026-11-13",
+   "end": "2026-11-26"
   }
  ],
  "results": [
@@ -311,5 +393,6 @@
    "source": "run_date 2026-10-29 (run_id 20261029_104121_1363197) in data/benchmark-v2/AISO_BenchmarkV2_20000.json",
    "owner": "David"
   }
- ]
+ ],
+ "weeks_from": "2026-11-09"
 }
