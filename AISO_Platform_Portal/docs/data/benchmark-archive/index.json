@@ -1,0 +1,37 @@
+{
+ "generated_from": "Benchmark_Archive_2026-11-15 (1).xlsx",
+ "scope": "history archive, not the same protocol as the stress-test pages; host / precision unverified where marked 待核對",
+ "sources": 183,
+ "groups": [
+  {
+   "id": "pro6000-vis",
+   "label": "NVIDIA · RTX PRO 6000 (VIS)",
+   "file": "data/benchmark-archive/pro6000-vis.json",
+   "records": 300,
+   "models": [
+    "GPT-OSS-120B",
+    "Llama-3.3-70B-Instruct"
+   ]
+  },
+  {
+   "id": "rog-z13",
+   "label": "AMD · ROG Flow Z13 · AI MAX+ 395",
+   "file": "data/benchmark-archive/rog-z13.json",
+   "records": 24,
+   "models": [
+    "Gemma 4 26B A4B",
+    "GPT-OSS 20B"
+   ]
+  },
+  {
+   "id": "max392",
+   "label": "AMD · Ryzen AI MAX+ 392",
+   "file": "data/benchmark-archive/max392.json",
+   "records": 12,
+   "models": [
+    "Gemma 4 26B A4B",
+    "GPT-OSS 20B"
+   ]
+  }
+ ]
+}

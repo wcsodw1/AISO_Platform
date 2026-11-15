@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AISO — Benchmark Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.3">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="tesla.css?v=28">
+  <link rel="stylesheet" href="benchmark-archive.css?v=2">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    
+  </header>
+
+  <main class="v2 st ba">
+    <section class="v2-hero">
+      <a class="pg-back" href="benchmark-hub.html"><span aria-hidden="true">←</span> 返回</a>
+      <h1>Benchmark Archive<small class="zhs">歷史數據</small></h1>
+      <p class="v2-sub" id="baSum">…</p>
+    </section>
+    <section class="report-section" id="baMain">
+      <div class="ba-grid">
+        <div class="ba-left"><p class="ba-h">Machine<small class="zhs">機器</small></p><div id="baMachines" class="ba-list"></div></div>
+        <div class="ba-right">
+          <p class="ba-h">Model<small class="zhs">模型</small></p><div id="baModels" class="ba-tabs"></div>
+          <div id="baParams" class="ba-params"></div>
+          <div class="ba-filters" id="baFilters"></div>
+          <div id="baCharts"></div>
+          <details class="ba-full"><summary>Full values<small class="zhs">完整數值</small></summary><div class="ba-wrap"><table class="ba-tbl" id="baTbl"></table></div></details>
+          <p class="ba-more" id="baMore"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="benchmark-archive.js?v=5"></script>
+  <script src="ui-min-type.js?v=2" defer></script>
+</body>
+</html>
