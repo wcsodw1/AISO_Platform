@@ -582,3 +582,5 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-term-clock small{display:inline;margin:0;font-size:16px;color:var(--muted)}
 .lr .lr-term-clock b{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--gold)}.lr .lr-term-clock.done b{color:#b7cfa6}
 .lr .lr-term-clock:not(:empty)+.lr-term-n{margin-left:14px}
+
+.lr .lr-resnote .lr-inp{margin-top:10px}

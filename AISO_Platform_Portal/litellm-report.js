@@ -311,7 +311,7 @@
     runUI("running", "");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ lang: inputLang }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; clockStart(); paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: rows appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示一列</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
+      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; clockStart(); paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: results appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示結果</small>' + inputHtml(runLang); renderFuncs(); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled: no password entered.", "已取消：未輸入測試密碼") : esc(e.message || e)); });
   }
   function tick() {
