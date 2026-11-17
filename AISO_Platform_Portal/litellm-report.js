@@ -117,22 +117,16 @@
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["Applications use one endpoint and one key; backend machines can be replaced without client changes.", "應用程式使用單一端點與金鑰，後端機器可替換而不影響用戶端。", ""],
-    ["Requests are distributed across both machines: lower latency, higher throughput%NUM%.", "請求分散至兩台機器：延遲降低、吞吐量提升。", "measured"],
-    ["If one machine fails, the other serves the requests: 10 / 10 answered.", "單一機器故障時，由另一台接手回應。", "poc"],
-    ["Each key can access only its authorized models.", "每把金鑰僅能存取被授權的模型。", "poc"]
+    ["One endpoint, one key: swap machines without changing apps.", "一個端點、一把金鑰，換機器不必改應用程式。", ""],
+    ["Spreads requests across machines: faster, higher throughput.", "請求分散到多台機器：回應更快、吞吐更高。", "measured"],
+    ["If one machine fails, another keeps answering.", "一台機器故障，另一台繼續回應。", ""],
+    ["Each key reaches only its own models.", "每把金鑰只能用被授權的模型。", ""]
   ];
-  var TAG = { measured: ["Measured", "實測"], poc: ["PoC", "概念驗證"] };
+  var TAG = { measured: ["Measured", "實測"] };
   function renderFuncs() {
-    var num = "";
-    if (D.live) {
-      var ttft = Math.round(100 * D.sizes.reduce(function (t, z) { return t + (1 - z.ab.ttft_s / z.a.ttft_s); }, 0) / D.sizes.length);
-      var tps = (D.sizes.reduce(function (t, z) { return t + z.ab.agg_tps / z.a.agg_tps; }, 0) / D.sizes.length).toFixed(2);
-      num = " (TTFT −" + ttft + "%, TPS ×" + tps + ")";
-    }
     $("lrFuncs").innerHTML = '<ol class="lr-ef">' + FUNCS.map(function (f, i) {
       var tag = f[2] && (f[2] !== "measured" || D.live) ? '<em class="lr-tg ' + f[2] + '">' + TAG[f[2]][0] + '<small class="zhs">' + TAG[f[2]][1] + "</small></em>" : "";
-      return '<li><i>' + (i + 1) + '</i><span>' + esc(f[0].replace("%NUM%", num)) + '<small class="zhs">' + esc(f[1]) + "</small>" +
+      return '<li><i>' + (i + 1) + '</i><span>' + esc(f[0]) + '<small class="zhs">' + esc(f[1]) + "</small>" +
         (i === 1 || i === 2 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + "</li>";
     }).join("") + "</ol>";
     paintFuncs();
