@@ -19,10 +19,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import statistics as st
+import subprocess
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -33,19 +36,75 @@ KEY_FILE = Path("~/.config/aiso/litellm_smoke.env")      # KEY=VALUE lines, outs
 CRIT = {"gain_min": 1.3}
 LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 2, "request_timeout_s": 60, "job_timeout_s": 200, "pace_s": 0.7}   # pace_s: a short pause between the quick preflight checks so people can follow them on screen
 STEP_NAMES = ("Preflight", "Benchmark")
-# The same three input sizes in two languages. The question is identical for every size; only the amount of text in front of it changes.
+# The input text is taken from the web at the start of every run: one real article per language (Wikipedia, CC BY-SA 4.0), nothing repeated.
+# Sentence = the first sentence, Paragraph / Long passage = the first sentences of the same article up to about 100 / 1000 input tokens
+# (the length is fitted against the model's own token count, and the real token and character counts are reported with the result).
 # Every request starts with a different number, so no machine can answer it from a cached prompt.
-# Token counts differ by language, so the repeat counts were calibrated against the model's own count (about 100 and about 1000 input tokens).
-TEXT = {"en": {"sent": "Night markets in Taipei sell food, games and small goods until late at night. ", "ask": "Now write about 80 words about Taipei night markets.", "reps": {"short": 0, "mid": 5, "long": 55}},
-        "zh": {"sent": "台北的夜市販售小吃、遊戲與各式小物，營業到深夜。", "ask": "請用約 80 字介紹台北夜市文化。", "reps": {"short": 0, "mid": 4, "long": 54}}}
-LANGS = tuple(TEXT)
+SOURCES = {"en": {"api": "https://en.wikipedia.org/w/api.php", "title": "Night market", "page": "https://en.wikipedia.org/wiki/Night_market", "ask": "Summarize the text above in about 80 words.", "per_token": 4.2, "min_line": 40},
+           "zh": {"api": "https://zh.wikipedia.org/w/api.php", "title": "夜市", "page": "https://zh.wikipedia.org/wiki/%E5%A4%9C%E5%B8%82", "ask": "請用約 80 字摘要上面的文章。", "per_token": 1.2, "min_line": 20}}
+LANGS = tuple(SOURCES)
+LICENSE = "CC BY-SA 4.0"
+TARGET_TOKENS = {"mid": 100, "long": 1000}
 SIZES = (("short", "Sentence", "一句話"), ("mid", "Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), ("long", "Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"))
 _uid = iter(range(1, 10 ** 9))
 
 
-def bench_prompt(key, lang="en"):
-    t = TEXT[lang]
-    return "[%d] %s%s" % (next(_uid), t["sent"] * t["reps"][key], t["ask"])
+def bench_prompt(text, ask):
+    return "[%d] %s\n\n%s" % (next(_uid), text, ask)
+
+
+def fetch_article(lang):
+    """Plain text of the article for this language, straight from the web -> {title, url, text}."""
+    src = SOURCES[lang]
+    q = urllib.parse.urlencode({"action": "query", "prop": "extracts", "explaintext": 1, "redirects": 1, "format": "json", "titles": src["title"]})
+    url, ua = src["api"] + "?" + q, "AISO-smoke-test/1.0"
+    raw = None
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": ua}), timeout=10) as r:
+            raw = r.read()
+    except Exception:
+        try:       # some Python builds have no CA bundle: the system curl uses the OS trust store (certificates are still verified)
+            raw = subprocess.run(["curl", "-sS", "-m", "10", "-A", ua, url], capture_output=True, timeout=15, check=True).stdout
+        except Exception:
+            raw = None
+    try:
+        page = next(iter(json.loads(raw)["query"]["pages"].values()))
+        text = page.get("extract") or ""
+    except Exception:
+        text = ""
+    return {"title": src["title"], "url": src["page"], "text": text}
+
+
+def sentences(text, lang):
+    """Article text -> clean sentences (headings, one-word list lines and reference marks dropped)."""
+    keep = [ln.strip() for ln in text.splitlines() if ln.strip() and not ln.strip().startswith("=") and len(ln.strip()) >= SOURCES[lang]["min_line"]]
+    t = re.sub(r"\[\d+\]", "", ("" if lang == "zh" else " ").join(keep))
+    t = re.sub(r"[ \t]+", " ", t)
+    parts = re.split(r"(?<=[。！？])", t) if lang == "zh" else re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"“(])", t)
+    return [x.strip() for x in parts if len(x.strip()) >= (8 if lang == "zh" else 25)]
+
+
+def char_count(text, lang):
+    return len(re.sub(r"\s", "", text)) if lang == "zh" else len(text)
+
+
+def fit_text(sents, target, per_token, measure, lang):
+    """Whole sentences from the start of the article, chosen so the model's own count lands close to `target` tokens."""
+    join = "" if lang == "zh" else " "
+    goal, best = target * per_token, None
+    for _ in range(4):
+        acc, n = [], 0
+        for x in sents:
+            if acc and n + len(x) > goal:
+                break
+            acc.append(x); n += len(x) + 1
+        text = join.join(acc); tok = measure(text)
+        if tok and (best is None or abs(tok - target) < abs(best[1] - target)):
+            best = (text, tok)
+        if not tok or abs(tok - target) <= 0.1 * target or len(acc) == len(sents):
+            break
+        goal *= target / tok
+    return best or (join.join(sents[:1]), 0)
 
 
 def plan(cfg=None, load=None):
@@ -53,9 +112,9 @@ def plan(cfg=None, load=None):
     L = dict(LOAD, **(load or {}))
     a = (cfg or {}).get("machine_a", {}).get("name", "Machine A"); b = (cfg or {}).get("machine_b", {}).get("name", "Machine B")
     it = lambda en, zh: {"label": en, "zh": zh}
-    return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats")}, "criteria": CRIT, "inputs": {l: {"sent": TEXT[l]["sent"].strip(), "ask": TEXT[l]["ask"], "reps": TEXT[l]["reps"]} for l in TEXT}, "machines": [a, b], "steps": [
-        {"name": "Preflight", "zh": "檢查", "sends": [], "items": [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用")]},
-        {"name": "Benchmark", "zh": "速度", "sends": [{"prompt": "Text in front (a sentence, a paragraph or a long passage) + the same question", "tokens": L["tokens"], "meta": "%d requests, %d at once, x %d" % (L["requests"], L["concurrency"], L["repeats"])}],
+    return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats")}, "criteria": CRIT, "machines": [a, b], "steps": [
+        {"name": "Preflight", "zh": "檢查", "sends": [], "items": [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用"), it("Input text taken from the web", "自網路擷取輸入文字")]},
+        {"name": "Benchmark", "zh": "速度", "sends": [{"prompt": "Excerpt of a web article (a sentence, a paragraph or a long passage) + a summary request", "tokens": L["tokens"], "meta": "%d requests, %d at once, x %d" % (L["requests"], L["concurrency"], L["repeats"])}],
          "items": [it("Sentence (one line of text)", "一句話"), it("Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), it("Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"),
                    it("Mean Aggregate TPS gain with LiteLLM at least %.1fx" % CRIT["gain_min"], "經 LiteLLM 後 Aggregate TPS 平均提升至少 %.1f 倍" % CRIT["gain_min"])]}]}
 
@@ -143,11 +202,11 @@ def _stream(base, model, content, tokens, bearer=None, timeout=60):
         return {"code": 0, "ttft": 0, "total": time.time() - t, "n": 0}
 
 
-def _load(base, model, bearer, key, n, conc, tokens, timeout, lang="en"):
+def _load(base, model, bearer, text, ask, n, conc, tokens, timeout):
     """n streamed requests, `conc` at a time -> TTFT / TPOT / TPS of the whole run. NP is the number of requests in flight at once."""
     t0 = time.time()
     with ThreadPoolExecutor(conc) as ex:
-        rs = list(ex.map(lambda _: _stream(base, model, bench_prompt(key, lang), tokens, bearer, timeout), range(n)))
+        rs = list(ex.map(lambda _: _stream(base, model, bench_prompt(text, ask), tokens, bearer, timeout), range(n)))
     wall = time.time() - t0
     ok = [r for r in rs if r["code"] == 200 and r["n"] > 0]
     tpots = [(r["total"] - r["ttft"]) / (r["n"] - 1) for r in ok if r["n"] > 1]
@@ -157,8 +216,9 @@ def _load(base, model, bearer, key, n, conc, tokens, timeout, lang="en"):
 
 
 class SmokeService:
-    def __init__(self, base_dir, busy_check=None, config=None, keys=None, load=None):
+    def __init__(self, base_dir, busy_check=None, config=None, keys=None, load=None, fetch=None):
         self.base_dir = Path(base_dir)
+        self.fetch = fetch or fetch_article
         self.busy_check = busy_check or (lambda: None)
         self._config, self._keys, self.load = config, keys, dict(LOAD, **(load or {}))
         self.jobs, self.lock = {}, threading.RLock()
@@ -235,7 +295,7 @@ class SmokeService:
                 raise SmokeError("A smoke test is already running; it was not interrupted.", 409)
             job = {"job_id": uuid.uuid4().hex[:12], "state": "running", "started": time.time(), "lang": lang,
                    "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "items": [[{"state": "wait", "value": ""} for _ in s_["items"]] for s_ in plan(self.config(), self.load)["steps"]],
-                   "result": None, "partial": [], "error": "", "cancel": False, "log": []}
+                   "result": None, "partial": [], "error": "", "cancel": False, "log": [], "input": None, "texts": {}}
             self.jobs[job["job_id"]] = job
             for old in sorted(self.jobs.values(), key=lambda j: j["started"])[:-10]:
                 self.jobs.pop(old["job_id"], None)
@@ -248,7 +308,7 @@ class SmokeService:
             if not j:
                 raise SmokeError("Unknown smoke test.", 404)
             since = max(0, int(since or 0))
-            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "partial", "error")}
+            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "partial", "error", "input")}
             out["log"], out["log_next"] = j["log"][since:], len(j["log"])
             return out
 
@@ -277,6 +337,26 @@ class SmokeService:
 
     def _pace(self):
         time.sleep(self.load["pace_s"])
+
+    def _prepare_text(self, job, gw, alias, key, to, lang):
+        """Take the article from the web, cut it into the three input sizes and fit each to the model's own token count."""
+        art = self.fetch(lang)
+        sents = sentences(art.get("text", ""), lang)
+        if len(sents) < 3:
+            self._item(job, 0, 4, "fail", "no text"); self._step(job, 0, "fail", "article not fetched")
+            raise SmokeError("Not started: the input article could not be taken from the web.")
+        src, ask = SOURCES[lang], SOURCES[lang]["ask"]
+        measure = lambda t: _prompt_tokens(gw, alias, bench_prompt(t, ask), key, to)
+        texts, info = {"short": sents[0]}, []
+        texts["mid"], tok_mid = fit_text(sents, TARGET_TOKENS["mid"], src["per_token"], measure, lang)
+        texts["long"], tok_long = fit_text(sents, TARGET_TOKENS["long"], src["per_token"], measure, lang)
+        toks = {"short": measure(texts["short"]), "mid": tok_mid, "long": tok_long}
+        for k, _, _ in SIZES:
+            info.append({"key": k, "tokens": int(toks[k]), "chars": char_count(texts[k], lang), "preview": texts[k] if len(texts[k]) <= 90 else texts[k][:50].rstrip() + " … " + texts[k][-34:].lstrip()})
+        with self.lock:
+            job["texts"] = texts
+            job["input"] = {"lang": lang, "title": art.get("title", src["title"]), "url": art.get("url", src["page"]), "license": LICENSE, "sizes": info}
+        self._log(job, "  input text: web article \"%s\" (%s), %s" % (job["input"]["title"], LICENSE, "; ".join("%s %d tokens / %d characters" % (x["key"], x["tokens"], x["chars"]) for x in info)))
 
     def _check(self, job, deadline):
         if job["cancel"]:
@@ -308,7 +388,7 @@ class SmokeService:
         # 0 Preflight: nothing is asked of a model until every check has passed
         self._log(job, "[1/2] Preflight")
         self._step(job, 0, "run", "checking")
-        for j in range(4):
+        for j in range(5):
             self._item(job, 0, j, "wait")
         self._item(job, 0, 0, "run")
         if _http("GET", gw + "/health/liveliness", timeout=5)[0] != 200:
@@ -330,9 +410,11 @@ class SmokeService:
         if code != 200 or cfg["group_alias"] not in have:
             self._item(job, 0, 3, "fail", "missing"); self._step(job, 0, "fail", "model missing" if code == 200 else "test key refused")
             raise SmokeError("Not started: the gateway does not offer the model this test needs.")
-        self._pace(); self._item(job, 0, 3, "ok"); self._pace()
-        self._step(job, 0, "ok", "gateway up")
+        self._pace(); self._item(job, 0, 3, "ok"); self._pace(); self._item(job, 0, 4, "run")
         self._log(job, "  gateway up, %s and %s reachable, nothing else running, test key accepted  -> OK" % (A["name"], B["name"]))
+        self._prepare_text(job, gw, cfg["group_alias"], key, to, lang)
+        self._item(job, 0, 4, "ok", "%s · %d texts" % (job["input"]["title"], len(job["input"]["sizes"])))
+        self._step(job, 0, "ok", "gateway up")
 
         # 1 Benchmark: for each input size, Without (machine A straight) and With (the gateway over both machines), repeats interleaved
         self._check(job, deadline)
@@ -344,17 +426,18 @@ class SmokeService:
         sizes = []
         for si, (skey, en, zh) in enumerate(SIZES):
             self._item(job, 1, si, "run", "")
-            ptok = _prompt_tokens(gw, cfg["group_alias"], bench_prompt(skey, lang), key, to)
+            text, ask = job["texts"][skey], SOURCES[lang]["ask"]
+            ptok = job["input"]["sizes"][si]["tokens"]
             runs = {"a": [], "ab": []}
             for rep in range(reps):
-                for mk, label, fn in (("a", "%s only (without LiteLLM)" % A["name"], lambda: _load(A["url"], A["model"], None, skey, n, c, tk, to, lang)),
-                                      ("ab", "both machines via LiteLLM", lambda: _load(gw, cfg["group_alias"], key, skey, n, c, tk, to, lang))):
+                for mk, label, fn in (("a", "%s only (without LiteLLM)" % A["name"], lambda: _load(A["url"], A["model"], None, text, ask, n, c, tk, to)),
+                                      ("ab", "both machines via LiteLLM", lambda: _load(gw, cfg["group_alias"], key, text, ask, n, c, tk, to))):
                     r_ = fn(); runs[mk].append(r_); self._check(job, deadline)
                     self._log(job, "  %-22s repeat %d/%d  %-30s TTFT %5.2f s  TPOT %5.1f ms  TPS %6.1f agg / %5.1f norm   %d/%d ok"
                               % (en, rep + 1, reps, label, r_["ttft_s"], r_["tpot_s"] * 1000, r_["agg_tps"], r_["norm_tps"], r_["ok"], r_["n"]))
                 self._item(job, 1, si, "run", "%d/%d" % (rep + 1, reps))
             med = lambda mk, f: st.median(x[f] for x in runs[mk])
-            sz = {"key": skey, "tokens": int(ptok)}
+            sz = {"key": skey, "tokens": int(ptok), "chars": job["input"]["sizes"][si]["chars"]}
             for mk in ("a", "ab"):
                 sz[mk] = {"ttft_s": round(med(mk, "ttft_s"), 3), "tpot_ms": round(med(mk, "tpot_s") * 1000, 1), "agg_tps": round(med(mk, "agg_tps"), 1), "norm_tps": round(med(mk, "norm_tps"), 1),
                           "ok": all(x["ok"] == x["n"] for x in runs[mk])}
@@ -371,7 +454,7 @@ class SmokeService:
         self._item(job, 1, 3, "ok" if passed else "fail", "%.2fx" % gain)
         self._step(job, 1, "ok" if passed else "fail", "%.2fx Aggregate TPS" % gain)
         self._log(job, "  mean Aggregate TPS gain %.2fx  (need >= %.1fx)  %s" % (gain, CRIT["gain_min"], "PASS" if passed else "FAIL"))
-        res = {"bench": {"lang": lang, "np": c, "requests": n, "output_tokens": tk, "repeats": reps, "sizes": sizes, "gain_agg": round(gain, 2), "pass": passed},
+        res = {"bench": {"lang": lang, "input": job["input"], "np": c, "requests": n, "output_tokens": tk, "repeats": reps, "sizes": sizes, "gain_agg": round(gain, 2), "pass": passed},
                "machines": [A["name"], B["name"]], "all_pass": passed, "criteria": CRIT, "finished": time.strftime("%H:%M:%S")}
         self._log(job, "RESULT: %s" % ("ALL PASS" if passed else "SOME CHECKS FAILED"))
         return res
