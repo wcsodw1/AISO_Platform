@@ -8,7 +8,7 @@
     tested: "2026-11-17",
     nreq: 8, load: "8 requests, 4 at once, median of 3 repeats; mean of 2 earlier runs",
     sec: { a: 7.1, b: 5.7, hand: 3.5, ab: 4.1 },
-    cost: { direct: 0.16, gw: 0.2, add: 0.04 },
+    cost: { levels: [{"key": "short", "tok": 16, "direct": 0.17, "gw": 0.22, "add": 0.05}, {"key": "mid", "tok": 102, "direct": 0.29, "gw": 0.33, "add": 0.04}, {"key": "long", "tok": 902, "direct": 0.77, "gw": 0.83, "add": 0.03}], add: 0.05 },
     wrong: { direct: 200, key: 403 },
     fail: { n: 10, direct: 0, gw: 10, median: 1.31 },
     ctl: { block: 6, cap: 0.0005 },
@@ -36,34 +36,25 @@
   /* The conclusion is PRELIMINARY until the smoke test has run on this platform (David, 2026-11-17).
      Replay data (proof-of-concept run) -> "Preliminary estimate". A live smoke test result -> "Confirmed". */
   function conclusion(live) {
-    var el = $("lrConcl"), dmax = Math.max(D.cost.direct, D.cost.gw);
+    var el = $("lrConcl");
     el.classList.toggle("prelim", !live);
-    /* every card says what was done, in plain words, then the result.
-       [title, zh, tag, without label, with label, hero, hero en, hero zh, without bar, with bar, what was done (en), what was done (zh)] */
-    var cards = [
-      ["Speed", "速度", "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快", 1, D.sec.ab / D.sec.a,
-        "How long it takes to answer " + D.nreq + " questions", "回答 " + D.nreq + " 個問題要多久"],
-      ["Delay", "延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "extra per question", "每個問題多花", D.cost.direct / dmax, D.cost.gw / dmax,
-        "How long one short question takes", "一個很短的問題要多久"],
-      ["Access control", "權限管控", "", "Answered, nobody checks|照樣回答，沒人檢查", "Refused, the key stops it|被拒絕，被金鑰擋下", "Stopped", "the request", "越權的請求被擋下", null, null,
-        "A key that may only use " + M.ma + " asks for Qwen3.6 35B", "只能用 " + M.ma + " 的金鑰，去問 Qwen3.6 35B"],
-      ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n, "still answered", "仍有回覆", 0, D.fail.gw / D.fail.n,
-        M.b + " is switched off, " + D.fail.n + " questions are asked", "把 " + M.b + " 關掉，問 " + D.fail.n + " 個問題"]
-    ].map(function (k) {
-      var row = function (cls, en, zh, label, frac) {
-        var parts = String(label).split("|");
-        return '<div class="lr-kr ' + cls + '"><span class="lr-kl">' + en + '<small class="zhs">' + zh + '</small></span>' +
-          (frac === null ? '<b class="lr-kpill">' + esc(parts[0]) + (parts[1] ? '<small class="zhs">' + esc(parts[1]) + "</small>" : "") + '</b>'
-            : '<i class="lr-kbar"><u style="width:' + Math.max(frac * 100, frac > 0 ? 3 : 0).toFixed(1) + '%"></u></i><b>' + esc(label) + '</b>') + '</div>';
-      };
-      return '<div class="lr-kpi"><h4>' + k[0] + '<small class="zhs">' + k[1] + '</small>' + (k[2] ? '<em class="lr-tag">' + k[2] + '</em>' : "") + '</h4>' +
-        '<p class="lr-sc">' + esc(k[10]) + '<small class="zhs">' + esc(k[11]) + '</small></p>' +
-        '<p class="lr-kd"><b>' + k[5] + '</b><span>' + k[6] + '<small class="zhs">' + k[7] + '</small></span></p>' +
-        row("no", "Without", "沒有", k[3], k[8]) + row("yes", "With", "有", k[4], k[9]) + '</div>';
+    /* one plain question per card, one answer you can read at a glance (✗ = bad, ✓ = good) */
+    var ans = function (cls, en, zh, big, sub) { return '<div class="lr-ka ' + cls + '"><span class="lr-kw">' + en + '<small class="zhs">' + zh + '</small></span><b><i aria-hidden="true">' + (cls === "no" ? "✗" : "✓") + "</i>" + esc(big) + (sub ? "<small>" + esc(sub) + "</small>" : "") + "</b></div>"; };
+    var foot = function (big, en, zh) { return '<p class="lr-kd"><b>' + esc(big) + '</b><span>' + en + '<small class="zhs">' + zh + "</small></span></p>"; };
+    var head = function (q, zh, tag) { return "<h4>" + q + '<small class="zhs">' + zh + "</small>" + (tag ? '<em class="lr-tag">' + tag + "</em>" : "") + "</h4>"; };
+    var lbl = { short: ["Short", "一句話"], mid: ["Medium", "中等"], long: ["Long", "很長"] };
+    var delayRows = D.cost.levels.map(function (l) {
+      return '<div class="lr-dr"><span>' + lbl[l.key][0] + '<small class="zhs">' + lbl[l.key][1] + " · " + l.tok + ' tokens</small></span><span>' + f2(l.direct) + ' → ' + f2(l.gw) + ' s</span><b>+' + f2(l.add) + ' s</b></div>';
     }).join("");
+    var cards = [
+      '<div class="lr-kpi">' + head("Faster?", "變快嗎？") + '<p class="lr-kq">' + D.nreq + " questions<small class=\"zhs\">" + D.nreq + " 個問題</small></p>" + ans("no", "Without", "沒有", f1(D.sec.a) + " s") + ans("yes", "With", "有", f1(D.sec.ab) + " s") + foot(f1(gain) + "×", "faster", "更快") + "</div>",
+      '<div class="lr-kpi">' + head("Slower?", "會變慢嗎？") + '<p class="lr-kq">Extra time, by question length<small class="zhs">依問題長度，每次多花的時間</small></p><div class="lr-dh"><span>Input<small class="zhs">輸入</small></span><span>Without → With<small class="zhs">沒有 → 有</small></span><span>Extra<small class="zhs">多花</small></span></div>' + delayRows + foot("+" + f2(D.cost.add) + " s", "at most", "最多") + "</div>",
+      '<div class="lr-kpi">' + head("Wrong model?", "能用別的模型嗎？") + '<p class="lr-kq">A key limited to one model asks another<small class="zhs">限定一個模型的金鑰，去問另一個</small></p>' + ans("no", "Without", "沒有", "Gets an answer", "") + ans("yes", "With", "有", "Refused", "") + foot("Blocked", "by the key", "被金鑰擋下") + "</div>",
+      '<div class="lr-kpi">' + head("Machine down?", "機器壞了？", "PoC") + '<p class="lr-kq">' + D.fail.n + " questions while it is off<small class=\"zhs\">關機時問 " + D.fail.n + " 個問題</small></p>" + ans("no", "Without", "沒有", "0 / " + D.fail.n + " answered", "") + ans("yes", "With", "有", D.fail.gw + " / " + D.fail.n + " answered", "") + foot("No errors", "for users", "使用者看不到錯誤") + "</div>"
+    ].join("");
     el.innerHTML = '<span class="lr-cl">KPI<small class="zhs">效果差異</small>' + (live ? '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + '</em>' : '<em class="lr-pend">Preliminary<small class="zhs">初步估算，待實測</small></em>') + '</span>' + notes +
       '<p class="lr-legend"><b>Without</b> apps talk straight to the machine · <b>With</b> through LiteLLM<small class="zhs">沒有 ＝ 應用直接連機器；有 ＝ 經過 LiteLLM</small></p>' +
-      '<div class="lr-kpis">' + cards + '</div>';
+      '<div class="lr-kpis">' + cards + "</div>";
   }
   conclusion(false);
 
@@ -167,14 +158,14 @@
   render();
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
-  var inclB = false, logNext = 0, API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
+  var logNext = 0, API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
 
   /* What the smoke test does, as ticking checklists. Mirrors plan() in benchmark/litellm_smoke.py (the backend sends its own copy when available). */
   var it = function (en, zh) { return { label: en, zh: zh }; };
   var PLAN = { steps: [
     { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway is up", "閘道正常"), it("Machines reachable", "機器連得到"), it("Nothing else is running", "沒有其他測試在跑"), it("Test keys and models present", "測試金鑰與模型都在")] },
     { name: "Speed", zh: "速度", sends: [{ prompt: "用約80字介紹台北的夜市文化", tokens: 100, meta: "8 requests x 3" }], items: [it(M.a + " only (one machine, today)", "只接 " + M.a + "（現況）"), it(M.b + " only", "只接 " + M.b), it("Both, the app splits by hand", "兩台，應用自己分流"), it("Both, via LiteLLM", "兩台，經 LiteLLM"), it("LiteLLM at least 1.3x faster than " + M.a + " only", "LiteLLM 比只接 " + M.a + " 快至少 1.3 倍")] },
-    { name: "Cost", zh: "延遲", sends: [{ prompt: "說一個字", tokens: 10, meta: "6 pairs" }], items: [it("Pairs sent: direct and via LiteLLM", "直連與經 LiteLLM 各送一次"), it("Extra delay at most 0.10 s", "額外延遲不超過 0.10 秒")] },
+    { name: "Cost", zh: "延遲", sends: [{ prompt: "說一個字", tokens: 10, meta: "short, 5 pairs" }, { prompt: "A short passage, then “Reply with one word.”", tokens: 10, meta: "about 100 input tokens, 5 pairs" }, { prompt: "A longer passage, then “Reply with one word.”", tokens: 10, meta: "about 1000 input tokens, 5 pairs" }], items: [it("Short question: extra delay at most 0.10 s", "一句話：額外延遲不超過 0.10 秒"), it("About 100 input tokens: extra delay at most 0.10 s", "約 100 token：額外延遲不超過 0.10 秒"), it("About 1000 input tokens: extra delay at most 0.10 s", "約 1000 token：額外延遲不超過 0.10 秒")] },
     { name: "Control", zh: "管控", sends: [{ prompt: "hi", tokens: 20, meta: "4 requests" }], items: [it("Limited key, its own model (expect 200)", "限定金鑰，自己的模型（預期 200）"), it("Limited key, another model (expect 403)", "限定金鑰，別的模型（預期 403）"), it("Open key, another model (expect 200)", "不設限金鑰，別的模型（預期 200）"), it("No gateway, another model (200: nothing stops it)", "不經閘道，別的模型（200：沒人擋）")] }
   ] };
   var TICK = { wait: "○", run: "◔", ok: "✓", fail: "✗", skip: "–" }, DONE = { wait: ["Waiting", "等待"], run: ["Running", "執行中"], ok: ["complete", "完成"], fail: ["failed", "未通過"], skip: ["skipped", "略過"] };
@@ -197,10 +188,9 @@
   }
   function runUI(mode, msg, st, items) {
     runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn' + (mode === "running" ? " busy" : "") + '" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '><span>' + (mode === "running" ? "Running" : "Run smoke test") + '</span><small class="zhs">' + (mode === "running" ? "執行中" : "實測") + '</small><i aria-hidden="true">→</i></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
-    if (mode === "ready" || mode === "running") {
-      runEl.querySelector(".lr-runrow").insertAdjacentHTML("afterend", '<div class="lr-runopts"><label class="lr-incl"><input type="checkbox" id="lrInclB"' + (inclB ? " checked" : "") + (mode === "ready" ? "" : " disabled") + '><span>Also test ' + M.b + ' (shared machine), needed for Speed<small class="zhs">一併測 ' + M.b + '（共用機器），速度才量得出來</small></span></label><span class="lr-pwnote">*Ask the relevant staff for the test password<small class="zhs">測試密碼請洽相關工作人員</small></span></div>');
-      $("lrInclB").onchange = function () { inclB = this.checked; };
-    }
+    var row = runEl.querySelector(".lr-runrow");
+    row.insertAdjacentHTML("beforeend", '<span class="lr-pwnote">*Test password: ask staff<small class="zhs">測試密碼請洽工作人員</small></span>');
+    row.insertAdjacentHTML("afterend", '<div class="lr-lights" id="lrLights" role="status" aria-label="Connection status">' + lightsHtml() + "</div>");
     if (mode === "ready") $("lrRunBtn").onclick = startRun;
   }
   var info = function (en, zh) { return en + '<small class="zhs">' + zh + "</small>"; };
@@ -213,6 +203,21 @@
     if (stick) b.scrollTop = b.scrollHeight;
     $("lrTermN").textContent = b.children.length + " lines";
   }
+
+  /* connection lights: one per thing the test needs; a red light says why */
+  var lights = [], healthB = null;
+  var WHY = { "no connection": ["No connection", "連不上"], "gateway unreachable": ["Gateway down", "閘道連不上"], "not set": ["Not set", "沒設定"], "refused by the gateway": ["Key refused", "金鑰被拒"] };
+  function why(d) { if (WHY[d]) return WHY[d][0] + '<small class="zhs">' + WHY[d][1] + "</small>"; if (/benchmark/i.test(d)) return 'Benchmark running<small class="zhs">有測試在跑</small>'; return esc(d); }
+  function lightsHtml() {
+    return lights.map(function (l) { return '<span class="lr-light ' + (l.ok ? "ok" : "bad") + '"><i aria-hidden="true"></i><span class="lr-ln2">' + esc(l.name) + "</span>" + (l.ok ? "" : '<em>' + why(l.detail) + "</em>") + "</span>"; }).join("");
+  }
+  function refreshHealth() {
+    fetch(API + "/health", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.checks) return;
+      lights = d.checks; var b = lights.filter(function (c) { return c.name === M.b; })[0]; healthB = b ? b.ok : null;
+      var el = $("lrLights"); if (el) el.innerHTML = lightsHtml();
+    }).catch(function () {});
+  }
   function checkStatus() {
     runUI("checking", "");
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
@@ -223,7 +228,7 @@
   function startRun() {
     if (!window.RunGate) { runUI("ready", info("Test-password dialog is not loaded.", "測試密碼視窗沒有載入")); return; }
     runUI("running", "");
-    RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ include_b: inclB }) }); })
+    RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ include_b: healthB !== false }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
       .then(function (d) { job = d.job_id; logNext = 0; termReset(""); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled. No password was entered.", "已取消，沒有輸入密碼") : esc(e.message || e)); });
@@ -241,7 +246,7 @@
   function applyLive(r, steps, items) {
     D.liveSpeed = !!r.speed;
     if (r.speed) { D.sec = r.speed.median_s; D.tps = r.speed.tok_s; D.nreq = r.load ? r.load.requests : D.nreq; D.load = (r.load ? r.load.requests : D.nreq) + " requests, " + (r.load ? r.load.concurrency : 4) + " at once, median of " + (r.load ? r.load.repeats : 3) + " repeats (this run)"; }
-    if (r.cost) D.cost = { direct: r.cost.direct_s, gw: r.cost.gateway_s, add: r.cost.added_s };
+    if (r.cost && r.cost.levels) D.cost = { levels: r.cost.levels.map(function (l) { return { key: l.key, tok: l.tokens, direct: l.direct_s, gw: l.gateway_s, add: l.added_s }; }), add: r.cost.added_s };
     if (r.control && r.control.direct_other) D.wrong = { direct: r.control.direct_other, key: r.control.other };
     D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString(); D.liveSkipped = r.skipped || []; recalc();
     var done = !!r.all_pass;
@@ -263,4 +268,5 @@
       .catch(function () { $("lrScript").textContent = "The script is shown on the local platform only.\nIt lives in the repository at benchmark/litellm_smoke.py."; });
   });
   checkStatus();
+  refreshHealth(); setInterval(function () { if (!poll) refreshHealth(); }, 10000);
 })();

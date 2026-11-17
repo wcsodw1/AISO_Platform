@@ -46,7 +46,8 @@ def make_server(kind, log, limited_allows_other=False):
                 time.sleep(0.06 if model == "gemma26-multi" else 0.16)
             else:
                 time.sleep(delays[kind])
-            self.reply(200, {"usage": {"completion_tokens": 10}})
+            n = len(str((body.get("messages") or [{}])[0].get("content", ""))) // 4 + 1
+            self.reply(200, {"usage": {"completion_tokens": 10, "prompt_tokens": n}})
 
     srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -91,9 +92,14 @@ class SmokeTests(unittest.TestCase):
         self.assertGreater(r["speed"]["vs_hand"], 0)
         self.assertEqual(r["control"], {"own": 200, "other": 403, "open": 200, "direct_other": 200, "pass": True})
         self.assertEqual([s["state"] for s in j["steps"]], ["ok"] * 4)
-        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 5, ["ok"] * 2, ["ok"] * 4])   # every checklist item ticked
+        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 5, ["ok"] * 3, ["ok"] * 4])   # every checklist item ticked
         self.assertEqual(j["items"][3][1]["value"], "403")
         self.assertLess(r["cost"]["added_s"], 0.10)
+        lv = r["cost"]["levels"]
+        self.assertEqual([x["key"] for x in lv], ["short", "mid", "long"])
+        self.assertLess(lv[0]["tokens"], lv[1]["tokens"] + 1)              # the three questions really grow
+        self.assertLess(lv[1]["tokens"], lv[2]["tokens"])
+        self.assertGreater(lv[2]["tokens"], 5 * lv[0]["tokens"])
 
     def test_log_lines_stream_with_since_and_contain_no_secrets(self):
         svc = self.service()
@@ -177,13 +183,32 @@ class SmokeTests(unittest.TestCase):
         pl = svc.plan()
         self.assertEqual([x["name"] for x in pl["steps"]], list(m.STEP_NAMES))
         asked = {s["prompt"] for st_ in pl["steps"] for s in st_["sends"]}
-        self.assertEqual(asked, {m.PROMPTS["speed"], m.PROMPTS["cost"], m.PROMPTS["control"]})
+        self.assertTrue({m.PROMPTS["speed"], m.PROMPTS["cost"], m.PROMPTS["control"]} <= asked)
         self.assertEqual(pl["steps"][1]["items"][0]["label"], "AISO1 only (one machine, today)")
-        self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 5, 2, 4])
+        self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 5, 3, 4])
         sc = svc.script()
         self.assertIn("def _execute", sc["text"])
         for bad in (OPEN, LIMITED):
             self.assertNotIn(bad, sc["text"])
+
+    def test_health_lights_say_what_is_wrong(self):
+        svc = self.service()
+        h = svc.health()
+        self.assertTrue(h["configured"])
+        self.assertEqual([c["name"] for c in h["checks"]], ["Gateway", "AISO1", "PRO6000", "Test keys", "Platform idle"])
+        self.assertTrue(all(c["ok"] for c in h["checks"]), h)
+        bad = self.service(busy=lambda: "A benchmark job is running").health()
+        self.assertFalse(bad["checks"][4]["ok"])
+        self.assertIn("benchmark", bad["checks"][4]["detail"])
+        down = self.service(gateway_up=False).health()
+        self.assertFalse(down["checks"][0]["ok"]); self.assertEqual(down["checks"][0]["detail"], "no connection")
+        self.assertEqual(down["checks"][3]["detail"], "gateway unreachable")
+        self.assertTrue(down["checks"][1]["ok"])                      # the machines are fine, only the gateway is red
+        nokeys = self.service(); nokeys._keys = ("", "")
+        self.assertEqual(nokeys.health()["checks"][3]["detail"], "not set")
+        blob = json.dumps([h, bad, down])
+        for bad_ in (OPEN, LIMITED, "127.0.0.1"):
+            self.assertNotIn(bad_, blob)
 
     def test_unknown_job(self):
         with self.assertRaises(SmokeError) as cm:

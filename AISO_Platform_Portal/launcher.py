@@ -292,6 +292,8 @@ class Handler(SimpleHTTPRequestHandler):
             if method == "GET":
                 if path == "/api/litellm/status":
                     return self.send_json(LITELLM_SMOKE.status())
+                if path == "/api/litellm/health":
+                    return self.send_json(LITELLM_SMOKE.health())
                 if path == "/api/litellm/plan":
                     return self.send_json(LITELLM_SMOKE.plan())
                 if path == "/api/litellm/script":

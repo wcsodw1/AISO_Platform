@@ -26,9 +26,18 @@ from pathlib import Path
 CONFIG_NAME = "litellm.local.json"                       # next to launcher.py, git-ignored (machines.local.json style)
 KEY_FILE = Path("~/.config/aiso/litellm_smoke.env")      # KEY=VALUE lines, outside the repository
 CRIT = {"speedup_min": 1.3, "overhead_max_s": 0.10}
-LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 3, "cost_pairs": 6, "request_timeout_s": 60, "job_timeout_s": 120}
+LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 3, "cost_pairs": 5, "request_timeout_s": 60, "job_timeout_s": 120}
 STEP_NAMES = ("Preflight", "Speed", "Cost", "Control")
 PROMPTS = {"speed": "用約80字介紹台北的夜市文化", "cost": "說一個字", "control": "hi", "warmup": "hi"}   # the exact questions sent to the models
+# Cost step: three input sizes. Every request starts with a different number so no model can answer it from a cached prompt.
+_SENT = "Night markets in Taipei sell food, games and small goods until late at night. "
+COST_LEVELS = (("short", "Short question", "一句話", 0), ("mid", "About 100 input tokens", "約 100 個 input token", 5), ("long", "About 1000 input tokens", "約 1000 個 input token", 55))
+_uid = iter(range(1, 10 ** 9))
+
+
+def cost_prompt(key):
+    reps = {k: r for k, _, _, r in COST_LEVELS}[key]
+    return PROMPTS["cost"] if reps == 0 else "[%d] %sReply with one word." % (next(_uid), _SENT * reps)
 
 
 def plan(cfg=None, load=None):
@@ -42,8 +51,12 @@ def plan(cfg=None, load=None):
         {"name": "Speed", "zh": "速度", "sends": [{"prompt": PROMPTS["speed"], "tokens": L["tokens"], "meta": "%d requests x %d" % (n, r)}],
          "items": [it(a + " only (one machine, today)", "只接 " + a + "（現況）"), it(b + " only", "只接 " + b), it("Both, the app splits by hand", "兩台，應用自己分流"), it("Both, via LiteLLM", "兩台，經 LiteLLM"),
                    it("LiteLLM at least %.1fx faster than %s only" % (CRIT["speedup_min"], a), "LiteLLM 比只接 %s 快至少 %.1f 倍" % (a, CRIT["speedup_min"]))]},
-        {"name": "Cost", "zh": "延遲", "sends": [{"prompt": PROMPTS["cost"], "tokens": 10, "meta": "%d pairs" % L["cost_pairs"]}],
-         "items": [it("Pairs sent: direct and via LiteLLM", "直連與經 LiteLLM 各送一次"), it("Extra delay at most %.2f s" % CRIT["overhead_max_s"], "額外延遲不超過 %.2f 秒" % CRIT["overhead_max_s"])]},
+        {"name": "Cost", "zh": "延遲", "sends": [{"prompt": PROMPTS["cost"], "tokens": 10, "meta": "short, %d pairs" % L["cost_pairs"]},
+                                                  {"prompt": "A short passage, then “Reply with one word.”", "tokens": 10, "meta": "about 100 input tokens, %d pairs" % L["cost_pairs"]},
+                                                  {"prompt": "A longer passage, then “Reply with one word.”", "tokens": 10, "meta": "about 1000 input tokens, %d pairs" % L["cost_pairs"]}],
+         "items": [it("Short question: extra delay at most %.2f s" % CRIT["overhead_max_s"], "一句話：額外延遲不超過 %.2f 秒" % CRIT["overhead_max_s"]),
+                   it("About 100 input tokens: extra delay at most %.2f s" % CRIT["overhead_max_s"], "約 100 token：額外延遲不超過 %.2f 秒" % CRIT["overhead_max_s"]),
+                   it("About 1000 input tokens: extra delay at most %.2f s" % CRIT["overhead_max_s"], "約 1000 token：額外延遲不超過 %.2f 秒" % CRIT["overhead_max_s"])]},
         {"name": "Control", "zh": "管控", "sends": [{"prompt": PROMPTS["control"], "tokens": 20, "meta": "4 requests"}],
          "items": [it("Limited key, its own model (expect 200)", "限定金鑰，自己的模型（預期 200）"), it("Limited key, another model (expect 403)", "限定金鑰，別的模型（預期 403）"),
                    it("Open key, another model (expect 200)", "不設限金鑰，別的模型（預期 200）"), it("No gateway, another model (200: nothing stops it)", "不經閘道，別的模型（200：沒人擋）")]}]}
@@ -97,8 +110,8 @@ def _chat(base, model, content, tokens, bearer=None, timeout=60):
     body = {"model": model, "messages": [{"role": "user", "content": content}], "max_tokens": tokens, "chat_template_kwargs": {"enable_thinking": False}}
     t = time.time()
     status, _, data = _http("POST", base.rstrip("/") + "/v1/chat/completions", body, bearer, timeout)
-    toks = ((data or {}).get("usage") or {}).get("completion_tokens", 0) if status == 200 else 0
-    return {"code": status, "s": time.time() - t, "tok": toks}
+    usage = ((data or {}).get("usage") or {}) if status == 200 else {}
+    return {"code": status, "s": time.time() - t, "tok": usage.get("completion_tokens", 0), "ptok": usage.get("prompt_tokens", 0)}
 
 
 def _load(base, model, bearer, n, conc, tokens, timeout):
@@ -136,6 +149,35 @@ class SmokeService:
             return json.loads((self.base_dir / CONFIG_NAME).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
+
+    def health(self):
+        """One light per thing the test needs. A red light says why: no connection, an HTTP error, or a missing key."""
+        cfg = self.config()
+        if not cfg:
+            return {"configured": False, "checks": []}
+        gw, A, B = cfg["gateway"].rstrip("/"), cfg["machine_a"], cfg["machine_b"]
+        k_open, k_lim = self.keys(cfg)
+
+        def probe(name, url, bearer=None):
+            code = _http("GET", url, bearer=bearer, timeout=4)[0]
+            return {"name": name, "ok": code == 200, "detail": "" if code == 200 else ("no connection" if code == 0 else "HTTP %d" % code)}
+
+        def keys_check():
+            if not (k_open and k_lim):
+                return {"name": "Test keys", "ok": False, "detail": "not set"}
+            r = probe("Test keys", gw + "/v1/models", k_open)
+            if not r["ok"]:
+                r["detail"] = "gateway unreachable" if r["detail"] == "no connection" else ("refused by the gateway" if r["detail"] in ("HTTP 401", "HTTP 403") else r["detail"])
+            return r
+
+        def idle_check():
+            reason = self.busy_check()
+            return {"name": "Platform idle", "ok": not reason, "detail": reason or ""}
+        jobs = [lambda: probe("Gateway", gw + "/health/liveliness"), lambda: probe(A["name"], A["url"].rstrip("/") + "/v1/models"),
+                lambda: probe(B["name"], B["url"].rstrip("/") + "/v1/models"), keys_check, idle_check]
+        with ThreadPoolExecutor(len(jobs)) as ex:
+            checks = list(ex.map(lambda f: f(), jobs))
+        return {"configured": True, "checks": checks}
 
     def plan(self):
         return plan(self.config(), self.load)
@@ -308,31 +350,35 @@ class SmokeService:
             m_ = res["speed"]["median_s"]
             self._log(job, "  median: %s %.2f s | %s %.2f s | by hand %.2f s | LiteLLM %.2f s  ->  %.2fx vs %s  (need >= %.1fx)  %s" % (A["name"], m_["a"], B["name"], m_["b"], m_["hand"], m_["ab"], sp, A["name"], CRIT["speedup_min"], "PASS" if res["speed"]["pass"] else "FAIL"))
 
-        # 2 Cost
+        # 2 Cost: three input sizes, direct vs via the gateway, taking turns
         self._check(job, deadline)
         self._step(job, 2, "run", "measuring")
-        self._log(job, "[3/4] Cost  (%d short requests, direct and via LiteLLM, interleaved)" % L["cost_pairs"])
-        self._item(job, 2, 0, "run", "0 / %d" % L["cost_pairs"]); self._item(job, 2, 1, "wait")
-        d_s, g_s, errs = [], [], 0
-        for _ in range(L["cost_pairs"]):
-            d = _chat(A["url"], A["model"], PROMPTS["cost"], 10, timeout=to); g = _chat(gw, cfg["single_alias"], PROMPTS["cost"], 10, k_open, to)
-            if d["code"] == 200 and g["code"] == 200:
-                d_s.append(d["s"]); g_s.append(g["s"])
-                self._log(job, "  pair %d  direct %.3f s   via LiteLLM %.3f s   (%+.3f s)" % (len(d_s), d["s"], g["s"], g["s"] - d["s"]))
-                self._item(job, 2, 0, "run", "%d / %d" % (len(d_s), L["cost_pairs"]))
+        self._log(job, "[3/4] Cost  (extra delay of the gateway, three input sizes, %d pairs each, direct and via LiteLLM taking turns)" % L["cost_pairs"])
+        levels, errs = [], 0
+        for li, (key, en, zh, _r) in enumerate(COST_LEVELS):
+            self._item(job, 2, li, "run", "0 / %d" % L["cost_pairs"])
+            d_s, g_s, toks = [], [], []
+            for _ in range(L["cost_pairs"]):
+                d = _chat(A["url"], A["model"], cost_prompt(key), 10, timeout=to); g = _chat(gw, cfg["single_alias"], cost_prompt(key), 10, k_open, to)
+                if d["code"] == 200 and g["code"] == 200:
+                    d_s.append(d["s"]); g_s.append(g["s"]); toks.append(g["ptok"] or d["ptok"])
+                    self._log(job, "  %-22s pair %d  direct %.3f s   via LiteLLM %.3f s   (%+.3f s)   input %s tokens" % (en, len(d_s), d["s"], g["s"], g["s"] - d["s"], toks[-1] or "?"))
+                    self._item(job, 2, li, "run", "%d / %d" % (len(d_s), L["cost_pairs"]))
+                else:
+                    errs += 1
+                self._check(job, deadline)
+            if d_s:
+                added = st.median(g - d for g, d in zip(g_s, d_s))
+                lv = {"key": key, "tokens": int(st.median(toks)), "direct_s": round(st.median(d_s), 3), "gateway_s": round(st.median(g_s), 3), "added_s": round(added, 3), "pass": added <= CRIT["overhead_max_s"]}
             else:
-                errs += 1
-            self._check(job, deadline)
-        if d_s:
-            added = st.median(g - d for g, d in zip(g_s, d_s))
-            res["cost"] = {"direct_s": round(st.median(d_s), 3), "gateway_s": round(st.median(g_s), 3), "added_s": round(added, 3), "errors": errs,
-                           "pass": errs == 0 and added <= CRIT["overhead_max_s"]}
-        else:
-            res["cost"] = {"direct_s": 0, "gateway_s": 0, "added_s": 0, "errors": errs, "pass": False}
-        self._item(job, 2, 0, "ok" if errs == 0 else "fail", "%d / %d" % (len(d_s), L["cost_pairs"]))
-        self._item(job, 2, 1, "ok" if res["cost"]["pass"] else "fail", "%+.2f s" % res["cost"]["added_s"])
-        self._step(job, 2, "ok" if res["cost"]["pass"] else "fail", "%+.2f s" % res["cost"]["added_s"] if d_s else "requests failed")
-        self._log(job, "  added delay (median) %+.3f s  (need <= %.2f s)  %s" % (res["cost"]["added_s"], CRIT["overhead_max_s"], "PASS" if res["cost"]["pass"] else "FAIL"))
+                lv = {"key": key, "tokens": 0, "direct_s": 0, "gateway_s": 0, "added_s": 0, "pass": False}
+            levels.append(lv)
+            self._item(job, 2, li, "ok" if lv["pass"] else "fail", ("%+.2f s · %d tok" % (lv["added_s"], lv["tokens"])) if d_s else "failed")
+            self._log(job, "  %-22s median extra delay %+.3f s  (need <= %.2f s)  input %d tokens  %s" % (en, lv["added_s"], CRIT["overhead_max_s"], lv["tokens"], "PASS" if lv["pass"] else "FAIL"))
+        worst = max(lv["added_s"] for lv in levels)
+        res["cost"] = {"levels": levels, "direct_s": levels[0]["direct_s"], "gateway_s": levels[0]["gateway_s"], "added_s": worst, "errors": errs,
+                       "pass": errs == 0 and all(lv["pass"] for lv in levels)}
+        self._step(job, 2, "ok" if res["cost"]["pass"] else "fail", "at most %+.2f s" % worst)
 
         # 3 Control
         self._check(job, deadline)
