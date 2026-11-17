@@ -24,7 +24,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var f1 = function (n) { return n.toFixed(1); }, f2 = function (n) { return n.toFixed(2); };
-  var gain = D.sec.a / D.sec.ab, gainB = D.sec.b / D.sec.ab;
+  var gain, gainB; function recalc() { gain = D.sec.a / D.sec.ab; gainB = D.sec.b / D.sec.ab; } recalc();
   var raf = null, timer = null, reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var stop = function () { if (raf) cancelAnimationFrame(raf); if (timer) clearInterval(timer); raf = timer = null; };
 
@@ -38,7 +38,7 @@
     el.classList.toggle("prelim", !live);
     el.innerHTML = '<span class="lr-cl">' + (live ? 'Conclusion<small class="zhs">實測結論</small>' : 'Preliminary estimate<small class="zhs">初步估算</small><em class="lr-pend">Pending smoke test<small class="zhs">待 smoke test 確認</small></em>') + '</span>' + notes +
       '<p class="lr-big">' + (live ? "" : "About ") + f1(gain) + '× faster: ' + M.a + ' + ' + M.b + ' behind one entry.<small>' + M.a + ' 加 ' + M.b + ' 共用一個入口，' + (live ? "快 " : "預估快約 ") + f1(gain) + ' 倍</small></p>' +
-      '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests answered' + (live ? "." : " in the trial run.") + '<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求有 ' + D.fail.gw + ' 個正常回覆' + (live ? "" : "（試跑）") + '</small></p>' +
+      '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests answered in the PoC run.' + '<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求有 ' + D.fail.gw + ' 個正常回覆（PoC）' + '</small></p>' +
       '<p class="lr-big">Cost: about ' + f2(D.cost.add) + ' s per request.<small>代價：每個請求多約 ' + f2(D.cost.add) + ' 秒</small></p>' +
       (live ? "" : '<p class="lr-hint">Confirmed only after the smoke test runs on this platform.<small class="zhs">要在平台上跑完 smoke test 才算確認</small></p>');
   }
@@ -124,7 +124,50 @@
 
   var VIEW = { speed: speed, fail: fail, control: control };
   function tabs() { $("lrTabs").innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-t="' + t[0] + '" aria-selected="' + (t[0] === cur) + '" class="' + (t[0] === cur ? "on" : "") + '">' + t[1] + '<small class="zhs">' + t[2] + "</small></button>"; }).join(""); }
-  function render() { stop(); tabs(); VIEW[cur](); $("lrSrc").textContent = "Replay of the proof-of-concept run, " + D.tested + " · preliminary, to be confirmed by the smoke test · nothing here calls a live gateway"; }
+  function render() { stop(); tabs(); VIEW[cur](); $("lrSrc").textContent = D.live ? "LIVE smoke test, " + D.liveAt + " · speed, cost and key checks measured just now; failover is from the PoC run" : "Replay of the proof-of-concept run, " + D.tested + " · preliminary, to be confirmed by the smoke test · nothing here calls a live gateway"; }
   $("lrTabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-t]"); if (b) { cur = b.dataset.t; render(); if (cur === "speed") play(); } });
   render();
+
+  /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
+  var API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
+  function stepsHtml(st) {
+    return '<ol class="lr-rs">' + STEPS.map(function (n, i) { var x = (st && st[i]) || { state: "wait" }; return '<li class="' + esc(x.state) + '"><b>' + n[0] + '<small class="zhs">' + n[1] + '</small></b><span>' + esc(x.detail || "") + "</span></li>"; }).join("") + "</ol>";
+  }
+  function runUI(mode, msg, st) {
+    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '>▶ Run smoke test<small class="zhs">實測</small></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + (st ? stepsHtml(st) : "");
+    if (mode === "ready") $("lrRunBtn").onclick = startRun;
+  }
+  var info = function (en, zh) { return en + '<small class="zhs">' + zh + "</small>"; };
+  function checkStatus() {
+    runUI("checking", info("Checking the local platform…", "檢查本機平台…"));
+    fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
+      if (d && d.ok) runUI("ready", info("About 40 s. Asks for the test password first.", "約 40 秒，會先要測試密碼"));
+      else runUI("off", info("The gateway is not reachable from this platform.", "平台連不到閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
+    }).catch(function () { runUI("off", info("Local platform only: needs the smoke-test backend on this computer.", "只能在本機平台按；需要本機裝上 smoke test 後端")); });
+  }
+  function startRun() {
+    if (!window.RunGate) { runUI("ready", info("Test-password dialog is not loaded.", "測試密碼視窗沒有載入")); return; }
+    runUI("running", info("Waiting for the test password…", "等待輸入測試密碼"));
+    RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: "{}" }); })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
+      .then(function (d) { job = d.job_id; poll = setInterval(tick, 1000); tick(); })
+      .catch(function (e) { runUI("ready", esc(e.message || e)); });
+  }
+  function tick() {
+    fetch(API + "/smoke/" + job, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+      runUI("running", info("Running…", "執行中"), d.steps);
+      if (d.state === "running" || d.state === "queued") return;
+      clearInterval(poll); poll = null;
+      if (d.state === "done" && d.result) applyLive(d.result, d.steps); else runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), d.steps);
+    }).catch(function () { clearInterval(poll); poll = null; runUI("ready", info("Lost contact with the platform.", "和平台失去連線")); });
+  }
+  /* result schema: speed.median_s{a,b,ab}, speed.tok_s{a,b,ab}, cost{direct_s,gateway_s,added_s}, control{own,other,open}, all_pass, finished */
+  function applyLive(r, steps) {
+    D.sec = r.speed.median_s; D.tps = r.speed.tok_s; D.cost = { direct: r.cost.direct_s, gw: r.cost.gateway_s, add: r.cost.added_s };
+    D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString(); recalc();
+    conclusion(!!r.all_pass); render();
+    runUI("ready", info(r.all_pass ? "Done. Conclusion updated with this run." : "Done. At least one check did not pass; see the steps.", r.all_pass ? "完成，結論已換成這次實測" : "完成，但有項目沒過，請看各步驟"), steps);
+    if (cur === "speed") play();
+  }
+  checkStatus();
 })();

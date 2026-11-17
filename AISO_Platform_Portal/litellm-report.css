@@ -122,3 +122,17 @@ main.lr .v2-hero .v2-sub{margin-top:10px}
 .lr .lr-pend small{margin-left:8px}
 .lr .lr-hint{margin:10px 0 0;color:var(--muted);font-size:17px}.lr .lr-hint small{margin-left:8px}
 @media(max-width:760px){.lr .lr-pend{display:block;margin:8px 0 0}}
+
+/* smoke test button + progress */
+.lr .lr-run{margin:-14px 0 30px}
+.lr .lr-runrow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+.lr .lr-runbtn{padding:12px 26px;border:0;border-radius:999px;background:var(--gold);color:#14161b;font:inherit;font-size:20px;font-weight:800;cursor:pointer}
+.lr .lr-runbtn small{margin-left:10px;color:#14161b;font-size:16px;font-weight:600}
+.lr .lr-runbtn:disabled{background:transparent;border:1px solid var(--line);color:var(--muted);cursor:not-allowed}
+.lr .lr-runbtn:disabled small{color:var(--muted)}
+.lr .lr-runmsg{font-size:18px;color:var(--ivory)}.lr .lr-runmsg small{margin-left:8px;color:var(--muted);font-size:16px}
+.lr .lr-rs{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.lr .lr-rs li{padding:10px 14px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:17px}
+.lr .lr-rs li b{display:block;color:var(--ivory);font-size:18px}.lr .lr-rs li b small{margin-left:8px;color:var(--muted);font-size:16px;font-weight:500}
+.lr .lr-rs li span{display:block;min-height:22px}
+.lr .lr-rs li.run{border-color:var(--gold)}.lr .lr-rs li.ok{border-color:#4fd1b0}.lr .lr-rs li.ok span{color:#4fd1b0}.lr .lr-rs li.fail{border-color:#ff8a76}.lr .lr-rs li.fail span{color:#ff8a76}
