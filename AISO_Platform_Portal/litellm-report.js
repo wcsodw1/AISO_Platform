@@ -38,22 +38,32 @@
   function conclusion(live) {
     var el = $("lrConcl"), dmax = Math.max(D.cost.direct, D.cost.gw);
     el.classList.toggle("prelim", !live);
-    /* [name, zh, tag, without label, with label, hero, hero en, hero zh, without bar 0..1 or null, with bar 0..1 or null] */
+    /* every card says what was done, in plain words, then the result.
+       [title, zh, tag, without label, with label, hero, hero en, hero zh, without bar, with bar, what was done (en), what was done (zh)] */
     var cards = [
-      ["Speed", "速度", "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快", 1, D.sec.ab / D.sec.a],
-      ["Delay per request", "單次延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "the cost", "代價", D.cost.direct / dmax, D.cost.gw / dmax],
-      ["Unauthorized model", "打到沒授權的模型", "", "answered · " + D.wrong.direct + "|照樣回答", "refused · " + D.wrong.key + "|被拒絕", "blocked", "by the key", "被金鑰擋下", null, null],
-      ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", "+" + D.fail.gw, "answered", "有回覆", 0, D.fail.gw / D.fail.n]
+      ["Speed", "速度", "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快", 1, D.sec.ab / D.sec.a,
+        "How long it takes to answer " + D.nreq + " questions", "回答 " + D.nreq + " 個問題要多久"],
+      ["Delay", "延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "extra per question", "每個問題多花", D.cost.direct / dmax, D.cost.gw / dmax,
+        "How long one short question takes", "一個很短的問題要多久"],
+      ["Access control", "權限管控", "", "Answered, nobody checks|照樣回答，沒人檢查", "Refused, the key stops it|被拒絕，被金鑰擋下", "Stopped", "the request", "越權的請求被擋下", null, null,
+        "A key that may only use " + M.ma + " asks for Qwen3.6 35B", "只能用 " + M.ma + " 的金鑰，去問 Qwen3.6 35B"],
+      ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n, "still answered", "仍有回覆", 0, D.fail.gw / D.fail.n,
+        M.b + " is switched off, " + D.fail.n + " questions are asked", "把 " + M.b + " 關掉，問 " + D.fail.n + " 個問題"]
     ].map(function (k) {
       var row = function (cls, en, zh, label, frac) {
+        var parts = String(label).split("|");
         return '<div class="lr-kr ' + cls + '"><span class="lr-kl">' + en + '<small class="zhs">' + zh + '</small></span>' +
-          (frac === null ? '<b class="lr-kpill">' + esc(String(label).split("|")[0]) + (String(label).split("|")[1] ? '<small class="zhs">' + esc(String(label).split("|")[1]) + "</small>" : "") + '</b>' : '<i class="lr-kbar"><u style="width:' + Math.max(frac * 100, frac > 0 ? 3 : 0).toFixed(1) + '%"></u></i><b>' + esc(label) + '</b>') + '</div>';
+          (frac === null ? '<b class="lr-kpill">' + esc(parts[0]) + (parts[1] ? '<small class="zhs">' + esc(parts[1]) + "</small>" : "") + '</b>'
+            : '<i class="lr-kbar"><u style="width:' + Math.max(frac * 100, frac > 0 ? 3 : 0).toFixed(1) + '%"></u></i><b>' + esc(label) + '</b>') + '</div>';
       };
       return '<div class="lr-kpi"><h4>' + k[0] + '<small class="zhs">' + k[1] + '</small>' + (k[2] ? '<em class="lr-tag">' + k[2] + '</em>' : "") + '</h4>' +
+        '<p class="lr-sc">' + esc(k[10]) + '<small class="zhs">' + esc(k[11]) + '</small></p>' +
         '<p class="lr-kd"><b>' + k[5] + '</b><span>' + k[6] + '<small class="zhs">' + k[7] + '</small></span></p>' +
         row("no", "Without", "沒有", k[3], k[8]) + row("yes", "With", "有", k[4], k[9]) + '</div>';
     }).join("");
-    el.innerHTML = '<span class="lr-cl">KPI<small class="zhs">效果差異</small>' + (live ? '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + '</em>' : '<em class="lr-pend">Preliminary<small class="zhs">初步估算，待實測</small></em>') + '</span>' + notes + '<div class="lr-kpis">' + cards + '</div>';
+    el.innerHTML = '<span class="lr-cl">KPI<small class="zhs">效果差異</small>' + (live ? '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + '</em>' : '<em class="lr-pend">Preliminary<small class="zhs">初步估算，待實測</small></em>') + '</span>' + notes +
+      '<p class="lr-legend"><b>Without</b> apps talk straight to the machine · <b>With</b> through LiteLLM<small class="zhs">沒有 ＝ 應用直接連機器；有 ＝ 經過 LiteLLM</small></p>' +
+      '<div class="lr-kpis">' + cards + '</div>';
   }
   conclusion(false);
 
