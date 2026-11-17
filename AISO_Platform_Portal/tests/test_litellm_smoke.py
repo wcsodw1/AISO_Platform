@@ -72,7 +72,7 @@ class SmokeTests(unittest.TestCase):
         if not b_up:
             ub = "http://127.0.0.1:9"
         cfg = {"gateway": ug, "machine_a": {"name": "AISO1", "url": ua, "model": "m"}, "machine_b": {"name": "PRO6000", "url": ub, "model": "m"}, "group_alias": "gemma26-multi"}
-        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, load={"requests": 8, "concurrency": 4, "repeats": 2, **kw})
+        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, load={"requests": 8, "concurrency": 4, "repeats": 2, "pace_s": 0, **kw})
 
     def finish(self, svc, timeout=60):
         jid = svc.start()["job_id"]
@@ -100,6 +100,23 @@ class SmokeTests(unittest.TestCase):
             self.assertLess(s["ab"]["ttft_s"], s["a"]["ttft_s"])       # fewer requests wait in a queue with more capacity
             self.assertGreater(s["gain_agg"], 1.3)
         self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 4])
+        self.assertEqual([x["key"] for x in j["partial"]], ["short", "mid", "long"])        # rows were published one by one
+
+    def test_chinese_input_text_is_used_and_sized_like_the_english_one(self):
+        svc = self.service()
+        jid = svc.start("zh")["job_id"]
+        end = time.time() + 60
+        while svc.get(jid)["state"] == "running" and time.time() < end:
+            time.sleep(0.05)
+        j = svc.get(jid)
+        self.assertEqual(j["state"], "done", j)
+        self.assertEqual(j["result"]["bench"]["lang"], "zh")
+        self.assertTrue(any("Chinese" in x for x in j["log"]))
+        z = m.bench_prompt("mid", "zh"); e = m.bench_prompt("mid", "en")
+        self.assertIn("台北", z); self.assertNotIn("台北", e)
+        self.assertGreater(len(m.bench_prompt("long", "zh")), 10 * len(m.bench_prompt("mid", "zh")) / 2)
+        with self.assertRaises(SmokeError):
+            svc.start("fr")
 
     def test_without_extra_capacity_the_gain_is_not_confirmed(self):
         j = self.finish(self.service(gw_slots=2))                          # the gateway adds no capacity

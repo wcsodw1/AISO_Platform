@@ -31,19 +31,21 @@ from pathlib import Path
 CONFIG_NAME = "litellm.local.json"                       # next to launcher.py, git-ignored (machines.local.json style)
 KEY_FILE = Path("~/.config/aiso/litellm_smoke.env")      # KEY=VALUE lines, outside the repository
 CRIT = {"gain_min": 1.3}
-LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 2, "request_timeout_s": 60, "job_timeout_s": 200}
+LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 2, "request_timeout_s": 60, "job_timeout_s": 200, "pace_s": 0.7}   # pace_s: a short pause between the quick preflight checks so people can follow them on screen
 STEP_NAMES = ("Preflight", "Benchmark")
-# the question is the same for every size; only the amount of text in front of it changes. Every request starts with a different
-# number, so no machine can answer it from a cached prompt.
-ASK = "Now write about 80 words about Taipei night markets."
-_SENT = "Night markets in Taipei sell food, games and small goods until late at night. "
-SIZES = (("short", "Short input", "一句話", 0), ("mid", "About 100 input tokens", "約 100 個 input token", 5), ("long", "About 1000 input tokens", "約 1000 個 input token", 55))
+# The same three input sizes in two languages. The question is identical for every size; only the amount of text in front of it changes.
+# Every request starts with a different number, so no machine can answer it from a cached prompt.
+# Token counts differ by language, so the repeat counts were calibrated against the model's own count (about 100 and about 1000 input tokens).
+TEXT = {"en": {"sent": "Night markets in Taipei sell food, games and small goods until late at night. ", "ask": "Now write about 80 words about Taipei night markets.", "reps": {"short": 0, "mid": 5, "long": 55}},
+        "zh": {"sent": "台北的夜市販售小吃、遊戲與各式小物，營業到深夜。", "ask": "請用約 80 字介紹台北夜市文化。", "reps": {"short": 0, "mid": 4, "long": 54}}}
+LANGS = tuple(TEXT)
+SIZES = (("short", "Sentence", "一句話"), ("mid", "Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), ("long", "Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"))
 _uid = iter(range(1, 10 ** 9))
 
 
-def bench_prompt(key):
-    reps = {k: r for k, _, _, r in SIZES}[key]
-    return "[%d] %s%s" % (next(_uid), _SENT * reps, ASK)
+def bench_prompt(key, lang="en"):
+    t = TEXT[lang]
+    return "[%d] %s%s" % (next(_uid), t["sent"] * t["reps"][key], t["ask"])
 
 
 def plan(cfg=None, load=None):
@@ -52,10 +54,10 @@ def plan(cfg=None, load=None):
     a = (cfg or {}).get("machine_a", {}).get("name", "Machine A"); b = (cfg or {}).get("machine_b", {}).get("name", "Machine B")
     it = lambda en, zh: {"label": en, "zh": zh}
     return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats")}, "criteria": CRIT, "machines": [a, b], "steps": [
-        {"name": "Preflight", "zh": "檢查", "sends": [], "items": [it("Gateway is up", "閘道正常"), it("Machines reachable", "機器連得到"), it("Nothing else is running", "沒有其他測試在跑"), it("Test key and model present", "測試金鑰與模型都在")]},
-        {"name": "Benchmark", "zh": "速度", "sends": [{"prompt": "Short passage + “%s”" % ASK, "tokens": L["tokens"], "meta": "%d requests, %d at once, x %d" % (L["requests"], L["concurrency"], L["repeats"])}],
-         "items": [it("Short input", "一句話"), it("About 100 input tokens", "約 100 個 input token"), it("About 1000 input tokens", "約 1000 個 input token"),
-                   it("LiteLLM raises Aggregate TPS at least %.1fx (mean)" % CRIT["gain_min"], "LiteLLM 讓 Aggregate TPS 平均至少 %.1f 倍" % CRIT["gain_min"])]}]}
+        {"name": "Preflight", "zh": "檢查", "sends": [], "items": [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用")]},
+        {"name": "Benchmark", "zh": "速度", "sends": [{"prompt": "Text in front (a sentence, a paragraph or a long passage) + the same question", "tokens": L["tokens"], "meta": "%d requests, %d at once, x %d" % (L["requests"], L["concurrency"], L["repeats"])}],
+         "items": [it("Sentence (one line of text)", "一句話"), it("Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), it("Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"),
+                   it("Mean Aggregate TPS gain with LiteLLM at least %.1fx" % CRIT["gain_min"], "經 LiteLLM 後 Aggregate TPS 平均提升至少 %.1f 倍" % CRIT["gain_min"])]}]}
 
 
 class SmokeError(Exception):
@@ -141,11 +143,11 @@ def _stream(base, model, content, tokens, bearer=None, timeout=60):
         return {"code": 0, "ttft": 0, "total": time.time() - t, "n": 0}
 
 
-def _load(base, model, bearer, key, n, conc, tokens, timeout):
+def _load(base, model, bearer, key, n, conc, tokens, timeout, lang="en"):
     """n streamed requests, `conc` at a time -> TTFT / TPOT / TPS of the whole run. NP is the number of requests in flight at once."""
     t0 = time.time()
     with ThreadPoolExecutor(conc) as ex:
-        rs = list(ex.map(lambda _: _stream(base, model, bench_prompt(key), tokens, bearer, timeout), range(n)))
+        rs = list(ex.map(lambda _: _stream(base, model, bench_prompt(key, lang), tokens, bearer, timeout), range(n)))
     wall = time.time() - t0
     ok = [r for r in rs if r["code"] == 200 and r["n"] > 0]
     tpots = [(r["total"] - r["ttft"]) / (r["n"] - 1) for r in ok if r["n"] > 1]
@@ -221,7 +223,9 @@ class SmokeService:
         return {"ok": True, "machines": [cfg["machine_a"]["name"], cfg["machine_b"]["name"]], "load": {k: self.load[k] for k in ("requests", "concurrency", "tokens", "repeats")}}
 
     # ---- jobs ----
-    def start(self):
+    def start(self, lang="en"):
+        if lang not in LANGS:
+            raise SmokeError("Unknown input language.", 400)
         st_ = self.status()
         if not st_["ok"]:
             raise SmokeError("Smoke test is not available: " + st_["reason"], 503)
@@ -229,9 +233,9 @@ class SmokeService:
             running = next((j for j in self.jobs.values() if j["state"] == "running"), None)
             if running:
                 raise SmokeError("A smoke test is already running; it was not interrupted.", 409)
-            job = {"job_id": uuid.uuid4().hex[:12], "state": "running", "started": time.time(),
+            job = {"job_id": uuid.uuid4().hex[:12], "state": "running", "started": time.time(), "lang": lang,
                    "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "items": [[{"state": "wait", "value": ""} for _ in s_["items"]] for s_ in plan(self.config(), self.load)["steps"]],
-                   "result": None, "error": "", "cancel": False, "log": []}
+                   "result": None, "partial": [], "error": "", "cancel": False, "log": []}
             self.jobs[job["job_id"]] = job
             for old in sorted(self.jobs.values(), key=lambda j: j["started"])[:-10]:
                 self.jobs.pop(old["job_id"], None)
@@ -244,7 +248,7 @@ class SmokeService:
             if not j:
                 raise SmokeError("Unknown smoke test.", 404)
             since = max(0, int(since or 0))
-            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "error")}
+            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "partial", "error")}
             out["log"], out["log_next"] = j["log"][since:], len(j["log"])
             return out
 
@@ -271,6 +275,9 @@ class SmokeService:
         with self.lock:
             job["steps"][i] = {"state": state, "detail": detail}
 
+    def _pace(self):
+        time.sleep(self.load["pace_s"])
+
     def _check(self, job, deadline):
         if job["cancel"]:
             raise SmokeError("Cancelled.")
@@ -295,7 +302,8 @@ class SmokeService:
         gw, A, B = cfg["gateway"].rstrip("/"), cfg["machine_a"], cfg["machine_b"]
         key = self.key(cfg)
         to, n, c, tk, reps = L["request_timeout_s"], L["requests"], L["concurrency"], L["tokens"], L["repeats"]
-        self._log(job, "$ smoke test start  load: %d requests, %d at once, up to %d output tokens, %d repeats" % (n, c, tk, reps))
+        lang = job["lang"]
+        self._log(job, "$ smoke test start  input language: %s  load: %d requests, %d at once, up to %d output tokens, %d repeats" % ({"en": "English", "zh": "Chinese"}[lang], n, c, tk, reps))
 
         # 0 Preflight: nothing is asked of a model until every check has passed
         self._log(job, "[1/2] Preflight")
@@ -306,23 +314,23 @@ class SmokeService:
         if _http("GET", gw + "/health/liveliness", timeout=5)[0] != 200:
             self._item(job, 0, 0, "fail", "down"); self._step(job, 0, "fail", "gateway down")
             raise SmokeError("Not started: the gateway is not reachable.")
-        self._item(job, 0, 0, "ok"); self._item(job, 0, 1, "run")
+        self._item(job, 0, 0, "ok"); self._pace(); self._item(job, 0, 1, "run")
         for m in (A, B):
             if _http("GET", m["url"].rstrip("/") + "/v1/models", timeout=5)[0] != 200:
                 self._item(job, 0, 1, "fail", m["name"]); self._step(job, 0, "fail", m["name"] + " unreachable")
                 raise SmokeError("Not started: %s is not reachable." % m["name"])
-        self._item(job, 0, 1, "ok", "%s + %s" % (A["name"], B["name"])); self._item(job, 0, 2, "run")
+        self._item(job, 0, 1, "ok", "%s + %s" % (A["name"], B["name"])); self._pace(); self._item(job, 0, 2, "run")
         reason = self.busy_check()
         if reason:
             self._item(job, 0, 2, "fail", "busy"); self._step(job, 0, "fail", reason)
             raise SmokeError("Not started: " + reason)
-        self._item(job, 0, 2, "ok"); self._item(job, 0, 3, "run")
+        self._item(job, 0, 2, "ok"); self._pace(); self._item(job, 0, 3, "run")
         code, _, models = _http("GET", gw + "/v1/models", bearer=key, timeout=5)
         have = {x.get("id") for x in (models or {}).get("data", [])} if code == 200 else set()
         if code != 200 or cfg["group_alias"] not in have:
             self._item(job, 0, 3, "fail", "missing"); self._step(job, 0, "fail", "model missing" if code == 200 else "test key refused")
             raise SmokeError("Not started: the gateway does not offer the model this test needs.")
-        self._item(job, 0, 3, "ok")
+        self._pace(); self._item(job, 0, 3, "ok"); self._pace()
         self._step(job, 0, "ok", "gateway up")
         self._log(job, "  gateway up, %s and %s reachable, nothing else running, test key accepted  -> OK" % (A["name"], B["name"]))
 
@@ -334,13 +342,13 @@ class SmokeService:
         self._log(job, "[2/2] Benchmark  (%s straight  vs  both machines through LiteLLM; TTFT, TPOT, TPS)" % A["name"])
         _stream(A["url"], A["model"], "hi", 5, timeout=to); _stream(gw, cfg["group_alias"], "hi", 5, key, to)   # warm-up
         sizes = []
-        for si, (skey, en, zh, _r) in enumerate(SIZES):
+        for si, (skey, en, zh) in enumerate(SIZES):
             self._item(job, 1, si, "run", "")
-            ptok = _prompt_tokens(gw, cfg["group_alias"], bench_prompt(skey), key, to)
+            ptok = _prompt_tokens(gw, cfg["group_alias"], bench_prompt(skey, lang), key, to)
             runs = {"a": [], "ab": []}
             for rep in range(reps):
-                for mk, label, fn in (("a", "%s only (without LiteLLM)" % A["name"], lambda: _load(A["url"], A["model"], None, skey, n, c, tk, to)),
-                                      ("ab", "both machines via LiteLLM", lambda: _load(gw, cfg["group_alias"], key, skey, n, c, tk, to))):
+                for mk, label, fn in (("a", "%s only (without LiteLLM)" % A["name"], lambda: _load(A["url"], A["model"], None, skey, n, c, tk, to, lang)),
+                                      ("ab", "both machines via LiteLLM", lambda: _load(gw, cfg["group_alias"], key, skey, n, c, tk, to, lang))):
                     r_ = fn(); runs[mk].append(r_); self._check(job, deadline)
                     self._log(job, "  %-22s repeat %d/%d  %-30s TTFT %5.2f s  TPOT %5.1f ms  TPS %6.1f agg / %5.1f norm   %d/%d ok"
                               % (en, rep + 1, reps, label, r_["ttft_s"], r_["tpot_s"] * 1000, r_["agg_tps"], r_["norm_tps"], r_["ok"], r_["n"]))
@@ -352,6 +360,8 @@ class SmokeService:
                           "ok": all(x["ok"] == x["n"] for x in runs[mk])}
             sz["gain_agg"] = round(sz["ab"]["agg_tps"] / sz["a"]["agg_tps"], 2) if sz["a"]["agg_tps"] else 0
             sizes.append(sz)
+            with self.lock:
+                job["partial"] = [dict(x) for x in sizes]            # the page shows a row as soon as its size is done
             good = sz["a"]["ok"] and sz["ab"]["ok"]
             self._item(job, 1, si, "ok" if good else "fail", "%.2fx · %d tok" % (sz["gain_agg"], sz["tokens"]))
             self._log(job, "  %-22s input %d tokens: Aggregate TPS %.1f -> %.1f  (%.2fx)" % (en, sz["tokens"], sz["a"]["agg_tps"], sz["ab"]["agg_tps"], sz["gain_agg"]))
@@ -361,7 +371,7 @@ class SmokeService:
         self._item(job, 1, 3, "ok" if passed else "fail", "%.2fx" % gain)
         self._step(job, 1, "ok" if passed else "fail", "%.2fx Aggregate TPS" % gain)
         self._log(job, "  mean Aggregate TPS gain %.2fx  (need >= %.1fx)  %s" % (gain, CRIT["gain_min"], "PASS" if passed else "FAIL"))
-        res = {"bench": {"np": c, "requests": n, "output_tokens": tk, "repeats": reps, "sizes": sizes, "gain_agg": round(gain, 2), "pass": passed},
+        res = {"bench": {"lang": lang, "np": c, "requests": n, "output_tokens": tk, "repeats": reps, "sizes": sizes, "gain_agg": round(gain, 2), "pass": passed},
                "machines": [A["name"], B["name"]], "all_pass": passed, "criteria": CRIT, "finished": time.strftime("%H:%M:%S")}
         self._log(job, "RESULT: %s" % ("ALL PASS" if passed else "SOME CHECKS FAILED"))
         return res
