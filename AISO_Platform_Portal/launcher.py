@@ -292,6 +292,8 @@ class Handler(SimpleHTTPRequestHandler):
             if method == "GET":
                 if path == "/api/litellm/status":
                     return self.send_json(LITELLM_SMOKE.status())
+                if path == "/api/litellm/health":
+                    return self.send_json(LITELLM_SMOKE.health())
                 if path == "/api/litellm/plan":
                     return self.send_json(LITELLM_SMOKE.plan())
                 if path == "/api/litellm/script":
@@ -313,7 +315,7 @@ class Handler(SimpleHTTPRequestHandler):
             if path == "/api/litellm/smoke":
                 if not RUN_AUTH.consume(self.headers.get("X-Run-Ticket", "")):
                     return self.send_json({"error": "Test password required: enter it again to run the smoke test.", "code": "run-password-required"}, 401)
-                return self.send_json(LITELLM_SMOKE.start(bool(body.get("include_b"))), 202)
+                return self.send_json(LITELLM_SMOKE.start(), 202)
             if path.startswith("/api/litellm/smoke/") and path.endswith("/cancel"):
                 return self.send_json(LITELLM_SMOKE.cancel(path.split("/")[-2]))
             return self.send_json({"error": "Unknown endpoint."}, 404)
