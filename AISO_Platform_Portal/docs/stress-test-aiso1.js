@@ -69,7 +69,32 @@ function renderCover(){
  const rows=REG.frameworks.flatMap(f=>REG.models.map(m=>{const rs=runsOf(f.key).filter(r=>r.model===m.key);const n=[...new Set(rs.map(r=>r.np))].sort((a,b)=>a-b);return `<tr><td>${esc(f.label)}</td><td>${esc(m.name)}</td><td>${rs.length?`NP${n.join(" / NP")} · ${rs.length} 組`:'<span class="st-wait">無資料</span>'}</td></tr>`})).join("");
  $s("stCover").innerHTML=`<thead><tr><th>Framework</th><th>Model</th><th class="l">AISO1 已有資料</th></tr></thead><tbody>${rows}</tbody>`;
 }
-function renderAll(){renderPick();renderSetup();renderMetrics();renderTable()}
+// ---- side by side: same framework + same NP -> every model; same model + same NP -> every framework ----
+const MCOL=["#8f9bff","#4fd1b0","#ff8a4c","#e6c35c"],FWCOL={sglang:"#4fd1b0",vllm:"#8f9bff",llamacpp:"#ff8a4c"};
+const quantOf=f=>{const q=/Q(\d)/.exec(f||"");return q?"Q"+q[1]:""};
+const gbOf=b=>Number.isFinite(b)?(b/1e9).toFixed(1)+" GB":"";
+const cmpRows=(fw,mk,np)=>runsOf(fw).filter(r=>r.model===mk&&r.np===np&&Number.isFinite(r.ttft_s));
+const specOf=(fw,mk)=>{const c=((DATA[fw]||{}).config||{})[mk]||{},r=runsOf(fw).find(x=>x.model===mk)||{};return [quantOf(c.format||r.format),gbOf(c.bytes)].filter(Boolean).join(" · ")};
+const verTag=fw=>{const l=((DATA[fw]||{}).caveat||{}).level;return l==="historical_unverified"?"歷史・未核實":l==="retest_unverified"?"重測・待核實":""};
+function cmpBlock(head,series,get,baseline,groups,w,ctx,msg,note){
+ return `<div class="bv-model">${head}`+BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups,series,get,baseline,width:w,context:ctx,message:msg,tableNote:note})))+"</div>";
+}
+function renderCompare(){
+ const w=Math.max(320,($s("stMetrics").clientWidth||860)-100);
+ const ms=REG.models.filter(m=>cmpRows(FW,m.key,NP).length),mSeries=ms.map((m,i)=>({key:m.key,label:`${m.name}${specOf(FW,m.key)?" · "+specOf(FW,m.key):""}`,color:MCOL[i%MCOL.length]}));
+ const groupsOf=rows=>[...new Set(rows.map(r=>r.input))].sort((a,b)=>a-b).map(i=>({label:kn(i),sub:tok(i),i}));
+ const hM=`<h3 class="bv-mh">${esc(fwLabel(FW))} · NP${NP}<span class="zh-i">同框架、同並發：模型並排${verTag(FW)?" · 資料集："+verTag(FW):""}</span></h3>`;
+ $s("stCmpModels").innerHTML=ms.length>1
+  ?cmpBlock(hM,mSeries,(mk,g)=>cmpRows(FW,mk,NP).find(r=>r.input===g.i)||null,null,groupsOf(ms.flatMap(m=>cmpRows(FW,m.key,NP))),w,`${fwLabel(FW)} · NP${NP}`,"各模型數值並排；模型大小與量化不同，比的是同機器、同框架下各模型的表現","各模型數值並排，不計算差異")
+  :`<div class="bv-model">${hM}<p class="v2-fine st-empty">${esc(fwLabel(FW))} 在 NP${NP} 只有 ${ms.length?esc(ms.map(m=>m.name).join("、")):"沒有任何模型"} 有資料，無法並排模型；換一個框架或並發試試。</p></div>`;
+ const fws=REG.frameworks.filter(f=>DATA[f.key]&&cmpRows(f.key,MODEL,NP).length),lacking=REG.frameworks.filter(f=>!fws.includes(f)).map(f=>f.label);
+ const base=(fws.find(f=>f.key==="llamacpp")||fws[0]||{}).key,fSeries=fws.map(f=>({key:f.key,label:`${f.label}${verTag(f.key)?"（"+verTag(f.key)+"）":""}`,color:FWCOL[f.key]||"#aaa"}));
+ const hF=`<h3 class="bv-mh">${esc(mName(MODEL))} · NP${NP}<span class="zh-i">同模型、同並發：框架並排${lacking.length?" · "+esc(lacking.join("、"))+" 尚無成績":""}</span></h3>`;
+ $s("stCmpFw").innerHTML=fws.length>1
+  ?cmpBlock(hF,fSeries,(fk,g)=>cmpRows(fk,MODEL,NP).find(r=>r.input===g.i)||null,base,groupsOf(fws.flatMap(f=>cmpRows(f.key,MODEL,NP))),w,`${mName(MODEL)} · NP${NP}`,"",`差異 = 其他框架相對 ${esc(fwLabel(base))}；綠色 + 表示較佳、紅色 − 表示較差；標「未核實」的資料集僅供參考`)
+  :`<div class="bv-model">${hF}<p class="v2-fine st-empty">${esc(mName(MODEL))} 在 NP${NP} 只有 ${fws.length?esc(fwLabel(fws[0].key)):"（無）"} 有 AISO1 資料，無法並排框架。目前兩個框架都有資料的組合只有 Gemma 4 31B · NP2（vLLM 與 llama.cpp）。</p></div>`;
+}
+function renderAll(){renderPick();renderSetup();renderMetrics();renderCompare();renderTable()}
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json())]).then(([reg])=>{
  REG=reg;
  return Promise.all(reg.datasets.filter(x=>x.machine===MACHINE).map(x=>fetch("data/"+x.file.replace(/^data\//,""),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file);return r.json()}).then(d=>{
@@ -80,5 +105,5 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.
  renderAll();renderCover();
  const last=Object.values(DATA).map(d=>d.evidence_until).sort().pop();
  $s("stFoot").textContent=`資料更新至 ${last}；由 data/benchmark-registry.json 登錄的 AISO1 資料集自動帶入。`;
- window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderMetrics,150)});
+ window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{renderMetrics();renderCompare()},150)});
 }).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
