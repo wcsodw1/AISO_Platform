@@ -214,10 +214,9 @@
   function startRun() {
     if (!window.RunGate) { runUI("ready", info("Test-password dialog is not loaded.", "測試密碼視窗沒有載入")); return; }
     runUI("running", info("Waiting for the test password…", "等待輸入測試密碼"));
-    logNext = 0; termReset("$ waiting for the test password …");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ include_b: inclB }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; poll = setInterval(tick, 1000); tick(); })
+      .then(function (d) { job = d.job_id; logNext = 0; termReset(""); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", esc(e.message || e)); });
   }
   function tick() {
