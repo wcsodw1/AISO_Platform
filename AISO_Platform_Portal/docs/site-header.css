@@ -58,3 +58,12 @@
 /* type floor: dropdown items and their descriptions are at least 16px */
 .site-nav .nav-dropdown button,.site-header .nav-dropdown a{font-size:16px!important}
 .site-nav .nav-dropdown button small,.site-header .nav-dropdown a small,.site-nav .nav-dropdown button span,.site-header .nav-dropdown a span{font-size:16px!important}
+
+/* Research dropdown (research-menu.js): In progress / Done */
+.nav-dropdown.nav-research{left:auto;right:0;min-width:300px;max-width:360px}
+.nav-research .nd-h{margin:8px 14px 2px;color:#e8d98a;font-size:14px;font-weight:800;letter-spacing:.04em}
+.nav-research .nd-h span{margin-left:8px;color:#98a0ad;font-size:14px;font-weight:600;letter-spacing:0}
+.nav-research .nd-none{margin:2px 14px 6px;color:#98a0ad;font-size:14px}
+.nav-research .nd-all,.nav-research .nd-more{color:#98a0ad!important}
+.nav-research .nd-all{margin-top:6px;border-top:1px solid rgba(255,255,255,.08);border-radius:0 0 11px 11px}
+.nav-research small{font-size:14px}
