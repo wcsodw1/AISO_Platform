@@ -89,9 +89,23 @@ class SmokeTests(unittest.TestCase):
         self.assertGreaterEqual(r["speed"]["speedup_vs_a"], 1.3)
         self.assertIn("hand", r["speed"]["median_s"])           # the fair baseline: the app splits between both machines itself
         self.assertGreater(r["speed"]["vs_hand"], 0)
-        self.assertEqual(r["control"], {"own": 200, "other": 403, "open": 200, "pass": True})
+        self.assertEqual(r["control"], {"own": 200, "other": 403, "open": 200, "direct_other": 200, "pass": True})
         self.assertEqual([s["state"] for s in j["steps"]], ["ok"] * 4)
         self.assertLess(r["cost"]["added_s"], 0.10)
+
+    def test_log_lines_stream_with_since_and_contain_no_secrets(self):
+        svc = self.service()
+        j = self.finish(svc, True)
+        jid = j["job_id"]
+        full = svc.get(jid)
+        self.assertGreater(len(full["log"]), 10)
+        self.assertTrue(any("RESULT: ALL PASS" in x for x in full["log"]))
+        later = svc.get(jid, since=len(full["log"]) - 2)
+        self.assertEqual(len(later["log"]), 2)
+        self.assertEqual(later["log_next"], full["log_next"])
+        blob = "\n".join(full["log"])
+        for bad in (OPEN, LIMITED, "127.0.0.1", "http"):
+            self.assertNotIn(bad, blob)
 
     def test_without_machine_b_speed_is_skipped_and_never_confirmed(self):
         j = self.finish(self.service(), False)

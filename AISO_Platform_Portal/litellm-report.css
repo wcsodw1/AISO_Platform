@@ -154,3 +154,28 @@ main.lr .v2-hero .v2-sub{margin-top:10px}
 .lr .lr-imp{grid-template-columns:minmax(0,1fr) minmax(240px,320px)}
 .lr .lr-impk{min-width:0}.lr .lr-impk>span{display:block;min-width:0;overflow-wrap:anywhere;white-space:normal}
 .lr .lr-impk .lr-same small.zhs{display:block;margin:2px 0 0;white-space:normal;overflow-wrap:anywhere}
+
+/* KPI cards: without -> with, and the difference */
+.lr .lr-concl.prelim .lr-kpis{opacity:.95}
+.lr .lr-cl em{margin-left:14px;font-style:normal;font-size:16px;font-weight:600}
+.lr .lr-live{padding:2px 12px;border:1px solid #4fd1b0;border-radius:999px;color:#4fd1b0}
+.lr .lr-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:6px}
+.lr .lr-kpi{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.22)}
+.lr .lr-kpi h4{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0 0 10px;font-size:19px;color:var(--ivory)}
+.lr .lr-kpi h4 small{font-size:16px;color:var(--muted);font-weight:500}
+.lr .lr-tag{margin-left:auto;padding:1px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:16px;font-style:normal;font-weight:600}
+.lr .lr-kv{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.lr .lr-kv i{color:var(--muted);font-style:normal;font-size:20px}
+.lr .lr-kv span{display:block;font-size:16px;color:var(--muted)}.lr .lr-kv span small{margin-left:6px;font-size:16px}
+.lr .lr-kv b{display:block;margin-top:2px;font-size:22px;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+.lr .lr-kv .no b{color:#ff8a76}.lr .lr-kv .yes b{color:#4fd1b0}
+.lr .lr-kd{display:flex;align-items:baseline;gap:10px;margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.lr .lr-kd b{font-size:34px;line-height:1;color:var(--gold)}
+.lr .lr-kd span{font-size:17px;color:var(--ivory)}.lr .lr-kd span small{margin-left:8px;font-size:16px;color:var(--muted)}
+@media(max-width:760px){.lr .lr-kv{grid-template-columns:1fr}.lr .lr-kv i{display:none}}
+/* terminal */
+.lr .lr-term{margin:-14px 0 30px;border:1px solid #2a2f38;border-radius:12px;background:#0b0d10;overflow:hidden}
+.lr .lr-term-h{display:flex;align-items:baseline;gap:10px;padding:8px 16px;border-bottom:1px solid #2a2f38;background:#14171c;color:var(--ivory);font-size:17px;font-weight:700}
+.lr .lr-term-h small{color:var(--muted);font-size:16px;font-weight:500}
+.lr .lr-term-b{max-height:340px;min-height:120px;overflow:auto;padding:12px 16px;font:16px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#cfd6e4;white-space:pre-wrap;overflow-wrap:anywhere}
+.lr .lr-term-b .hd{color:#d9cb8f}.lr .lr-term-b .ok{color:#4fd1b0}.lr .lr-term-b .bad{color:#ff8a76}

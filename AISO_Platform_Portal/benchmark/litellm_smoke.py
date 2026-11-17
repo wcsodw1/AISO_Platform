@@ -142,19 +142,22 @@ class SmokeService:
             if running:
                 raise SmokeError("A smoke test is already running; it was not interrupted.", 409)
             job = {"job_id": uuid.uuid4().hex[:12], "state": "running", "include_b": bool(include_b), "started": time.time(),
-                   "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "result": None, "error": "", "cancel": False}
+                   "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "result": None, "error": "", "cancel": False, "log": []}
             self.jobs[job["job_id"]] = job
             for old in sorted(self.jobs.values(), key=lambda j: j["started"])[:-10]:
                 self.jobs.pop(old["job_id"], None)
         threading.Thread(target=self._run, args=(job,), daemon=True).start()
         return {"job_id": job["job_id"]}
 
-    def get(self, job_id):
+    def get(self, job_id, since=0):
         with self.lock:
             j = self.jobs.get(job_id)
             if not j:
                 raise SmokeError("Unknown smoke test.", 404)
-            return {k: j[k] for k in ("job_id", "state", "steps", "result", "error")}
+            since = max(0, int(since or 0))
+            out = {k: j[k] for k in ("job_id", "state", "steps", "result", "error")}
+            out["log"], out["log_next"] = j["log"][since:], len(j["log"])
+            return out
 
     def cancel(self, job_id):
         with self.lock:
@@ -165,6 +168,12 @@ class SmokeService:
         return {"ok": True}
 
     # ---- the run ----
+    def _log(self, job, text):
+        """Terminal lines for the UI. Only machine names, timings and status codes: never addresses, keys or request text."""
+        with self.lock:
+            if len(job["log"]) < 600:
+                job["log"].append(time.strftime("%H:%M:%S") + "  " + text)
+
     def _step(self, job, i, state, detail=""):
         with self.lock:
             job["steps"][i] = {"state": state, "detail": detail}
@@ -197,6 +206,8 @@ class SmokeService:
         res = {"speed": None, "cost": None, "control": None, "skipped": [], "criteria": CRIT, "load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats")}}
 
         # 0 Preflight: nothing is sent to a model until every check has passed
+        self._log(job, "$ smoke test start  (%s machine B)  load: %d requests, %d at once, %d repeats" % ("with" if include_b else "without", L["requests"], L["concurrency"], L["repeats"]))
+        self._log(job, "[1/4] Preflight")
         self._step(job, 0, "run", "checking")
         reason = self.busy_check()
         if reason:
@@ -216,22 +227,28 @@ class SmokeService:
             self._step(job, 0, "fail", "aliases missing" if code == 200 else "test key refused")
             raise SmokeError("Not started: the gateway does not offer the aliases this test needs.")
         self._step(job, 0, "ok", "gateway up")
+        self._log(job, "  gateway up, %s%s reachable, test keys accepted, aliases present  -> OK" % (A["name"], " and " + B["name"] if include_b else ""))
 
         # 1 Speed
         self._check(job, deadline)
         if not include_b:
             self._step(job, 1, "skip", "%s not included" % B["name"])
+            self._log(job, "[2/4] Speed  skipped: %s is not included, so two machines cannot be compared" % B["name"])
             res["skipped"].append("speed")
         else:
             self._step(job, 1, "run", "measuring")
+            self._log(job, "[2/4] Speed  (same load, four ways)")
             n, c, tk = L["requests"], L["concurrency"], L["tokens"]
             _chat(A["url"], A["model"], "hi", 5, timeout=to); _chat(gw, cfg["group_alias"], "hi", 5, k_open, to)   # warm-up
             runs = {"a": [], "b": [], "hand": [], "ab": []}
             for _ in range(L["repeats"]):                      # one pass of each mode per repeat; the median of the repeats is reported
-                runs["a"].append(_load(A["url"], A["model"], None, n, c, tk, to)); self._check(job, deadline)
-                runs["b"].append(_load(B["url"], B["model"], None, n, c, tk, to)); self._check(job, deadline)
-                runs["hand"].append(_load_hand(A, B, n, c, tk, to)); self._check(job, deadline)
-                runs["ab"].append(_load(gw, cfg["group_alias"], k_open, n, c, tk, to)); self._check(job, deadline)
+                rep_no = len(runs["a"]) + 1
+                for key, label, fn in (("a", "%s only (app wired to one machine)" % A["name"], lambda: _load(A["url"], A["model"], None, n, c, tk, to)),
+                                       ("b", "%s only" % B["name"], lambda: _load(B["url"], B["model"], None, n, c, tk, to)),
+                                       ("hand", "both, app splits by hand", lambda: _load_hand(A, B, n, c, tk, to)),
+                                       ("ab", "both, via LiteLLM", lambda: _load(gw, cfg["group_alias"], k_open, n, c, tk, to))):
+                    r_ = fn(); runs[key].append(r_); self._check(job, deadline)
+                    self._log(job, "  repeat %d/%d  %-38s %5.2f s   %d/%d ok" % (rep_no, L["repeats"], label, r_["wall_s"], r_["ok"], r_["n"]))
             ok = all(r["ok"] == r["n"] for k in runs for r in runs[k])
             med = lambda k, f: st.median(r[f] for r in runs[k])
             ra, rb, rh, rg = ({"wall_s": med(k, "wall_s"), "tok_s": med(k, "tok_s")} for k in ("a", "b", "hand", "ab"))
@@ -240,15 +257,19 @@ class SmokeService:
                             "tok_s": {"a": round(ra["tok_s"], 1), "b": round(rb["tok_s"], 1), "hand": round(rh["tok_s"], 1), "ab": round(rg["tok_s"], 1)},
                             "speedup_vs_a": round(sp, 2), "vs_hand": round(rh["wall_s"] / rg["wall_s"], 2) if rg["wall_s"] else 0, "all_ok": ok, "pass": ok and sp >= CRIT["speedup_min"]}
             self._step(job, 1, "ok" if res["speed"]["pass"] else "fail", "%.2fx vs %s" % (sp, A["name"]) if ok else "some requests failed")
+            m_ = res["speed"]["median_s"]
+            self._log(job, "  median: %s %.2f s | %s %.2f s | by hand %.2f s | LiteLLM %.2f s  ->  %.2fx vs %s  (need >= %.1fx)  %s" % (A["name"], m_["a"], B["name"], m_["b"], m_["hand"], m_["ab"], sp, A["name"], CRIT["speedup_min"], "PASS" if res["speed"]["pass"] else "FAIL"))
 
         # 2 Cost
         self._check(job, deadline)
         self._step(job, 2, "run", "measuring")
+        self._log(job, "[3/4] Cost  (%d short requests, direct and via LiteLLM, interleaved)" % L["cost_pairs"])
         d_s, g_s, errs = [], [], 0
         for _ in range(L["cost_pairs"]):
             d = _chat(A["url"], A["model"], "說一個字", 10, timeout=to); g = _chat(gw, cfg["single_alias"], "說一個字", 10, k_open, to)
             if d["code"] == 200 and g["code"] == 200:
                 d_s.append(d["s"]); g_s.append(g["s"])
+                self._log(job, "  pair %d  direct %.3f s   via LiteLLM %.3f s   (%+.3f s)" % (len(d_s), d["s"], g["s"], g["s"] - d["s"]))
             else:
                 errs += 1
             self._check(job, deadline)
@@ -259,18 +280,28 @@ class SmokeService:
         else:
             res["cost"] = {"direct_s": 0, "gateway_s": 0, "added_s": 0, "errors": errs, "pass": False}
         self._step(job, 2, "ok" if res["cost"]["pass"] else "fail", "%+.2f s" % res["cost"]["added_s"] if d_s else "requests failed")
+        self._log(job, "  added delay (median) %+.3f s  (need <= %.2f s)  %s" % (res["cost"]["added_s"], CRIT["overhead_max_s"], "PASS" if res["cost"]["pass"] else "FAIL"))
 
         # 3 Control
         self._check(job, deadline)
         self._step(job, 3, "run", "checking keys")
+        self._log(job, "[4/4] Control  (a key limited to one model)")
         own = _chat(gw, cfg["limited_alias"], "hi", 20, k_lim, to)["code"]
         other = _chat(gw, cfg["other_model"], "hi", 20, k_lim, to)["code"]
         opn = _chat(gw, cfg["other_model"], "hi", 20, k_open, to)["code"]
+        # "without": the same other-model request sent straight to the machine (no key, nothing to stop it)
+        direct_other = _chat(A["url"], cfg.get("other_direct_model", "qwen36-35b-q4"), "hi", 20, None, to)["code"]
+        self._log(job, "  limited key -> its own model      HTTP %s  (expect 200)" % own)
+        self._log(job, "  limited key -> another model      HTTP %s  (expect 403, refused)" % other)
+        self._log(job, "  open key    -> another model      HTTP %s  (expect 200)" % opn)
+        self._log(job, "  no gateway  -> another model      HTTP %s  (straight to the machine: nothing stops it)" % direct_other)
         ctl_ok = own == 200 and other in (401, 403) and opn == 200
-        res["control"] = {"own": own, "other": other, "open": opn, "pass": ctl_ok}
+        res["control"] = {"own": own, "other": other, "open": opn, "direct_other": direct_other, "pass": ctl_ok}
         self._step(job, 3, "ok" if ctl_ok else "fail", "%s on other model" % other)
+        self._log(job, "  control  %s" % ("PASS" if ctl_ok else "FAIL"))
 
         parts = [res[k]["pass"] for k in ("speed", "cost", "control") if res[k]]
         res["all_pass"] = bool(parts) and all(parts) and not res["skipped"]
         res["finished"] = time.strftime("%H:%M:%S")
+        self._log(job, "RESULT: %s" % ("ALL PASS" if res["all_pass"] else ("NOT CONFIRMED (speed was skipped)" if res["skipped"] else "SOME CHECKS FAILED")))
         return res

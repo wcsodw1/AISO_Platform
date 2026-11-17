@@ -8,7 +8,8 @@
     tested: "2026-11-17",
     load: "8 requests, 4 at once, median of 3 repeats; mean of 2 runs",
     sec: { a: 7.1, b: 5.7, hand: 3.5, ab: 4.1 },
-    cost: { direct: 0.158, gw: 0.189, add: 0.04 },
+    cost: { direct: 0.16, gw: 0.2, add: 0.04 },
+    wrong: { direct: 200, key: 403 },
     fail: { n: 10, direct: 0, gw: 10, median: 1.31 },
     ctl: { block: 6, cap: 0.0005 },
     usage: [["Key 1 · limited", "金鑰 1・限定", 0.00015], ["Key 2 · open", "金鑰 2・不設限", 0.000126]],
@@ -35,14 +36,19 @@
   /* The conclusion is PRELIMINARY until the smoke test has run on this platform (David, 2026-11-17).
      Replay data (proof-of-concept run) -> "Preliminary estimate". A live smoke test result -> "Confirmed". */
   function conclusion(live) {
-    var el = $("lrConcl");
+    var el = $("lrConcl"), saved = D.sec.a - D.sec.ab;
     el.classList.toggle("prelim", !live);
-    el.innerHTML = '<span class="lr-cl">' + (live ? 'Conclusion<small class="zhs">實測結論</small>' : 'Preliminary estimate<small class="zhs">初步估算</small><em class="lr-pend">Pending smoke test<small class="zhs">待 smoke test 確認</small></em>') + '</span>' + notes +
-      '<p class="lr-big">Two machines behind one entry: ' + (live ? "" : "about ") + f1(gain) + '× faster than one.<small>' + M.a + ' 加 ' + M.b + ' 共用一個入口，比單用 ' + M.a + (live ? " 快 " : " 預估快約 ") + f1(gain) + ' 倍</small></p>' +
-      '<p class="lr-big">Apps need no splitting or failover code.<small>應用不用自己寫分流與備援的程式</small></p>' +
-      '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests answered in the PoC run.<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求有 ' + D.fail.gw + ' 個正常回覆（PoC）</small></p>' +
-      '<p class="lr-big">Cost: about ' + f2(D.cost.add) + ' s per request.<small>代價：每個請求多約 ' + f2(D.cost.add) + ' 秒</small></p>' +
-      (live ? "" : '<p class="lr-hint">Confirmed only after the smoke test runs on this platform.<small class="zhs">要在平台上跑完 smoke test 才算確認</small></p>');
+    var cards = [
+      ["Speed", "速度", D.live ? "" : "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快"],
+      ["Delay per request", "單次延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "the cost", "代價"],
+      ["Wrong-model request", "打錯模型", "", "allowed " + D.wrong.direct, "refused " + D.wrong.key, "blocked", "by key", "被金鑰擋下"],
+      ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", "+" + D.fail.gw, "answered", "有回覆"]
+    ].map(function (k) {
+      return '<div class="lr-kpi"><h4>' + k[0] + '<small class="zhs">' + k[1] + '</small>' + (k[2] ? '<em class="lr-tag">' + k[2] + '</em>' : "") + '</h4>' +
+        '<div class="lr-kv"><div class="no"><span>Without<small class="zhs">沒有</small></span><b>' + k[3] + '</b></div><i aria-hidden="true">→</i><div class="yes"><span>With<small class="zhs">有</small></span><b>' + k[4] + '</b></div></div>' +
+        '<p class="lr-kd"><b>' + k[5] + '</b><span>' + k[6] + '<small class="zhs">' + k[7] + '</small></span></p></div>';
+    }).join("");
+    el.innerHTML = '<span class="lr-cl">KPI<small class="zhs">效果差異</small>' + (live ? '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + '</em>' : '<em class="lr-pend">Preliminary<small class="zhs">初步估算，待實測</small></em>') + '</span>' + notes + '<div class="lr-kpis">' + cards + '</div>';
   }
   conclusion(false);
 
@@ -141,7 +147,7 @@
   render();
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
-  var inclB = false, API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
+  var inclB = false, logNext = 0, API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
   function stepsHtml(st) {
     return '<ol class="lr-rs">' + STEPS.map(function (n, i) { var x = (st && st[i]) || { state: "wait" }; return '<li class="' + esc(x.state) + '"><b>' + n[0] + '<small class="zhs">' + n[1] + '</small></b><span>' + esc(x.detail || "") + "</span></li>"; }).join("") + "</ol>";
   }
@@ -155,6 +161,14 @@
     if (mode === "ready") $("lrRunBtn").onclick = startRun;
   }
   var info = function (en, zh) { return en + '<small class="zhs">' + zh + "</small>"; };
+
+  /* terminal: the log lines of the run, as the backend writes them */
+  function termReset(first) { var b = $("lrTermBody"); b.textContent = ""; if (first) termAdd([first]); $("lrTerm").hidden = false; }
+  function termAdd(lines) {
+    var b = $("lrTermBody"), stick = b.scrollTop + b.clientHeight >= b.scrollHeight - 30;
+    lines.forEach(function (l) { var d = document.createElement("div"); d.textContent = l; d.className = /ALL PASS|\bPASS\b/.test(l) ? "ok" : /FAIL|NOT CONFIRMED|skipped/.test(l) ? "bad" : /^\S+\s+\[\d\/\d\]|^\$/.test(l) ? "hd" : ""; b.appendChild(d); });
+    if (stick) b.scrollTop = b.scrollHeight;
+  }
   function checkStatus() {
     runUI("checking", info("Checking the local platform…", "檢查本機平台…"));
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
@@ -165,13 +179,15 @@
   function startRun() {
     if (!window.RunGate) { runUI("ready", info("Test-password dialog is not loaded.", "測試密碼視窗沒有載入")); return; }
     runUI("running", info("Waiting for the test password…", "等待輸入測試密碼"));
+    logNext = 0; termReset("$ waiting for the test password …");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ include_b: inclB }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
       .then(function (d) { job = d.job_id; poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", esc(e.message || e)); });
   }
   function tick() {
-    fetch(API + "/smoke/" + job, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+    fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.log) { termAdd(d.log); logNext = d.log_next; }
       runUI("running", info("Running…", "執行中"), d.steps);
       if (d.state === "running" || d.state === "queued") return;
       clearInterval(poll); poll = null;
@@ -182,6 +198,7 @@
   function applyLive(r, steps) {
     if (r.speed) { D.sec = r.speed.median_s; D.tps = r.speed.tok_s; }
     if (r.cost) D.cost = { direct: r.cost.direct_s, gw: r.cost.gateway_s, add: r.cost.added_s };
+    if (r.control && r.control.direct_other) D.wrong = { direct: r.control.direct_other, key: r.control.other };
     D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString(); D.liveSkipped = r.skipped || []; recalc();
     var done = !!r.all_pass;
     conclusion(done); render();

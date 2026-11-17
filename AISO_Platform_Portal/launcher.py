@@ -286,14 +286,14 @@ class Handler(SimpleHTTPRequestHandler):
         except (ValueError, TypeError):
             return self.send_json({"error": "Bad request."}, 400)
 
-    def handle_litellm(self, method, path, origin=""):
+    def handle_litellm(self, method, path, origin="", query=""):
         """LiteLLM smoke test (benchmark/litellm_smoke.py). Localhost only (the /api/* guards above); starting needs the one-time test-password ticket."""
         try:
             if method == "GET":
                 if path == "/api/litellm/status":
                     return self.send_json(LITELLM_SMOKE.status())
                 if path.startswith("/api/litellm/smoke/"):
-                    return self.send_json(LITELLM_SMOKE.get(path.rsplit("/", 1)[1]))
+                    return self.send_json(LITELLM_SMOKE.get(path.rsplit("/", 1)[1], urllib.parse.parse_qs(query).get("since", ["0"])[0]))
                 return self.send_json({"error": "Unknown endpoint."}, 404)
             if (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]").lower() not in {"127.0.0.1", "localhost", "::1"}:
                 return self.send_json({"error": "The smoke test is available from this computer only (localhost)."}, 403)
@@ -331,7 +331,7 @@ class Handler(SimpleHTTPRequestHandler):
         if url.path.startswith("/api/") and not self.is_admin_request():
             return self.send_json({"error": "This operation requires localhost administrator access."}, 403)
         if url.path.startswith("/api/litellm/"):
-            return self.handle_litellm("GET", url.path)
+            return self.handle_litellm("GET", url.path, query=url.query)
         if url.path.startswith("/api/terminal/"):
             return self.handle_terminal("GET")
         if url.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")) and not self.require_benchmark_auth():
