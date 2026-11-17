@@ -392,6 +392,16 @@
    "done": "2026-10-29",
    "source": "run_date 2026-10-29 (run_id 20261029_104121_1363197) in data/benchmark-v2/AISO_BenchmarkV2_20000.json",
    "owner": "David"
+  },
+  {
+    "task": "LiteLLM Gateway",
+    "zh": "閘道：一個入口接多台機器",
+    "href": "litellm-report.html",
+    "status": "done",
+    "added": "2026-11-17",
+    "done": "2026-11-17",
+    "source": "LiteLLM gateway test, 2026-11-17 (two machines)",
+    "owner": "David"
   }
  ],
  "weeks_from": "2026-11-09"

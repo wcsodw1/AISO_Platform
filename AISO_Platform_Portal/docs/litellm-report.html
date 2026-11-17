@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="One LiteLLM entry in front of two machines: throughput with one versus two machines, added latency, load balancing, fallback and budgets.">
+  <title>AISO — LiteLLM Gateway</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.3">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=47">
+  <link rel="stylesheet" href="tesla.css?v=49">
+  <link rel="stylesheet" href="litellm-report.css?v=3">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="stress-test-compare.html">View Result<small>結果總覽：B60 · B70 · AISO1</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    
+  </header>
+
+  <main class="v2 st lr">
+    <section class="v2-hero">
+      <a class="pg-back" href="research.html"><span aria-hidden="true">←</span> 返回 Research</a>
+      <h1>LiteLLM Gateway<small class="zhs">閘道</small></h1>
+      <p class="v2-sub">One Entry, Many Machines<span class="zh-i">一個入口・多台機器</span></p>
+    </section>
+
+    <section class="report-section" id="lrMain">
+      <div class="lr-box lr-concl" id="lrConcl"></div>
+
+      <p class="lr-stp s1"><i>1</i><span>Without vs With<small class="zhs">有無差別</small></span></p>
+      <div class="lr-box" id="lrFlow"></div>
+
+      <p class="lr-stp s2"><i>2</i><span>Try it<small class="zhs">實際重播</small></span></p>
+      <div class="lr-box lr-gold">
+        <div class="lr-tabs" id="lrTabs" role="tablist" aria-label="Scenario"></div>
+        <div class="lr-stage" id="lrStage" aria-live="polite"></div>
+        <p class="lr-src" id="lrSrc"></p>
+      </div>
+    </section>
+  </main>
+  <script src="litellm-report.js?v=3"></script>
+  <script src="ui-min-type.js?v=2" defer></script>
+</body>
+</html>
