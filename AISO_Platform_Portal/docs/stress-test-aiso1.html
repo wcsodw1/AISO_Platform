@@ -38,6 +38,7 @@
 
     <section class="report-section" id="secPick">
       <header><h2>Select conditions<span class="zh">選擇條件</span></h2></header>
+      <div class="cmp-pick"><span>Mode<small class="zhs">模式</small></span><div class="st-tabs cmp-tabs" id="cmpMode" role="tablist" aria-label="Mode"></div></div>
       <div class="cmp-pick"><span>Framework<small class="zhs">框架</small></span><div class="st-tabs cmp-tabs" id="cmpFw" role="tablist" aria-label="Framework"></div></div>
       <div class="cmp-pick"><span>Model<small class="zhs">模型</small></span><div class="st-tabs cmp-tabs" id="cmpModel" role="tablist" aria-label="Model"></div></div>
       <div class="cmp-pick"><span>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="cmpNp" role="tablist" aria-label="NP"></div></div>
@@ -51,6 +52,12 @@
     <section class="report-section" id="secMetrics">
       <header><h2>TTFT · TPOT · TPS<span class="zh">AISO1 · 四項指標</span></h2></header>
       <div id="stMetrics"></div>
+    </section>
+
+    <section class="report-section" id="secCmp">
+      <header><h2>Side by side<span class="zh">並排比對</span></h2></header>
+      <p class="v2-fine">依上方選的框架、模型、並發：先看同框架同 NP 的各模型，再看同模型同 NP 的各框架。沒有資料的組合不估算。</p>
+      <div id="stCmpModels"></div><div id="stCmpFw"></div>
     </section>
 
     <section class="report-section" id="secTable">
@@ -73,7 +80,7 @@
 
       <section class="report-section" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
 
-  </main><script src="bench-viz.js?v=21"></script><script src="troubleshooting.js?v=3tx"></script><script src="stress-test-aiso1.js?v=4v"></script>
+  </main><script src="bench-viz.js?v=21"></script><script src="troubleshooting.js?v=3tx"></script><script src="stress-test-aiso1.js?v=6multib"></script>
 <script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"aiso1"})</script>
 <script src="debug-notes.js?v=3"></script>
 <script src="research-menu.js?v=1" defer></script>
