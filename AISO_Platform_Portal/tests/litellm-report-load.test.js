@@ -13,7 +13,7 @@ global.matchMedia = window.matchMedia; global.getSelection = () => ({ removeAllR
 global.fetch = () => Promise.reject(new Error("offline"));      // the public site has no backend
 global.setInterval = () => 0; global.clearInterval = () => {}; global.navigator = {};
 require("vm").runInThisContext(fs.readFileSync(path.join(__dirname, "..", "litellm-report.js"), "utf8"), { filename: "litellm-report.js" });
-assert.ok(/One entry/.test(els.lrFuncs.innerHTML) && /Switch on failure/.test(els.lrFuncs.innerHTML) && /Key limits/.test(els.lrFuncs.innerHTML), "function cards drawn");
+assert.ok(/One entry/.test(els.lrFuncs.innerHTML) && /Failover/.test(els.lrFuncs.innerHTML) && /Key limits/.test(els.lrFuncs.innerHTML), "function cards drawn");
 assert.ok(!/\d\.\d+ s/.test(els.lrFuncs.innerHTML), "no result numbers before a test has run");
 assert.strictEqual(els.lrConcl.hidden, true, "results stay hidden until a test has finished");
 assert.ok(/lr-plan/.test(els.lrRun.innerHTML), "stage cards drawn");
