@@ -510,3 +510,26 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-langtag{margin-left:14px;padding:2px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ivory);font-style:normal;font-size:16px;font-weight:600}.lr .lr-langtag small{margin-left:6px;font-weight:500;color:var(--muted)}
 
 .lr .lr-term.folded .lr-term-b{display:none}.lr .lr-term.folded .lr-term-h{border-bottom:0}
+/* benefit title (e.g. Failover 備援) above its one-line sentence */
+.lr .lr-ef .lr-ft{display:block;margin:0 0 4px;color:var(--gold);font-size:21.5px;font-weight:700}
+.lr .lr-ef .lr-ft small{display:inline;margin:0 0 0 10px;font-size:21.5px;font-weight:600;color:var(--gold)}
+.lr .lr-ef .lr-fs{display:block;font-size:19px}
+.lr .lr-ef li .lr-fs small{display:block;margin-top:2px;font-size:17px;color:var(--muted)}
+
+/* benefit rows: title in colour, same layout on every row; hover/focus lights the row and the first one grows downward with step-3 numbers */
+.lr .lr-ef li strong.lr-ft{display:block;margin:0 0 4px;color:var(--gold);font-size:21.5px;font-weight:700}
+.lr .lr-ef li strong.lr-ft small{display:inline;margin:0 0 0 12px;font-size:21.5px;font-weight:600;color:var(--gold)}
+.lr .lr-ef li{transition:border-color .2s,box-shadow .2s,background .2s;cursor:default}
+.lr .lr-ef li:hover,.lr .lr-ef li:focus-within,.lr .lr-ef li:focus{border-color:var(--gold);background:rgba(214,178,107,.1);box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(214,178,107,.28);outline:none}
+.lr .lr-ef .lr-fd{grid-column:1/-1;display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.lr .lr-ef .lr-fd>div{overflow:hidden;min-height:0}
+.lr .lr-ef li:hover .lr-fd,.lr .lr-ef li:focus .lr-fd,.lr .lr-ef li:focus-within .lr-fd{grid-template-rows:1fr}
+.lr .lr-ef .lr-fdn{margin:10px 0 8px;padding-top:12px;border-top:1px solid #4a3d2e;font-size:17px;color:var(--ivory)}
+.lr .lr-ef .lr-fdn small{display:inline;margin-left:10px;font-size:16px}
+.lr .lr-ef .lr-fdt{overflow-x:auto}
+.lr .lr-ef .lr-fdt table{width:100%;border-collapse:collapse;font-size:17px}
+.lr .lr-ef .lr-fdt th,.lr .lr-ef .lr-fdt td{padding:6px 12px 6px 0;text-align:left;vertical-align:top;white-space:nowrap;font-weight:500}
+.lr .lr-ef .lr-fdt th{color:var(--muted)}
+.lr .lr-ef .lr-fdt th small{display:block;margin:0;font-size:16px}
+.lr .lr-ef .lr-fdt i{font-style:normal}.lr .lr-ef .lr-fdt i.no{color:var(--muted)}
+.lr .lr-ef .lr-fdt b.good{color:#9db88c}.lr .lr-ef .lr-fdt b.bad{color:#e0805f}

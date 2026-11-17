@@ -117,23 +117,34 @@
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["Applications use one endpoint and one key; backend machines can be replaced without client changes.", "應用程式使用單一端點與金鑰，後端機器可替換而不影響用戶端。", ""],
-    ["Requests are distributed across both machines: lower latency, higher throughput%NUM%.", "請求分散至兩台機器：延遲降低、吞吐量提升。", "measured"],
-    ["If one machine fails, the other serves the requests: 10 / 10 answered.", "單一機器故障時，由另一台接手回應。", "poc"],
-    ["Each key can access only its authorized models.", "每把金鑰僅能存取被授權的模型。", "poc"]
+    ["Spread load", "分流", "Faster response, higher throughput.", "回應更快、吞吐速度更高。", "measured"],
+    ["Failover", "備援", "If one machine fails, another keeps answering.", "一台機器故障，另一台繼續回應。", ""],
+    ["Single entry", "統一入口", "Apps call one address; LiteLLM picks the machine.", "應用程式只打一個網址，由 LiteLLM 選機器。", ""],
+    ["Easy scaling", "易擴充", "Add a machine to the list; apps stay unchanged.", "新增機器只需加進清單，應用程式不用改。", ""]
   ];
-  var TAG = { measured: ["Measured", "實測"], poc: ["PoC", "概念驗證"] };
+  var TAG = { measured: ["Measured", "實測"] };
+  /* hovering a benefit lights it up; the first one grows downward with the numbers measured in step 3 (this page's own run, else the previous run) */
+  function funcData(i) {
+    if (i !== 0) return "";
+    var run = D.live ? { sizes: D.sizes } : loadHist()[0];
+    if (!run || !run.sizes || !run.sizes.length) return '<div class="lr-fd"><div><p class="lr-fdn">Run the test to see the numbers.<small class="zhs">執行測試後顯示數據。</small></p></div></div>';
+    var by = {}; run.sizes.forEach(function (z) { by[z.key] = z; });
+    var keys = ["short", "mid", "long"].filter(function (k) { return by[k]; });
+    var head = "<tr><th></th>" + keys.map(function (k) { return "<th>" + SIZE[k][0] + '<small class="zhs">' + SIZE[k][1] + "</small></th>"; }).join("") + "<th>Average<small class=\"zhs\">平均</small></th></tr>";
+    var rows = METRICS.map(function (m) {
+      var mean = keys.reduce(function (t, k) { var z = by[k]; return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / keys.length;
+      return "<tr><th>" + m.name + '<small class="zhs">' + m.zh + "</small></th>" + keys.map(function (k) {
+        var z = by[k], c = change(m, z.a[m.f], z.ab[m.f]);
+        return '<td><i class="no">' + m.show(z.a[m.f]) + '</i> → <i class="yes">' + m.show(z.ab[m.f]) + '</i> <b class="' + (c.good ? "good" : "bad") + '">' + c.txt + "</b></td>";
+      }).join("") + '<td><b class="' + (mean > (m.low ? 0 : 1) ? "good" : "bad") + '">' + (m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2)) + "</b></td></tr>";
+    }).join("");
+    return '<div class="lr-fd"><div><p class="lr-fdn">Without LiteLLM → With LiteLLM<small class="zhs">沒有 → 有 LiteLLM</small></p><div class="lr-fdt"><table>' + head + rows + "</table></div></div></div>";
+  }
   function renderFuncs() {
-    var num = "";
-    if (D.live) {
-      var ttft = Math.round(100 * D.sizes.reduce(function (t, z) { return t + (1 - z.ab.ttft_s / z.a.ttft_s); }, 0) / D.sizes.length);
-      var tps = (D.sizes.reduce(function (t, z) { return t + z.ab.agg_tps / z.a.agg_tps; }, 0) / D.sizes.length).toFixed(2);
-      num = " (TTFT −" + ttft + "%, TPS ×" + tps + ")";
-    }
     $("lrFuncs").innerHTML = '<ol class="lr-ef">' + FUNCS.map(function (f, i) {
-      var tag = f[2] && (f[2] !== "measured" || D.live) ? '<em class="lr-tg ' + f[2] + '">' + TAG[f[2]][0] + '<small class="zhs">' + TAG[f[2]][1] + "</small></em>" : "";
-      return '<li><i>' + (i + 1) + '</i><span>' + esc(f[0].replace("%NUM%", num)) + '<small class="zhs">' + esc(f[1]) + "</small>" +
-        (i === 1 || i === 2 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + "</li>";
+      var tag = f[4] && (f[4] !== "measured" || D.live) ? '<em class="lr-tg ' + f[4] + '">' + TAG[f[4]][0] + '<small class="zhs">' + TAG[f[4]][1] + "</small></em>" : "";
+      return '<li tabindex="0"><i>' + (i + 1) + '</i><span><strong class="lr-ft">' + esc(f[0]) + '<small class="zhs">' + esc(f[1]) + '</small></strong><span class="lr-fs">' + esc(f[2]) + '<small class="zhs">' + esc(f[3]) + "</small></span>" +
+        (i === 0 || i === 1 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + funcData(i) + "</li>";
     }).join("") + "</ol>";
     paintFuncs();
   }
@@ -212,7 +223,7 @@
   function lightsHtml() {
     return lights.map(function (l) { return '<span class="lr-light ' + (l.ok ? "ok" : "bad") + '"><i aria-hidden="true"></i><span class="lr-ln2">' + esc(l.name) + "</span>" + (l.ok ? "" : '<em>' + why(l.detail) + "</em>") + "</span>"; }).join("");
   }
-  /* Spread requests (card 2) and Switch on failure (card 3): red, glowing text whenever the connection says they are not fully working */
+  /* Spread load (card 1) and failover (card 2): red, glowing text whenever the connection says they are not fully working */
   function fnStatus() {
     if (!lights || !lights.length) return null;          // lights is filled later by the health check
     var by = {}; lights.forEach(function (l) { by[l.name] = l; });
@@ -226,7 +237,7 @@
   }
   function paintFuncs() {
     var st = fnStatus();
-    [1, 2].forEach(function (i, k) {
+    [0, 1].forEach(function (i, k) {
       var el = $("lrFst" + i); if (!el) return;
       if (!st) { el.innerHTML = ""; el.className = "lr-fst"; return; }
       if (!st[k].bad) { el.innerHTML = ""; el.className = "lr-fst"; return; }               // quiet when everything is fine
