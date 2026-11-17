@@ -178,22 +178,14 @@
     ["Easy scaling", "易擴充", "Add a machine to the list; apps stay unchanged.", "新增機器只需加進清單，應用程式不用改。", ""]
   ];
   var TAG = { measured: ["Measured", "實測"] };
-  /* hovering a benefit lights it up; the first one grows downward with the numbers measured in step 3 (this page's own run, else the previous run) */
+  /* hovering a benefit lights it up; the first one grows downward with the line charts of the measured results (this page's own run, else the previous run) */
   function funcData(i) {
     if (i !== 0) return "";
     var run = D.live ? { sizes: D.sizes } : loadHist()[0];
     if (!run || !run.sizes || !run.sizes.length) return '<div class="lr-fd"><div><p class="lr-fdn">Run the test to see the numbers.<small class="zhs">執行測試後顯示數據。</small></p></div></div>';
     var by = {}; run.sizes.forEach(function (z) { by[z.key] = z; });
-    var keys = ["short", "mid", "long"].filter(function (k) { return by[k]; });
-    var head = "<tr><th></th>" + keys.map(function (k) { return "<th>" + SIZE[k][0] + '<small class="zhs">' + SIZE[k][1] + "</small></th>"; }).join("") + "<th>Average<small class=\"zhs\">平均</small></th></tr>";
-    var rows = METRICS.map(function (m) {
-      var mean = keys.reduce(function (t, k) { var z = by[k]; return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / keys.length;
-      return "<tr><th>" + m.name + '<small class="zhs">' + m.zh + "</small></th>" + keys.map(function (k) {
-        var z = by[k], c = change(m, z.a[m.f], z.ab[m.f]);
-        return '<td><i class="no">' + m.show(z.a[m.f]) + '</i> → <i class="yes">' + m.show(z.ab[m.f]) + '</i> <b class="' + (c.good ? "good" : "bad") + '">' + c.txt + "</b></td>";
-      }).join("") + '<td><b class="' + (mean > (m.low ? 0 : 1) ? "good" : "bad") + '">' + (m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2)) + "</b></td></tr>";
-    }).join("");
-    return '<div class="lr-fd"><div><p class="lr-fdn">Without LiteLLM → With LiteLLM<small class="zhs">沒有 → 有 LiteLLM</small></p><div class="lr-fdt"><table>' + head + rows + "</table></div></div></div>";
+    var cards = METRICS.map(function (m) { return lineChart(m, by, run.sizes.length === 3, run.sizes); }).join("");
+    return '<div class="lr-fd"><div><p class="lr-legend"><span><i class="a"></i>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><span><i class="ab"></i>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p><div class="lr-charts">' + cards + "</div></div></div>";
   }
   function renderFuncs() {
     $("lrFuncs").innerHTML = '<ol class="lr-ef">' + FUNCS.map(function (f, i) {
