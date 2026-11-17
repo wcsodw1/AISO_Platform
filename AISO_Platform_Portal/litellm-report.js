@@ -126,19 +126,22 @@
     { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway is up", "閘道正常"), it("Machines reachable", "機器連得到"), it("Nothing else is running", "沒有其他測試在跑"), it("Test key and model present", "測試金鑰與模型都在")] },
     { name: "Benchmark", zh: "速度", sends: [{ prompt: "Short passage + “Now write about 80 words about Taipei night markets.”", tokens: 100, meta: "8 requests, 4 at once, x 2" }], items: [it("Short input", "一句話"), it("About 100 input tokens", "約 100 個 input token"), it("About 1000 input tokens", "約 1000 個 input token"), it("LiteLLM raises Aggregate TPS at least 1.3x (mean)", "LiteLLM 讓 Aggregate TPS 平均至少 1.3 倍")] }
   ] };
-  var TICK = { wait: "○", run: "◔", ok: "✓", fail: "✗", skip: "–" }, DONE = { wait: ["Waiting", "等待"], run: ["Running", "執行中"], ok: ["complete", "完成"], fail: ["failed", "未通過"], skip: ["skipped", "略過"] };
-  var shown = {};   // item states already drawn, so only a newly finished item pops
+  var TICK = { wait: "○", run: "◔", ok: "✓", fail: "✗", skip: "–" }, DONE = { wait: ["Waiting", "等待"], run: ["Running", "執行中"], ok: ["Complete", "完成"], fail: ["Failed", "未通過"], skip: ["Skipped", "略過"] };
+  var shown = {}, shownVal = {};   // what has already been drawn, so only something new pops in
+  /* two stages, one above the other. Items stay hidden until the test reaches them; each one then pops in, and its value pops out to the right. */
   function planHtml(st, items) {
-    return '<ol class="lr-plan">' + PLAN.steps.map(function (p, i) {
+    return '<ol class="lr-plan lr-stack">' + PLAN.steps.map(function (p, i) {
       var x = (st && st[i]) || { state: "wait", detail: "" }, lab = DONE[x.state] || DONE.wait, its = (items && items[i]) || [];
-      var q = (p.sends || []).map(function (q) { return '<p class="lr-qs"><span class="lr-q">“' + esc(q.prompt) + '”</span><span class="lr-meta">' + esc(q.meta || "") + "</span></p>"; }).join("");
+      var q = x.state === "wait" ? "" : (p.sends || []).map(function (q) { return '<p class="lr-qs"><span class="lr-q">“' + esc(q.prompt) + '”</span><span class="lr-meta">' + esc(q.meta || "") + "</span></p>"; }).join("");
       var list = p.items.map(function (m, j) {
-        var y = its[j] || { state: "wait", value: "" }, key = i + "-" + j, pop = (y.state === "ok" || y.state === "fail") && shown[key] !== y.state;
-        shown[key] = y.state;
-        return '<li class="' + esc(y.state) + (pop ? " pop" : "") + '"><i aria-hidden="true">' + (TICK[y.state] || "○") + '</i><span>' + esc(m.label) + '<small class="zhs">' + esc(m.zh) + "</small></span>" + (y.value ? "<b>" + esc(y.value) + "</b>" : "") + "</li>";
+        var y = its[j] || { state: "wait", value: "" }, key = i + "-" + j;
+        if (y.state === "wait") return "";                                     // not reached yet: nothing to show
+        var pop = shown[key] === undefined, vpop = y.value && shownVal[key] !== y.value;
+        shown[key] = y.state; shownVal[key] = y.value || "";
+        return '<li class="' + esc(y.state) + (pop ? " pop" : "") + '"><i aria-hidden="true">' + (TICK[y.state] || "○") + '</i><span>' + esc(m.label) + '<small class="zhs">' + esc(m.zh) + "</small></span>" + (y.value ? '<b class="' + (vpop ? "vpop" : "") + '">' + esc(y.value) + "</b>" : "") + "</li>";
       }).join("");
-      var done = x.state === "ok" ? "✓ " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "fail" ? "✗ " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "skip" ? "– " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "run" ? "… " + lab[0] : "○ " + lab[0];
-      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + "</small></b></div>" + q + '<ul class="lr-ck">' + list + '</ul><p class="lr-done ' + esc(x.state) + '">' + done + '<small class="zhs">' + lab[1] + "</small></p>" + (x.state === "skip" ? '<p class="lr-skiphint">Not measured. Tick “Include ' + esc(M.b) + '” and run again.<small class="zhs">這項沒有量；勾選「包含 ' + esc(M.b) + '」後再跑一次</small></p>' : "") + "</li>";
+      var chip = '<em class="lr-sst ' + esc(x.state) + '">' + (TICK[x.state] || "○") + " " + lab[0] + '<small class="zhs">' + lab[1] + "</small></em>";
+      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + "</small></b>" + chip + "</div>" + q + (list ? '<ul class="lr-ck">' + list + "</ul>" : "") + "</li>";
     }).join("") + "</ol>";
   }
   function runUI(mode, msg, st, items) {
@@ -207,7 +210,7 @@
     runUI("running", "");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: "{}" }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; logNext = 0; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring… the rows appear one by one.<small class="zhs">量測中，結果會一列一列出現</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
+      .then(function (d) { job = d.job_id; logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring… the rows appear one by one.<small class="zhs">量測中，結果會一列一列出現</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled. No password was entered.", "已取消，沒有輸入密碼") : esc(e.message || e)); });
   }
   function tick() {

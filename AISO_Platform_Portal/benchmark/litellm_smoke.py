@@ -31,7 +31,7 @@ from pathlib import Path
 CONFIG_NAME = "litellm.local.json"                       # next to launcher.py, git-ignored (machines.local.json style)
 KEY_FILE = Path("~/.config/aiso/litellm_smoke.env")      # KEY=VALUE lines, outside the repository
 CRIT = {"gain_min": 1.3}
-LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 2, "request_timeout_s": 60, "job_timeout_s": 200}
+LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 2, "request_timeout_s": 60, "job_timeout_s": 200, "pace_s": 0.7}   # pace_s: a short pause between the quick preflight checks so people can follow them on screen
 STEP_NAMES = ("Preflight", "Benchmark")
 # the question is the same for every size; only the amount of text in front of it changes. Every request starts with a different
 # number, so no machine can answer it from a cached prompt.
@@ -271,6 +271,9 @@ class SmokeService:
         with self.lock:
             job["steps"][i] = {"state": state, "detail": detail}
 
+    def _pace(self):
+        time.sleep(self.load["pace_s"])
+
     def _check(self, job, deadline):
         if job["cancel"]:
             raise SmokeError("Cancelled.")
@@ -306,23 +309,23 @@ class SmokeService:
         if _http("GET", gw + "/health/liveliness", timeout=5)[0] != 200:
             self._item(job, 0, 0, "fail", "down"); self._step(job, 0, "fail", "gateway down")
             raise SmokeError("Not started: the gateway is not reachable.")
-        self._item(job, 0, 0, "ok"); self._item(job, 0, 1, "run")
+        self._item(job, 0, 0, "ok"); self._pace(); self._item(job, 0, 1, "run")
         for m in (A, B):
             if _http("GET", m["url"].rstrip("/") + "/v1/models", timeout=5)[0] != 200:
                 self._item(job, 0, 1, "fail", m["name"]); self._step(job, 0, "fail", m["name"] + " unreachable")
                 raise SmokeError("Not started: %s is not reachable." % m["name"])
-        self._item(job, 0, 1, "ok", "%s + %s" % (A["name"], B["name"])); self._item(job, 0, 2, "run")
+        self._item(job, 0, 1, "ok", "%s + %s" % (A["name"], B["name"])); self._pace(); self._item(job, 0, 2, "run")
         reason = self.busy_check()
         if reason:
             self._item(job, 0, 2, "fail", "busy"); self._step(job, 0, "fail", reason)
             raise SmokeError("Not started: " + reason)
-        self._item(job, 0, 2, "ok"); self._item(job, 0, 3, "run")
+        self._item(job, 0, 2, "ok"); self._pace(); self._item(job, 0, 3, "run")
         code, _, models = _http("GET", gw + "/v1/models", bearer=key, timeout=5)
         have = {x.get("id") for x in (models or {}).get("data", [])} if code == 200 else set()
         if code != 200 or cfg["group_alias"] not in have:
             self._item(job, 0, 3, "fail", "missing"); self._step(job, 0, "fail", "model missing" if code == 200 else "test key refused")
             raise SmokeError("Not started: the gateway does not offer the model this test needs.")
-        self._item(job, 0, 3, "ok")
+        self._pace(); self._item(job, 0, 3, "ok"); self._pace()
         self._step(job, 0, "ok", "gateway up")
         self._log(job, "  gateway up, %s and %s reachable, nothing else running, test key accepted  -> OK" % (A["name"], B["name"]))
 

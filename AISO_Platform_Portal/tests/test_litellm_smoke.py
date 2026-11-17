@@ -72,7 +72,7 @@ class SmokeTests(unittest.TestCase):
         if not b_up:
             ub = "http://127.0.0.1:9"
         cfg = {"gateway": ug, "machine_a": {"name": "AISO1", "url": ua, "model": "m"}, "machine_b": {"name": "PRO6000", "url": ub, "model": "m"}, "group_alias": "gemma26-multi"}
-        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, load={"requests": 8, "concurrency": 4, "repeats": 2, **kw})
+        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, load={"requests": 8, "concurrency": 4, "repeats": 2, "pace_s": 0, **kw})
 
     def finish(self, svc, timeout=60):
         jid = svc.start()["job_id"]

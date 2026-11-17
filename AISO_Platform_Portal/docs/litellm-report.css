@@ -467,3 +467,20 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-ef .lr-tg{align-self:center}
 @media(max-width:760px){.lr .lr-ef li{grid-template-columns:30px minmax(0,1fr)}.lr .lr-ef li .lr-tg{grid-column:2;justify-self:start}}
 .lr .lr-ef .lr-fst:empty{display:none}
+
+/* ===== the two stages as an up/down list; items and values appear only when the test reaches them ===== */
+.lr .lr-plan.lr-stack{display:grid;grid-template-columns:minmax(0,1fr);grid-auto-flow:row;grid-auto-columns:auto;gap:14px;overflow:visible;padding:0;margin:16px 0 0}
+.lr .lr-plan.lr-stack>li{padding:16px 20px;gap:10px}
+.lr .lr-plan.lr-stack>li::before,.lr .lr-plan.lr-stack>li::after{display:none}
+.lr .lr-stack .lr-ph{align-items:center;font-size:22px}
+.lr .lr-sst{font-style:normal;font-size:17px;font-weight:700;color:var(--muted);white-space:nowrap}
+.lr .lr-sst small{margin-left:8px;font-size:16px;font-weight:500}
+.lr .lr-sst.run{color:var(--gold)}.lr .lr-sst.ok{color:#b7cfa6}.lr .lr-sst.fail{color:#e8a98c}
+.lr .lr-plan.lr-stack>li.ok{border-color:#9db88c}.lr .lr-plan.lr-stack>li.run{border-color:var(--gold)}.lr .lr-plan.lr-stack>li.wait{opacity:.8}
+.lr .lr-stack .lr-ck li{grid-template-columns:30px minmax(0,1fr) auto;padding:9px 4px;font-size:19px}
+.lr .lr-stack .lr-ck li b{font-size:20px;min-width:96px;text-align:right}
+.lr .lr-stack .lr-ck li.pop{animation:lritem .45s ease-out}
+.lr .lr-stack .lr-ck li b.vpop{animation:lrval .5s ease-out}
+@keyframes lritem{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:none}}
+@keyframes lrval{0%{opacity:0;transform:translateX(-26px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.lr .lr-stack .lr-ck li.pop,.lr .lr-stack .lr-ck li b.vpop{animation:none}}
