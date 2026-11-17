@@ -117,16 +117,16 @@
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["Spread load: faster, higher throughput.", "分散請求：更快、高吞吐。", "measured"],
-    ["If one machine fails, another keeps answering.", "一台機器故障，另一台繼續回應。", ""],
-    ["Apps call one address; LiteLLM picks the machine.", "應用程式只打一個網址，由 LiteLLM 選機器。", ""],
-    ["Each key reaches only its own models.", "每把金鑰只能用被授權的模型。", ""]
+    ["Load balancing", "分流", "Spread load: faster, higher throughput.", "分散請求：更快、高吞吐。", "measured"],
+    ["Failover", "備援", "If one machine fails, another keeps answering.", "一台機器故障，另一台繼續回應。", ""],
+    ["Single entry", "統一入口", "Apps call one address; LiteLLM picks the machine.", "應用程式只打一個網址，由 LiteLLM 選機器。", ""],
+    ["Easy scaling", "易擴充", "Add a machine to the list; apps stay unchanged.", "新增機器只需加進清單，應用程式不用改。", ""]
   ];
   var TAG = { measured: ["Measured", "實測"] };
   function renderFuncs() {
     $("lrFuncs").innerHTML = '<ol class="lr-ef">' + FUNCS.map(function (f, i) {
-      var tag = f[2] && (f[2] !== "measured" || D.live) ? '<em class="lr-tg ' + f[2] + '">' + TAG[f[2]][0] + '<small class="zhs">' + TAG[f[2]][1] + "</small></em>" : "";
-      return '<li><i>' + (i + 1) + '</i><span>' + esc(f[0]) + '<small class="zhs">' + esc(f[1]) + "</small>" +
+      var tag = f[4] && (f[4] !== "measured" || D.live) ? '<em class="lr-tg ' + f[4] + '">' + TAG[f[4]][0] + '<small class="zhs">' + TAG[f[4]][1] + "</small></em>" : "";
+      return '<li><i>' + (i + 1) + '</i><span><strong class="lr-ft">' + esc(f[0]) + '<small class="zhs">' + esc(f[1]) + '</small></strong><span class="lr-fs">' + esc(f[2]) + '<small class="zhs">' + esc(f[3]) + "</small></span>" +
         (i === 0 || i === 1 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + "</li>";
     }).join("") + "</ol>";
     paintFuncs();

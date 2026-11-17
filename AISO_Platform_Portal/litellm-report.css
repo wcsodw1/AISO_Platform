@@ -508,3 +508,9 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-langsel button.on{background:var(--gold);border-color:var(--gold);color:#1d1710}
 .lr .lr-langsel button:disabled{opacity:.5;cursor:not-allowed}
 .lr .lr-langtag{margin-left:14px;padding:2px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ivory);font-style:normal;font-size:16px;font-weight:600}.lr .lr-langtag small{margin-left:6px;font-weight:500;color:var(--muted)}
+
+/* benefit title (e.g. Failover 備援) above its one-line sentence */
+.lr .lr-ef .lr-ft{display:block;margin:0 0 4px;color:var(--gold);font-size:21.5px;font-weight:700}
+.lr .lr-ef .lr-ft small{display:inline;margin:0 0 0 10px;font-size:21.5px;font-weight:600;color:var(--gold)}
+.lr .lr-ef .lr-fs{display:block;font-size:19px}
+.lr .lr-ef li .lr-fs small{display:block;margin-top:2px;font-size:17px;color:var(--muted)}
