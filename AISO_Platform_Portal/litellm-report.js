@@ -93,38 +93,28 @@
 
 
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
-  /* one benefit per line, one sentence each */
+  /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["One entry", "統一入口", [
-      ["Apps keep one address and one key", "應用只記一個位址、一把金鑰"],
-      ["Swap machines without touching apps", "換機器，應用都不用改"]]],
-    ["Spread requests", "分流", [
-      ["Less waiting: TTFT %TTFT%", "等待變短", "measured"],
-      ["More output: TPS %TPS%", "每秒產出變多", "measured"]]],
-    ["Failover", "故障切換", [
-      ["A broken machine goes unnoticed: 10 / 10 answered", "一台壞掉，使用者仍拿到回覆", "poc"],
-      ["No switching code in any app", "應用不必寫切換程式"]]],
-    ["Key limits", "金鑰管控", [
-      ["A key reaches only its own models", "每把金鑰只能用自己的模型", "poc"]]]
+    ["Apps keep one address and one key; machines can change behind it.", "應用只記一個位址和一把金鑰，後面的機器可以隨時更換。", ""],
+    ["Requests are shared by both machines: less waiting, more output%NUM%.", "請求分給兩台機器：等待變短，每秒產出變多。", "measured"],
+    ["When one machine breaks, users still get their answers: 10 / 10.", "一台機器壞掉，使用者仍拿得到回覆。", "poc"],
+    ["A key reaches only the models it is given.", "每把金鑰只能用被授權的模型。", "poc"]
   ];
   var TAG = { measured: ["Measured", "實測"], poc: ["PoC", "概念驗證"] };
   function renderFuncs() {
-    var ttft = "", tps = "";                 // no numbers before a test has run
+    var num = "";
     if (D.live) {
-      ttft = "−" + Math.round(100 * D.sizes.reduce(function (t, z) { return t + (1 - z.ab.ttft_s / z.a.ttft_s); }, 0) / D.sizes.length) + "%";
-      tps = "×" + (D.sizes.reduce(function (t, z) { return t + z.ab.agg_tps / z.a.agg_tps; }, 0) / D.sizes.length).toFixed(2);
+      var ttft = Math.round(100 * D.sizes.reduce(function (t, z) { return t + (1 - z.ab.ttft_s / z.a.ttft_s); }, 0) / D.sizes.length);
+      var tps = (D.sizes.reduce(function (t, z) { return t + z.ab.agg_tps / z.a.agg_tps; }, 0) / D.sizes.length).toFixed(2);
+      num = " (TTFT −" + ttft + "%, TPS ×" + tps + ")";
     }
-    $("lrFuncs").innerHTML = FUNCS.map(function (f, i) {
-      var lis = f[2].map(function (b) {
-        var en = b[0].replace(": TTFT %TTFT%", D.live ? ": TTFT " + ttft : " (TTFT)").replace(": TPS %TPS%", D.live ? ": TPS " + tps : " (TPS)");
-        return '<li><i aria-hidden="true">✓</i><span>' + esc(en) + '<small class="zhs">' + esc(b[1]) + "</small></span>" + (b[2] && (b[2] !== "measured" || D.live) ? '<em class="lr-tg ' + b[2] + '">' + TAG[b[2]][0] + '<small class="zhs">' + TAG[b[2]][1] + "</small></em>" : "") + "</li>";
-      }).join("");
-      return '<div class="lr-fn"><h4><i>' + (i + 1) + "</i>" + f[0] + '<small class="zhs">' + f[1] + '</small></h4><ul class="lr-eff">' + lis + "</ul>" +
-        (i === 1 || i === 2 ? '<p class="lr-fst" id="lrFst' + i + '" role="status"></p>' : "") + "</div>";
-    }).join("");
+    $("lrFuncs").innerHTML = '<ol class="lr-ef">' + FUNCS.map(function (f, i) {
+      var tag = f[2] && (f[2] !== "measured" || D.live) ? '<em class="lr-tg ' + f[2] + '">' + TAG[f[2]][0] + '<small class="zhs">' + TAG[f[2]][1] + "</small></em>" : "";
+      return '<li><i>' + (i + 1) + '</i><span>' + esc(f[0].replace("%NUM%", num)) + '<small class="zhs">' + esc(f[1]) + "</small>" +
+        (i === 1 || i === 2 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + "</li>";
+    }).join("") + "</ol>";
     paintFuncs();
   }
-
   renderFuncs();
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
