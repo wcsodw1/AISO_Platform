@@ -172,7 +172,7 @@
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["Spread load", "分流", "Faster response, higher throughput.", "回應更快、吞吐速度更高。", "measured"],
+    ["Spread load", "分流", "Spreads requests across machines to cut waiting and raise total throughput.", "請求分散到多台機器，縮短等待、提高整體吞吐。", "measured"],
     ["Failover", "備援", "If one machine fails, another keeps answering.", "一台機器故障，另一台繼續回應。", ""],
     ["Single entry", "統一入口", "Apps call one address; LiteLLM picks the machine.", "應用程式只打一個網址，由 LiteLLM 選機器。", ""],
     ["Easy scaling", "易擴充", "Add a machine to the list; apps stay unchanged.", "新增機器只需加進清單，應用程式不用改。", ""]
