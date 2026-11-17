@@ -115,3 +115,10 @@ main.lr .v2-hero .v2-sub{margin-top:10px}
 .lr .lr-lane{grid-template-columns:minmax(190px,260px) 1fr}
 .lr .lr-svg text{font-family:inherit}
 @media(max-width:760px){.lr .lr-lane{grid-template-columns:1fr}}
+
+/* preliminary conclusion: dashed frame + a small "pending" tag until the smoke test has run here */
+.lr .lr-concl.prelim{border-style:dashed;border-left-style:solid}
+.lr .lr-pend{display:inline-block;margin-left:14px;padding:2px 12px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-size:16px;font-style:normal;font-weight:600}
+.lr .lr-pend small{margin-left:8px}
+.lr .lr-hint{margin:10px 0 0;color:var(--muted);font-size:17px}.lr .lr-hint small{margin-left:8px}
+@media(max-width:760px){.lr .lr-pend{display:block;margin:8px 0 0}}

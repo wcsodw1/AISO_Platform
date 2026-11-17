@@ -31,10 +31,18 @@
   /* ---------- conclusion ---------- */
   var notes = '<div class="lr-notes" tabindex="0"><span class="lr-nb">Notes<small class="zhs"> 備註</small></span><div class="lr-nf"><ul>' +
     D.notes.map(function (n) { return "<li>" + esc(n[0]) + "<small>" + esc(n[1]) + "</small></li>"; }).join("") + "</ul></div></div>";
-  $("lrConcl").innerHTML = '<span class="lr-cl">Conclusion<small class="zhs">結論</small></span>' + notes +
-    '<p class="lr-big">' + f1(gain) + '× faster: ' + M.a + ' + ' + M.b + ' behind one entry.<small>' + M.a + ' 加 ' + M.b + ' 共用一個入口，快 ' + f1(gain) + ' 倍</small></p>' +
-    '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests still answered.<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求仍有 ' + D.fail.gw + ' 個正常回覆</small></p>' +
-    '<p class="lr-big">Cost: about ' + f2(D.cost.add) + ' s per request.<small>代價：每個請求多約 ' + f2(D.cost.add) + ' 秒</small></p>';
+  /* The conclusion is PRELIMINARY until the smoke test has run on this platform (David, 2026-11-17).
+     Replay data (proof-of-concept run) -> "Preliminary estimate". A live smoke test result -> "Confirmed". */
+  function conclusion(live) {
+    var el = $("lrConcl");
+    el.classList.toggle("prelim", !live);
+    el.innerHTML = '<span class="lr-cl">' + (live ? 'Conclusion<small class="zhs">實測結論</small>' : 'Preliminary estimate<small class="zhs">初步估算</small><em class="lr-pend">Pending smoke test<small class="zhs">待 smoke test 確認</small></em>') + '</span>' + notes +
+      '<p class="lr-big">' + (live ? "" : "About ") + f1(gain) + '× faster: ' + M.a + ' + ' + M.b + ' behind one entry.<small>' + M.a + ' 加 ' + M.b + ' 共用一個入口，' + (live ? "快 " : "預估快約 ") + f1(gain) + ' 倍</small></p>' +
+      '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests answered' + (live ? "." : " in the trial run.") + '<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求有 ' + D.fail.gw + ' 個正常回覆' + (live ? "" : "（試跑）") + '</small></p>' +
+      '<p class="lr-big">Cost: about ' + f2(D.cost.add) + ' s per request.<small>代價：每個請求多約 ' + f2(D.cost.add) + ' 秒</small></p>' +
+      (live ? "" : '<p class="lr-hint">Confirmed only after the smoke test runs on this platform.<small class="zhs">要在平台上跑完 smoke test 才算確認</small></p>');
+  }
+  conclusion(false);
 
   /* ---------- 1 · the picture: real clients, real machines, real models ---------- */
   var W = 560, CH = 30;
@@ -116,7 +124,7 @@
 
   var VIEW = { speed: speed, fail: fail, control: control };
   function tabs() { $("lrTabs").innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-t="' + t[0] + '" aria-selected="' + (t[0] === cur) + '" class="' + (t[0] === cur ? "on" : "") + '">' + t[1] + '<small class="zhs">' + t[2] + "</small></button>"; }).join(""); }
-  function render() { stop(); tabs(); VIEW[cur](); $("lrSrc").textContent = "Replay of the proof-of-concept run, " + D.tested + " · pass criteria set before the run · 4 of 4 checks passed · nothing here calls a live gateway"; }
+  function render() { stop(); tabs(); VIEW[cur](); $("lrSrc").textContent = "Replay of the proof-of-concept run, " + D.tested + " · preliminary, to be confirmed by the smoke test · nothing here calls a live gateway"; }
   $("lrTabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-t]"); if (b) { cur = b.dataset.t; render(); if (cur === "speed") play(); } });
   render();
 })();
