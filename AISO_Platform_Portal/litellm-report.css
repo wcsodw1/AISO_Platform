@@ -239,3 +239,20 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-term-b .hd{color:#d6b26b}.lr .lr-term-b .ok{color:#b7cfa6}.lr .lr-term-b .bad{color:#e0a283}
 .lr .lr-term{border-color:#3d3328}
 @media(max-width:760px){.lr .lr-kr{grid-template-columns:84px 1fr auto}}
+
+/* stages run left to right: Preflight -> Speed -> Cost -> Control, joined by arrows */
+.lr .lr-plan{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(300px,1fr);gap:34px;overflow-x:auto;padding:4px 4px 10px;margin-left:-4px;margin-right:-4px}
+@media(min-width:1180px){.lr .lr-plan{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}}
+.lr .lr-plan>li{position:relative}
+.lr .lr-plan>li:not(:last-child)::after{content:"";position:absolute;top:34px;right:-27px;width:20px;height:20px;border-top:3px solid #6b5638;border-right:3px solid #6b5638;transform:rotate(45deg);border-radius:2px}
+.lr .lr-plan>li.ok:not(:last-child)::after{border-color:#9db88c}.lr .lr-plan>li.run:not(:last-child)::after{border-color:#d6b26b}.lr .lr-plan>li.fail:not(:last-child)::after{border-color:#d98a66}
+.lr .lr-plan>li:not(:last-child)::before{content:"";position:absolute;top:43px;right:-30px;width:24px;height:3px;background:#6b5638}
+.lr .lr-plan>li.ok:not(:last-child)::before{background:#9db88c}.lr .lr-plan>li.run:not(:last-child)::before{background:#d6b26b}.lr .lr-plan>li.fail:not(:last-child)::before{background:#d98a66}
+@media(max-width:760px){
+  .lr .lr-plan{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:1fr;gap:34px;overflow:visible}
+  .lr .lr-plan>li:not(:last-child)::after{top:auto;bottom:-27px;right:auto;left:calc(50% - 10px);transform:rotate(135deg)}
+  .lr .lr-plan>li:not(:last-child)::before{top:auto;bottom:-30px;right:auto;left:calc(50% - 1px);width:3px;height:24px}
+}
+.lr .lr-plan>li{grid-template-columns:minmax(0,1fr);min-width:0}
+.lr .lr-plan>li *{min-width:0;overflow-wrap:anywhere}
+.lr .lr-plan .lr-to i{white-space:normal}
