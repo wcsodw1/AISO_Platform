@@ -10,11 +10,11 @@
     sizes: [{"key": "short", "tok": 29, "a": {"ttft_s": 2.67, "tpot_ms": 23.4, "agg_tps": 79.2, "norm_tps": 19.8}, "ab": {"ttft_s": 0.7, "tpot_ms": 15.6, "agg_tps": 127.7, "norm_tps": 31.9}}, {"key": "mid", "tok": 110, "a": {"ttft_s": 2.96, "tpot_ms": 24.8, "agg_tps": 72.8, "norm_tps": 18.2}, "ab": {"ttft_s": 0.73, "tpot_ms": 11.8, "agg_tps": 137.6, "norm_tps": 34.4}}, {"key": "long", "tok": 910, "a": {"ttft_s": 4.77, "tpot_ms": 31.2, "agg_tps": 49.1, "norm_tps": 12.2}, "ab": {"ttft_s": 1.46, "tpot_ms": 21.1, "agg_tps": 82.2, "norm_tps": 20.5}}],
     notes: [
       [M.a + " runs Q4 and " + M.b + " runs BF16: not like-for-like. The gain shows gateway scaling, not a hardware ranking.", M.a + " 用 Q4、" + M.b + " 用 BF16，精度不同；倍數代表閘道分流效果，不是機器排名"],
-      ["Both machines are shared with other users. Numbers move between runs.", "兩台機器都與他人共用，每次跑的數字會浮動"],
-      ["Without LiteLLM = " + M.a + " only (today's setup). With LiteLLM = the same requests spread over both machines. TTFT drops mostly because fewer requests wait in a queue.", "沒有 LiteLLM ＝ 只接 " + M.a + "（現況）；有 LiteLLM ＝ 同樣的請求分給兩台。TTFT 變短主要是排隊的請求變少"],
-      ["An app can also split between the two machines by itself and gets about the same speed. LiteLLM saves each app from writing that.", "應用自己手動分流速度差不多；LiteLLM 的價值是每個應用都不用自己寫"],
-      ["Tokens are counted as streamed pieces; output is capped at 100 tokens per request.", "token 以串流片段計算；每個請求輸出上限 100 個 token"],
-      ["It is one more service to run and keep alive.", "多了一個要維運的服務"]
+      ["Both machines are shared with other users. Values vary between runs.", "兩台機器為共用資源，各次量測數值會有差異"],
+      ["Without LiteLLM = " + M.a + " only (today's setup). With LiteLLM = the same requests spread over both machines. TTFT drops mostly because fewer requests wait in a queue.", "沒有 LiteLLM ＝ 僅連接 " + M.a + "（目前配置）；有 LiteLLM ＝ 相同請求分散至兩台。TTFT 縮短主要因為排隊的請求減少"],
+      ["An application can also distribute requests itself and reach a similar speed; LiteLLM spares every application from implementing it.", "應用程式自行分流可得相近的速度；LiteLLM 的價值在於各應用無須自行實作"],
+      ["Tokens are counted as streamed pieces; output is capped at 100 tokens per request.", "token 以串流片段計數；每個請求的輸出上限為 100 tokens"],
+      ["It is one more service to operate.", "需額外維運一項服務"]
     ]
   };
   var $ = function (id) { return document.getElementById(id); };
@@ -24,7 +24,7 @@
   /* ---------- KPI: four metrics, each Without -> With LiteLLM at three input sizes ---------- */
   var notes = '<div class="lr-notes" tabindex="0"><span class="lr-nb">Notes<small class="zhs"> 備註</small></span><div class="lr-nf"><ul>' +
     D.notes.map(function (n) { return "<li>" + esc(n[0]) + "<small>" + esc(n[1]) + "</small></li>"; }).join("") + "</ul></div></div>";
-  var SIZE = { short: ["Short", "一句話"], mid: ["Medium", "中等"], long: ["Long", "很長"] };
+  var SIZE = { short: ["Sentence", "一句話"], mid: ["Paragraph", "一段文字"], long: ["Long passage", "長篇文字"] };
   /* lower is better for TTFT and TPOT, higher is better for TPS */
   var METRICS = [
     { f: "ttft_s", name: "TTFT", zh: "首字等待", low: true, show: function (v) { return f2(v) + " s"; } },
@@ -37,7 +37,8 @@
     return { txt: m.low ? (pct >= 0 ? "−" + Math.round(pct) + "%" : "+" + Math.round(-pct) + "%") : "×" + (ab / a).toFixed(2), good: pct >= 0 };
   }
   /* results build up row by row while the test runs: mode "running" (some sizes still to come), "done" or "fail" (below 1.3x) */
-  function buildResults(sizes, mode) {
+  var LANGNAME = { en: ['English input', 'English 輸入'], zh: ['Chinese input', '中文輸入'] };
+  function buildResults(sizes, mode, at, lang) {
     var el = $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
     var all = sizes.length === 3;
     var cards = METRICS.map(function (m) {
@@ -52,18 +53,39 @@
       return '<div class="lr-kpi"><h4>' + m.name + '<small class="zhs">' + m.zh + '</small></h4><p class="lr-dir">' + (m.low ? "Lower is better" : "Higher is better") + '<small class="zhs">' + (m.low ? "越低越好" : "越高越好") + '</small></p>' + rows +
         '<p class="lr-kd"><b>' + hero + '</b><span>on average<small class="zhs">平均</small></span></p></div>';
     }).join("");
-    var tag = mode === "running" ? '<em class="lr-run2">Measuring · ' + sizes.length + " / 3<small class=\"zhs\">量測中</small></em>" : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
-    el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag +
-      (mode === "fail" ? '<em class="lr-below">Below 1.3×, not confirmed<small class="zhs">低於 1.3 倍，不算確認</small></em>' : "") + '</span>' + notes +
+    var tag = mode === "running" ? '<em class="lr-run2">Measuring · ' + sizes.length + " / 3<small class=\"zhs\">量測中</small></em>"
+      : mode === "prev" ? '<em class="lr-prevtag">PREVIOUS RUN · ' + esc(at || "") + '<small class="zhs">前一次結果</small></em>'
+      : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
+    el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag + (lang && LANGNAME[lang] ? '<em class="lr-langtag">' + LANGNAME[lang][0] + '<small class="zhs">' + LANGNAME[lang][1] + "</small></em>" : "") +
+      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + notes +
       '<p class="lr-cols"><span>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><em aria-hidden="true">→</em><span>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
       '<div class="lr-kpis">' + cards + "</div>";
     el.hidden = false; $("lrResNote").hidden = true;
   }
   function showPartial(list) {
     D.sizes = list.map(function (z) { return { key: z.key, tok: z.tokens, a: z.a, ab: z.ab }; });
-    buildResults(D.sizes, "running");
+    buildResults(D.sizes, "running", undefined, runLang);
   }
-  function conclusion(pass) { buildResults(D.sizes, pass ? "done" : "fail"); }
+
+  /* earlier runs are remembered in this browser (localStorage); the newest comes first, five at most */
+  var HKEY = "aiso.litellm.runs";
+  function loadHist() { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch (e) { return []; } }
+  function saveHist(h) { try { localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 5))); } catch (e) {} }
+  function runSummary(run) {
+    return METRICS.map(function (m) {
+      var mean = run.sizes.reduce(function (t, z) { return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / run.sizes.length;
+      return '<span><i>' + m.name.replace("TPS · ", "TPS ") + '</i><b class="' + (mean > (m.low ? 0 : 1) ? "good" : "bad") + '">' + (m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2)) + "</b></span>";
+    }).join("");
+  }
+  var shownPrev = null;
+  function paintPrev(run, label) {
+    var el = $("lrPrev"); shownPrev = run;
+    if (!run) { el.hidden = true; el.innerHTML = ""; return; }
+    el.hidden = false;
+    el.innerHTML = '<div class="lr-prevh"><b>' + label + '<small class="zhs">' + (label === "Previous run" ? "前一次結果" : "上次結果") + '</small></b><em>' + esc(run.at || "") + (run.lang && LANGNAME[run.lang] ? " · " + LANGNAME[run.lang][0] : "") + '</em>' + (run.pass ? "" : '<em class="lr-below">below 1.3×</em>') + '</div><div class="lr-prevs">' + runSummary(run) + '</div><button type="button" class="lr-ghost" id="lrPrevShow">Show details<small class="zhs">顯示明細</small></button>';
+    $("lrPrevShow").onclick = function () { buildResults(run.sizes, run.pass ? "prev" : "prevfail", run.at, run.lang); };
+  }
+  function conclusion(pass) { buildResults(D.sizes, pass ? "done" : "fail", undefined, D.lang); }
 
   /* ---------- 1 · the picture: real clients, real machines, real models ---------- */
   var W = 560, CH = 30;
@@ -87,18 +109,18 @@
   var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 ' + W + ' 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
   $("lrFlow").innerHTML = '<div class="lr-vs">' +
     '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 LiteLLM</small></h3>' + svg(svgWithout, "Three clients each connect to both machines: six links") +
-    '<p class="lr-pt">To use both machines, every app needs <b>6 links</b> and its own split and failover code<small class="zhs">要兩台一起用，每個應用都要 6 條連線，並自己寫分流與備援</small></p></div>' +
+    '<p class="lr-pt">Using both machines takes <b>6 links</b> and custom distribution and failover code in every application<small class="zhs">兩台並用時，每個應用都需 6 條連線，並自行實作分流與備援</small></p></div>' +
     '<div class="lr-side lr-yes"><h3>With<small class="zhs">有 LiteLLM</small></h3>' + svg(svgWith, "Three clients connect to one gateway, which connects to both machines") +
-    '<p class="lr-pt"><b>1 place</b> holds the split, failover and keys; apps stay the same<small class="zhs">分流、備援、金鑰都在一個地方，應用都不用改</small></p></div></div>';
+    '<p class="lr-pt"><b>One place</b> handles distribution, failover and keys; applications stay unchanged<small class="zhs">分流、備援與金鑰集中管理，應用程式無須更動</small></p></div></div>';
 
 
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["Apps keep one address and one key; machines can change behind it.", "應用只記一個位址和一把金鑰，後面的機器可以隨時更換。", ""],
-    ["Requests are shared by both machines: less waiting, more output%NUM%.", "請求分給兩台機器：等待變短，每秒產出變多。", "measured"],
-    ["When one machine breaks, users still get their answers: 10 / 10.", "一台機器壞掉，使用者仍拿得到回覆。", "poc"],
-    ["A key reaches only the models it is given.", "每把金鑰只能用被授權的模型。", "poc"]
+    ["Applications use one endpoint and one key; backend machines can be replaced without client changes.", "應用程式使用單一端點與金鑰，後端機器可替換而不影響用戶端。", ""],
+    ["Requests are distributed across both machines: lower latency, higher throughput%NUM%.", "請求分散至兩台機器：延遲降低、吞吐量提升。", "measured"],
+    ["If one machine fails, the other serves the requests: 10 / 10 answered.", "單一機器故障時，由另一台接手回應。", "poc"],
+    ["Each key can access only its authorized models.", "每把金鑰僅能存取被授權的模型。", "poc"]
   ];
   var TAG = { measured: ["Measured", "實測"], poc: ["PoC", "概念驗證"] };
   function renderFuncs() {
@@ -123,8 +145,8 @@
   /* What the smoke test does, as ticking checklists. Mirrors plan() in benchmark/litellm_smoke.py (the backend sends its own copy when available). */
   var it = function (en, zh) { return { label: en, zh: zh }; };
   var PLAN = { steps: [
-    { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway is up", "閘道正常"), it("Machines reachable", "機器連得到"), it("Nothing else is running", "沒有其他測試在跑"), it("Test key and model present", "測試金鑰與模型都在")] },
-    { name: "Benchmark", zh: "速度", sends: [{ prompt: "Short passage + “Now write about 80 words about Taipei night markets.”", tokens: 100, meta: "8 requests, 4 at once, x 2" }], items: [it("Short input", "一句話"), it("About 100 input tokens", "約 100 個 input token"), it("About 1000 input tokens", "約 1000 個 input token"), it("LiteLLM raises Aggregate TPS at least 1.3x (mean)", "LiteLLM 讓 Aggregate TPS 平均至少 1.3 倍")] }
+    { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用")] },
+    { name: "Benchmark", zh: "速度", sends: [{ prompt: "Text in front (a sentence, a paragraph or a long passage) + the same question", tokens: 100, meta: "8 requests, 4 at once, x 2" }], items: [it("Sentence (one line of text)", "一句話"), it("Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), it("Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"), it("Mean Aggregate TPS gain with LiteLLM at least 1.3x", "經 LiteLLM 後 Aggregate TPS 平均提升至少 1.3 倍")] }
   ] };
   var TICK = { wait: "○", run: "◔", ok: "✓", fail: "✗", skip: "–" }, DONE = { wait: ["Waiting", "等待"], run: ["Running", "執行中"], ok: ["Complete", "完成"], fail: ["Failed", "未通過"], skip: ["Skipped", "略過"] };
   var shown = {}, shownVal = {};   // what has already been drawn, so only something new pops in
@@ -147,9 +169,31 @@
   function runUI(mode, msg, st, items) {
     runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn' + (mode === "running" ? " busy" : "") + '" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '><span>' + (mode === "running" ? "Running" : "Run smoke test") + '</span><small class="zhs">' + (mode === "running" ? "執行中" : "實測") + '</small><i aria-hidden="true">→</i></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
     var row = runEl.querySelector(".lr-runrow");
-    row.insertAdjacentHTML("beforeend", '<span class="lr-pwnote">*Test password: ask staff<small class="zhs">測試密碼請洽工作人員</small></span>');
-    row.insertAdjacentHTML("afterend", '<div class="lr-lights" id="lrLights" role="status" aria-label="Connection status">' + lightsHtml() + "</div>");
+    if (mode === "running") row.querySelector(".lr-runbtn").insertAdjacentHTML("afterend", '<button type="button" class="lr-ghost" id="lrStopBtn">Stop<small class="zhs">停止</small></button>');
+    else if (mode === "ready" && hasRun) row.querySelector(".lr-runbtn").insertAdjacentHTML("afterend", '<button type="button" class="lr-ghost" id="lrResetBtn">Reset<small class="zhs">重置</small></button>');
+    row.insertAdjacentHTML("beforeend", '<span class="lr-pwnote">*Test password: contact staff<small class="zhs">測試密碼請洽工作人員</small></span>');
+    row.insertAdjacentHTML("afterend", '<div class="lr-lights" id="lrLights" role="status" aria-label="Connection status">' + lightsHtml() + "</div>" +
+      '<div class="lr-langsel" role="group" aria-label="Input language"><span>Input language<small class="zhs">輸入語言</small></span>' +
+      ["en", "zh"].map(function (l) { return '<button type="button" data-l="' + l + '" class="' + (inputLang === l ? "on" : "") + '"' + (mode === "ready" ? "" : " disabled") + ">" + (l === "en" ? "English" : "中文") + "</button>"; }).join("") + "</div>");
+    Array.prototype.forEach.call(runEl.querySelectorAll(".lr-langsel button"), function (b) { b.onclick = function () { inputLang = b.dataset.l; Array.prototype.forEach.call(runEl.querySelectorAll(".lr-langsel button"), function (x) { x.className = x.dataset.l === inputLang ? "on" : ""; }); }; });
     if (mode === "ready") $("lrRunBtn").onclick = startRun;
+    if ($("lrStopBtn")) $("lrStopBtn").onclick = stopRun;
+    if ($("lrResetBtn")) $("lrResetBtn").onclick = resetAll;
+  }
+  var hasRun = false, inputLang = "en", runLang = "en";
+  function stopRun() {
+    if (!job) return;
+    fetch(API + "/smoke/" + job + "/cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).catch(function () {});
+    $("lrStopBtn").disabled = true;
+  }
+  /* back to the state before any test: stages waiting, terminal and result hidden; the earlier runs stay available */
+  function resetAll() {
+    if (poll) { clearInterval(poll); poll = null; }
+    job = null; hasRun = false; shown = {}; shownVal = {}; D.live = false; logNext = 0;
+    $("lrTerm").hidden = true; $("lrTermBody").textContent = ""; $("lrTermN").textContent = "0 lines";
+    $("lrConcl").hidden = true; $("lrConcl").innerHTML = "";
+    $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Results are shown once the test completes.<small class="zhs">測試完成後顯示結果</small>';
+    renderFuncs(); runUI("ready", ""); paintPrev(loadHist()[0] || null, "Last run");
   }
   var info = function (en, zh) { return en + '<small class="zhs">' + zh + "</small>"; };
 
@@ -163,8 +207,8 @@
   }
 
   /* connection lights: one per thing the test needs; a red light says why */
-  var WHY = { "no connection": ["No connection", "連不上"], "gateway unreachable": ["Gateway down", "閘道連不上"], "not set": ["Not set", "沒設定"], "refused by the gateway": ["Key refused", "金鑰被拒"] };
-  function why(d) { if (WHY[d]) return WHY[d][0] + '<small class="zhs">' + WHY[d][1] + "</small>"; if (/benchmark/i.test(d)) return 'Benchmark running<small class="zhs">有測試在跑</small>'; return esc(d); }
+  var WHY = { "no connection": ["No connection", "無法連線"], "gateway unreachable": ["Gateway unreachable", "閘道無法連線"], "not set": ["Not configured", "尚未設定"], "refused by the gateway": ["Key rejected", "金鑰遭拒"] };
+  function why(d) { if (WHY[d]) return WHY[d][0] + '<small class="zhs">' + WHY[d][1] + "</small>"; if (/benchmark/i.test(d)) return 'Benchmark in progress<small class="zhs">測試進行中</small>'; return esc(d); }
   function lightsHtml() {
     return lights.map(function (l) { return '<span class="lr-light ' + (l.ok ? "ok" : "bad") + '"><i aria-hidden="true"></i><span class="lr-ln2">' + esc(l.name) + "</span>" + (l.ok ? "" : '<em>' + why(l.detail) + "</em>") + "</span>"; }).join("");
   }
@@ -174,10 +218,10 @@
     var by = {}; lights.forEach(function (l) { by[l.name] = l; });
     var gw = by["Gateway"], ms = [by[M.a], by[M.b]].filter(Boolean);
     var up = ms.filter(function (x) { return x.ok; }).map(function (x) { return x.name; }), down = ms.filter(function (x) { return !x.ok; }).map(function (x) { return x.name; });
-    if (gw && !gw.ok) return [{ bad: true, en: "Gateway down: nothing is spread", zh: "閘道連不上，沒有在分流" }, { bad: true, en: "Gateway down: no switching", zh: "閘道連不上，無法切換" }];
-    if (!up.length) return [{ bad: true, en: "No machine reachable", zh: "兩台機器都連不上" }, { bad: true, en: "No machine to switch to", zh: "沒有可以切換的機器" }];
-    if (down.length) return [{ bad: true, en: "Only " + up.join(", ") + " left: " + down.join(", ") + " has no connection", zh: "只剩 " + up.join("、") + "：" + down.join("、") + " 連不上" },
-      { bad: true, en: "Switched: " + up.join(", ") + " answers instead of " + down.join(", "), zh: "已切換：由 " + up.join("、") + " 代替 " + down.join("、") + " 回答" }];
+    if (gw && !gw.ok) return [{ bad: true, en: "Gateway unreachable: requests cannot be distributed", zh: "閘道無法連線，無法分流" }, { bad: true, en: "Gateway unreachable: failover unavailable", zh: "閘道無法連線，無法故障切換" }];
+    if (!up.length) return [{ bad: true, en: "No machine reachable", zh: "兩台主機皆無法連線" }, { bad: true, en: "No machine available for failover", zh: "無可接手的主機" }];
+    if (down.length) return [{ bad: true, en: "Only " + up.join(", ") + " available: " + down.join(", ") + " unreachable", zh: "僅 " + up.join("、") + " 可用：" + down.join("、") + " 無法連線" },
+      { bad: true, en: "Failover active: " + up.join(", ") + " serves in place of " + down.join(", "), zh: "已故障切換：由 " + up.join("、") + " 接手 " + down.join("、") + " 的請求" }];
     return [{ bad: false, en: "Both machines in use", zh: "兩台機器都在用" }, { bad: false, en: "Standing by", zh: "待命中" }];
   }
   function paintFuncs() {
@@ -202,16 +246,16 @@
     runUI("checking", "");
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
       if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
-      else runUI("off", info("The gateway is not reachable from this platform.", "平台連不到閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
-    }).catch(function () { runUI("off", info("Local platform only: needs the smoke-test backend on this computer.", "只能在本機平台按；需要本機裝上 smoke test 後端")); });
+      else runUI("off", info("The gateway is not reachable from this platform.", "平台無法連線至閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
+    }).catch(function () { runUI("off", info("Available on the local platform only; requires the smoke-test backend on this computer.", "僅限本機平台使用；需在本機啟用 smoke test 後端")); });
   }
   function startRun() {
-    if (!window.RunGate) { runUI("ready", info("Test-password dialog is not loaded.", "測試密碼視窗沒有載入")); return; }
+    if (!window.RunGate) { runUI("ready", info("The test-password dialog is not loaded.", "測試密碼視窗尚未載入")); return; }
     runUI("running", "");
-    RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: "{}" }); })
+    RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ lang: inputLang }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring… the rows appear one by one.<small class="zhs">量測中，結果會一列一列出現</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
-      .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled. No password was entered.", "已取消，沒有輸入密碼") : esc(e.message || e)); });
+      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: rows appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示一列</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
+      .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled: no password entered.", "已取消：未輸入測試密碼") : esc(e.message || e)); });
   }
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
@@ -220,15 +264,19 @@
       runUI("running", "", d.steps, d.items);
       if (d.state === "running" || d.state === "queued") return;
       clearInterval(poll); poll = null;
-      if (d.state === "done" && d.result) applyLive(d.result, d.steps, d.items); else runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), d.steps, d.items);
-    }).catch(function () { clearInterval(poll); poll = null; runUI("ready", info("Lost contact with the platform.", "和平台失去連線")); });
+      if (d.state === "done" && d.result) applyLive(d.result, d.steps, d.items); else hasRun = true;
+        var stopped = (d.steps || []).map(function (x) { return x.state === "run" ? { state: "fail", detail: x.detail } : x; });
+        var stoppedItems = (d.items || []).map(function (g) { return g.map(function (y) { return y.state === "run" ? { state: "fail", value: y.value } : y; }); });
+        runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), stopped, stoppedItems);
+    }).catch(function () { clearInterval(poll); poll = null; runUI("ready", info("Connection to the platform was lost.", "與平台的連線中斷")); });
   }
   /* result: bench.sizes[{key, tokens, a:{ttft_s,tpot_ms,agg_tps,norm_tps}, ab:{...}, gain_agg}], bench.gain_agg, bench.pass */
   function applyLive(r, steps, items) {
     D.sizes = r.bench.sizes.map(function (z) { return { key: z.key, tok: z.tokens, a: z.a, ab: z.ab }; });
-    D.np = r.bench.np; D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString();
+    D.np = r.bench.np; D.lang = r.bench.lang; D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString();
+    var h = loadHist(); h.unshift({ at: D.liveAt, lang: r.bench.lang, sizes: D.sizes, gain: r.bench.gain_agg, pass: !!r.bench.pass }); saveHist(h);
     conclusion(!!r.bench.pass); renderFuncs();
-    runUI("ready", r.bench.pass ? "" : info("Done. The gain is below 1.3x, so this is not confirmed.", "完成，但提升低於 1.3 倍，不算確認"), steps, items);
+    runUI("ready", r.bench.pass ? "" : info("Completed, but the gain is below 1.3x: not confirmed.", "已完成，但提升未達 1.3 倍，未達標"), steps, items);
   }
 
   var termBig = false;
@@ -241,5 +289,6 @@
       .catch(function () { $("lrScript").textContent = "The script is shown on the local platform only.\nIt lives in the repository at benchmark/litellm_smoke.py."; });
   });
   checkStatus();
+  paintPrev(loadHist()[0] || null, "Last run");
   refreshHealth(); setInterval(function () { if (!poll) refreshHealth(); }, 10000);
 })();

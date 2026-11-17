@@ -102,6 +102,22 @@ class SmokeTests(unittest.TestCase):
         self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 4])
         self.assertEqual([x["key"] for x in j["partial"]], ["short", "mid", "long"])        # rows were published one by one
 
+    def test_chinese_input_text_is_used_and_sized_like_the_english_one(self):
+        svc = self.service()
+        jid = svc.start("zh")["job_id"]
+        end = time.time() + 60
+        while svc.get(jid)["state"] == "running" and time.time() < end:
+            time.sleep(0.05)
+        j = svc.get(jid)
+        self.assertEqual(j["state"], "done", j)
+        self.assertEqual(j["result"]["bench"]["lang"], "zh")
+        self.assertTrue(any("Chinese" in x for x in j["log"]))
+        z = m.bench_prompt("mid", "zh"); e = m.bench_prompt("mid", "en")
+        self.assertIn("台北", z); self.assertNotIn("台北", e)
+        self.assertGreater(len(m.bench_prompt("long", "zh")), 10 * len(m.bench_prompt("mid", "zh")) / 2)
+        with self.assertRaises(SmokeError):
+            svc.start("fr")
+
     def test_without_extra_capacity_the_gain_is_not_confirmed(self):
         j = self.finish(self.service(gw_slots=2))                          # the gateway adds no capacity
         self.assertEqual(j["state"], "done")

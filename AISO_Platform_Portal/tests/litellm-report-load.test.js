@@ -15,8 +15,9 @@ global.setInterval = () => 0; global.clearInterval = () => {}; global.navigator 
 require("vm").runInThisContext(fs.readFileSync(path.join(__dirname, "..", "litellm-report.js"), "utf8"), { filename: "litellm-report.js" });
 const rows = (els.lrFuncs.innerHTML.match(/<li>/g) || []).length;
 assert.strictEqual(rows, 4, "exactly four sentences");
-assert.ok(/one address and one key/.test(els.lrFuncs.innerHTML) && /shared by both machines/.test(els.lrFuncs.innerHTML) && /still get their answers/.test(els.lrFuncs.innerHTML) && /only the models/.test(els.lrFuncs.innerHTML), "the four benefits are drawn");
+assert.ok(/one endpoint and one key/.test(els.lrFuncs.innerHTML) && /distributed across both machines/.test(els.lrFuncs.innerHTML) && /the other serves/.test(els.lrFuncs.innerHTML) && /authorized models/.test(els.lrFuncs.innerHTML), "the four benefits are drawn");
 assert.ok(!/\d\.\d+ s/.test(els.lrFuncs.innerHTML), "no result numbers before a test has run");
 assert.strictEqual(els.lrConcl.hidden, true, "results stay hidden until a test has finished");
-assert.ok(/lr-plan/.test(els.lrRun.innerHTML), "stage cards drawn");
+assert.ok(/lr-plan/.test(els.lrRun.innerHTML), "stage list drawn");
+assert.strictEqual(els.lrPrev.hidden, true, "no previous run to show on a fresh browser");
 console.log("litellm-report page script: ok");
