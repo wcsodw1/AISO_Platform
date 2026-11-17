@@ -1,0 +1,20 @@
+{
+  "gateway": "http://localhost:4000",
+  "machine_a": {
+    "name": "AISO1",
+    "url": "http://127.0.0.1:28080",
+    "model": "gemma26-q4"
+  },
+  "machine_b": {
+    "name": "PRO6000",
+    "url": "http://127.0.0.1:28100",
+    "model": "gemma4-thinking"
+  },
+  "group_alias": "gemma26-multi",
+  "single_alias": "gemma26-q4",
+  "limited_alias": "gemma-26b",
+  "other_model": "qwen36-35b",
+  "open_key_env": "LITELLM_SMOKE_OPEN_KEY",
+  "limited_key_env": "LITELLM_SMOKE_LIMITED_KEY",
+  "_note": "Copy to litellm.local.json (git-ignored). Machine URLs are the local ends of your own connections. Put the two test keys in the environment or in ~/.config/aiso/litellm_smoke.env, never in this file."
+}
