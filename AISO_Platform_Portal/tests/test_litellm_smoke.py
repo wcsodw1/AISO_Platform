@@ -91,6 +91,8 @@ class SmokeTests(unittest.TestCase):
         self.assertGreater(r["speed"]["vs_hand"], 0)
         self.assertEqual(r["control"], {"own": 200, "other": 403, "open": 200, "direct_other": 200, "pass": True})
         self.assertEqual([s["state"] for s in j["steps"]], ["ok"] * 4)
+        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 5, ["ok"] * 2, ["ok"] * 4])   # every checklist item ticked
+        self.assertEqual(j["items"][3][1]["value"], "403")
         self.assertLess(r["cost"]["added_s"], 0.10)
 
     def test_log_lines_stream_with_since_and_contain_no_secrets(self):
@@ -176,7 +178,8 @@ class SmokeTests(unittest.TestCase):
         self.assertEqual([x["name"] for x in pl["steps"]], list(m.STEP_NAMES))
         asked = {s["prompt"] for st_ in pl["steps"] for s in st_["sends"]}
         self.assertEqual(asked, {m.PROMPTS["speed"], m.PROMPTS["cost"], m.PROMPTS["control"]})
-        self.assertEqual(pl["steps"][1]["sends"][0]["to"][0], "AISO1 only (one machine, today)")
+        self.assertEqual(pl["steps"][1]["items"][0]["label"], "AISO1 only (one machine, today)")
+        self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 5, 2, 4])
         sc = svc.script()
         self.assertIn("def _execute", sc["text"])
         for bad in (OPEN, LIMITED):

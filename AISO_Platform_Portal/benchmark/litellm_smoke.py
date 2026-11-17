@@ -32,26 +32,21 @@ PROMPTS = {"speed": "用約80字介紹台北的夜市文化", "cost": "說一個
 
 
 def plan(cfg=None, load=None):
-    """What the test does, as data: the UI draws it, and the run below uses the same constants (one source of truth)."""
+    """What the test does, as data: the UI draws it as ticking checklists, and the run below reports each item with the same indexes."""
     L = dict(LOAD, **(load or {}))
     a = (cfg or {}).get("machine_a", {}).get("name", "Machine A"); b = (cfg or {}).get("machine_b", {}).get("name", "Machine B")
     n, r = L["requests"], L["repeats"]
+    it = lambda en, zh: {"label": en, "zh": zh}
     return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats", "cost_pairs")}, "criteria": CRIT, "steps": [
-        {"name": "Preflight", "zh": "檢查", "what": "Nothing is asked of a model. Checks only.", "what_zh": "不問任何模型，只做檢查",
-         "sends": [], "checks": ["gateway is up", "machines reachable", "no other benchmark is running", "test keys and model aliases present"],
-         "pass": "every check is OK", "pass_zh": "全部檢查都通過"},
-        {"name": "Speed", "zh": "速度", "what": "The same question, the same load, four ways.", "what_zh": "同一個問題、同樣的量，用四種方式送",
-         "sends": [{"prompt": PROMPTS["speed"], "tokens": L["tokens"], "count": "%d requests x %d repeats, %d at once" % (n, r, L["concurrency"]),
-                    "to": [a + " only (one machine, today)", b + " only", "both, the app splits by hand", "both, via LiteLLM"]}],
-         "pass": "via LiteLLM is at least %.1fx faster than %s only, and every request is answered" % (CRIT["speedup_min"], a),
-         "pass_zh": "經 LiteLLM 比只接 %s 快至少 %.1f 倍，且每個請求都有回覆" % (a, CRIT["speedup_min"])},
-        {"name": "Cost", "zh": "延遲", "what": "A tiny question, once straight to the machine and once through LiteLLM, taking turns.", "what_zh": "很短的問題，直連與經 LiteLLM 輪流各送一次",
-         "sends": [{"prompt": PROMPTS["cost"], "tokens": 10, "count": "%d pairs" % L["cost_pairs"], "to": [a + " direct", a + " via LiteLLM"]}],
-         "pass": "the median extra delay is at most %.2f s" % CRIT["overhead_max_s"], "pass_zh": "額外延遲的中位數不超過 %.2f 秒" % CRIT["overhead_max_s"]},
-        {"name": "Control", "zh": "管控", "what": "A key limited to one model, and the same request without any gateway.", "what_zh": "一把限定模型的金鑰，以及不經閘道的同一個請求",
-         "sends": [{"prompt": PROMPTS["control"], "tokens": 20, "count": "4 requests",
-                    "to": ["limited key, its own model (expect 200)", "limited key, another model (expect 403)", "open key, another model (expect 200)", "no gateway, another model (200: nothing stops it)"]}],
-         "pass": "own model 200, another model refused, open key 200", "pass_zh": "自己的模型 200、別的模型被拒絕、不設限的金鑰 200"}]}
+        {"name": "Preflight", "zh": "檢查", "sends": [], "items": [it("Gateway is up", "閘道正常"), it("Machines reachable", "機器連得到"), it("Nothing else is running", "沒有其他測試在跑"), it("Test keys and models present", "測試金鑰與模型都在")]},
+        {"name": "Speed", "zh": "速度", "sends": [{"prompt": PROMPTS["speed"], "tokens": L["tokens"], "meta": "%d requests x %d" % (n, r)}],
+         "items": [it(a + " only (one machine, today)", "只接 " + a + "（現況）"), it(b + " only", "只接 " + b), it("Both, the app splits by hand", "兩台，應用自己分流"), it("Both, via LiteLLM", "兩台，經 LiteLLM"),
+                   it("LiteLLM at least %.1fx faster than %s only" % (CRIT["speedup_min"], a), "LiteLLM 比只接 %s 快至少 %.1f 倍" % (a, CRIT["speedup_min"]))]},
+        {"name": "Cost", "zh": "延遲", "sends": [{"prompt": PROMPTS["cost"], "tokens": 10, "meta": "%d pairs" % L["cost_pairs"]}],
+         "items": [it("Pairs sent: direct and via LiteLLM", "直連與經 LiteLLM 各送一次"), it("Extra delay at most %.2f s" % CRIT["overhead_max_s"], "額外延遲不超過 %.2f 秒" % CRIT["overhead_max_s"])]},
+        {"name": "Control", "zh": "管控", "sends": [{"prompt": PROMPTS["control"], "tokens": 20, "meta": "4 requests"}],
+         "items": [it("Limited key, its own model (expect 200)", "限定金鑰，自己的模型（預期 200）"), it("Limited key, another model (expect 403)", "限定金鑰，別的模型（預期 403）"),
+                   it("Open key, another model (expect 200)", "不設限金鑰，別的模型（預期 200）"), it("No gateway, another model (200: nothing stops it)", "不經閘道，別的模型（200：沒人擋）")]}]}
 
 
 class SmokeError(Exception):
@@ -173,7 +168,8 @@ class SmokeService:
             if running:
                 raise SmokeError("A smoke test is already running; it was not interrupted.", 409)
             job = {"job_id": uuid.uuid4().hex[:12], "state": "running", "include_b": bool(include_b), "started": time.time(),
-                   "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "result": None, "error": "", "cancel": False, "log": []}
+                   "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "items": [[{"state": "wait", "value": ""} for _ in st_["items"]] for st_ in plan(self.config(), self.load)["steps"]],
+                   "result": None, "error": "", "cancel": False, "log": []}
             self.jobs[job["job_id"]] = job
             for old in sorted(self.jobs.values(), key=lambda j: j["started"])[:-10]:
                 self.jobs.pop(old["job_id"], None)
@@ -186,7 +182,7 @@ class SmokeService:
             if not j:
                 raise SmokeError("Unknown smoke test.", 404)
             since = max(0, int(since or 0))
-            out = {k: j[k] for k in ("job_id", "state", "steps", "result", "error")}
+            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "error")}
             out["log"], out["log_next"] = j["log"][since:], len(j["log"])
             return out
 
@@ -204,6 +200,10 @@ class SmokeService:
         with self.lock:
             if len(job["log"]) < 600:
                 job["log"].append(time.strftime("%H:%M:%S") + "  " + text)
+
+    def _item(self, job, i, j, state, value=""):
+        with self.lock:
+            job["items"][i][j] = {"state": state, "value": value}
 
     def _step(self, job, i, state, detail=""):
         with self.lock:
@@ -240,23 +240,30 @@ class SmokeService:
         self._log(job, "$ smoke test start  (%s machine B)  load: %d requests, %d at once, %d repeats" % ("with" if include_b else "without", L["requests"], L["concurrency"], L["repeats"]))
         self._log(job, "[1/4] Preflight")
         self._step(job, 0, "run", "checking")
-        reason = self.busy_check()
-        if reason:
-            self._step(job, 0, "fail", reason)
-            raise SmokeError("Not started: " + reason)
+        for j in range(4):
+            self._item(job, 0, j, "wait")
+        self._item(job, 0, 0, "run")
         if _http("GET", gw + "/health/liveliness", timeout=5)[0] != 200:
-            self._step(job, 0, "fail", "gateway down")
+            self._item(job, 0, 0, "fail", "down"); self._step(job, 0, "fail", "gateway down")
             raise SmokeError("Not started: the gateway is not reachable.")
+        self._item(job, 0, 0, "ok"); self._item(job, 0, 1, "run")
         for m in [A] + ([B] if include_b else []):
             if _http("GET", m["url"].rstrip("/") + "/v1/models", timeout=5)[0] != 200:
-                self._step(job, 0, "fail", m["name"] + " unreachable")
+                self._item(job, 0, 1, "fail", m["name"]); self._step(job, 0, "fail", m["name"] + " unreachable")
                 raise SmokeError("Not started: %s is not reachable." % m["name"])
+        self._item(job, 0, 1, "ok", " + ".join(x["name"] for x in ([A] + ([B] if include_b else [])))); self._item(job, 0, 2, "run")
+        reason = self.busy_check()
+        if reason:
+            self._item(job, 0, 2, "fail", "busy"); self._step(job, 0, "fail", reason)
+            raise SmokeError("Not started: " + reason)
+        self._item(job, 0, 2, "ok"); self._item(job, 0, 3, "run")
         code, _, models = _http("GET", gw + "/v1/models", bearer=k_open, timeout=5)
         have = {x.get("id") for x in (models or {}).get("data", [])} if code == 200 else set()
         need = {cfg["single_alias"], cfg["group_alias"], cfg["limited_alias"], cfg["other_model"]}
         if code != 200 or not need <= have:
-            self._step(job, 0, "fail", "aliases missing" if code == 200 else "test key refused")
+            self._item(job, 0, 3, "fail", "missing"); self._step(job, 0, "fail", "aliases missing" if code == 200 else "test key refused")
             raise SmokeError("Not started: the gateway does not offer the aliases this test needs.")
+        self._item(job, 0, 3, "ok")
         self._step(job, 0, "ok", "gateway up")
         self._log(job, "  gateway up, %s%s reachable, test keys accepted, aliases present  -> OK" % (A["name"], " and " + B["name"] if include_b else ""))
 
@@ -264,10 +271,14 @@ class SmokeService:
         self._check(job, deadline)
         if not include_b:
             self._step(job, 1, "skip", "%s not included" % B["name"])
+            for j in range(5):
+                self._item(job, 1, j, "skip", "tick %s to measure" % B["name"])
             self._log(job, "[2/4] Speed  skipped: %s is not included, so two machines cannot be compared" % B["name"])
             res["skipped"].append("speed")
         else:
             self._step(job, 1, "run", "measuring")
+            for j in range(5):
+                self._item(job, 1, j, "wait")
             self._log(job, "[2/4] Speed  (same load, four ways)")
             n, c, tk = L["requests"], L["concurrency"], L["tokens"]
             _chat(A["url"], A["model"], PROMPTS["warmup"], 5, timeout=to); _chat(gw, cfg["group_alias"], PROMPTS["warmup"], 5, k_open, to)   # warm-up
@@ -278,7 +289,10 @@ class SmokeService:
                                        ("b", "%s only" % B["name"], lambda: _load(B["url"], B["model"], None, n, c, tk, to)),
                                        ("hand", "both, app splits by hand", lambda: _load_hand(A, B, n, c, tk, to)),
                                        ("ab", "both, via LiteLLM", lambda: _load(gw, cfg["group_alias"], k_open, n, c, tk, to))):
+                    j_ = ("a", "b", "hand", "ab").index(key)
+                    self._item(job, 1, j_, "run", "")
                     r_ = fn(); runs[key].append(r_); self._check(job, deadline)
+                    self._item(job, 1, j_, "run", "%.1f s · %d/%d" % (r_["wall_s"], rep_no, L["repeats"]))
                     self._log(job, "  repeat %d/%d  %-38s %5.2f s   %d/%d ok" % (rep_no, L["repeats"], label, r_["wall_s"], r_["ok"], r_["n"]))
             ok = all(r["ok"] == r["n"] for k in runs for r in runs[k])
             med = lambda k, f: st.median(r[f] for r in runs[k])
@@ -287,6 +301,9 @@ class SmokeService:
             res["speed"] = {"median_s": {"a": round(ra["wall_s"], 2), "b": round(rb["wall_s"], 2), "hand": round(rh["wall_s"], 2), "ab": round(rg["wall_s"], 2)},
                             "tok_s": {"a": round(ra["tok_s"], 1), "b": round(rb["tok_s"], 1), "hand": round(rh["tok_s"], 1), "ab": round(rg["tok_s"], 1)},
                             "speedup_vs_a": round(sp, 2), "vs_hand": round(rh["wall_s"] / rg["wall_s"], 2) if rg["wall_s"] else 0, "all_ok": ok, "pass": ok and sp >= CRIT["speedup_min"]}
+            for j_, key in enumerate(("a", "b", "hand", "ab")):
+                self._item(job, 1, j_, "ok" if ok else "fail", "%.1f s" % med(key, "wall_s"))
+            self._item(job, 1, 4, "ok" if res["speed"]["pass"] else "fail", "%.2fx" % sp)
             self._step(job, 1, "ok" if res["speed"]["pass"] else "fail", "%.2fx vs %s" % (sp, A["name"]) if ok else "some requests failed")
             m_ = res["speed"]["median_s"]
             self._log(job, "  median: %s %.2f s | %s %.2f s | by hand %.2f s | LiteLLM %.2f s  ->  %.2fx vs %s  (need >= %.1fx)  %s" % (A["name"], m_["a"], B["name"], m_["b"], m_["hand"], m_["ab"], sp, A["name"], CRIT["speedup_min"], "PASS" if res["speed"]["pass"] else "FAIL"))
@@ -295,12 +312,14 @@ class SmokeService:
         self._check(job, deadline)
         self._step(job, 2, "run", "measuring")
         self._log(job, "[3/4] Cost  (%d short requests, direct and via LiteLLM, interleaved)" % L["cost_pairs"])
+        self._item(job, 2, 0, "run", "0 / %d" % L["cost_pairs"]); self._item(job, 2, 1, "wait")
         d_s, g_s, errs = [], [], 0
         for _ in range(L["cost_pairs"]):
             d = _chat(A["url"], A["model"], PROMPTS["cost"], 10, timeout=to); g = _chat(gw, cfg["single_alias"], PROMPTS["cost"], 10, k_open, to)
             if d["code"] == 200 and g["code"] == 200:
                 d_s.append(d["s"]); g_s.append(g["s"])
                 self._log(job, "  pair %d  direct %.3f s   via LiteLLM %.3f s   (%+.3f s)" % (len(d_s), d["s"], g["s"], g["s"] - d["s"]))
+                self._item(job, 2, 0, "run", "%d / %d" % (len(d_s), L["cost_pairs"]))
             else:
                 errs += 1
             self._check(job, deadline)
@@ -310,6 +329,8 @@ class SmokeService:
                            "pass": errs == 0 and added <= CRIT["overhead_max_s"]}
         else:
             res["cost"] = {"direct_s": 0, "gateway_s": 0, "added_s": 0, "errors": errs, "pass": False}
+        self._item(job, 2, 0, "ok" if errs == 0 else "fail", "%d / %d" % (len(d_s), L["cost_pairs"]))
+        self._item(job, 2, 1, "ok" if res["cost"]["pass"] else "fail", "%+.2f s" % res["cost"]["added_s"])
         self._step(job, 2, "ok" if res["cost"]["pass"] else "fail", "%+.2f s" % res["cost"]["added_s"] if d_s else "requests failed")
         self._log(job, "  added delay (median) %+.3f s  (need <= %.2f s)  %s" % (res["cost"]["added_s"], CRIT["overhead_max_s"], "PASS" if res["cost"]["pass"] else "FAIL"))
 
@@ -317,11 +338,18 @@ class SmokeService:
         self._check(job, deadline)
         self._step(job, 3, "run", "checking keys")
         self._log(job, "[4/4] Control  (a key limited to one model)")
+        for j in range(4):
+            self._item(job, 3, j, "wait")
+        self._item(job, 3, 0, "run")
         own = _chat(gw, cfg["limited_alias"], PROMPTS["control"], 20, k_lim, to)["code"]
+        self._item(job, 3, 0, "ok" if own == 200 else "fail", str(own)); self._item(job, 3, 1, "run")
         other = _chat(gw, cfg["other_model"], PROMPTS["control"], 20, k_lim, to)["code"]
+        self._item(job, 3, 1, "ok" if other in (401, 403) else "fail", str(other)); self._item(job, 3, 2, "run")
         opn = _chat(gw, cfg["other_model"], PROMPTS["control"], 20, k_open, to)["code"]
+        self._item(job, 3, 2, "ok" if opn == 200 else "fail", str(opn)); self._item(job, 3, 3, "run")
         # "without": the same other-model request sent straight to the machine (no key, nothing to stop it)
         direct_other = _chat(A["url"], cfg.get("other_direct_model", "qwen36-35b-q4"), PROMPTS["control"], 20, None, to)["code"]
+        self._item(job, 3, 3, "ok" if direct_other == 200 else "fail", str(direct_other))
         self._log(job, "  limited key -> its own model      HTTP %s  (expect 200)" % own)
         self._log(job, "  limited key -> another model      HTTP %s  (expect 403, refused)" % other)
         self._log(job, "  open key    -> another model      HTTP %s  (expect 200)" % opn)

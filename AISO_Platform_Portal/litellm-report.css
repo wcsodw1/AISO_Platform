@@ -256,3 +256,33 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-plan>li{grid-template-columns:minmax(0,1fr);min-width:0}
 .lr .lr-plan>li *{min-width:0;overflow-wrap:anywhere}
 .lr .lr-plan .lr-to i{white-space:normal}
+
+/* checklist cards: title, the question asked, ticks one by one, then "N · Stage complete" */
+.lr .lr-qs{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0;padding:8px 12px;border-radius:10px;background:#16110d;border:1px solid #3d3328}
+.lr .lr-qs .lr-q{font-size:18px;font-weight:700;color:var(--ivory)}.lr .lr-qs .lr-meta{font-size:16px;color:var(--muted)}
+.lr .lr-ck{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.lr .lr-ck li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:start;padding:7px 2px;border-bottom:1px solid rgba(255,255,255,.06);font-size:17px;color:var(--muted)}
+.lr .lr-ck li:last-child{border-bottom:0}
+.lr .lr-ck li i{font-style:normal;font-size:20px;line-height:1.2;text-align:center;color:#6b5f4e}
+.lr .lr-ck li span small{display:block;color:var(--muted);font-size:16px}
+.lr .lr-ck li b{font-size:17px;color:var(--ivory);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lr .lr-ck li.run{color:var(--ivory)}.lr .lr-ck li.run i{color:var(--gold)}
+.lr .lr-ck li.ok{color:var(--ivory)}.lr .lr-ck li.ok i{color:#9db88c}.lr .lr-ck li.ok b{color:#b7cfa6}
+.lr .lr-ck li.fail{color:var(--ivory)}.lr .lr-ck li.fail i,.lr .lr-ck li.fail b{color:#e0a283}
+.lr .lr-ck li.skip{opacity:.6}
+.lr .lr-ck li.pop i{animation:lrpop .45s ease-out}
+@keyframes lrpop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.35)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.lr .lr-ck li.pop i{animation:none}}
+.lr .lr-done{margin:4px 0 0;padding:8px 12px;border-radius:10px;border:1px dashed #4a3d2e;font-size:18px;font-weight:700;color:var(--muted)}
+.lr .lr-done small{margin-left:8px;font-size:16px;font-weight:500}
+.lr .lr-done.run{color:var(--gold);border-color:var(--gold)}
+.lr .lr-done.ok{color:#b7cfa6;border:1px solid #9db88c;background:rgba(157,184,140,.12)}
+.lr .lr-done.fail{color:#e0a283;border:1px solid #d98a66;background:rgba(217,138,102,.12)}
+
+/* KPI card alignment: same layout on all four cards */
+.lr .lr-kpi .lr-kd{display:flex;align-items:center;gap:12px}
+.lr .lr-kpi .lr-kd span{display:grid;gap:0;line-height:1.35}
+.lr .lr-kpi .lr-kd span small{display:block;margin:0}
+.lr .lr-kr{grid-template-columns:124px minmax(0,1fr) auto;align-items:center}
+.lr .lr-kr .lr-kl{white-space:nowrap}
+.lr .lr-kr:has(.lr-kpill){grid-template-columns:124px minmax(0,1fr)}

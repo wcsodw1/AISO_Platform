@@ -6,7 +6,7 @@
   var M = { a: "AISO1", b: "PRO6000", ma: "Gemma 4 26B Q4", mb: "Gemma 4 26B BF16" };
   var D = {
     tested: "2026-11-17",
-    load: "8 requests, 4 at once, median of 3 repeats; mean of 2 runs",
+    nreq: 8, load: "8 requests, 4 at once, median of 3 repeats; mean of 2 earlier runs",
     sec: { a: 7.1, b: 5.7, hand: 3.5, ab: 4.1 },
     cost: { direct: 0.16, gw: 0.2, add: 0.04 },
     wrong: { direct: 200, key: 403 },
@@ -90,7 +90,7 @@
   var lane = function (id, label) { return '<div class="lr-lane"><span class="lr-ln">' + label + '</span><span class="lr-sq" id="' + id + '"></span></div>'; };
 
   function paintLanes(withG, t) {
-    var n = 16, sec = withG ? D.sec.ab : D.sec.a, i, A = "", B = "", done = 0;
+    var n = D.nreq, sec = withG ? D.sec.ab : D.sec.a, i, A = "", B = "", done = 0;
     for (i = 0; i < n; i++) { var ok = t >= sec * (i + 1) / n - 1e-9; if (ok) done++; var sq = '<i class="' + (ok ? "ok" : "wait") + '"></i>'; if (withG && i % 2) B += sq; else A += sq; }
     var p = withG ? "y" : "n";
     $(p + "A").innerHTML = A; if (withG) $("yB").innerHTML = B;
@@ -108,11 +108,11 @@
   function speed() {
     $("lrStage").innerHTML = solved("Each app is wired to one machine, so the other one sits idle.", "每個應用只接一台機器，另一台閒置") +
       '<div class="lr-vs"><div class="lr-side lr-no"><h3>Without<small class="zhs">應用只接 ' + M.a + '（現況）</small></h3>' + lane("nA", M.a + " · " + M.ma) +
-      '<div class="lr-res"><b id="nClock">0.0 s</b><span id="nDone">0 / 16</span></div></div>' +
+      '<div class="lr-res"><b id="nClock">0.0 s</b><span id="nDone">0 / ' + D.nreq + '</span></div></div>' +
       '<div class="lr-side lr-yes"><h3>With<small class="zhs">兩台分流</small></h3>' + lane("yA", M.a + " · " + M.ma) + lane("yB", M.b + " · " + M.mb) +
-      '<div class="lr-res"><b id="yClock">0.0 s</b><span id="yDone">0 / 16</span></div></div></div>' +
+      '<div class="lr-res"><b id="yClock">0.0 s</b><span id="yDone">0 / ' + D.nreq + '</span></div></div></div>' +
       impHtml() +
-      '<div class="lr-foot"><p class="lr-one">' + D.load + '<small class="zhs">每種各 ' + (D.live ? '8' : '16') + ' 個請求，同時 4 個；3 次取中位數</small></p><button type="button" class="lr-play" id="lrPlay">▶ Replay<small class="zhs">重播</small></button></div>';
+      '<div class="lr-foot"><p class="lr-one">' + D.load + '<small class="zhs">每種各 ' + D.nreq + ' 個請求，同時 4 個；3 次取中位數</small></p><button type="button" class="lr-play" id="lrPlay">▶ Replay<small class="zhs">重播</small></button></div>';
     $("lrPlay").onclick = play; paintLanes(false, D.sec.a); paintLanes(true, D.sec.ab);
   }
   function play() {
@@ -147,36 +147,46 @@
 
   var VIEW = { speed: speed, fail: fail, control: control };
   function tabs() { $("lrTabs").innerHTML = TABS.map(function (t) { return '<button type="button" role="tab" data-t="' + t[0] + '" aria-selected="' + (t[0] === cur) + '" class="' + (t[0] === cur ? "on" : "") + '">' + t[1] + '<small class="zhs">' + t[2] + "</small></button>"; }).join(""); }
-  function render() { stop(); tabs(); VIEW[cur](); $("lrSrc").textContent = D.live ? "LIVE smoke test, " + D.liveAt + " · speed, cost and key checks measured just now; failover is from the PoC run" : "Replay of the proof-of-concept run, " + D.tested + " · preliminary, to be confirmed by the smoke test · nothing here calls a live gateway"; }
+  function srcText() {
+    if (!D.live) return "Replay of earlier smoke-test runs, " + D.tested + " · preliminary, to be confirmed by a run here · nothing on this page calls a live gateway";
+    return D.liveSpeed ? "LIVE smoke test, " + D.liveAt + " · speed, delay and key checks measured just now · machine-down and budget are from the PoC run"
+      : "Delay and key checks: LIVE, " + D.liveAt + " · speed bars: replay of earlier runs (speed was not measured, " + M.b + " not included) · machine-down and budget: PoC run";
+  }
+  function render() { stop(); tabs(); VIEW[cur](); $("lrSrc").textContent = srcText(); }
   $("lrTabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-t]"); if (b) { cur = b.dataset.t; render(); if (cur === "speed") play(); } });
   render();
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
   var inclB = false, logNext = 0, API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
 
-  /* What the smoke test does. This mirrors plan() in benchmark/litellm_smoke.py; on the local platform the page asks the backend for its own copy. */
+  /* What the smoke test does, as ticking checklists. Mirrors plan() in benchmark/litellm_smoke.py (the backend sends its own copy when available). */
+  var it = function (en, zh) { return { label: en, zh: zh }; };
   var PLAN = { steps: [
-    { name: "Preflight", zh: "檢查", what: "Nothing is asked of a model. Checks only.", what_zh: "不問任何模型，只做檢查", sends: [], checks: ["gateway is up", "machines reachable", "no other benchmark is running", "test keys and model aliases present"], pass: "every check is OK", pass_zh: "全部檢查都通過" },
-    { name: "Speed", zh: "速度", what: "The same question, the same load, four ways.", what_zh: "同一個問題、同樣的量，用四種方式送", sends: [{ prompt: "用約80字介紹台北的夜市文化", tokens: 100, count: "8 requests x 3 repeats, 4 at once", to: [M.a + " only (one machine, today)", M.b + " only", "both, the app splits by hand", "both, via LiteLLM"] }], pass: "via LiteLLM is at least 1.3x faster than " + M.a + " only, and every request is answered", pass_zh: "經 LiteLLM 比只接 " + M.a + " 快至少 1.3 倍，且每個請求都有回覆" },
-    { name: "Cost", zh: "延遲", what: "A tiny question, once straight to the machine and once through LiteLLM, taking turns.", what_zh: "很短的問題，直連與經 LiteLLM 輪流各送一次", sends: [{ prompt: "說一個字", tokens: 10, count: "6 pairs", to: [M.a + " direct", M.a + " via LiteLLM"] }], pass: "the median extra delay is at most 0.10 s", pass_zh: "額外延遲的中位數不超過 0.10 秒" },
-    { name: "Control", zh: "管控", what: "A key limited to one model, and the same request without any gateway.", what_zh: "一把限定模型的金鑰，以及不經閘道的同一個請求", sends: [{ prompt: "hi", tokens: 20, count: "4 requests", to: ["limited key, its own model (expect 200)", "limited key, another model (expect 403)", "open key, another model (expect 200)", "no gateway, another model (200: nothing stops it)"] }], pass: "own model 200, another model refused, open key 200", pass_zh: "自己的模型 200、別的模型被拒絕、不設限的金鑰 200" }
+    { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway is up", "閘道正常"), it("Machines reachable", "機器連得到"), it("Nothing else is running", "沒有其他測試在跑"), it("Test keys and models present", "測試金鑰與模型都在")] },
+    { name: "Speed", zh: "速度", sends: [{ prompt: "用約80字介紹台北的夜市文化", tokens: 100, meta: "8 requests x 3" }], items: [it(M.a + " only (one machine, today)", "只接 " + M.a + "（現況）"), it(M.b + " only", "只接 " + M.b), it("Both, the app splits by hand", "兩台，應用自己分流"), it("Both, via LiteLLM", "兩台，經 LiteLLM"), it("LiteLLM at least 1.3x faster than " + M.a + " only", "LiteLLM 比只接 " + M.a + " 快至少 1.3 倍")] },
+    { name: "Cost", zh: "延遲", sends: [{ prompt: "說一個字", tokens: 10, meta: "6 pairs" }], items: [it("Pairs sent: direct and via LiteLLM", "直連與經 LiteLLM 各送一次"), it("Extra delay at most 0.10 s", "額外延遲不超過 0.10 秒")] },
+    { name: "Control", zh: "管控", sends: [{ prompt: "hi", tokens: 20, meta: "4 requests" }], items: [it("Limited key, its own model (expect 200)", "限定金鑰，自己的模型（預期 200）"), it("Limited key, another model (expect 403)", "限定金鑰，別的模型（預期 403）"), it("Open key, another model (expect 200)", "不設限金鑰，別的模型（預期 200）"), it("No gateway, another model (200: nothing stops it)", "不經閘道，別的模型（200：沒人擋）")] }
   ] };
-  var STATE = { wait: ["waiting", "等待"], run: ["running", "執行中"], ok: ["PASS", "通過"], fail: ["FAIL", "未過"], skip: ["skipped", "略過"] };
-  function planHtml(st) {
+  var TICK = { wait: "○", run: "◔", ok: "✓", fail: "✗", skip: "–" }, DONE = { wait: ["Waiting", "等待"], run: ["Running", "執行中"], ok: ["complete", "完成"], fail: ["failed", "未通過"], skip: ["skipped", "略過"] };
+  var shown = {};   // item states already drawn, so only a newly finished item pops
+  function planHtml(st, items) {
     return '<ol class="lr-plan">' + PLAN.steps.map(function (p, i) {
-      var x = (st && st[i]) || { state: "wait", detail: "" }, lab = STATE[x.state] || STATE.wait;
-      var sends = (p.sends || []).map(function (q) { return '<li class="lr-snd"><span class="lr-q">“' + esc(q.prompt) + '”</span><span class="lr-meta">' + esc(q.count) + ' · up to ' + q.tokens + ' tokens</span><span class="lr-to">' + q.to.map(function (t) { return "<i>" + esc(t) + "</i>"; }).join("") + "</span></li>"; }).join("");
-      var checks = (p.checks || []).map(function (c) { return "<i>" + esc(c) + "</i>"; }).join("");
-      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + '</small></b><em>' + lab[0] + '<small class="zhs">' + lab[1] + "</small></em></div>" +
-        '<p class="lr-pw">' + esc(p.what) + '<small class="zhs">' + esc(p.what_zh) + "</small></p>" + (sends ? '<ul class="lr-sends">' + sends + "</ul>" : "") + (checks ? '<div class="lr-to">' + checks + "</div>" : "") +
-        '<p class="lr-pp"><u>Pass if</u> ' + esc(p.pass) + '<small class="zhs">' + esc(p.pass_zh) + "</small></p>" + (x.detail ? '<p class="lr-pd">→ ' + esc(x.detail) + "</p>" : "") + "</li>";
+      var x = (st && st[i]) || { state: "wait", detail: "" }, lab = DONE[x.state] || DONE.wait, its = (items && items[i]) || [];
+      var q = (p.sends || []).map(function (q) { return '<p class="lr-qs"><span class="lr-q">“' + esc(q.prompt) + '”</span><span class="lr-meta">' + esc(q.meta || "") + "</span></p>"; }).join("");
+      var list = p.items.map(function (m, j) {
+        var y = its[j] || { state: "wait", value: "" }, key = i + "-" + j, pop = (y.state === "ok" || y.state === "fail") && shown[key] !== y.state;
+        shown[key] = y.state;
+        return '<li class="' + esc(y.state) + (pop ? " pop" : "") + '"><i aria-hidden="true">' + (TICK[y.state] || "○") + '</i><span>' + esc(m.label) + '<small class="zhs">' + esc(m.zh) + "</small></span>" + (y.value ? "<b>" + esc(y.value) + "</b>" : "") + "</li>";
+      }).join("");
+      var done = x.state === "ok" ? "✓ " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "fail" ? "✗ " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "skip" ? "– " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "run" ? "… " + lab[0] : "○ " + lab[0];
+      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + "</small></b></div>" + q + '<ul class="lr-ck">' + list + '</ul><p class="lr-done ' + esc(x.state) + '">' + done + '<small class="zhs">' + lab[1] + "</small></p></li>";
     }).join("") + "</ol>";
   }
   function stepsHtml(st) {
     return '<ol class="lr-rs">' + STEPS.map(function (n, i) { var x = (st && st[i]) || { state: "wait" }; return '<li class="' + esc(x.state) + '"><b>' + n[0] + '<small class="zhs">' + n[1] + '</small></b><span>' + esc(x.detail || "") + "</span></li>"; }).join("") + "</ol>";
   }
-  function runUI(mode, msg, st) {
-    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '>▶ Run smoke test<small class="zhs">實測</small></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st);
+  function runUI(mode, msg, st, items) {
+    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '>▶ Run smoke test<small class="zhs">實測</small></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
     var row = runEl.querySelector(".lr-runrow");
     if (row && (mode === "ready" || mode === "running")) {
       row.insertAdjacentHTML("beforeend", '<label class="lr-incl"><input type="checkbox" id="lrInclB"' + (inclB ? " checked" : "") + (mode === "ready" ? "" : " disabled") + '> Include ' + M.b + ' (shared machine)<small class="zhs">包含 ' + M.b + '（共用機器）</small></label>');
@@ -213,15 +223,16 @@
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       if (d.log) { termAdd(d.log); logNext = d.log_next; }
-      runUI("running", info("Running…", "執行中"), d.steps);
+      runUI("running", info("Running…", "執行中"), d.steps, d.items);
       if (d.state === "running" || d.state === "queued") return;
       clearInterval(poll); poll = null;
-      if (d.state === "done" && d.result) applyLive(d.result, d.steps); else runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), d.steps);
+      if (d.state === "done" && d.result) applyLive(d.result, d.steps, d.items); else runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), d.steps, d.items);
     }).catch(function () { clearInterval(poll); poll = null; runUI("ready", info("Lost contact with the platform.", "和平台失去連線")); });
   }
   /* result schema: speed.median_s{a,b,ab}, speed.tok_s{a,b,ab}, cost{direct_s,gateway_s,added_s}, control{own,other,open}, all_pass, finished */
-  function applyLive(r, steps) {
-    if (r.speed) { D.sec = r.speed.median_s; D.tps = r.speed.tok_s; }
+  function applyLive(r, steps, items) {
+    D.liveSpeed = !!r.speed;
+    if (r.speed) { D.sec = r.speed.median_s; D.tps = r.speed.tok_s; D.nreq = r.load ? r.load.requests : D.nreq; D.load = (r.load ? r.load.requests : D.nreq) + " requests, " + (r.load ? r.load.concurrency : 4) + " at once, median of " + (r.load ? r.load.repeats : 3) + " repeats (this run)"; }
     if (r.cost) D.cost = { direct: r.cost.direct_s, gw: r.cost.gateway_s, add: r.cost.added_s };
     if (r.control && r.control.direct_other) D.wrong = { direct: r.control.direct_other, key: r.control.other };
     D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString(); D.liveSkipped = r.skipped || []; recalc();
@@ -230,7 +241,7 @@
     var msg = done ? ["Done. Conclusion updated with this run.", "完成，結論已換成這次實測"]
       : r.skipped && r.skipped.length ? ["Done, but speed was not measured (" + M.b + " not included). The conclusion stays preliminary.", "完成，但沒有測速度（未包含 " + M.b + "），結論仍是初步估算"]
       : ["Done. At least one check did not pass; see the steps.", "完成，但有項目沒過，請看各步驟"];
-    runUI("ready", info(msg[0], msg[1]), steps);
+    runUI("ready", info(msg[0], msg[1]), steps, items);
     if (cur === "speed") play();
   }
 
