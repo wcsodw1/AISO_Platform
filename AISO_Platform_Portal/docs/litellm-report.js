@@ -190,7 +190,7 @@
   function resetAll() {
     if (poll) { clearInterval(poll); poll = null; }
     job = null; hasRun = false; shown = {}; shownVal = {}; D.live = false; logNext = 0;
-    $("lrTerm").hidden = true; $("lrTermBody").textContent = ""; $("lrTermN").textContent = "0 lines";
+    $("lrTerm").hidden = true; $("lrTerm").classList.remove("folded"); $("lrTermFold").setAttribute("aria-expanded", "true"); $("lrTermFold").firstChild.nodeValue = "Fold "; $("lrTermFold").querySelector("small").textContent = "收合"; $("lrTermBody").textContent = ""; $("lrTermN").textContent = "0 lines";
     $("lrConcl").hidden = true; $("lrConcl").innerHTML = "";
     $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Results are shown once the test completes.<small class="zhs">測試完成後顯示結果</small>';
     renderFuncs(); runUI("ready", ""); paintPrev(loadHist()[0] || null, "Last run");
@@ -280,6 +280,8 @@
   }
 
   var termBig = false;
+  /* fold the whole terminal body away and bring it back */
+  $("lrTermFold").onclick = function () { var f = $("lrTerm").classList.toggle("folded"); this.setAttribute("aria-expanded", f ? "false" : "true"); this.firstChild.nodeValue = f ? "Unfold " : "Fold "; this.querySelector("small").textContent = f ? "展開" : "收合"; };
   $("lrTermBig").onclick = function () { termBig = !termBig; $("lrTermBody").classList.toggle("big", termBig); this.firstChild.nodeValue = termBig ? "Collapse " : "Expand "; this.querySelector("small").textContent = termBig ? "收合" : "展開全部"; };
   $("lrTermCopy").onclick = function () { var t = $("lrTermBody").innerText, b = this; (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.querySelector("small").textContent = "已複製"; setTimeout(function () { b.querySelector("small").textContent = "複製"; }, 1500); }).catch(function () { var r = document.createRange(); r.selectNodeContents($("lrTermBody")); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }); };
   var scriptLoaded = false;
