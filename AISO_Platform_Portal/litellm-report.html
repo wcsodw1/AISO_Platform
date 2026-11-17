@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="tesla.css?v=49">
-  <link rel="stylesheet" href="litellm-report.css?v=28">
+  <link rel="stylesheet" href="litellm-report.css?v=31">
 </head>
 <body>
   <header class="site-header">
@@ -33,26 +33,21 @@
     </section>
 
     <section class="report-section" id="lrMain">
+      <p class="lr-stp s1"><i>1</i><span>LiteLLM<small class="zhs">架構與功能</small></span></p>
+      <div class="lr-box" id="lrFlow"></div>
+      <div class="lr-funcs" id="lrFuncs"></div>
+
+      <p class="lr-stp s2"><i>2</i><span>Spread requests: speed<small class="zhs">分流功能的速度差異</small></span></p>
       <div class="lr-box lr-concl" id="lrConcl"></div>
 
-      <p class="lr-stp s1"><i>1</i><span>Without vs With<small class="zhs">有無差別</small></span></p>
-      <div class="lr-box" id="lrFlow"></div>
-
-      <p class="lr-stp s2"><i>2</i><span>Run the test<small class="zhs">執行測試</small></span></p>
+      <p class="lr-stp s3"><i>3</i><span>Run the test<small class="zhs">執行測試</small></span></p>
       <div class="lr-run" id="lrRun"></div>
       <div class="lr-term" id="lrTerm" hidden><div class="lr-term-h">Terminal<small class="zhs">終端機・測試紀錄</small><span class="lr-term-n" id="lrTermN">1 lines</span><button type="button" id="lrTermCopy">Copy<small class="zhs">複製</small></button><button type="button" id="lrTermBig">Expand <small class="zhs">展開全部</small></button></div><div class="lr-term-b" id="lrTermBody" role="log" aria-live="polite"><div class="hd">$ press "Run smoke test" to see the log here</div></div></div>
       <details class="lr-script" id="lrScriptBox"><summary>Script<small class="zhs">腳本原始碼</small><span>benchmark/litellm_smoke.py · exactly what is run</span></summary><pre id="lrScript">loading…</pre></details></div>
-
-      <p class="lr-stp s3"><i>3</i><span>Replay<small class="zhs">重播說明</small></span></p>
-      <div class="lr-box lr-gold">
-        <div class="lr-tabs" id="lrTabs" role="tablist" aria-label="Scenario"></div>
-        <div class="lr-stage" id="lrStage" aria-live="polite"></div>
-        <p class="lr-src" id="lrSrc"></p>
-      </div>
     </section>
   </main>
   <script src="run-gate.js"></script>
-  <script src="litellm-report.js?v=24"></script>
+  <script src="litellm-report.js?v=26"></script>
   <script src="ui-min-type.js?v=2" defer></script>
 </body>
 </html>

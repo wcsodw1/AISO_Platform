@@ -1,4 +1,5 @@
-"""LiteLLM smoke test: runs the real module against small fake HTTP servers (gateway, machine A, machine B). No network, no keys."""
+"""LiteLLM smoke test (one benchmark: TTFT, TPOT, TPS with and without LiteLLM): runs the real module against small fake HTTP servers
+(gateway, machine A, machine B) that stream like llama.cpp does. No network, no real key."""
 import json
 import sys
 import threading
@@ -9,14 +10,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from benchmark import litellm_smoke as m
 from benchmark.litellm_smoke import SmokeError, SmokeService
 
-OPEN, LIMITED = "open-key-for-test-1234", "limited-key-for-test-5678"
+KEY = "test-key-for-unit-tests-1234"
 
 
-def make_server(kind, log, limited_allows_other=False):
-    """kind: 'A' | 'B' | 'GW'. Machine A is slow, B is a little faster, the gateway group answers fastest (two machines share the load)."""
-    delays = {"A": 0.15, "B": 0.10}
+def make_server(kind, log, slots, delay=0.12):
+    """kind: 'A' | 'B' | 'GW'. `slots` = requests served at once; the rest wait, like a llama.cpp server with few slots."""
+    sem = threading.Semaphore(slots)
 
     class H(BaseHTTPRequestHandler):
         def log_message(self, *a):
@@ -30,24 +32,23 @@ def make_server(kind, log, limited_allows_other=False):
             if self.path == "/health/liveliness":
                 return self.reply(200, "I'm alive!")
             if self.path == "/v1/models":
-                if kind == "GW" and self.headers.get("Authorization") != "Bearer " + OPEN:
+                if kind == "GW" and self.headers.get("Authorization") != "Bearer " + KEY:
                     return self.reply(401)
-                ids = ["gemma26-q4", "gemma26-multi", "gemma-26b", "qwen36-35b"] if kind == "GW" else ["m"]
-                return self.reply(200, {"data": [{"id": i} for i in ids]})
+                return self.reply(200, {"data": [{"id": i} for i in (["gemma26-multi"] if kind == "GW" else ["m"])]})
             self.reply(404)
 
         def do_POST(self):
             body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", "0"))) or b"{}")
-            model, auth = body.get("model"), self.headers.get("Authorization", "")
-            log.append((kind, model))
-            if kind == "GW":
-                if auth == "Bearer " + LIMITED and model != "gemma-26b" and not limited_allows_other:
-                    return self.reply(403, {"error": "not allowed"})
-                time.sleep(0.06 if model == "gemma26-multi" else 0.16)
-            else:
-                time.sleep(delays[kind])
-            n = len(str((body.get("messages") or [{}])[0].get("content", ""))) // 4 + 1
-            self.reply(200, {"usage": {"completion_tokens": 10, "prompt_tokens": n}})
+            content = str((body.get("messages") or [{}])[0].get("content", ""))
+            log.append((kind, body.get("model"), bool(body.get("stream"))))
+            if not body.get("stream"):
+                return self.reply(200, {"usage": {"completion_tokens": 1, "prompt_tokens": len(content) // 4 + 1}})
+            with sem:
+                time.sleep(delay + len(content) / 60000.0)                      # prompt processing grows with the input
+                self.send_response(200); self.send_header("Content-Type", "text/event-stream"); self.end_headers()
+                for _ in range(6):
+                    self.wfile.write(b"data: " + json.dumps({"choices": [{"delta": {"content": "x"}}]}).encode() + b"\n\n"); self.wfile.flush(); time.sleep(0.01)
+                self.wfile.write(b"data: [DONE]\n\n")
 
     srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -63,17 +64,18 @@ class SmokeTests(unittest.TestCase):
         for s in self.servers:
             s.shutdown(); s.server_close()
 
-    def service(self, busy=None, limited_allows_other=False, gateway_up=True, **kw):
-        a, ua = make_server("A", self.log); b, ub = make_server("B", self.log); g, ug = make_server("GW", self.log, limited_allows_other)
+    def service(self, busy=None, gateway_up=True, b_up=True, gw_slots=4, **kw):
+        a, ua = make_server("A", self.log, 2); b, ub = make_server("B", self.log, 2); g, ug = make_server("GW", self.log, gw_slots)
         self.servers += [a, b, g]
         if not gateway_up:
             ug = "http://127.0.0.1:9"
-        cfg = {"gateway": ug, "machine_a": {"name": "AISO1", "url": ua, "model": "m"}, "machine_b": {"name": "PRO6000", "url": ub, "model": "m"},
-               "group_alias": "gemma26-multi", "single_alias": "gemma26-q4", "limited_alias": "gemma-26b", "other_model": "qwen36-35b"}
-        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=(OPEN, LIMITED), load={"requests": 8, "concurrency": 4, "repeats": 2, "cost_pairs": 3, **kw})
+        if not b_up:
+            ub = "http://127.0.0.1:9"
+        cfg = {"gateway": ug, "machine_a": {"name": "AISO1", "url": ua, "model": "m"}, "machine_b": {"name": "PRO6000", "url": ub, "model": "m"}, "group_alias": "gemma26-multi"}
+        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, load={"requests": 8, "concurrency": 4, "repeats": 2, **kw})
 
-    def finish(self, svc, include_b, timeout=30):
-        jid = svc.start(include_b)["job_id"]
+    def finish(self, svc, timeout=60):
+        jid = svc.start()["job_id"]
         end = time.time() + timeout
         while time.time() < end:
             j = svc.get(jid)
@@ -82,133 +84,105 @@ class SmokeTests(unittest.TestCase):
             time.sleep(0.05)
         self.fail("smoke test did not finish")
 
-    def test_all_pass_with_both_machines(self):
-        j = self.finish(self.service(), True)
+    def test_benchmark_reports_the_four_metrics_for_three_sizes(self):
+        j = self.finish(self.service())
         self.assertEqual(j["state"], "done", j)
-        r = j["result"]
-        self.assertTrue(r["all_pass"], r)
-        self.assertGreaterEqual(r["speed"]["speedup_vs_a"], 1.3)
-        self.assertIn("hand", r["speed"]["median_s"])           # the fair baseline: the app splits between both machines itself
-        self.assertGreater(r["speed"]["vs_hand"], 0)
-        self.assertEqual(r["control"], {"own": 200, "other": 403, "open": 200, "direct_other": 200, "pass": True})
-        self.assertEqual([s["state"] for s in j["steps"]], ["ok"] * 4)
-        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 5, ["ok"] * 3, ["ok"] * 4])   # every checklist item ticked
-        self.assertEqual(j["items"][3][1]["value"], "403")
-        self.assertLess(r["cost"]["added_s"], 0.10)
-        lv = r["cost"]["levels"]
-        self.assertEqual([x["key"] for x in lv], ["short", "mid", "long"])
-        self.assertLess(lv[0]["tokens"], lv[1]["tokens"] + 1)              # the three questions really grow
-        self.assertLess(lv[1]["tokens"], lv[2]["tokens"])
-        self.assertGreater(lv[2]["tokens"], 5 * lv[0]["tokens"])
+        b = j["result"]["bench"]
+        self.assertTrue(j["result"]["all_pass"], b)
+        self.assertEqual([s["key"] for s in b["sizes"]], ["short", "mid", "long"])
+        self.assertLess(b["sizes"][0]["tokens"], b["sizes"][1]["tokens"]); self.assertLess(b["sizes"][1]["tokens"], b["sizes"][2]["tokens"])
+        self.assertGreater(b["sizes"][2]["tokens"], 5 * b["sizes"][0]["tokens"])
+        for s in b["sizes"]:
+            for mode in ("a", "ab"):
+                self.assertEqual(set(s[mode]), {"ttft_s", "tpot_ms", "agg_tps", "norm_tps", "ok"})
+                self.assertGreater(s[mode]["ttft_s"], 0); self.assertGreater(s[mode]["tpot_ms"], 0)
+                self.assertAlmostEqual(s[mode]["agg_tps"] / b["np"], s[mode]["norm_tps"], delta=0.11)      # Normalized = Aggregate / NP
+            self.assertLess(s["ab"]["ttft_s"], s["a"]["ttft_s"])       # fewer requests wait in a queue with more capacity
+            self.assertGreater(s["gain_agg"], 1.3)
+        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 4])
 
-    def test_log_lines_stream_with_since_and_contain_no_secrets(self):
-        svc = self.service()
-        j = self.finish(svc, True)
-        jid = j["job_id"]
-        full = svc.get(jid)
-        self.assertGreater(len(full["log"]), 10)
-        self.assertTrue(any("RESULT: ALL PASS" in x for x in full["log"]))
-        later = svc.get(jid, since=len(full["log"]) - 2)
-        self.assertEqual(len(later["log"]), 2)
-        self.assertEqual(later["log_next"], full["log_next"])
-        blob = "\n".join(full["log"])
-        for bad in (OPEN, LIMITED, "127.0.0.1", "http"):
-            self.assertNotIn(bad, blob)
-
-    def test_without_machine_b_speed_is_skipped_and_never_confirmed(self):
-        j = self.finish(self.service(), False)
+    def test_without_extra_capacity_the_gain_is_not_confirmed(self):
+        j = self.finish(self.service(gw_slots=2))                          # the gateway adds no capacity
         self.assertEqual(j["state"], "done")
-        self.assertEqual(j["steps"][1]["state"], "skip")
-        self.assertIsNone(j["result"]["speed"])
         self.assertFalse(j["result"]["all_pass"])
-        self.assertNotIn(("B", "m"), self.log)        # machine B was not touched
-        self.assertNotIn(("GW", "gemma26-multi"), self.log)
+        self.assertEqual(j["items"][1][3]["state"], "fail")
 
     def test_busy_platform_sends_no_model_request(self):
-        j = self.finish(self.service(busy=lambda: "A benchmark job is running"), True)
+        j = self.finish(self.service(busy=lambda: "A benchmark job is running"))
         self.assertEqual(j["state"], "failed")
-        self.assertEqual(j["steps"][0]["state"], "fail")
-        self.assertFalse([x for x in self.log if x[1] in ("m", "gemma26-multi", "gemma26-q4", "gemma-26b", "qwen36-35b")])
+        self.assertEqual(j["items"][0][2]["state"], "fail")
+        self.assertFalse(self.log)
+
+    def test_machine_b_down_stops_before_any_request(self):
+        j = self.finish(self.service(b_up=False))
+        self.assertEqual(j["state"], "failed")
+        self.assertEqual(j["items"][0][1]["state"], "fail")
+        self.assertIn("PRO6000", j["error"])
+        self.assertFalse(self.log)
 
     def test_gateway_down_refuses_to_start(self):
         with self.assertRaises(SmokeError) as cm:
-            self.service(gateway_up=False).start(True)
+            self.service(gateway_up=False).start()
         self.assertEqual(cm.exception.status, 503)
 
-    def test_not_configured(self):
-        svc = SmokeService("/nonexistent", keys=(OPEN, LIMITED))
+    def test_not_configured_and_missing_key(self):
+        svc = SmokeService("/nonexistent", keys=KEY)
         self.assertFalse(svc.status()["ok"])
         with self.assertRaises(SmokeError):
-            svc.start(True)
+            svc.start()
+        nokey = self.service(); nokey._keys = ""
+        self.assertFalse(nokey.status()["ok"])
 
-    def test_missing_keys(self):
+    def test_only_one_run_at_a_time_and_cancel(self):
         svc = self.service()
-        svc._keys = ("", "")
-        self.assertFalse(svc.status()["ok"])
-
-    def test_only_one_run_at_a_time(self):
-        svc = self.service()
-        first = svc.start(True)["job_id"]
+        first = svc.start()["job_id"]
         with self.assertRaises(SmokeError) as cm:
-            svc.start(True)
+            svc.start()
         self.assertEqual(cm.exception.status, 409)
         svc.cancel(first)
-        end = time.time() + 30
+        end = time.time() + 40
         while svc.get(first)["state"] == "running" and time.time() < end:
             time.sleep(0.05)
         self.assertIn(svc.get(first)["state"], ("cancelled", "done"))
 
-    def test_limited_key_not_refused_means_control_fails(self):
-        j = self.finish(self.service(limited_allows_other=True), True)
-        self.assertFalse(j["result"]["control"]["pass"])
-        self.assertFalse(j["result"]["all_pass"])
-        self.assertEqual(j["steps"][3]["state"], "fail")
-
     def test_job_timeout_stops_the_run(self):
-        j = self.finish(self.service(job_timeout_s=0), True)
+        j = self.finish(self.service(job_timeout_s=0))
         self.assertEqual(j["state"], "failed")
         self.assertIn("longer than", j["error"])
 
-    def test_no_key_in_results_or_status(self):
+    def test_log_lines_stream_with_since_and_contain_no_secrets(self):
         svc = self.service()
-        j = self.finish(svc, True)
-        blob = json.dumps([j, svc.status()])
-        self.assertNotIn(OPEN, blob)
-        self.assertNotIn(LIMITED, blob)
-        self.assertNotIn("127.0.0.1", blob)            # no addresses either
+        j = self.finish(svc)
+        full = svc.get(j["job_id"])
+        self.assertTrue(any("TTFT" in x and "TPOT" in x and "TPS" in x for x in full["log"]))
+        self.assertTrue(any("RESULT: ALL PASS" in x for x in full["log"]))
+        later = svc.get(j["job_id"], since=len(full["log"]) - 2)
+        self.assertEqual(len(later["log"]), 2)
+        blob = "\n".join(full["log"]) + json.dumps([j, svc.status(), svc.health()])
+        for bad in (KEY, "127.0.0.1", "http://"):
+            self.assertNotIn(bad, blob)
 
-    def test_plan_matches_what_is_sent_and_script_is_readable(self):
-        from benchmark import litellm_smoke as m
+    def test_plan_and_script(self):
         svc = self.service()
         pl = svc.plan()
         self.assertEqual([x["name"] for x in pl["steps"]], list(m.STEP_NAMES))
-        asked = {s["prompt"] for st_ in pl["steps"] for s in st_["sends"]}
-        self.assertTrue({m.PROMPTS["speed"], m.PROMPTS["cost"], m.PROMPTS["control"]} <= asked)
-        self.assertEqual(pl["steps"][1]["items"][0]["label"], "AISO1 only (one machine, today)")
-        self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 5, 3, 4])
+        self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 4])
+        self.assertEqual(pl["machines"], ["AISO1", "PRO6000"])
         sc = svc.script()
         self.assertIn("def _execute", sc["text"])
-        for bad in (OPEN, LIMITED):
-            self.assertNotIn(bad, sc["text"])
+        self.assertNotIn(KEY, sc["text"])
 
     def test_health_lights_say_what_is_wrong(self):
-        svc = self.service()
-        h = svc.health()
-        self.assertTrue(h["configured"])
-        self.assertEqual([c["name"] for c in h["checks"]], ["Gateway", "AISO1", "PRO6000", "Test keys", "Platform idle"])
+        h = self.service().health()
+        self.assertEqual([c["name"] for c in h["checks"]], ["Gateway", "AISO1", "PRO6000", "Test key", "Platform idle"])
         self.assertTrue(all(c["ok"] for c in h["checks"]), h)
         bad = self.service(busy=lambda: "A benchmark job is running").health()
-        self.assertFalse(bad["checks"][4]["ok"])
-        self.assertIn("benchmark", bad["checks"][4]["detail"])
+        self.assertFalse(bad["checks"][4]["ok"]); self.assertIn("benchmark", bad["checks"][4]["detail"])
         down = self.service(gateway_up=False).health()
-        self.assertFalse(down["checks"][0]["ok"]); self.assertEqual(down["checks"][0]["detail"], "no connection")
-        self.assertEqual(down["checks"][3]["detail"], "gateway unreachable")
-        self.assertTrue(down["checks"][1]["ok"])                      # the machines are fine, only the gateway is red
-        nokeys = self.service(); nokeys._keys = ("", "")
-        self.assertEqual(nokeys.health()["checks"][3]["detail"], "not set")
-        blob = json.dumps([h, bad, down])
-        for bad_ in (OPEN, LIMITED, "127.0.0.1"):
-            self.assertNotIn(bad_, blob)
+        self.assertEqual(down["checks"][0]["detail"], "no connection"); self.assertEqual(down["checks"][3]["detail"], "gateway unreachable")
+        self.assertTrue(down["checks"][1]["ok"])
+        b_down = self.service(b_up=False).health()
+        self.assertFalse(b_down["checks"][2]["ok"]); self.assertTrue(b_down["checks"][1]["ok"])
 
     def test_unknown_job(self):
         with self.assertRaises(SmokeError) as cm:
