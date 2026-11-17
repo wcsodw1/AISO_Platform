@@ -197,9 +197,8 @@
   }
   function runUI(mode, msg, st, items) {
     runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn' + (mode === "running" ? " busy" : "") + '" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '><span>' + (mode === "running" ? "Running" : "Run smoke test") + '</span><small class="zhs">' + (mode === "running" ? "執行中" : "實測") + '</small><i aria-hidden="true">→</i></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
-    var row = runEl.querySelector(".lr-runrow");
-    if (row && (mode === "ready" || mode === "running")) {
-      row.insertAdjacentHTML("beforeend", '<label class="lr-incl"><input type="checkbox" id="lrInclB"' + (inclB ? " checked" : "") + (mode === "ready" ? "" : " disabled") + '> Include ' + M.b + ' (shared machine)<small class="zhs">包含 ' + M.b + '（共用機器）</small></label>');
+    if (mode === "ready" || mode === "running") {
+      runEl.querySelector(".lr-runrow").insertAdjacentHTML("afterend", '<div class="lr-runopts"><label class="lr-incl"><input type="checkbox" id="lrInclB"' + (inclB ? " checked" : "") + (mode === "ready" ? "" : " disabled") + '><span>Also test ' + M.b + ' (shared machine), needed for Speed<small class="zhs">一併測 ' + M.b + '（共用機器），速度才量得出來</small></span></label><span class="lr-pwnote">*Ask the relevant staff for the test password<small class="zhs">測試密碼請洽相關工作人員</small></span></div>');
       $("lrInclB").onchange = function () { inclB = this.checked; };
     }
     if (mode === "ready") $("lrRunBtn").onclick = startRun;
@@ -215,15 +214,15 @@
     $("lrTermN").textContent = b.children.length + " lines";
   }
   function checkStatus() {
-    runUI("checking", info("Checking the local platform…", "檢查本機平台…"));
+    runUI("checking", "");
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
-      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (!job || !poll) runUI("ready", info("About 70 s. Asks for the test password first.", "約 70 秒，會先要測試密碼")); } }).catch(function () {}); runUI("ready", info("About 70 s. Asks for the test password first.", "約 70 秒，會先要測試密碼")); }
+      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
       else runUI("off", info("The gateway is not reachable from this platform.", "平台連不到閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
     }).catch(function () { runUI("off", info("Local platform only: needs the smoke-test backend on this computer.", "只能在本機平台按；需要本機裝上 smoke test 後端")); });
   }
   function startRun() {
     if (!window.RunGate) { runUI("ready", info("Test-password dialog is not loaded.", "測試密碼視窗沒有載入")); return; }
-    runUI("running", info("Waiting for the test password…", "等待輸入測試密碼"));
+    runUI("running", "");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ include_b: inclB }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
       .then(function (d) { job = d.job_id; logNext = 0; termReset(""); poll = setInterval(tick, 1000); tick(); })
@@ -232,7 +231,7 @@
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       if (d.log) { termAdd(d.log); logNext = d.log_next; }
-      runUI("running", info("Running…", "執行中"), d.steps, d.items);
+      runUI("running", "", d.steps, d.items);
       if (d.state === "running" || d.state === "queued") return;
       clearInterval(poll); poll = null;
       if (d.state === "done" && d.result) applyLive(d.result, d.steps, d.items); else runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), d.steps, d.items);
@@ -247,7 +246,7 @@
     D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString(); D.liveSkipped = r.skipped || []; recalc();
     var done = !!r.all_pass;
     conclusion(done); render();
-    var msg = done ? ["Done. Conclusion updated with this run.", "完成，結論已換成這次實測"]
+    var msg = done ? ["", ""]
       : r.skipped && r.skipped.length ? ["Done, but speed was not measured (" + M.b + " not included). The conclusion stays preliminary.", "完成，但沒有測速度（未包含 " + M.b + "），結論仍是初步估算"]
       : ["Done. At least one check did not pass; see the steps.", "完成，但有項目沒過，請看各步驟"];
     runUI("ready", info(msg[0], msg[1]), steps, items);

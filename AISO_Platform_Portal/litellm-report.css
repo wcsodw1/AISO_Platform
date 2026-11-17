@@ -335,3 +335,10 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 @keyframes lrsweep{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
 @media (prefers-reduced-motion:reduce){.lr .lr-runbtn.busy::after{animation:none;width:100%;opacity:.5}.lr .lr-runbtn,.lr .lr-runbtn i{transition:none}}
 .lr .lr-runrow{gap:14px 22px}
+
+/* options row: tick on the left, a tiny password note on the bottom right */
+.lr .lr-runopts{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px 24px;margin:12px 0 4px}
+.lr .lr-incl{align-items:flex-start}.lr .lr-incl span{display:block;font-size:17px;color:var(--ivory)}.lr .lr-incl span small{display:block;color:var(--muted);font-size:16px}
+.lr .lr-incl input{margin-top:3px;flex:0 0 auto}
+.lr .lr-pwnote{margin-left:auto;text-align:right;color:var(--muted);font-size:16px;line-height:1.35}.lr .lr-pwnote small{display:block;font-size:16px}
+.lr .lr-runmsg:empty{display:none}
