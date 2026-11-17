@@ -169,6 +169,19 @@ class SmokeTests(unittest.TestCase):
         self.assertNotIn(LIMITED, blob)
         self.assertNotIn("127.0.0.1", blob)            # no addresses either
 
+    def test_plan_matches_what_is_sent_and_script_is_readable(self):
+        from benchmark import litellm_smoke as m
+        svc = self.service()
+        pl = svc.plan()
+        self.assertEqual([x["name"] for x in pl["steps"]], list(m.STEP_NAMES))
+        asked = {s["prompt"] for st_ in pl["steps"] for s in st_["sends"]}
+        self.assertEqual(asked, {m.PROMPTS["speed"], m.PROMPTS["cost"], m.PROMPTS["control"]})
+        self.assertEqual(pl["steps"][1]["sends"][0]["to"][0], "AISO1 only (one machine, today)")
+        sc = svc.script()
+        self.assertIn("def _execute", sc["text"])
+        for bad in (OPEN, LIMITED):
+            self.assertNotIn(bad, sc["text"])
+
     def test_unknown_job(self):
         with self.assertRaises(SmokeError) as cm:
             self.service().get("nope")

@@ -292,6 +292,10 @@ class Handler(SimpleHTTPRequestHandler):
             if method == "GET":
                 if path == "/api/litellm/status":
                     return self.send_json(LITELLM_SMOKE.status())
+                if path == "/api/litellm/plan":
+                    return self.send_json(LITELLM_SMOKE.plan())
+                if path == "/api/litellm/script":
+                    return self.send_json(LITELLM_SMOKE.script())
                 if path.startswith("/api/litellm/smoke/"):
                     return self.send_json(LITELLM_SMOKE.get(path.rsplit("/", 1)[1], urllib.parse.parse_qs(query).get("since", ["0"])[0]))
                 return self.send_json({"error": "Unknown endpoint."}, 404)

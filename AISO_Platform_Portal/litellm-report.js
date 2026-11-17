@@ -36,17 +36,22 @@
   /* The conclusion is PRELIMINARY until the smoke test has run on this platform (David, 2026-11-17).
      Replay data (proof-of-concept run) -> "Preliminary estimate". A live smoke test result -> "Confirmed". */
   function conclusion(live) {
-    var el = $("lrConcl"), saved = D.sec.a - D.sec.ab;
+    var el = $("lrConcl"), dmax = Math.max(D.cost.direct, D.cost.gw);
     el.classList.toggle("prelim", !live);
+    /* [name, zh, tag, without label, with label, hero, hero en, hero zh, without bar 0..1 or null, with bar 0..1 or null] */
     var cards = [
-      ["Speed", "速度", D.live ? "" : "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快"],
-      ["Delay per request", "單次延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "the cost", "代價"],
-      ["Wrong-model request", "打錯模型", "", "allowed " + D.wrong.direct, "refused " + D.wrong.key, "blocked", "by key", "被金鑰擋下"],
-      ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", "+" + D.fail.gw, "answered", "有回覆"]
+      ["Speed", "速度", "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快", 1, D.sec.ab / D.sec.a],
+      ["Delay per request", "單次延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "the cost", "代價", D.cost.direct / dmax, D.cost.gw / dmax],
+      ["Wrong-model request", "打錯模型", "", "allowed · " + D.wrong.direct, "refused · " + D.wrong.key, "blocked", "by the key", "被金鑰擋下", null, null],
+      ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", "+" + D.fail.gw, "answered", "有回覆", 0, D.fail.gw / D.fail.n]
     ].map(function (k) {
+      var row = function (cls, en, zh, label, frac) {
+        return '<div class="lr-kr ' + cls + '"><span class="lr-kl">' + en + '<small class="zhs">' + zh + '</small></span>' +
+          (frac === null ? '<b class="lr-kpill">' + esc(label) + '</b>' : '<i class="lr-kbar"><u style="width:' + Math.max(frac * 100, frac > 0 ? 3 : 0).toFixed(1) + '%"></u></i><b>' + esc(label) + '</b>') + '</div>';
+      };
       return '<div class="lr-kpi"><h4>' + k[0] + '<small class="zhs">' + k[1] + '</small>' + (k[2] ? '<em class="lr-tag">' + k[2] + '</em>' : "") + '</h4>' +
-        '<div class="lr-kv"><div class="no"><span>Without<small class="zhs">沒有</small></span><b>' + k[3] + '</b></div><i aria-hidden="true">→</i><div class="yes"><span>With<small class="zhs">有</small></span><b>' + k[4] + '</b></div></div>' +
-        '<p class="lr-kd"><b>' + k[5] + '</b><span>' + k[6] + '<small class="zhs">' + k[7] + '</small></span></p></div>';
+        '<p class="lr-kd"><b>' + k[5] + '</b><span>' + k[6] + '<small class="zhs">' + k[7] + '</small></span></p>' +
+        row("no", "Without", "沒有", k[3], k[8]) + row("yes", "With", "有", k[4], k[9]) + '</div>';
     }).join("");
     el.innerHTML = '<span class="lr-cl">KPI<small class="zhs">效果差異</small>' + (live ? '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + '</em>' : '<em class="lr-pend">Preliminary<small class="zhs">初步估算，待實測</small></em>') + '</span>' + notes + '<div class="lr-kpis">' + cards + '</div>';
   }
@@ -58,19 +63,19 @@
   var txt = function (x, y, t, o) { o = o || {}; return '<text x="' + x + '" y="' + y + '" text-anchor="' + (o.a || "middle") + '" fill="' + (o.c || "#f3efe5") + '" font-size="' + (o.s || 18) + '" font-weight="' + (o.w || 700) + '">' + esc(t) + "</text>"; };
   var line = function (x1, y1, x2, y2, c) { return '<path d="M' + x1 + " " + y1 + "L" + x2 + " " + y2 + '" stroke="' + c + '" stroke-width="2" fill="none"/>'; };
   var APPS = ["Office AI", "AISO Platform", "Scripts"], AY = [40, 140, 240];
-  var MA = { y: 14, h: 158, title: M.a, chips: ["Gemma 4 26B Q4", "Qwen3.6 35B Q4", "Qwen3.8 27B Q4"], c: ["rgba(138,180,255,.12)", "#8ab4ff"] };
-  var MB = { y: 196, h: 122, title: M.b, chips: ["Gemma 4 26B BF16", "Gemma 4 E4B"], c: ["rgba(79,209,176,.12)", "#4fd1b0"] };
+  var MA = { y: 14, h: 158, title: M.a, chips: ["Gemma 4 26B Q4", "Qwen3.6 35B Q4", "Qwen3.8 27B Q4"], c: ["rgba(193,154,107,.12)", "#c19a6b"] };
+  var MB = { y: 196, h: 122, title: M.b, chips: ["Gemma 4 26B BF16", "Gemma 4 E4B"], c: ["rgba(157,184,140,.12)", "#9db88c"] };
   var machine = function (m, x, w) {
     var s = rect(x, m.y, w, m.h, m.c[0], m.c[1]) + txt(x + 14, m.y + 28, m.title, { a: "start", s: 20 });
     m.chips.forEach(function (c, i) { s += rect(x + 12, m.y + 42 + i * 36, w - 24, CH, "rgba(255,255,255,.07)", "rgba(255,255,255,.18)", 1) + txt(x + w / 2, m.y + 42 + i * 36 + 21, c, { s: 17, w: 600 }); });
     return s;
   };
-  var apps = function () { return APPS.map(function (a, i) { return rect(8, AY[i], 150, 44, "rgba(255,255,255,.06)", "#9aa6b8") + txt(83, AY[i] + 29, a, { s: 18 }); }).join(""); };
+  var apps = function () { return APPS.map(function (a, i) { return rect(8, AY[i], 150, 44, "rgba(255,255,255,.06)", "#a89c88") + txt(83, AY[i] + 29, a, { s: 18 }); }).join(""); };
   var MX = 330, MW = 222;
-  var svgWithout = apps() + AY.map(function (y) { return line(158, y + 22, MX, MA.y + 30, "#ff8a76") + line(158, y + 22, MX, MB.y + 30, "#ff8a76"); }).join("") + machine(MA, MX, MW) + machine(MB, MX, MW);
-  var svgWith = apps() + AY.map(function (y) { return line(158, y + 22, 188, 168, "#9aa6b8"); }).join("") +
-    rect(188, 132, 84, 72, "rgba(217,203,143,.14)", "#d9cb8f", 2) + txt(230, 174, "LiteLLM", { c: "#d9cb8f", s: 17, w: 800 }) +
-    line(272, 150, MX, MA.y + 60, "#d9cb8f") + line(272, 186, MX, MB.y + 60, "#d9cb8f") + machine(MA, MX, MW) + machine(MB, MX, MW);
+  var svgWithout = apps() + AY.map(function (y) { return line(158, y + 22, MX, MA.y + 30, "#d98a66") + line(158, y + 22, MX, MB.y + 30, "#d98a66"); }).join("") + machine(MA, MX, MW) + machine(MB, MX, MW);
+  var svgWith = apps() + AY.map(function (y) { return line(158, y + 22, 188, 168, "#a89c88"); }).join("") +
+    rect(188, 132, 84, 72, "rgba(214,178,107,.14)", "#d6b26b", 2) + txt(230, 174, "LiteLLM", { c: "#d6b26b", s: 17, w: 800 }) +
+    line(272, 150, MX, MA.y + 60, "#d6b26b") + line(272, 186, MX, MB.y + 60, "#d6b26b") + machine(MA, MX, MW) + machine(MB, MX, MW);
   var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 ' + W + ' 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
   $("lrFlow").innerHTML = '<div class="lr-vs">' +
     '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 LiteLLM</small></h3>' + svg(svgWithout, "Three clients each connect to both machines: six links") +
@@ -95,7 +100,7 @@
   /* speed improvement: three bars on one time scale + the multiplier and the seconds saved */
   function impHtml() {
     var mx = Math.max(D.sec.a, D.sec.b, D.sec.hand, D.sec.ab), saved = D.sec.a - D.sec.ab, pct = Math.round((1 - D.sec.ab / D.sec.a) * 100);
-    var rows = [["a", M.a + " only (today)", "只接 " + M.a + "（現況）", "#8ab4ff"], ["b", M.b + " only", "只接 " + M.b, "#4fd1b0"], ["hand", "Both, app splits by hand", "兩台，應用自己分流", "#9aa6b8"], ["ab", "Both, via LiteLLM", "兩台，經 LiteLLM", "#d9cb8f"]].map(function (r) {
+    var rows = [["a", M.a + " only (today)", "只接 " + M.a + "（現況）", "#c19a6b"], ["b", M.b + " only", "只接 " + M.b, "#9db88c"], ["hand", "Both, app splits by hand", "兩台，應用自己分流", "#a89c88"], ["ab", "Both, via LiteLLM", "兩台，經 LiteLLM", "#d6b26b"]].map(function (r) {
       return '<div class="lr-bar' + (r[0] === "ab" ? " best" : "") + '"><span class="lr-name">' + r[1] + '<small class="zhs">' + r[2] + '</small></span><span class="lr-track"><span class="lr-fill" style="width:' + (D.sec[r[0]] / mx * 100).toFixed(1) + '%;background:' + r[3] + '"></span></span><b>' + f1(D.sec[r[0]]) + ' s</b></div>';
     }).join("");
     return '<div class="lr-imp"><div class="lr-bars">' + rows + '</div><div class="lr-impk"><b>' + f1(gain) + '×</b><span>faster than one machine<small class="zhs">比只接一台快</small></span><span>saves ' + f1(saved) + ' s (' + pct + '%)<small class="zhs">少 ' + f1(saved) + ' 秒（' + pct + '%）</small></span><span class="lr-same">Hand split is about as fast<small class="zhs">應用自己分流速度差不多</small></span></div></div>';
@@ -148,11 +153,30 @@
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
   var inclB = false, logNext = 0, API = "/api/litellm", STEPS = [["Preflight", "檢查"], ["Speed", "速度"], ["Cost", "延遲"], ["Control", "管控"]], runEl = $("lrRun"), job = null, poll = null;
+
+  /* What the smoke test does. This mirrors plan() in benchmark/litellm_smoke.py; on the local platform the page asks the backend for its own copy. */
+  var PLAN = { steps: [
+    { name: "Preflight", zh: "檢查", what: "Nothing is asked of a model. Checks only.", what_zh: "不問任何模型，只做檢查", sends: [], checks: ["gateway is up", "machines reachable", "no other benchmark is running", "test keys and model aliases present"], pass: "every check is OK", pass_zh: "全部檢查都通過" },
+    { name: "Speed", zh: "速度", what: "The same question, the same load, four ways.", what_zh: "同一個問題、同樣的量，用四種方式送", sends: [{ prompt: "用約80字介紹台北的夜市文化", tokens: 100, count: "8 requests x 3 repeats, 4 at once", to: [M.a + " only (one machine, today)", M.b + " only", "both, the app splits by hand", "both, via LiteLLM"] }], pass: "via LiteLLM is at least 1.3x faster than " + M.a + " only, and every request is answered", pass_zh: "經 LiteLLM 比只接 " + M.a + " 快至少 1.3 倍，且每個請求都有回覆" },
+    { name: "Cost", zh: "延遲", what: "A tiny question, once straight to the machine and once through LiteLLM, taking turns.", what_zh: "很短的問題，直連與經 LiteLLM 輪流各送一次", sends: [{ prompt: "說一個字", tokens: 10, count: "6 pairs", to: [M.a + " direct", M.a + " via LiteLLM"] }], pass: "the median extra delay is at most 0.10 s", pass_zh: "額外延遲的中位數不超過 0.10 秒" },
+    { name: "Control", zh: "管控", what: "A key limited to one model, and the same request without any gateway.", what_zh: "一把限定模型的金鑰，以及不經閘道的同一個請求", sends: [{ prompt: "hi", tokens: 20, count: "4 requests", to: ["limited key, its own model (expect 200)", "limited key, another model (expect 403)", "open key, another model (expect 200)", "no gateway, another model (200: nothing stops it)"] }], pass: "own model 200, another model refused, open key 200", pass_zh: "自己的模型 200、別的模型被拒絕、不設限的金鑰 200" }
+  ] };
+  var STATE = { wait: ["waiting", "等待"], run: ["running", "執行中"], ok: ["PASS", "通過"], fail: ["FAIL", "未過"], skip: ["skipped", "略過"] };
+  function planHtml(st) {
+    return '<ol class="lr-plan">' + PLAN.steps.map(function (p, i) {
+      var x = (st && st[i]) || { state: "wait", detail: "" }, lab = STATE[x.state] || STATE.wait;
+      var sends = (p.sends || []).map(function (q) { return '<li class="lr-snd"><span class="lr-q">“' + esc(q.prompt) + '”</span><span class="lr-meta">' + esc(q.count) + ' · up to ' + q.tokens + ' tokens</span><span class="lr-to">' + q.to.map(function (t) { return "<i>" + esc(t) + "</i>"; }).join("") + "</span></li>"; }).join("");
+      var checks = (p.checks || []).map(function (c) { return "<i>" + esc(c) + "</i>"; }).join("");
+      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + '</small></b><em>' + lab[0] + '<small class="zhs">' + lab[1] + "</small></em></div>" +
+        '<p class="lr-pw">' + esc(p.what) + '<small class="zhs">' + esc(p.what_zh) + "</small></p>" + (sends ? '<ul class="lr-sends">' + sends + "</ul>" : "") + (checks ? '<div class="lr-to">' + checks + "</div>" : "") +
+        '<p class="lr-pp"><u>Pass if</u> ' + esc(p.pass) + '<small class="zhs">' + esc(p.pass_zh) + "</small></p>" + (x.detail ? '<p class="lr-pd">→ ' + esc(x.detail) + "</p>" : "") + "</li>";
+    }).join("") + "</ol>";
+  }
   function stepsHtml(st) {
     return '<ol class="lr-rs">' + STEPS.map(function (n, i) { var x = (st && st[i]) || { state: "wait" }; return '<li class="' + esc(x.state) + '"><b>' + n[0] + '<small class="zhs">' + n[1] + '</small></b><span>' + esc(x.detail || "") + "</span></li>"; }).join("") + "</ol>";
   }
   function runUI(mode, msg, st) {
-    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '>▶ Run smoke test<small class="zhs">實測</small></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + (st ? stepsHtml(st) : "");
+    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '>▶ Run smoke test<small class="zhs">實測</small></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st);
     var row = runEl.querySelector(".lr-runrow");
     if (row && (mode === "ready" || mode === "running")) {
       row.insertAdjacentHTML("beforeend", '<label class="lr-incl"><input type="checkbox" id="lrInclB"' + (inclB ? " checked" : "") + (mode === "ready" ? "" : " disabled") + '> Include ' + M.b + ' (shared machine)<small class="zhs">包含 ' + M.b + '（共用機器）</small></label>');
@@ -168,11 +192,12 @@
     var b = $("lrTermBody"), stick = b.scrollTop + b.clientHeight >= b.scrollHeight - 30;
     lines.forEach(function (l) { var d = document.createElement("div"); d.textContent = l; d.className = /ALL PASS|\bPASS\b/.test(l) ? "ok" : /FAIL|NOT CONFIRMED|skipped/.test(l) ? "bad" : /^\S+\s+\[\d\/\d\]|^\$/.test(l) ? "hd" : ""; b.appendChild(d); });
     if (stick) b.scrollTop = b.scrollHeight;
+    $("lrTermN").textContent = b.children.length + " lines";
   }
   function checkStatus() {
     runUI("checking", info("Checking the local platform…", "檢查本機平台…"));
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
-      if (d && d.ok) runUI("ready", info("About 70 s. Asks for the test password first.", "約 70 秒，會先要測試密碼"));
+      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (!job || !poll) runUI("ready", info("About 70 s. Asks for the test password first.", "約 70 秒，會先要測試密碼")); } }).catch(function () {}); runUI("ready", info("About 70 s. Asks for the test password first.", "約 70 秒，會先要測試密碼")); }
       else runUI("off", info("The gateway is not reachable from this platform.", "平台連不到閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
     }).catch(function () { runUI("off", info("Local platform only: needs the smoke-test backend on this computer.", "只能在本機平台按；需要本機裝上 smoke test 後端")); });
   }
@@ -208,5 +233,15 @@
     runUI("ready", info(msg[0], msg[1]), steps);
     if (cur === "speed") play();
   }
+
+  var termBig = false;
+  $("lrTermBig").onclick = function () { termBig = !termBig; $("lrTermBody").classList.toggle("big", termBig); this.firstChild.nodeValue = termBig ? "Collapse " : "Expand "; this.querySelector("small").textContent = termBig ? "收合" : "展開全部"; };
+  $("lrTermCopy").onclick = function () { var t = $("lrTermBody").innerText, b = this; (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.querySelector("small").textContent = "已複製"; setTimeout(function () { b.querySelector("small").textContent = "複製"; }, 1500); }).catch(function () { var r = document.createRange(); r.selectNodeContents($("lrTermBody")); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }); };
+  var scriptLoaded = false;
+  $("lrScriptBox").addEventListener("toggle", function () {
+    if (!this.open || scriptLoaded) return;
+    fetch(API + "/script", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) { $("lrScript").textContent = d.text; scriptLoaded = true; })
+      .catch(function () { $("lrScript").textContent = "The script is shown on the local platform only.\nIt lives in the repository at benchmark/litellm_smoke.py."; });
+  });
   checkStatus();
 })();

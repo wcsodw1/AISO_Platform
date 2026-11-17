@@ -28,6 +28,30 @@ KEY_FILE = Path("~/.config/aiso/litellm_smoke.env")      # KEY=VALUE lines, outs
 CRIT = {"speedup_min": 1.3, "overhead_max_s": 0.10}
 LOAD = {"requests": 8, "concurrency": 4, "tokens": 100, "repeats": 3, "cost_pairs": 6, "request_timeout_s": 60, "job_timeout_s": 120}
 STEP_NAMES = ("Preflight", "Speed", "Cost", "Control")
+PROMPTS = {"speed": "用約80字介紹台北的夜市文化", "cost": "說一個字", "control": "hi", "warmup": "hi"}   # the exact questions sent to the models
+
+
+def plan(cfg=None, load=None):
+    """What the test does, as data: the UI draws it, and the run below uses the same constants (one source of truth)."""
+    L = dict(LOAD, **(load or {}))
+    a = (cfg or {}).get("machine_a", {}).get("name", "Machine A"); b = (cfg or {}).get("machine_b", {}).get("name", "Machine B")
+    n, r = L["requests"], L["repeats"]
+    return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats", "cost_pairs")}, "criteria": CRIT, "steps": [
+        {"name": "Preflight", "zh": "檢查", "what": "Nothing is asked of a model. Checks only.", "what_zh": "不問任何模型，只做檢查",
+         "sends": [], "checks": ["gateway is up", "machines reachable", "no other benchmark is running", "test keys and model aliases present"],
+         "pass": "every check is OK", "pass_zh": "全部檢查都通過"},
+        {"name": "Speed", "zh": "速度", "what": "The same question, the same load, four ways.", "what_zh": "同一個問題、同樣的量，用四種方式送",
+         "sends": [{"prompt": PROMPTS["speed"], "tokens": L["tokens"], "count": "%d requests x %d repeats, %d at once" % (n, r, L["concurrency"]),
+                    "to": [a + " only (one machine, today)", b + " only", "both, the app splits by hand", "both, via LiteLLM"]}],
+         "pass": "via LiteLLM is at least %.1fx faster than %s only, and every request is answered" % (CRIT["speedup_min"], a),
+         "pass_zh": "經 LiteLLM 比只接 %s 快至少 %.1f 倍，且每個請求都有回覆" % (a, CRIT["speedup_min"])},
+        {"name": "Cost", "zh": "延遲", "what": "A tiny question, once straight to the machine and once through LiteLLM, taking turns.", "what_zh": "很短的問題，直連與經 LiteLLM 輪流各送一次",
+         "sends": [{"prompt": PROMPTS["cost"], "tokens": 10, "count": "%d pairs" % L["cost_pairs"], "to": [a + " direct", a + " via LiteLLM"]}],
+         "pass": "the median extra delay is at most %.2f s" % CRIT["overhead_max_s"], "pass_zh": "額外延遲的中位數不超過 %.2f 秒" % CRIT["overhead_max_s"]},
+        {"name": "Control", "zh": "管控", "what": "A key limited to one model, and the same request without any gateway.", "what_zh": "一把限定模型的金鑰，以及不經閘道的同一個請求",
+         "sends": [{"prompt": PROMPTS["control"], "tokens": 20, "count": "4 requests",
+                    "to": ["limited key, its own model (expect 200)", "limited key, another model (expect 403)", "open key, another model (expect 200)", "no gateway, another model (200: nothing stops it)"]}],
+         "pass": "own model 200, another model refused, open key 200", "pass_zh": "自己的模型 200、別的模型被拒絕、不設限的金鑰 200"}]}
 
 
 class SmokeError(Exception):
@@ -85,7 +109,7 @@ def _chat(base, model, content, tokens, bearer=None, timeout=60):
 def _load(base, model, bearer, n, conc, tokens, timeout):
     t = time.time()
     with ThreadPoolExecutor(conc) as ex:
-        rs = list(ex.map(lambda _: _chat(base, model, "用約80字介紹台北的夜市文化", tokens, bearer, timeout), range(n)))
+        rs = list(ex.map(lambda _: _chat(base, model, PROMPTS["speed"], tokens, bearer, timeout), range(n)))
     wall = time.time() - t
     ok = [r for r in rs if r["code"] == 200]
     return {"wall_s": wall, "ok": len(ok), "n": n, "tok_s": sum(r["tok"] for r in ok) / wall if wall else 0}
@@ -96,7 +120,7 @@ def _load_hand(a, b, n, conc, tokens, timeout):
     t = time.time()
     pick = lambda i: a if i % 2 == 0 else b
     with ThreadPoolExecutor(conc) as ex:
-        rs = list(ex.map(lambda i: _chat(pick(i)["url"], pick(i)["model"], "用約80字介紹台北的夜市文化", tokens, None, timeout), range(n)))
+        rs = list(ex.map(lambda i: _chat(pick(i)["url"], pick(i)["model"], PROMPTS["speed"], tokens, None, timeout), range(n)))
     wall = time.time() - t
     ok = [r for r in rs if r["code"] == 200]
     return {"wall_s": wall, "ok": len(ok), "n": n, "tok_s": sum(r["tok"] for r in ok) / wall if wall else 0}
@@ -117,6 +141,13 @@ class SmokeService:
             return json.loads((self.base_dir / CONFIG_NAME).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
+
+    def plan(self):
+        return plan(self.config(), self.load)
+
+    def script(self):
+        """The source of this very module, so the UI can show exactly what is run."""
+        return {"name": "benchmark/litellm_smoke.py", "text": Path(__file__).read_text(encoding="utf-8")}
 
     def keys(self, cfg):
         return self._keys if self._keys is not None else load_keys(cfg)
@@ -239,7 +270,7 @@ class SmokeService:
             self._step(job, 1, "run", "measuring")
             self._log(job, "[2/4] Speed  (same load, four ways)")
             n, c, tk = L["requests"], L["concurrency"], L["tokens"]
-            _chat(A["url"], A["model"], "hi", 5, timeout=to); _chat(gw, cfg["group_alias"], "hi", 5, k_open, to)   # warm-up
+            _chat(A["url"], A["model"], PROMPTS["warmup"], 5, timeout=to); _chat(gw, cfg["group_alias"], PROMPTS["warmup"], 5, k_open, to)   # warm-up
             runs = {"a": [], "b": [], "hand": [], "ab": []}
             for _ in range(L["repeats"]):                      # one pass of each mode per repeat; the median of the repeats is reported
                 rep_no = len(runs["a"]) + 1
@@ -266,7 +297,7 @@ class SmokeService:
         self._log(job, "[3/4] Cost  (%d short requests, direct and via LiteLLM, interleaved)" % L["cost_pairs"])
         d_s, g_s, errs = [], [], 0
         for _ in range(L["cost_pairs"]):
-            d = _chat(A["url"], A["model"], "說一個字", 10, timeout=to); g = _chat(gw, cfg["single_alias"], "說一個字", 10, k_open, to)
+            d = _chat(A["url"], A["model"], PROMPTS["cost"], 10, timeout=to); g = _chat(gw, cfg["single_alias"], PROMPTS["cost"], 10, k_open, to)
             if d["code"] == 200 and g["code"] == 200:
                 d_s.append(d["s"]); g_s.append(g["s"])
                 self._log(job, "  pair %d  direct %.3f s   via LiteLLM %.3f s   (%+.3f s)" % (len(d_s), d["s"], g["s"], g["s"] - d["s"]))
@@ -286,11 +317,11 @@ class SmokeService:
         self._check(job, deadline)
         self._step(job, 3, "run", "checking keys")
         self._log(job, "[4/4] Control  (a key limited to one model)")
-        own = _chat(gw, cfg["limited_alias"], "hi", 20, k_lim, to)["code"]
-        other = _chat(gw, cfg["other_model"], "hi", 20, k_lim, to)["code"]
-        opn = _chat(gw, cfg["other_model"], "hi", 20, k_open, to)["code"]
+        own = _chat(gw, cfg["limited_alias"], PROMPTS["control"], 20, k_lim, to)["code"]
+        other = _chat(gw, cfg["other_model"], PROMPTS["control"], 20, k_lim, to)["code"]
+        opn = _chat(gw, cfg["other_model"], PROMPTS["control"], 20, k_open, to)["code"]
         # "without": the same other-model request sent straight to the machine (no key, nothing to stop it)
-        direct_other = _chat(A["url"], cfg.get("other_direct_model", "qwen36-35b-q4"), "hi", 20, None, to)["code"]
+        direct_other = _chat(A["url"], cfg.get("other_direct_model", "qwen36-35b-q4"), PROMPTS["control"], 20, None, to)["code"]
         self._log(job, "  limited key -> its own model      HTTP %s  (expect 200)" % own)
         self._log(job, "  limited key -> another model      HTTP %s  (expect 403, refused)" % other)
         self._log(job, "  open key    -> another model      HTTP %s  (expect 200)" % opn)
