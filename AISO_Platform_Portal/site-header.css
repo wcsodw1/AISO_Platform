@@ -60,8 +60,8 @@
 .site-nav .nav-dropdown button small,.site-header .nav-dropdown a small,.site-nav .nav-dropdown button span,.site-header .nav-dropdown a span{font-size:16px!important}
 
 /* Research dropdown (research-menu.js): All, then Finished / On process / Wait select, each opens a flyout to the right */
-.nav-dropdown.nav-research{left:0;right:auto;min-width:230px}
-.nav-research .nd-all{margin-bottom:6px;padding-bottom:12px!important;border-bottom:1px solid rgba(255,255,255,.08);border-radius:11px 11px 0 0}
+.nav-dropdown.nav-research{left:0;right:auto;min-width:290px}.nav-research .nd-mb{white-space:nowrap}
+.nav-research .nd-mb{margin-bottom:6px;padding-bottom:12px!important;border-bottom:1px solid rgba(255,255,255,.08);border-radius:0 0 11px 11px}
 .nav-research a small,.nav-research .nd-g small{display:inline;margin-left:8px;color:#98a0ad;font-size:14px;font-weight:500}
 .nav-research .nd-fly a small{display:block;margin:3px 0 0}
 .nav-research .nd-g{position:relative;display:flex;align-items:center;gap:8px;padding:11px 14px;border-radius:11px;color:#f3efe5;font-size:14px;font-weight:700;letter-spacing:.02em;cursor:default;outline:0}
