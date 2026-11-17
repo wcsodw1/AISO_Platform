@@ -10,8 +10,13 @@ const FWCOL={sglang:"#4fd1b0",vllm:"#8f9bff",llamacpp:"#ff8a4c"};
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
 const val=(k,v)=>k==="ttft_s"&&v<10?num(v,2):num(v,1);
-let REG,DATA={},D,MODELS=[],NP=1,FW="sglang";
+let REG,DATA={},D,MODELS=[],NP=1,FW="sglang",FILES={};     // FILES: real GGUF file sizes (bytes) by model, from the registry's llama.cpp config; used only to write the size next to each model
 const FWS=()=>REG.frameworks;
+// quantization (Q4 / Q8 ...) and the real file size of each model, written in the parameter boxes
+const quantOf=f=>{const q=/Q(\d)/.exec(f||"");return q?"Q"+q[1]:(f||"")};
+const gbOf=b=>Number.isFinite(b)?(b/1e9).toFixed(1)+" GB":"";
+const fmtOf=(fk,mk)=>{const d=DATA[fk],mp=d&&(d.model_parity||[]).find(x=>x.model===mk),r=d&&d.b60_runs.find(x=>x.model===mk);return (mp&&mp.format)||(r&&r.format)||""};
+const sizeOf=(fk,mk)=>/GGUF/.test(fmtOf(fk,mk))&&FILES[mk]?gbOf(FILES[mk].bytes):"";
 const fwLabel=k=>FWS().find(f=>f.key===k).label;
 const row=(m,i,np,fw=FW)=>(DATA[fw]?DATA[fw].b60_runs:[]).find(r=>r.model===m&&r.input===i&&r.np===np);
 const failed=(m,i,np)=>(D.failures||[]).some(f=>f.model===m&&f.np===np&&f.input===i);
@@ -25,7 +30,7 @@ const VERDICT={
 
 function renderSetup(){
  const p=D.profile,r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`,fw=fwLabel(FW);
- const par=D.model_parity.length?D.model_parity.map(m=>`${esc(m.name)}<small>${m.repo!=="UNVERIFIED"?esc(m.repo)+" · "+esc(m.format):"來源／量化待核"}</small>`).join(""):"尚無已核實的模型來源";
+ const par=D.model_parity.length?D.model_parity.map(m=>`${esc(m.name)}<small>${m.repo!=="UNVERIFIED"?esc(m.repo)+" · "+esc(m.format)+(quantOf(m.format)&&quantOf(m.format)!==m.format?"（"+quantOf(m.format)+"）":"")+(/GGUF/.test(m.format||"")&&FILES[m.model]?" · 實際大小 "+gbOf(FILES[m.model].bytes):""):"來源／量化待核"}</small>`).join(""):"尚無已核實的模型來源";
  const knob=FW==="vllm"?r("Max Num Seqs / Prefill / Memory / Prefix Cache",`${p.max_num_seqs} / ${tok(p.prefill_tokens)} / ${p.memory_fraction} / ${p.prefix_cache}`):FW==="sglang"?r("Chunked Prefill / Max Running / Memory / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.memory_fraction} / ${p.radix_cache}`):FW==="llamacpp"?r("Slots / KV / Batch / uBatch",`${p.slots} slots × ${tok(p.per_slot_context)} / ${p.kv_cache_type} / ${tok(p.batch)} / ${p.ubatch}<small>總 KV：NP1 ${tok(p.total_kv_by_np["1"])} · NP2 ${tok(p.total_kv_by_np["2"])} · NP5 ${tok(p.total_kv_by_np["5"])} · Prefix Cache ${p.prefix_cache}</small>`):"";
  const params=`<dl class="v2-params">${r("Machine 機器",`Intel B60 · ${p.vram_total_gb} GB<small>${p.vram_layout.replace(" x "," × ")}（2 張）· 4 GPU devices · ${p.tp?"TP "+p.tp:"layer split"}</small>`)}${r("Framework 框架",`${esc(p.framework)}<small>${p.runtime==="UNVERIFIED"?"Runtime 映像待核":esc(p.runtime)}</small>`)}${r("Model 模型",par)}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small class="v2-approx">約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${knob}</dl>`;
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>Purpose<span>實驗目的</span></h2><p class="v2-goal">量測 <b>Intel B60（96 GB，48 GB × 2）</b> 在 <b>SGLang、vLLM、llama.cpp</b> 三種推論框架下，四個模型的 <b>TTFT</b> 首字延遲、<b>TPOT</b> 字間隔、<b>TPS</b> 每秒輸出（Normalized 與 Aggregate）；B60 與 B70、AISO1、不同框架分開呈現，不混合硬體、框架或量化格式。</p></section>
@@ -76,7 +81,8 @@ function renderFw(){
  el.innerHTML=ms.map(m=>{
   const fws=FWS().filter(f=>fwHas(f.key,m.key)),base=fws[0].key,miss=FWS().filter(f=>!fws.includes(f)).map(f=>f.label);
   const lead=fws.length>1?`以 ${esc(fws[0].label)} 為基準`:`目前只有 ${esc(fws[0].label)} 有成績，其他框架登錄後自動並排`;
-  return `<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · ${lead}${miss.length?`；${esc(miss.join("、"))} 尚無成績`:""}</span></h3>`+
+  const spec=`<span class="bv-spec">${fws.map(f=>{const fm=fmtOf(f.key,m.key),sz=sizeOf(f.key,m.key);return `<span><b>${esc(f.label)}</b>${esc(quantOf(fm)||"—")}<small>${quantOf(fm)!==fm?esc(fm):""}${sz?(quantOf(fm)!==fm?" · ":"")+"實際大小 "+sz:""}</small></span>`}).join("")}</span>`;
+  return `<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · ${lead}${miss.length?`；${esc(miss.join("、"))} 尚無成績`:""}</span>${spec}</h3>`+
   BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:fws.length>1?base:null,width:w,context:`${m.name} · NP${NP}`,
    message:fws.length>1?"":`${fws[0].label} 的數值；第二個框架有同條件成績後才會計算差異`,
    tableNote:fws.length>1?`差異 = 其他框架相對 ${fws[0].label}；綠色 + 表示較佳、紅色 − 表示較差`:"尚無第二個框架可比較"})))+"</div>"}).join("");
@@ -90,6 +96,7 @@ function renderRetry(){
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry");return r.json()})]).then(([reg])=>{
  REG=reg;
  return Promise.all(reg.datasets.filter(x=>x.machine==="b60").map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{DATA[x.framework]=d})));
+}).then(()=>{const ds=REG.datasets.find(x=>x.machine==="aiso1"&&x.framework==="llamacpp");return ds?fetch(ds.file,{cache:"no-store"}).then(r=>r.ok?r.json():null).then(d=>{FILES=(d&&d.config_by_model)||{}}).catch(()=>{}):null;
 }).then(()=>{
  renderRetry();
  BD.init({el:$s("secDash"),REG,DATA});

@@ -439,3 +439,9 @@ h1 .zhs,h2 .zhs,h3 .zhs{font-size:17px}
 
 .pt-fold>summary{cursor:pointer;list-style:none}.pt-fold>summary::-webkit-details-marker{display:none}
 .rd-go{display:inline-flex;align-items:baseline;gap:8px;font-size:19px!important;font-weight:700;white-space:nowrap}.rd-go .zhs{font-size:16px;opacity:.85;font-weight:500}
+
+/* per-model parameter box: quantization, real file size, AISO1 run parameters */
+.bv-mh .bv-spec{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:6px;font-size:16px;font-weight:500;color:var(--ivory)}
+.bv-mh .bv-spec>span{display:grid;gap:1px}
+.bv-mh .bv-spec b{font-size:16px;color:var(--gold);font-weight:700}
+.bv-mh .bv-spec small{color:var(--muted);font-size:16px;font-weight:500}
