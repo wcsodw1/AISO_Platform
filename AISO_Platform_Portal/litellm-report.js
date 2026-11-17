@@ -72,18 +72,19 @@
       '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + m.name + ' without and with LiteLLM, by input size">' + g + "</svg>" +
       '<p class="lr-kd"><b class="' + cls + '">' + hero + '</b><span>' + word + ' with LiteLLM, on average<small class="zhs">經 LiteLLM 平均' + zhw + '</small></span></p></div>';
   }
-  /* the text sent in each size (mirrors TEXT in benchmark/litellm_smoke.py; the platform's plan overrides it when reachable) */
-  var INPUTS = { en: { sent: "Night markets in Taipei sell food, games and small goods until late at night.", ask: "Now write about 80 words about Taipei night markets.", reps: { short: 0, mid: 5, long: 55 } },
-                 zh: { sent: "台北的夜市販售小吃、遊戲與各式小物，營業到深夜。", ask: "請用約 80 字介紹台北夜市文化。", reps: { short: 0, mid: 4, long: 54 } } };
-  function inputHtml(lang) {
-    var t = INPUTS[lang] || INPUTS.en, S = t.sent.replace(/\s+$/, "");
-    var rows = ["short", "mid", "long"].map(function (k) {
-      var n = t.reps[k];
-      return '<li><b>' + SIZE[k][0] + '<small class="zhs">' + SIZE[k][1] + "</small></b><span>" + (n ? "<q>" + esc(S) + '</q><em>× ' + n + '<small class="zhs">重複</small></em> + ' : "") + "<q>" + esc(t.ask) + "</q></span></li>";
+  /* the text sent in each size comes from the platform: a real web article, with its real token and character counts */
+  var curInput = null;
+  function nf(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function inputHtml(inp) {
+    if (!inp || !inp.sizes) return "";
+    var zh = inp.lang === "zh";
+    var rows = inp.sizes.map(function (z) {
+      return '<li><b>' + SIZE[z.key][0] + '<small class="zhs">' + SIZE[z.key][1] + "</small></b><span><q>" + esc(z.preview) + "</q>" +
+        '<em>' + nf(z.tokens) + " tokens</em><em>" + nf(z.chars) + (zh ? " Chinese characters<small class=\"zhs\">個中文字</small>" : " English characters<small class=\"zhs\">個英文字元</small>") + "</em></span></li>";
     }).join("");
-    return '<div class="lr-inp"><p class="lr-inph">Input text<small class="zhs">輸入文字</small></p><ul>' + rows + "</ul></div>";
+    return '<div class="lr-inp"><p class="lr-inph">Input text<small class="zhs">輸入文字</small><span class="lr-src">Source: <a href="' + esc(inp.url) + '" target="_blank" rel="noopener">Wikipedia · ' + esc(inp.title) + "</a> · " + esc(inp.license) + '<small class="zhs">取自網路，每次執行自動擷取</small></span></p><ul>' + rows + "</ul></div>";
   }
-  function buildResults(sizes, mode, at, lang) {
+  function buildResults(sizes, mode, at, lang, input) {
     var el = $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
     var all = sizes.length === 3;
     var cards = METRICS.map(function (m) { return lineChart(m, by, all, sizes); }).join("");
@@ -91,14 +92,14 @@
       : (mode === "prev" || mode === "prevfail") ? '<em class="lr-prevtag">PREVIOUS RUN · ' + esc(at || "") + '<small class="zhs">前一次結果</small></em>'
       : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
     el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag + (lang && LANGNAME[lang] ? '<em class="lr-langtag">' + LANGNAME[lang][0] + '<small class="zhs">' + LANGNAME[lang][1] + "</small></em>" : "") +
-      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + inputHtml(lang) + notes +
+      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + inputHtml(input || curInput) + notes +
       '<p class="lr-legend"><span><i class="a"></i>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><span><i class="ab"></i>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
       '<div class="lr-charts">' + cards + "</div>";
     el.hidden = false; $("lrResNote").hidden = true;
   }
   function showPartial(list) {
-    D.sizes = list.map(function (z) { return { key: z.key, tok: z.tokens, a: z.a, ab: z.ab }; });
-    buildResults(D.sizes, "running", undefined, runLang);
+    D.sizes = list.map(function (z) { return { key: z.key, tok: z.tokens, chars: z.chars, a: z.a, ab: z.ab }; });
+    buildResults(D.sizes, "running", undefined, runLang, curInput);
   }
 
   /* earlier runs are remembered in this browser (localStorage); the newest comes first, five at most */
@@ -117,9 +118,9 @@
     if (!run) { el.hidden = true; el.innerHTML = ""; return; }
     el.hidden = false;
     el.innerHTML = '<div class="lr-prevh"><b>' + label + '<small class="zhs">' + (label === "Previous run" ? "前一次結果" : "上次結果") + '</small></b><em>' + esc(run.at || "") + (run.lang && LANGNAME[run.lang] ? " · " + LANGNAME[run.lang][0] : "") + '</em>' + (run.pass ? "" : '<em class="lr-below">below 1.3×</em>') + '</div><div class="lr-prevs">' + runSummary(run) + '</div><button type="button" class="lr-ghost" id="lrPrevShow">Show details<small class="zhs">顯示明細</small></button>';
-    $("lrPrevShow").onclick = function () { buildResults(run.sizes, run.pass ? "prev" : "prevfail", run.at, run.lang); };
+    $("lrPrevShow").onclick = function () { buildResults(run.sizes, run.pass ? "prev" : "prevfail", run.at, run.lang, run.input); };
   }
-  function conclusion(pass) { buildResults(D.sizes, pass ? "done" : "fail", undefined, D.lang); }
+  function conclusion(pass) { buildResults(D.sizes, pass ? "done" : "fail", undefined, D.lang, D.input); }
 
   /* ---------- 1 · the picture: real clients, real machines, real models ---------- */
   var W = 560, CH = 30;
@@ -190,8 +191,8 @@
   /* What the smoke test does, as ticking checklists. Mirrors plan() in benchmark/litellm_smoke.py (the backend sends its own copy when available). */
   var it = function (en, zh) { return { label: en, zh: zh }; };
   var PLAN = { steps: [
-    { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用")] },
-    { name: "Benchmark", zh: "速度", sends: [{ prompt: "Text in front (a sentence, a paragraph or a long passage) + the same question", tokens: 100, meta: "8 requests, 4 at once, x 2" }], items: [it("Sentence (one line of text)", "一句話"), it("Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), it("Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"), it("Mean Aggregate TPS gain with LiteLLM at least 1.3x", "經 LiteLLM 後 Aggregate TPS 平均提升至少 1.3 倍")] }
+    { name: "Preflight", zh: "檢查", sends: [], items: [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用"), it("Input text taken from the web", "自網路擷取輸入文字")] },
+    { name: "Benchmark", zh: "速度", sends: [{ prompt: "Excerpt of a web article (a sentence, a paragraph or a long passage) + a summary request", tokens: 100, meta: "8 requests, 4 at once, x 2" }], items: [it("Sentence (one line of text)", "一句話"), it("Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), it("Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"), it("Mean Aggregate TPS gain with LiteLLM at least 1.3x", "經 LiteLLM 後 Aggregate TPS 平均提升至少 1.3 倍")] }
   ] };
   var TICK = { wait: "○", run: "◔", ok: "✓", fail: "✗", skip: "–" }, DONE = { wait: ["Waiting", "等待"], run: ["Running", "執行中"], ok: ["Complete", "完成"], fail: ["Failed", "未通過"], skip: ["Skipped", "略過"] };
   var shown = {}, shownVal = {};   // what has already been drawn, so only something new pops in
@@ -302,7 +303,7 @@
   function checkStatus() {
     runUI("checking", "");
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
-      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (pl.inputs) INPUTS = pl.inputs; if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
+      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl;  if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
       else runUI("off", info("The gateway is not reachable from this platform.", "平台無法連線至閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
     }).catch(function () { runUI("off", info("Available on the local platform only; requires the smoke-test backend on this computer.", "僅限本機平台使用；需在本機啟用 smoke test 後端")); });
   }
@@ -311,12 +312,13 @@
     runUI("running", "");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ lang: inputLang }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; clockStart(); paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: results appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示結果</small>' + inputHtml(runLang); renderFuncs(); poll = setInterval(tick, 1000); tick(); })
+      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; clockStart(); paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; curInput = null; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: results appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示結果</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled: no password entered.", "已取消：未輸入測試密碼") : esc(e.message || e)); });
   }
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       if (d.log) { termAdd(d.log); logNext = d.log_next; }
+      if (d.input && !curInput) { curInput = d.input; if ($("lrConcl").hidden) $("lrResNote").insertAdjacentHTML("beforeend", inputHtml(curInput)); }
       if (d.partial && d.partial.length && d.state === "running") showPartial(d.partial);
       if (d.state !== "running" && d.state !== "queued") clockStop();
       runUI("running", "", d.steps, d.items);
@@ -330,9 +332,9 @@
   }
   /* result: bench.sizes[{key, tokens, a:{ttft_s,tpot_ms,agg_tps,norm_tps}, ab:{...}, gain_agg}], bench.gain_agg, bench.pass */
   function applyLive(r, steps, items) {
-    D.sizes = r.bench.sizes.map(function (z) { return { key: z.key, tok: z.tokens, a: z.a, ab: z.ab }; });
-    D.np = r.bench.np; D.lang = r.bench.lang; D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString();
-    var h = loadHist(); h.unshift({ at: D.liveAt, lang: r.bench.lang, sizes: D.sizes, gain: r.bench.gain_agg, pass: !!r.bench.pass }); saveHist(h);
+    D.sizes = r.bench.sizes.map(function (z) { return { key: z.key, tok: z.tokens, chars: z.chars, a: z.a, ab: z.ab }; });
+    D.np = r.bench.np; D.lang = r.bench.lang; D.input = r.bench.input; D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString();
+    var h = loadHist(); h.unshift({ at: D.liveAt, lang: r.bench.lang, input: r.bench.input, sizes: D.sizes, gain: r.bench.gain_agg, pass: !!r.bench.pass }); saveHist(h);
     conclusion(!!r.bench.pass); renderFuncs();
     runUI("ready", r.bench.pass ? "" : info("Completed, but the gain is below 1.3x: not confirmed.", "已完成，但提升未達 1.3 倍，未達標"), steps, items);
   }

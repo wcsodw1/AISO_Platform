@@ -16,6 +16,15 @@ from benchmark.litellm_smoke import SmokeError, SmokeService
 KEY = "test-key-for-unit-tests-1234"
 
 
+def fake_article(lang):
+    """A web article without the web: many different sentences, so no sentence has to repeat."""
+    if lang == "zh":
+        text = "\n".join("== 小標題 ==\n第%d句：夜市是臺灣常見的夜間市集，販售小吃與各式小物，營業到深夜。" % i for i in range(1, 400))
+    else:
+        text = "\n".join("== Heading ==\nSentence %d: a night market is an evening street market that sells food, games and small goods." % i for i in range(1, 400))
+    return {"title": "Night market", "url": "https://example.org/wiki/Night_market", "text": text}
+
+
 def make_server(kind, log, slots, delay=0.12):
     """kind: 'A' | 'B' | 'GW'. `slots` = requests served at once; the rest wait, like a llama.cpp server with few slots."""
     sem = threading.Semaphore(slots)
@@ -64,7 +73,7 @@ class SmokeTests(unittest.TestCase):
         for s in self.servers:
             s.shutdown(); s.server_close()
 
-    def service(self, busy=None, gateway_up=True, b_up=True, gw_slots=4, **kw):
+    def service(self, busy=None, gateway_up=True, b_up=True, gw_slots=4, fetch=None, **kw):
         a, ua = make_server("A", self.log, 2); b, ub = make_server("B", self.log, 2); g, ug = make_server("GW", self.log, gw_slots)
         self.servers += [a, b, g]
         if not gateway_up:
@@ -72,7 +81,7 @@ class SmokeTests(unittest.TestCase):
         if not b_up:
             ub = "http://127.0.0.1:9"
         cfg = {"gateway": ug, "machine_a": {"name": "AISO1", "url": ua, "model": "m"}, "machine_b": {"name": "PRO6000", "url": ub, "model": "m"}, "group_alias": "gemma26-multi"}
-        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, load={"requests": 8, "concurrency": 4, "repeats": 2, "pace_s": 0, **kw})
+        return SmokeService("/nonexistent", busy_check=busy, config=cfg, keys=KEY, fetch=fetch or fake_article, load={"requests": 8, "concurrency": 4, "repeats": 2, "pace_s": 0, **kw})
 
     def finish(self, svc, timeout=60):
         jid = svc.start()["job_id"]
@@ -99,10 +108,16 @@ class SmokeTests(unittest.TestCase):
                 self.assertAlmostEqual(s[mode]["agg_tps"] / b["np"], s[mode]["norm_tps"], delta=0.11)      # Normalized = Aggregate / NP
             self.assertLess(s["ab"]["ttft_s"], s["a"]["ttft_s"])       # fewer requests wait in a queue with more capacity
             self.assertGreater(s["gain_agg"], 1.3)
-        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 4])
+        self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 5, ["ok"] * 4])
+        inp = b["input"]
+        self.assertEqual([x["key"] for x in inp["sizes"]], ["short", "mid", "long"])
+        self.assertEqual([x["tokens"] for x in inp["sizes"]], [s["tokens"] for s in b["sizes"]])            # real token counts are reported
+        self.assertEqual([x["chars"] for x in inp["sizes"]], [s["chars"] for s in b["sizes"]])
+        self.assertLess(inp["sizes"][0]["chars"], inp["sizes"][1]["chars"]); self.assertLess(inp["sizes"][1]["chars"], inp["sizes"][2]["chars"])
+        self.assertEqual((inp["title"], inp["license"]), ("Night market", "CC BY-SA 4.0"))
         self.assertEqual([x["key"] for x in j["partial"]], ["short", "mid", "long"])        # rows were published one by one
 
-    def test_chinese_input_text_is_used_and_sized_like_the_english_one(self):
+    def test_chinese_article_is_used_and_nothing_repeats(self):
         svc = self.service()
         jid = svc.start("zh")["job_id"]
         end = time.time() + 60
@@ -112,11 +127,20 @@ class SmokeTests(unittest.TestCase):
         self.assertEqual(j["state"], "done", j)
         self.assertEqual(j["result"]["bench"]["lang"], "zh")
         self.assertTrue(any("Chinese" in x for x in j["log"]))
-        z = m.bench_prompt("mid", "zh"); e = m.bench_prompt("mid", "en")
-        self.assertIn("台北", z); self.assertNotIn("台北", e)
-        self.assertGreater(len(m.bench_prompt("long", "zh")), 10 * len(m.bench_prompt("mid", "zh")) / 2)
+        texts = svc.jobs[jid]["texts"]
+        self.assertIn("夜市", texts["long"]); self.assertGreater(len(texts["long"]), 5 * len(texts["mid"]) / 2)
+        for k in ("mid", "long"):
+            parts = [x for x in m.sentences("\n".join([texts[k]]), "zh")]
+            self.assertEqual(len(parts), len(set(parts)), "no sentence is repeated in the " + k + " text")
         with self.assertRaises(SmokeError):
             svc.start("fr")
+
+    def test_missing_article_stops_before_any_model_request(self):
+        j = self.finish(self.service(fetch=lambda lang: {"title": "x", "url": "", "text": ""}))
+        self.assertEqual(j["state"], "failed")
+        self.assertEqual(j["items"][0][4]["state"], "fail")
+        self.assertIn("web", j["error"])
+        self.assertFalse([x for x in self.log if x[2]])             # nothing streamed
 
     def test_without_extra_capacity_the_gain_is_not_confirmed(self):
         j = self.finish(self.service(gw_slots=2))                          # the gateway adds no capacity
@@ -183,9 +207,8 @@ class SmokeTests(unittest.TestCase):
         svc = self.service()
         pl = svc.plan()
         self.assertEqual([x["name"] for x in pl["steps"]], list(m.STEP_NAMES))
-        self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 4])
+        self.assertEqual([len(x["items"]) for x in pl["steps"]], [5, 4])
         self.assertEqual(pl["machines"], ["AISO1", "PRO6000"])
-        self.assertEqual(set(pl["inputs"]), {"en", "zh"}); self.assertEqual(pl["inputs"]["en"]["reps"]["short"], 0)   # the page shows exactly this text
         sc = svc.script()
         self.assertIn("def _execute", sc["text"])
         self.assertNotIn(KEY, sc["text"])
