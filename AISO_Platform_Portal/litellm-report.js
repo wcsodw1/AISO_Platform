@@ -22,8 +22,7 @@
   var f1 = function (n) { return n.toFixed(1); }, f2 = function (n) { return n.toFixed(2); };
 
   /* ---------- KPI: four metrics, each Without -> With LiteLLM at three input sizes ---------- */
-  var notes = '<div class="lr-notes" tabindex="0"><span class="lr-nb">Notes<small class="zhs"> 備註</small></span><div class="lr-nf"><ul>' +
-    D.notes.map(function (n) { return "<li>" + esc(n[0]) + "<small>" + esc(n[1]) + "</small></li>"; }).join("") + "</ul></div></div>";
+  var notesHtml = '<ul class="lr-nl">' + D.notes.map(function (n) { return "<li>" + esc(n[0]) + "<small>" + esc(n[1]) + "</small></li>"; }).join("") + "</ul>";
   var SIZE = { short: ["Sentence", "一句話"], mid: ["Paragraph", "一段文字"], long: ["Long passage", "長篇文字"] };
   /* lower is better for TTFT and TPOT, higher is better for TPS */
   var METRICS = [
@@ -84,18 +83,18 @@
     }).join("");
     return '<div class="lr-inp"><p class="lr-inph">Input text<small class="zhs">輸入文字</small><span class="lr-src">Source: <a href="' + esc(inp.url) + '" target="_blank" rel="noopener">Wikipedia · ' + esc(inp.title) + "</a> · " + esc(inp.license) + '<small class="zhs">取自網路，每次執行自動擷取</small></span></p><ul>' + rows + "</ul></div>";
   }
-  function buildResults(sizes, mode, at, lang, input) {
-    var el = $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
+  function buildResults(sizes, mode, at, lang, input, target) {
+    var el = target || $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
     var all = sizes.length === 3;
     var cards = METRICS.map(function (m) { return lineChart(m, by, all, sizes); }).join("");
     var tag = mode === "running" ? '<em class="lr-run2">Measuring · ' + sizes.length + " / 3<small class=\"zhs\">量測中</small></em>"
-      : (mode === "prev" || mode === "prevfail") ? '<em class="lr-prevtag">PREVIOUS RUN · ' + esc(at || "") + '<small class="zhs">前一次結果</small></em>'
-      : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
+      : (mode === "prev" || mode === "prevfail") ? '<em class="lr-prevtag">PREVIOUS RUN<small class="zhs">前一次結果</small></em>'
+      : '<em class="lr-live">LIVE</em>';
     el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag + (lang && LANGNAME[lang] ? '<em class="lr-langtag">' + LANGNAME[lang][0] + '<small class="zhs">' + LANGNAME[lang][1] + "</small></em>" : "") +
-      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + inputHtml(input || curInput) + notes +
+      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + inputHtml(input || curInput) +
       '<p class="lr-legend"><span><i class="a"></i>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><span><i class="ab"></i>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
       '<div class="lr-charts">' + cards + "</div>";
-    el.hidden = false; $("lrResNote").hidden = true;
+    el.hidden = false; if (!target) $("lrResNote").hidden = true;
   }
   function showPartial(list) {
     D.sizes = list.map(function (z) { return { key: z.key, tok: z.tokens, chars: z.chars, a: z.a, ab: z.ab }; });
@@ -115,11 +114,32 @@
   var shownPrev = null;
   function paintPrev(run, label) {
     var el = $("lrPrev"); shownPrev = run;
-    if (!run) { el.hidden = true; el.innerHTML = ""; return; }
-    el.hidden = false;
-    el.innerHTML = '<div class="lr-prevh"><b>' + label + '<small class="zhs">' + (label === "Previous run" ? "前一次結果" : "上次結果") + '</small></b><em>' + esc(run.at || "") + (run.lang && LANGNAME[run.lang] ? " · " + LANGNAME[run.lang][0] : "") + '</em>' + (run.pass ? "" : '<em class="lr-below">below 1.3×</em>') + '</div><div class="lr-prevs">' + runSummary(run) + '</div><button type="button" class="lr-ghost" id="lrPrevShow">Show details<small class="zhs">顯示明細</small></button>';
-    $("lrPrevShow").onclick = function () { buildResults(run.sizes, run.pass ? "prev" : "prevfail", run.at, run.lang, run.input); };
+    $("lrToolPrev").hidden = !run;
+    if (!run) { el.innerHTML = ""; if (toolOpen === "prev") openTool(null); return; }
+    el.innerHTML = '<div class="lr-prevh"><b>' + label + '<small class="zhs">' + (label === "Previous run" ? "前一次結果" : "上次結果") + '</small></b><em>' + esc(run.at || "") + (run.lang && LANGNAME[run.lang] ? " · " + LANGNAME[run.lang][0] : "") + '</em>' + (run.pass ? "" : '<em class="lr-below">below 1.3×</em>') + '</div><div class="lr-prevs">' + runSummary(run) + '</div><div class="lr-prevd" id="lrPrevD"></div>';
+    buildResults(run.sizes, run.pass ? "prev" : "prevfail", run.at, run.lang, run.input, $("lrPrevD"));
   }
+  /* Last run / Script / Notes: three buttons on the right above the results. Hover opens a panel over the page, moving the mouse away closes it
+     (a click also toggles it, for touch screens and keyboards). */
+  var toolOpen = null, scriptLoaded = false, toolTimer = null;
+  function openTool(p) {
+    toolOpen = p;
+    Array.prototype.forEach.call($("lrTools").querySelectorAll("button"), function (b) { var on = b.dataset.p === toolOpen; b.className = on ? "on" : ""; b.setAttribute("aria-expanded", on ? "true" : "false"); });
+    Array.prototype.forEach.call($("lrToolP").querySelectorAll(".lr-tp"), function (d) { d.hidden = d.dataset.p !== toolOpen; });
+    $("lrToolP").hidden = !toolOpen;
+    if (toolOpen === "script" && !scriptLoaded) {
+      fetch(API + "/script", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) { $("lrScript").textContent = d.text; scriptLoaded = true; })
+        .catch(function () { $("lrScript").textContent = "The script is shown on the local platform only.\nIt lives in the repository at benchmark/litellm_smoke.py."; });
+    }
+  }
+  var toolWrap = $("lrToolWrap");
+  Array.prototype.forEach.call($("lrTools").querySelectorAll("button"), function (b) {
+    b.onmouseenter = function () { clearTimeout(toolTimer); openTool(b.dataset.p); };
+    b.onclick = function () { openTool(toolOpen === b.dataset.p ? null : b.dataset.p); };
+  });
+  toolWrap.onmouseenter = function () { clearTimeout(toolTimer); };
+  toolWrap.onmouseleave = function () { clearTimeout(toolTimer); toolTimer = setTimeout(function () { openTool(null); }, 220); };
+  $("lrNotesP").innerHTML = notesHtml;
   function conclusion(pass) { buildResults(D.sizes, pass ? "done" : "fail", undefined, D.lang, D.input); }
 
   /* ---------- 1 · the picture: real clients, real machines, real models ---------- */
@@ -344,12 +364,7 @@
   $("lrTermFold").onclick = function () { var f = $("lrTerm").classList.toggle("folded"); this.setAttribute("aria-expanded", f ? "false" : "true"); this.firstChild.nodeValue = f ? "Unfold " : "Fold "; this.querySelector("small").textContent = f ? "展開" : "收合"; };
   $("lrTermBig").onclick = function () { termBig = !termBig; $("lrTermBody").classList.toggle("big", termBig); this.firstChild.nodeValue = termBig ? "Collapse " : "Expand "; this.querySelector("small").textContent = termBig ? "收合" : "展開全部"; };
   $("lrTermCopy").onclick = function () { var t = $("lrTermBody").innerText, b = this; (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.querySelector("small").textContent = "已複製"; setTimeout(function () { b.querySelector("small").textContent = "複製"; }, 1500); }).catch(function () { var r = document.createRange(); r.selectNodeContents($("lrTermBody")); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }); };
-  var scriptLoaded = false;
-  $("lrScriptBox").addEventListener("toggle", function () {
-    if (!this.open || scriptLoaded) return;
-    fetch(API + "/script", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) { $("lrScript").textContent = d.text; scriptLoaded = true; })
-      .catch(function () { $("lrScript").textContent = "The script is shown on the local platform only.\nIt lives in the repository at benchmark/litellm_smoke.py."; });
-  });
+
   checkStatus();
   paintPrev(loadHist()[0] || null, "Last run");
   refreshHealth(); setInterval(function () { if (!poll) refreshHealth(); }, 10000);

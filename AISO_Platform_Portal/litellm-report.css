@@ -592,3 +592,24 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-inp li>span{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
 .lr .lr-inp li q{flex:1 1 320px;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lr .lr-inp li em small{display:inline;margin-left:4px;font-size:16px;color:var(--gold)}
+
+/* previous run: the details open right under the summary, inside the same panel */
+.lr .lr-prevd{flex-basis:100%;margin-top:6px}
+.lr .lr-prevd[hidden]{display:none}
+.lr .lr-prevd .lr-concl{margin:0;border-left-width:1px;background:transparent;padding:14px 0 0}
+
+/* Last run / Script / Notes: three buttons on the right; hover opens a panel over the page, leaving closes it */
+.lr .lr-toolwrap{position:relative;margin:0 0 12px;z-index:6}
+.lr .lr-tools{display:flex;justify-content:flex-end;gap:10px}
+.lr .lr-tools button{padding:6px 16px;border:1px solid rgba(244,239,228,.28);border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:16px;cursor:pointer}
+.lr .lr-tools button small{display:inline;margin-left:8px;font-size:16px;color:inherit}
+.lr .lr-tools button:hover,.lr .lr-tools button.on{border-color:var(--gold);color:var(--ivory)}
+.lr .lr-tools button[hidden]{display:none}
+.lr .lr-toolp{position:absolute;right:0;top:100%;margin-top:6px;width:min(1000px,100%);max-height:78vh;overflow:auto;padding:16px 18px;border:1px solid var(--gold);border-radius:14px;background:#1a140e;box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.lr .lr-toolp[hidden],.lr .lr-tp[hidden]{display:none}
+.lr .lr-toolp::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px}
+.lr .lr-toolp .lr-prev{display:block;margin:0;padding:0;border:0;background:none}
+.lr .lr-tpsrc{margin:0 0 8px;font-size:16px;color:var(--muted)}.lr .lr-tpsrc small{display:inline;margin-left:8px}
+.lr .lr-toolp pre{margin:0;max-height:60vh;overflow:auto;padding:12px 14px;border:1px solid #3d3328;border-radius:10px;background:#16110d;font:16px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#cfd6e4;white-space:pre}
+.lr .lr-nl{margin:0;padding:0;list-style:none;display:grid;gap:12px}.lr .lr-nl li{color:var(--ivory)}.lr .lr-nl li small{display:block;margin-top:2px;color:var(--muted);font-size:16px}
+.lr .lr-prevd .lr-concl{margin:0}
