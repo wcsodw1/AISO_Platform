@@ -21,3 +21,5 @@ assert.strictEqual(els.lrConcl.hidden, true, "results stay hidden until a test h
 assert.ok(/lr-plan/.test(els.lrRun.innerHTML), "stage list drawn");
 assert.strictEqual(els.lrPrev.hidden, true, "no previous run to show on a fresh browser");
 console.log("litellm-report page script: ok");
+// the online page (no backend, not on localhost) says it is view-only and links to the local platform
+setTimeout(() => { assert.ok(/lr-openlocal/.test(els.lrRun.innerHTML) && /view-only/.test(els.lrRun.innerHTML), "online page points to the local platform"); console.log("litellm-report online hint: ok"); }, 50);
