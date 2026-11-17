@@ -7,7 +7,7 @@
  el.parentNode.insertBefore(wrap,el);wrap.appendChild(el);
  var caret=document.createElement("span");caret.className="caret";caret.setAttribute("aria-hidden","true");el.appendChild(caret);
  var dd=document.createElement("div");dd.className="nav-dropdown nav-research";dd.setAttribute("role","menu");dd.setAttribute("aria-label","Research menu");wrap.appendChild(dd);
- var all='<a role="menuitem" class="nd-all" href="research.html">All research<small>全部研究</small></a>';
+ var all='<a role="menuitem" class="nd-all" href="research.html">All research<small>全部研究</small></a><a role="menuitem" class="nd-mb" href="sizing.html">Memory Budget<small>記憶體預算</small></a>';
  dd.innerHTML=all;
  fetch("data/rd-list.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){
   var DAY=864e5,W0=new Date((d.weeks_from||"2026-11-09")+"T00:00:00"),NOW=Math.floor((Date.now()-W0)/DAY/7),wk=function(v){return Math.floor((new Date(v+"T00:00:00")-W0)/DAY/7)};
