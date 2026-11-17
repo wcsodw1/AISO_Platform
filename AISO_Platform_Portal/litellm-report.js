@@ -117,9 +117,9 @@
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   /* four sentences, one benefit each (numbers appear only after a test has run) */
   var FUNCS = [
-    ["One endpoint, one key: swap machines without changing apps.", "一個端點、一把金鑰，換機器不必改應用程式。", ""],
-    ["Spreads requests across machines: faster, higher throughput.", "請求分散到多台機器：回應更快、吞吐更高。", "measured"],
+    ["Spread load: faster, higher throughput.", "分散請求：更快、高吞吐。", "measured"],
     ["If one machine fails, another keeps answering.", "一台機器故障，另一台繼續回應。", ""],
+    ["Apps call one address; LiteLLM picks the machine.", "應用程式只打一個網址，由 LiteLLM 選機器。", ""],
     ["Each key reaches only its own models.", "每把金鑰只能用被授權的模型。", ""]
   ];
   var TAG = { measured: ["Measured", "實測"] };
@@ -127,7 +127,7 @@
     $("lrFuncs").innerHTML = '<ol class="lr-ef">' + FUNCS.map(function (f, i) {
       var tag = f[2] && (f[2] !== "measured" || D.live) ? '<em class="lr-tg ' + f[2] + '">' + TAG[f[2]][0] + '<small class="zhs">' + TAG[f[2]][1] + "</small></em>" : "";
       return '<li><i>' + (i + 1) + '</i><span>' + esc(f[0]) + '<small class="zhs">' + esc(f[1]) + "</small>" +
-        (i === 1 || i === 2 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + "</li>";
+        (i === 0 || i === 1 ? '<b class="lr-fst" id="lrFst' + i + '" role="status"></b>' : "") + "</span>" + tag + "</li>";
     }).join("") + "</ol>";
     paintFuncs();
   }
@@ -206,7 +206,7 @@
   function lightsHtml() {
     return lights.map(function (l) { return '<span class="lr-light ' + (l.ok ? "ok" : "bad") + '"><i aria-hidden="true"></i><span class="lr-ln2">' + esc(l.name) + "</span>" + (l.ok ? "" : '<em>' + why(l.detail) + "</em>") + "</span>"; }).join("");
   }
-  /* Spread requests (card 2) and Switch on failure (card 3): red, glowing text whenever the connection says they are not fully working */
+  /* Spread load (card 1) and failover (card 2): red, glowing text whenever the connection says they are not fully working */
   function fnStatus() {
     if (!lights || !lights.length) return null;          // lights is filled later by the health check
     var by = {}; lights.forEach(function (l) { by[l.name] = l; });
@@ -220,7 +220,7 @@
   }
   function paintFuncs() {
     var st = fnStatus();
-    [1, 2].forEach(function (i, k) {
+    [0, 1].forEach(function (i, k) {
       var el = $("lrFst" + i); if (!el) return;
       if (!st) { el.innerHTML = ""; el.className = "lr-fst"; return; }
       if (!st[k].bad) { el.innerHTML = ""; el.className = "lr-fst"; return; }               // quiet when everything is fine
