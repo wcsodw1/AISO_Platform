@@ -196,7 +196,7 @@
     return '<ol class="lr-rs">' + STEPS.map(function (n, i) { var x = (st && st[i]) || { state: "wait" }; return '<li class="' + esc(x.state) + '"><b>' + n[0] + '<small class="zhs">' + n[1] + '</small></b><span>' + esc(x.detail || "") + "</span></li>"; }).join("") + "</ol>";
   }
   function runUI(mode, msg, st, items) {
-    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '>▶ Run smoke test<small class="zhs">實測</small></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
+    runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn' + (mode === "running" ? " busy" : "") + '" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '><span>' + (mode === "running" ? "Running" : "Run smoke test") + '</span><small class="zhs">' + (mode === "running" ? "執行中" : "實測") + '</small><i aria-hidden="true">→</i></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
     var row = runEl.querySelector(".lr-runrow");
     if (row && (mode === "ready" || mode === "running")) {
       row.insertAdjacentHTML("beforeend", '<label class="lr-incl"><input type="checkbox" id="lrInclB"' + (inclB ? " checked" : "") + (mode === "ready" ? "" : " disabled") + '> Include ' + M.b + ' (shared machine)<small class="zhs">包含 ' + M.b + '（共用機器）</small></label>');
@@ -227,7 +227,7 @@
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ include_b: inclB }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
       .then(function (d) { job = d.job_id; logNext = 0; termReset(""); poll = setInterval(tick, 1000); tick(); })
-      .catch(function (e) { runUI("ready", esc(e.message || e)); });
+      .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled. No password was entered.", "已取消，沒有輸入密碼") : esc(e.message || e)); });
   }
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {

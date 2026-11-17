@@ -316,3 +316,22 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-kpi{grid-template-columns:minmax(0,1fr)}
 .lr .lr-kpi *{min-width:0}
 .lr .lr-kr:has(.lr-kpill){grid-template-columns:124px minmax(0,1fr)}
+
+/* test area sits below the architecture picture (step 2) */
+.lr .lr-run{margin:0 0 18px}.lr .lr-term{margin:0 0 18px}.lr .lr-script{margin:0 0 30px}
+.lr .lr-stp.s3{color:var(--s3)}.lr .lr-stp.s3 i{background:var(--s3)}
+/* run button: flat, rectangular, small radius, uppercase with tracking, arrow on the right (in the spirit of Tesla / NVIDIA / Muji) */
+.lr .lr-runbtn{position:relative;display:inline-flex;align-items:center;gap:14px;height:56px;padding:0 26px 0 30px;border:2px solid var(--gold);border-radius:3px;background:var(--gold);color:#1d1710;font:inherit;font-size:17px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;overflow:hidden;transition:background .18s ease,color .18s ease}
+.lr .lr-runbtn small{margin:0 0 0 2px;padding-left:14px;border-left:1px solid rgba(29,23,16,.4);color:inherit;font-size:16px;font-weight:600;letter-spacing:.04em;text-transform:none}
+.lr .lr-runbtn i{font-style:normal;font-size:22px;letter-spacing:0;transition:transform .18s ease}
+.lr .lr-runbtn:hover:not(:disabled){background:transparent;color:var(--gold)}
+.lr .lr-runbtn:hover:not(:disabled) small{border-left-color:rgba(214,178,107,.5)}
+.lr .lr-runbtn:hover:not(:disabled) i{transform:translateX(5px)}
+.lr .lr-runbtn:focus-visible{outline:2px solid var(--ivory);outline-offset:3px}
+.lr .lr-runbtn:disabled{background:transparent;border-color:#4a3d2e;color:var(--muted);cursor:not-allowed}
+.lr .lr-runbtn:disabled small{border-left-color:#4a3d2e;color:var(--muted)}
+.lr .lr-runbtn.busy{border-color:var(--gold);color:var(--gold);cursor:progress}
+.lr .lr-runbtn.busy::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:40%;background:var(--gold);animation:lrsweep 1.1s ease-in-out infinite}
+@keyframes lrsweep{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+@media (prefers-reduced-motion:reduce){.lr .lr-runbtn.busy::after{animation:none;width:100%;opacity:.5}.lr .lr-runbtn,.lr .lr-runbtn i{transition:none}}
+.lr .lr-runrow{gap:14px 22px}
