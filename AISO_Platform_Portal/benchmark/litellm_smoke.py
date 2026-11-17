@@ -53,7 +53,7 @@ def plan(cfg=None, load=None):
     L = dict(LOAD, **(load or {}))
     a = (cfg or {}).get("machine_a", {}).get("name", "Machine A"); b = (cfg or {}).get("machine_b", {}).get("name", "Machine B")
     it = lambda en, zh: {"label": en, "zh": zh}
-    return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats")}, "criteria": CRIT, "machines": [a, b], "steps": [
+    return {"load": {k: L[k] for k in ("requests", "concurrency", "tokens", "repeats")}, "criteria": CRIT, "inputs": {l: {"sent": TEXT[l]["sent"].strip(), "ask": TEXT[l]["ask"], "reps": TEXT[l]["reps"]} for l in TEXT}, "machines": [a, b], "steps": [
         {"name": "Preflight", "zh": "檢查", "sends": [], "items": [it("Gateway reachable", "閘道可連線"), it("Machines reachable", "主機可連線"), it("No other test in progress", "無其他測試進行中"), it("Test key and model available", "測試金鑰與模型可用")]},
         {"name": "Benchmark", "zh": "速度", "sends": [{"prompt": "Text in front (a sentence, a paragraph or a long passage) + the same question", "tokens": L["tokens"], "meta": "%d requests, %d at once, x %d" % (L["requests"], L["concurrency"], L["repeats"])}],
          "items": [it("Sentence (one line of text)", "一句話"), it("Paragraph (about 100 input tokens)", "一段文字（約 100 input tokens）"), it("Long passage (about 1000 input tokens)", "長篇文字（約 1000 input tokens）"),

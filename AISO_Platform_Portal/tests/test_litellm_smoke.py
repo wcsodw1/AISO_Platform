@@ -185,6 +185,7 @@ class SmokeTests(unittest.TestCase):
         self.assertEqual([x["name"] for x in pl["steps"]], list(m.STEP_NAMES))
         self.assertEqual([len(x["items"]) for x in pl["steps"]], [4, 4])
         self.assertEqual(pl["machines"], ["AISO1", "PRO6000"])
+        self.assertEqual(set(pl["inputs"]), {"en", "zh"}); self.assertEqual(pl["inputs"]["en"]["reps"]["short"], 0)   # the page shows exactly this text
         sc = svc.script()
         self.assertIn("def _execute", sc["text"])
         self.assertNotIn(KEY, sc["text"])

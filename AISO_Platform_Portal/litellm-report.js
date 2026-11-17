@@ -42,15 +42,21 @@
   var UNIT = { ttft_s: "s", tpot_ms: "ms", norm_tps: "tokens/s", agg_tps: "tokens/s" };
   function niceStep(r) { var p = Math.pow(10, Math.floor(Math.log(r) / Math.LN10)), n = r / p; return (n <= 1 ? 1 : n <= 1.5 ? 1.5 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 3 ? 3 : n <= 4 ? 4 : n <= 5 ? 5 : 10) * p; }
   function lineChart(m, by, all, sizes) {
-    var W = 540, H = 290, L = 56, R = 22, T = 34, B = 66, pw = W - L - R, ph = H - T - B, ks = ["short", "mid", "long"], vals = [];
+    var W = 540, H = 304, L = 56, R = 22, T = 48, B = 66, pw = W - L - R, ph = H - T - B, ks = ["short", "mid", "long"], vals = [];
     ks.forEach(function (k) { if (by[k]) vals.push(by[k].a[m.f], by[k].ab[m.f]); });
     var step = niceStep((vals.length ? Math.max.apply(null, vals) : 1) * 1.25 / 4), top = step * 4;
     var X = function (i) { return L + pw * (i + 0.5) / 3; }, Y = function (v) { return T + ph - (v / top) * ph; };
     var num = function (v) { return m.f === "ttft_s" ? f2(v) : f1(v); }, tk = function (v) { return step % 1 === 0 ? String(Math.round(v)) : v.toFixed(step < 0.1 ? 2 : 1); };
     var g = "";
     for (var t = 0; t <= 4; t++) g += '<line class="lr-gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(step * t).toFixed(1) + '" y2="' + Y(step * t).toFixed(1) + '"/><text class="lr-tk" x="' + (L - 8) + '" y="' + (Y(step * t) + 5).toFixed(1) + '" text-anchor="end">' + tk(step * t) + "</text>";
+    var gainOf = function (z) { return (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f] - 1) * 100; };      // positive = faster with LiteLLM
     ks.forEach(function (k, i) {
-      g += '<text class="lr-xl" x="' + X(i).toFixed(1) + '" y="' + (H - 34) + '" text-anchor="middle">' + SIZE[k][0] + '</text><text class="lr-xs" x="' + X(i).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + SIZE[k][1] + (by[k] ? " · " + by[k].tok + " tok" : "") + "</text>";
+      var cx = X(i).toFixed(1);
+      g += '<text class="lr-xl" x="' + cx + '" y="' + (H - 34) + '" text-anchor="middle">' + SIZE[k][0] + '</text><text class="lr-xs" x="' + cx + '" y="' + (H - 12) + '" text-anchor="middle">' + SIZE[k][1] + (by[k] ? " · " + by[k].tok + " tok" : "") + "</text>";
+      if (by[k]) {                                                                   // small faint note straight above the two points: how much faster with LiteLLM
+        var pc = Math.round(gainOf(by[k])), ok = pc >= 0, n = Math.abs(pc), hi = Math.min(Y(by[k].a[m.f]), Y(by[k].ab[m.f]));
+        g += '<text class="lr-gn ' + (ok ? "good" : "bad") + '" x="' + cx + '" y="' + (hi - 36).toFixed(1) + '" text-anchor="middle">' + n + "% " + (ok ? "faster" : "slower") + " " + (ok ? "快" : "慢") + n + "%</text>";
+      }
     });
     ["a", "ab"].forEach(function (mk) {
       var pts = ks.map(function (k, i) { return by[k] ? { x: X(i), y: Y(by[k][mk][m.f]), v: by[k][mk][m.f], o: by[k][mk === "a" ? "ab" : "a"][m.f] } : null; }).filter(Boolean);
@@ -60,21 +66,32 @@
         g += '<circle class="lr-pt ' + mk + '" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="6"/><text class="lr-pv ' + mk + '" x="' + p.x.toFixed(1) + '" y="' + (above ? p.y - 13 : p.y + 26).toFixed(1) + '" text-anchor="middle">' + num(p.v) + "</text>";
       });
     });
-    var hero = "…", cls = "";
-    if (all) { var mean = sizes.reduce(function (t, z) { return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / sizes.length; hero = m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2); cls = mean > (m.low ? 0 : 1) ? "good" : "bad"; }
+    var hero = "…", cls = "", word = "faster", zhw = "快";
+    if (all) { var pct = Math.round(sizes.reduce(function (t, z) { return t + gainOf(z); }, 0) / sizes.length); cls = pct >= 0 ? "good" : "bad"; hero = Math.abs(pct) + "%"; if (pct < 0) { word = "slower"; zhw = "慢"; } }
     return '<div class="lr-chart"><h4>' + m.name + '<small class="zhs">' + m.zh + '</small><em>' + UNIT[m.f] + " · " + (m.low ? "lower is better" : "higher is better") + '<small class="zhs">' + (m.low ? "越低越好" : "越高越好") + '</small></em></h4>' +
       '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + m.name + ' without and with LiteLLM, by input size">' + g + "</svg>" +
-      '<p class="lr-kd"><b class="' + cls + '">' + hero + '</b><span>with LiteLLM, on average<small class="zhs">經 LiteLLM，平均</small></span></p></div>';
+      '<p class="lr-kd"><b class="' + cls + '">' + hero + '</b><span>' + word + ' with LiteLLM, on average<small class="zhs">經 LiteLLM 平均' + zhw + '</small></span></p></div>';
+  }
+  /* the text sent in each size (mirrors TEXT in benchmark/litellm_smoke.py; the platform's plan overrides it when reachable) */
+  var INPUTS = { en: { sent: "Night markets in Taipei sell food, games and small goods until late at night.", ask: "Now write about 80 words about Taipei night markets.", reps: { short: 0, mid: 5, long: 55 } },
+                 zh: { sent: "台北的夜市販售小吃、遊戲與各式小物，營業到深夜。", ask: "請用約 80 字介紹台北夜市文化。", reps: { short: 0, mid: 4, long: 54 } } };
+  function inputHtml(lang) {
+    var t = INPUTS[lang] || INPUTS.en, S = t.sent.replace(/\s+$/, "");
+    var rows = ["short", "mid", "long"].map(function (k) {
+      var n = t.reps[k];
+      return '<li><b>' + SIZE[k][0] + '<small class="zhs">' + SIZE[k][1] + "</small></b><span>" + (n ? "<q>" + esc(S) + '</q><em>× ' + n + '<small class="zhs">重複</small></em> + ' : "") + "<q>" + esc(t.ask) + "</q></span></li>";
+    }).join("");
+    return '<div class="lr-inp"><p class="lr-inph">Input text<small class="zhs">輸入文字</small></p><ul>' + rows + "</ul></div>";
   }
   function buildResults(sizes, mode, at, lang) {
     var el = $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
     var all = sizes.length === 3;
     var cards = METRICS.map(function (m) { return lineChart(m, by, all, sizes); }).join("");
     var tag = mode === "running" ? '<em class="lr-run2">Measuring · ' + sizes.length + " / 3<small class=\"zhs\">量測中</small></em>"
-      : mode === "prev" ? '<em class="lr-prevtag">PREVIOUS RUN · ' + esc(at || "") + '<small class="zhs">前一次結果</small></em>'
+      : (mode === "prev" || mode === "prevfail") ? '<em class="lr-prevtag">PREVIOUS RUN · ' + esc(at || "") + '<small class="zhs">前一次結果</small></em>'
       : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
     el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag + (lang && LANGNAME[lang] ? '<em class="lr-langtag">' + LANGNAME[lang][0] + '<small class="zhs">' + LANGNAME[lang][1] + "</small></em>" : "") +
-      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + notes +
+      ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + inputHtml(lang) + notes +
       '<p class="lr-legend"><span><i class="a"></i>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><span><i class="ab"></i>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
       '<div class="lr-charts">' + cards + "</div>";
     el.hidden = false; $("lrResNote").hidden = true;
@@ -273,7 +290,7 @@
   function checkStatus() {
     runUI("checking", "");
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
-      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
+      if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl; if (pl.inputs) INPUTS = pl.inputs; if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
       else runUI("off", info("The gateway is not reachable from this platform.", "平台無法連線至閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
     }).catch(function () { runUI("off", info("Available on the local platform only; requires the smoke-test backend on this computer.", "僅限本機平台使用；需在本機啟用 smoke test 後端")); });
   }
