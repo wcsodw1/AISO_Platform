@@ -100,6 +100,7 @@ class SmokeTests(unittest.TestCase):
             self.assertLess(s["ab"]["ttft_s"], s["a"]["ttft_s"])       # fewer requests wait in a queue with more capacity
             self.assertGreater(s["gain_agg"], 1.3)
         self.assertEqual([[x["state"] for x in step] for step in j["items"]], [["ok"] * 4, ["ok"] * 4])
+        self.assertEqual([x["key"] for x in j["partial"]], ["short", "mid", "long"])        # rows were published one by one
 
     def test_without_extra_capacity_the_gain_is_not_confirmed(self):
         j = self.finish(self.service(gw_slots=2))                          # the gateway adds no capacity

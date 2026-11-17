@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=47">
   <link rel="stylesheet" href="tesla.css?v=49">
-  <link rel="stylesheet" href="litellm-report.css?v=31">
+  <link rel="stylesheet" href="litellm-report.css?v=35">
 </head>
 <body>
   <header class="site-header">
@@ -33,21 +33,24 @@
     </section>
 
     <section class="report-section" id="lrMain">
-      <p class="lr-stp s1"><i>1</i><span>LiteLLM<small class="zhs">架構與功能</small></span></p>
+      <p class="lr-stp s1"><i>1</i><span>LiteLLM<small class="zhs">架構</small></span></p>
       <div class="lr-box" id="lrFlow"></div>
-      <div class="lr-funcs" id="lrFuncs"></div>
 
-      <p class="lr-stp s2"><i>2</i><span>Spread requests: speed<small class="zhs">分流功能的速度差異</small></span></p>
-      <div class="lr-box lr-concl" id="lrConcl"></div>
-
-      <p class="lr-stp s3"><i>3</i><span>Run the test<small class="zhs">執行測試</small></span></p>
+      <p class="lr-stp s2"><i>2</i><span>Run the test<small class="zhs">執行測試</small></span></p>
       <div class="lr-run" id="lrRun"></div>
       <div class="lr-term" id="lrTerm" hidden><div class="lr-term-h">Terminal<small class="zhs">終端機・測試紀錄</small><span class="lr-term-n" id="lrTermN">1 lines</span><button type="button" id="lrTermCopy">Copy<small class="zhs">複製</small></button><button type="button" id="lrTermBig">Expand <small class="zhs">展開全部</small></button></div><div class="lr-term-b" id="lrTermBody" role="log" aria-live="polite"><div class="hd">$ press "Run smoke test" to see the log here</div></div></div>
-      <details class="lr-script" id="lrScriptBox"><summary>Script<small class="zhs">腳本原始碼</small><span>benchmark/litellm_smoke.py · exactly what is run</span></summary><pre id="lrScript">loading…</pre></details></div>
+      <details class="lr-script" id="lrScriptBox"><summary>Script<small class="zhs">腳本原始碼</small><span>benchmark/litellm_smoke.py · exactly what is run</span></summary><pre id="lrScript">loading…</pre></details>
+
+      <p class="lr-stp s3"><i>3</i><span>Result<small class="zhs">結果</small></span></p>
+      <p class="lr-resnote" id="lrResNote">Appears here once the test has finished.<small class="zhs">測試跑完才會有結果</small></p>
+      <div class="lr-box lr-concl" id="lrConcl" hidden></div>
+
+      <p class="lr-stp s4"><i>4</i><span>What LiteLLM gives you<small class="zhs">功效</small></span></p>
+      <div class="lr-funcs" id="lrFuncs"></div>
     </section>
   </main>
   <script src="run-gate.js"></script>
-  <script src="litellm-report.js?v=26"></script>
+  <script src="litellm-report.js?v=32"></script>
   <script src="ui-min-type.js?v=2" defer></script>
 </body>
 </html>

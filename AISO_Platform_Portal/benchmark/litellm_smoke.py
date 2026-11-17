@@ -231,7 +231,7 @@ class SmokeService:
                 raise SmokeError("A smoke test is already running; it was not interrupted.", 409)
             job = {"job_id": uuid.uuid4().hex[:12], "state": "running", "started": time.time(),
                    "steps": [{"state": "wait", "detail": ""} for _ in STEP_NAMES], "items": [[{"state": "wait", "value": ""} for _ in s_["items"]] for s_ in plan(self.config(), self.load)["steps"]],
-                   "result": None, "error": "", "cancel": False, "log": []}
+                   "result": None, "partial": [], "error": "", "cancel": False, "log": []}
             self.jobs[job["job_id"]] = job
             for old in sorted(self.jobs.values(), key=lambda j: j["started"])[:-10]:
                 self.jobs.pop(old["job_id"], None)
@@ -244,7 +244,7 @@ class SmokeService:
             if not j:
                 raise SmokeError("Unknown smoke test.", 404)
             since = max(0, int(since or 0))
-            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "error")}
+            out = {k: j[k] for k in ("job_id", "state", "steps", "items", "result", "partial", "error")}
             out["log"], out["log_next"] = j["log"][since:], len(j["log"])
             return out
 
@@ -352,6 +352,8 @@ class SmokeService:
                           "ok": all(x["ok"] == x["n"] for x in runs[mk])}
             sz["gain_agg"] = round(sz["ab"]["agg_tps"] / sz["a"]["agg_tps"], 2) if sz["a"]["agg_tps"] else 0
             sizes.append(sz)
+            with self.lock:
+                job["partial"] = [dict(x) for x in sizes]            # the page shows a row as soon as its size is done
             good = sz["a"]["ok"] and sz["ab"]["ok"]
             self._item(job, 1, si, "ok" if good else "fail", "%.2fx · %d tok" % (sz["gain_agg"], sz["tokens"]))
             self._log(job, "  %-22s input %d tokens: Aggregate TPS %.1f -> %.1f  (%.2fx)" % (en, sz["tokens"], sz["a"]["agg_tps"], sz["ab"]["agg_tps"], sz["gain_agg"]))

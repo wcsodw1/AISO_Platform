@@ -3,6 +3,7 @@
    smoke-test runs on 2026-11-17 (the same code path as the Run button). No addresses, keys or paths. */
 (function () {
   "use strict";
+  var lights = [], healthB = null;   // connection lights, filled by the health check (declared first: other code reads them)
   var M = { a: "AISO1", b: "PRO6000", ma: "Gemma 4 26B Q4", mb: "Gemma 4 26B BF16" };
   var D = {
     tested: "2026-11-17", np: 4,
@@ -35,25 +36,34 @@
     var pct = m.low ? (1 - ab / a) * 100 : (ab / a - 1) * 100;      // positive = better with LiteLLM
     return { txt: m.low ? (pct >= 0 ? "−" + Math.round(pct) + "%" : "+" + Math.round(-pct) + "%") : "×" + (ab / a).toFixed(2), good: pct >= 0 };
   }
-  function conclusion(live) {
-    var el = $("lrConcl");
-    el.classList.toggle("prelim", !live);
+  /* results build up row by row while the test runs: mode "running" (some sizes still to come), "done" or "fail" (below 1.3x) */
+  function buildResults(sizes, mode) {
+    var el = $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
+    var all = sizes.length === 3;
     var cards = METRICS.map(function (m) {
-      var rows = D.sizes.map(function (z) {
+      var rows = ["short", "mid", "long"].map(function (k) {
+        var z = by[k], lab = '<span class="lr-ms">' + SIZE[k][0] + '<small class="zhs">' + SIZE[k][1] + (z ? " · " + z.tok + " tok" : "") + "</small></span>";
+        if (!z) return '<div class="lr-mr wait">' + lab + '<span class="lr-mv"><i>' + (mode === "running" ? "measuring…" : "—") + "</i></span></div>";
         var c = change(m, z.a[m.f], z.ab[m.f]);
-        return '<div class="lr-mr"><span class="lr-ms">' + SIZE[z.key][0] + '<small class="zhs">' + SIZE[z.key][1] + " · " + z.tok + ' tok</small></span>' +
-          '<span class="lr-mv"><i class="no">' + m.show(z.a[m.f]) + '</i><em aria-hidden="true">→</em><i class="yes">' + m.show(z.ab[m.f]) + '</i></span><b class="' + (c.good ? "good" : "bad") + '">' + c.txt + "</b></div>";
+        return '<div class="lr-mr pop">' + lab + '<span class="lr-mv"><i class="no">' + m.show(z.a[m.f]) + '</i><em aria-hidden="true">→</em><i class="yes">' + m.show(z.ab[m.f]) + '</i></span><b class="' + (c.good ? "good" : "bad") + '">' + c.txt + "</b></div>";
       }).join("");
-      var mean = D.sizes.reduce(function (t, z) { return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / D.sizes.length;
-      var hero = m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2);
+      var hero = "…";
+      if (all) { var mean = sizes.reduce(function (t, z) { return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / sizes.length; hero = m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2); }
       return '<div class="lr-kpi"><h4>' + m.name + '<small class="zhs">' + m.zh + '</small></h4><p class="lr-dir">' + (m.low ? "Lower is better" : "Higher is better") + '<small class="zhs">' + (m.low ? "越低越好" : "越高越好") + '</small></p>' + rows +
         '<p class="lr-kd"><b>' + hero + '</b><span>on average<small class="zhs">平均</small></span></p></div>';
     }).join("");
-    el.innerHTML = '<span class="lr-cl">KPI<small class="zhs">速度差異</small>' + (live ? '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + '</em>' : '<em class="lr-pend">Preliminary<small class="zhs">先前兩次實測平均，待這次實測</small></em>') + '</span>' + notes +
+    var tag = mode === "running" ? '<em class="lr-run2">Measuring · ' + sizes.length + " / 3<small class=\"zhs\">量測中</small></em>" : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
+    el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag +
+      (mode === "fail" ? '<em class="lr-below">Below 1.3×, not confirmed<small class="zhs">低於 1.3 倍，不算確認</small></em>' : "") + '</span>' + notes +
       '<p class="lr-cols"><span>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><em aria-hidden="true">→</em><span>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
       '<div class="lr-kpis">' + cards + "</div>";
+    el.hidden = false; $("lrResNote").hidden = true;
   }
-  conclusion(false);
+  function showPartial(list) {
+    D.sizes = list.map(function (z) { return { key: z.key, tok: z.tokens, a: z.a, ab: z.ab }; });
+    buildResults(D.sizes, "running");
+  }
+  function conclusion(pass) { buildResults(D.sizes, pass ? "done" : "fail"); }
 
   /* ---------- 1 · the picture: real clients, real machines, real models ---------- */
   var W = 560, CH = 30;
@@ -84,14 +94,40 @@
 
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
   var FUNCS = [
-    ["One entry", "統一入口", "Apps use one address and one key.", "應用只用一個位址和一把金鑰", "Used in every test", "每項測試都用到", "ok"],
-    ["Spread requests", "分流", "Requests are shared by both machines.", "請求分給兩台機器一起處理", "Measured below ↓", "下方有實測數字", "ok"],
-    ["Switch on failure", "故障切換", "A broken machine is skipped; the other one answers.", "壞掉的機器被跳過，改由另一台回答", "PoC: 10 / 10 answered with one machine off", "PoC：關掉一台，10 個問題都有回覆", "poc"],
-    ["Key limits", "金鑰管控", "A key can only use the models it is given.", "金鑰只能用被授權的模型", "PoC: another model was refused", "PoC：用別的模型會被拒絕", "poc"]
+    ["One entry", "統一入口", [
+      ["One address and one key for every app", "所有應用共用一個位址、一把金鑰"],
+      ["Swap or add a machine, apps stay unchanged", "換機器、加機器，應用都不用改"]]],
+    ["Spread requests", "分流", [
+      ["Both machines answer at the same time", "兩台機器同時回答"],
+      ["TTFT %TTFT%, less waiting", "首字等待變短", "measured"],
+      ["TPS %TPS%, more tokens per second", "每秒產出變多", "measured"]]],
+    ["Switch on failure", "故障切換", [
+      ["A broken machine is skipped", "壞掉的機器被跳過"],
+      ["Users still get answers: 10 / 10", "使用者仍拿到回覆", "poc"],
+      ["No switching code in any app", "應用不必自己寫切換"]]],
+    ["Key limits", "金鑰管控", [
+      ["Each key reaches only its own models", "每把金鑰只能用自己的模型"],
+      ["Other models are refused", "用別的模型會被拒絕", "poc"]]]
   ];
-  $("lrFuncs").innerHTML = FUNCS.map(function (f, i) {
-    return '<div class="lr-fn"><h4><i>' + (i + 1) + "</i>" + f[0] + '<small class="zhs">' + f[1] + '</small></h4><p>' + f[2] + '<small class="zhs">' + f[3] + '</small></p><span class="lr-proof ' + f[6] + '">' + f[4] + '<small class="zhs">' + f[5] + "</small></span></div>";
-  }).join("");
+  var TAG = { measured: ["Measured", "實測"], poc: ["PoC", "概念驗證"] };
+  function renderFuncs() {
+    var ttft = "lower", tps = "higher";                 // no numbers before a test has run
+    if (D.live) {
+      ttft = "−" + Math.round(100 * D.sizes.reduce(function (t, z) { return t + (1 - z.ab.ttft_s / z.a.ttft_s); }, 0) / D.sizes.length) + "%";
+      tps = "×" + (D.sizes.reduce(function (t, z) { return t + z.ab.agg_tps / z.a.agg_tps; }, 0) / D.sizes.length).toFixed(2);
+    }
+    $("lrFuncs").innerHTML = FUNCS.map(function (f, i) {
+      var lis = f[2].map(function (b) {
+        var en = b[0].replace("%TTFT%", ttft).replace("%TPS%", tps);
+        return '<li><i aria-hidden="true">✓</i><span>' + esc(en) + '<small class="zhs">' + esc(b[1]) + "</small></span>" + (b[2] ? '<em class="lr-tg ' + (b[2] === "measured" && !D.live ? "wait" : b[2]) + '">' + (b[2] === "measured" && !D.live ? "After the test" : TAG[b[2]][0]) + '<small class="zhs">' + (b[2] === "measured" && !D.live ? "測完才有" : TAG[b[2]][1]) + "</small></em>" : "") + "</li>";
+      }).join("");
+      return '<div class="lr-fn"><h4><i>' + (i + 1) + "</i>" + f[0] + '<small class="zhs">' + f[1] + '</small></h4><ul class="lr-eff">' + lis + "</ul>" +
+        (i === 1 || i === 2 ? '<p class="lr-fst" id="lrFst' + i + '" role="status"></p>' : "") + "</div>";
+    }).join("");
+    paintFuncs();
+  }
+
+  renderFuncs();
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
   var logNext = 0, API = "/api/litellm", runEl = $("lrRun"), job = null, poll = null;
@@ -136,17 +172,38 @@
   }
 
   /* connection lights: one per thing the test needs; a red light says why */
-  var lights = [], healthB = null;
   var WHY = { "no connection": ["No connection", "連不上"], "gateway unreachable": ["Gateway down", "閘道連不上"], "not set": ["Not set", "沒設定"], "refused by the gateway": ["Key refused", "金鑰被拒"] };
   function why(d) { if (WHY[d]) return WHY[d][0] + '<small class="zhs">' + WHY[d][1] + "</small>"; if (/benchmark/i.test(d)) return 'Benchmark running<small class="zhs">有測試在跑</small>'; return esc(d); }
   function lightsHtml() {
     return lights.map(function (l) { return '<span class="lr-light ' + (l.ok ? "ok" : "bad") + '"><i aria-hidden="true"></i><span class="lr-ln2">' + esc(l.name) + "</span>" + (l.ok ? "" : '<em>' + why(l.detail) + "</em>") + "</span>"; }).join("");
+  }
+  /* Spread requests (card 2) and Switch on failure (card 3): red, glowing text whenever the connection says they are not fully working */
+  function fnStatus() {
+    if (!lights || !lights.length) return null;          // lights is filled later by the health check
+    var by = {}; lights.forEach(function (l) { by[l.name] = l; });
+    var gw = by["Gateway"], ms = [by[M.a], by[M.b]].filter(Boolean);
+    var up = ms.filter(function (x) { return x.ok; }).map(function (x) { return x.name; }), down = ms.filter(function (x) { return !x.ok; }).map(function (x) { return x.name; });
+    if (gw && !gw.ok) return [{ bad: true, en: "Gateway down: nothing is spread", zh: "閘道連不上，沒有在分流" }, { bad: true, en: "Gateway down: no switching", zh: "閘道連不上，無法切換" }];
+    if (!up.length) return [{ bad: true, en: "No machine reachable", zh: "兩台機器都連不上" }, { bad: true, en: "No machine to switch to", zh: "沒有可以切換的機器" }];
+    if (down.length) return [{ bad: true, en: "Only " + up.join(", ") + " left: " + down.join(", ") + " has no connection", zh: "只剩 " + up.join("、") + "：" + down.join("、") + " 連不上" },
+      { bad: true, en: "Switched: " + up.join(", ") + " answers instead of " + down.join(", "), zh: "已切換：由 " + up.join("、") + " 代替 " + down.join("、") + " 回答" }];
+    return [{ bad: false, en: "Both machines in use", zh: "兩台機器都在用" }, { bad: false, en: "Standing by", zh: "待命中" }];
+  }
+  function paintFuncs() {
+    var st = fnStatus();
+    [1, 2].forEach(function (i, k) {
+      var el = $("lrFst" + i); if (!el) return;
+      if (!st) { el.innerHTML = ""; el.className = "lr-fst"; return; }
+      el.className = "lr-fst " + (st[k].bad ? "bad" : "ok");
+      el.innerHTML = '<i aria-hidden="true"></i>' + esc(st[k].en) + '<small class="zhs">' + esc(st[k].zh) + "</small>";
+    });
   }
   function refreshHealth() {
     fetch(API + "/health", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (!d || !d.checks) return;
       lights = d.checks; var b = lights.filter(function (c) { return c.name === M.b; })[0]; healthB = b ? b.ok : null;
       var el = $("lrLights"); if (el) el.innerHTML = lightsHtml();
+      paintFuncs();
     }).catch(function () {});
   }
   function checkStatus() {
@@ -161,12 +218,13 @@
     runUI("running", "");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: "{}" }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; logNext = 0; termReset(""); poll = setInterval(tick, 1000); tick(); })
+      .then(function (d) { job = d.job_id; logNext = 0; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring… the rows appear one by one.<small class="zhs">量測中，結果會一列一列出現</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled. No password was entered.", "已取消，沒有輸入密碼") : esc(e.message || e)); });
   }
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       if (d.log) { termAdd(d.log); logNext = d.log_next; }
+      if (d.partial && d.partial.length && d.state === "running") showPartial(d.partial);
       runUI("running", "", d.steps, d.items);
       if (d.state === "running" || d.state === "queued") return;
       clearInterval(poll); poll = null;
@@ -177,7 +235,7 @@
   function applyLive(r, steps, items) {
     D.sizes = r.bench.sizes.map(function (z) { return { key: z.key, tok: z.tokens, a: z.a, ab: z.ab }; });
     D.np = r.bench.np; D.live = true; D.liveAt = r.finished || new Date().toLocaleTimeString();
-    conclusion(!!r.bench.pass);
+    conclusion(!!r.bench.pass); renderFuncs();
     runUI("ready", r.bench.pass ? "" : info("Done. The gain is below 1.3x, so this is not confirmed.", "完成，但提升低於 1.3 倍，不算確認"), steps, items);
   }
 
