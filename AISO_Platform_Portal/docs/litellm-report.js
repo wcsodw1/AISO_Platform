@@ -144,9 +144,9 @@
   var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 ' + W + ' 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
   $("lrFlow").innerHTML = '<div class="lr-vs">' +
     '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 LiteLLM</small></h3>' + svg(svgWithout, "Three clients each connect to both machines: six links") +
-    '<p class="lr-pt">Using both machines takes <b>6 links</b> and custom distribution and failover code in every application<small class="zhs">兩台並用時，每個應用都需 6 條連線，並自行實作分流與備援</small></p></div>' +
+    '<p class="lr-pt">Requests are distributed <b>manually</b>, and every application must add an endpoint for each machine (<b>6 links</b>)<small class="zhs">手動分配請求，並在每個應用程式增設各機器的 endpoint（共 6 條連線）</small></p></div>' +
     '<div class="lr-side lr-yes"><h3>With<small class="zhs">有 LiteLLM</small></h3>' + svg(svgWith, "Three clients connect to one gateway, which connects to both machines") +
-    '<p class="lr-pt"><b>One place</b> handles distribution, failover and keys; applications stay unchanged<small class="zhs">分流、備援與金鑰集中管理，應用程式無須更動</small></p></div></div>';
+    '<p class="lr-pt">Requests are distributed <b>automatically</b>, with automatic failover; applications use <b>one endpoint</b> and stay unchanged<small class="zhs">自動分配請求並自動備援，應用程式只需一個 endpoint，無須更動</small></p></div></div>';
 
 
   /* ---------- the four things LiteLLM does, in plain words, each with its proof status ---------- */
