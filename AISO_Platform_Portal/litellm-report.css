@@ -286,3 +286,16 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-kr{grid-template-columns:124px minmax(0,1fr) auto;align-items:center}
 .lr .lr-kr .lr-kl{white-space:nowrap}
 .lr .lr-kr:has(.lr-kpill){grid-template-columns:124px minmax(0,1fr)}
+
+/* a skipped stage must not look finished: amber card + a plain hint; long values never squeeze the label */
+.lr .lr-ck li{grid-template-columns:28px minmax(90px,1fr) auto}
+.lr .lr-ck li b{white-space:nowrap;text-align:right;overflow-wrap:normal}
+.lr .lr-plan>li.skip{opacity:1;border-color:#d6b26b;background:rgba(214,178,107,.07)}
+.lr .lr-plan>li.skip .lr-ck li{opacity:.55}
+.lr .lr-done.skip{color:#d6b26b;border:1px dashed #d6b26b}
+.lr .lr-skiphint{margin:0;padding:8px 12px;border-radius:10px;background:rgba(214,178,107,.14);color:#f3ead9;font-size:17px;font-weight:700}
+.lr .lr-skiphint small{display:block;color:var(--muted);font-size:16px;font-weight:500}
+.lr .lr-kpill small{margin-left:8px;font-size:16px;font-weight:500;color:var(--muted)}
+
+.lr .lr-plan>li *{overflow-wrap:normal}
+.lr .lr-plan>li .lr-ck li span,.lr .lr-plan>li .lr-q,.lr .lr-plan>li .lr-skiphint,.lr .lr-plan>li .lr-done{overflow-wrap:anywhere}

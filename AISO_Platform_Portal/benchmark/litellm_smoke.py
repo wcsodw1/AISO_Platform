@@ -272,7 +272,7 @@ class SmokeService:
         if not include_b:
             self._step(job, 1, "skip", "%s not included" % B["name"])
             for j in range(5):
-                self._item(job, 1, j, "skip", "tick %s to measure" % B["name"])
+                self._item(job, 1, j, "skip")
             self._log(job, "[2/4] Speed  skipped: %s is not included, so two machines cannot be compared" % B["name"])
             res["skipped"].append("speed")
         else:

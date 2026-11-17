@@ -42,12 +42,12 @@
     var cards = [
       ["Speed", "速度", "", f1(D.sec.a) + " s", f1(D.sec.ab) + " s", f1(gain) + "×", "faster", "更快", 1, D.sec.ab / D.sec.a],
       ["Delay per request", "單次延遲", "", f2(D.cost.direct) + " s", f2(D.cost.gw) + " s", "+" + f2(D.cost.add) + " s", "the cost", "代價", D.cost.direct / dmax, D.cost.gw / dmax],
-      ["Wrong-model request", "打錯模型", "", "allowed · " + D.wrong.direct, "refused · " + D.wrong.key, "blocked", "by the key", "被金鑰擋下", null, null],
+      ["Unauthorized model", "打到沒授權的模型", "", "answered · " + D.wrong.direct + "|照樣回答", "refused · " + D.wrong.key + "|被拒絕", "blocked", "by the key", "被金鑰擋下", null, null],
       ["Machine down", "機器掛掉", "PoC", "0 / " + D.fail.n + " answered", D.fail.gw + " / " + D.fail.n + " answered", "+" + D.fail.gw, "answered", "有回覆", 0, D.fail.gw / D.fail.n]
     ].map(function (k) {
       var row = function (cls, en, zh, label, frac) {
         return '<div class="lr-kr ' + cls + '"><span class="lr-kl">' + en + '<small class="zhs">' + zh + '</small></span>' +
-          (frac === null ? '<b class="lr-kpill">' + esc(label) + '</b>' : '<i class="lr-kbar"><u style="width:' + Math.max(frac * 100, frac > 0 ? 3 : 0).toFixed(1) + '%"></u></i><b>' + esc(label) + '</b>') + '</div>';
+          (frac === null ? '<b class="lr-kpill">' + esc(String(label).split("|")[0]) + (String(label).split("|")[1] ? '<small class="zhs">' + esc(String(label).split("|")[1]) + "</small>" : "") + '</b>' : '<i class="lr-kbar"><u style="width:' + Math.max(frac * 100, frac > 0 ? 3 : 0).toFixed(1) + '%"></u></i><b>' + esc(label) + '</b>') + '</div>';
       };
       return '<div class="lr-kpi"><h4>' + k[0] + '<small class="zhs">' + k[1] + '</small>' + (k[2] ? '<em class="lr-tag">' + k[2] + '</em>' : "") + '</h4>' +
         '<p class="lr-kd"><b>' + k[5] + '</b><span>' + k[6] + '<small class="zhs">' + k[7] + '</small></span></p>' +
@@ -179,7 +179,7 @@
         return '<li class="' + esc(y.state) + (pop ? " pop" : "") + '"><i aria-hidden="true">' + (TICK[y.state] || "○") + '</i><span>' + esc(m.label) + '<small class="zhs">' + esc(m.zh) + "</small></span>" + (y.value ? "<b>" + esc(y.value) + "</b>" : "") + "</li>";
       }).join("");
       var done = x.state === "ok" ? "✓ " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "fail" ? "✗ " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "skip" ? "– " + (i + 1) + " · " + esc(p.name) + " " + lab[0] : x.state === "run" ? "… " + lab[0] : "○ " + lab[0];
-      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + "</small></b></div>" + q + '<ul class="lr-ck">' + list + '</ul><p class="lr-done ' + esc(x.state) + '">' + done + '<small class="zhs">' + lab[1] + "</small></p></li>";
+      return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + "</small></b></div>" + q + '<ul class="lr-ck">' + list + '</ul><p class="lr-done ' + esc(x.state) + '">' + done + '<small class="zhs">' + lab[1] + "</small></p>" + (x.state === "skip" ? '<p class="lr-skiphint">Not measured. Tick “Include ' + esc(M.b) + '” and run again.<small class="zhs">這項沒有量；勾選「包含 ' + esc(M.b) + '」後再跑一次</small></p>' : "") + "</li>";
     }).join("") + "</ol>";
   }
   function stepsHtml(st) {
