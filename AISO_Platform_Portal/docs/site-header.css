@@ -7,7 +7,7 @@
 .nav-menu.open .nav-dropdown,.nav-menu:focus-within .nav-dropdown,.site-header .nav-menu:hover .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
 .site-nav .nav-dropdown button,.site-header .nav-dropdown a{display:block!important;width:100%;padding:11px 14px!important;border:0;border-radius:11px;background:transparent;color:#f3efe5!important;font-size:14px!important;font-weight:700;letter-spacing:.02em;text-align:left;text-decoration:none;cursor:pointer;font-family:inherit}
 .site-nav .nav-dropdown button:after,.site-nav .nav-dropdown button:before{display:none!important}
-.nav-dropdown small{display:block;margin-top:3px;color:#98a0ad;font-size:11px;font-weight:500;letter-spacing:0;line-height:1.35}
+.nav-dropdown small{display:block;margin-top:3px;color:#98a0ad;font-size:14px;font-weight:500;letter-spacing:0;line-height:1.35}
 .site-nav .nav-dropdown button:hover,.site-nav .nav-dropdown button:focus-visible,.site-header .nav-dropdown a:hover,.site-header .nav-dropdown a:focus-visible{background:rgba(200,184,117,.14);color:#e8d98a!important;outline:0}
 
 /* benchmark.html header: same look as the home header */
@@ -75,3 +75,9 @@
 .nav-research .nd-fly a{display:block!important;width:100%;padding:10px 14px!important;border-radius:11px;color:#f3efe5!important;font-size:14px!important;font-weight:700;text-decoration:none}
 .nav-research .nd-fly a:hover{background:rgba(200,184,117,.14);color:#e8d98a!important}
 .nav-research .nd-none{margin:6px 14px;color:#98a0ad;font-size:14px}
+
+/* home page header is .topbar (not .site-header): same hover dropdown + link styling */
+.topbar .nav-menu:hover .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.topbar .nav-dropdown a{display:block!important;width:100%;padding:11px 14px!important;border:0;border-radius:11px;background:transparent;color:#f3efe5!important;font-size:14px!important;font-weight:700;letter-spacing:.02em;text-align:left;text-decoration:none;cursor:pointer;font-family:inherit}
+.topbar .nav-dropdown a:hover,.topbar .nav-dropdown a:focus-visible{background:rgba(200,184,117,.14);color:#e8d98a!important;outline:0}
+.topbar .nav-dropdown{text-align:left}
