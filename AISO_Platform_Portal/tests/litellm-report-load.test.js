@@ -15,7 +15,7 @@ global.setInterval = () => 0; global.clearInterval = () => {}; global.navigator 
 require("vm").runInThisContext(fs.readFileSync(path.join(__dirname, "..", "litellm-report.js"), "utf8"), { filename: "litellm-report.js" });
 const rows = (els.lrFuncs.innerHTML.match(/<li[ >]/g) || []).length;
 assert.strictEqual(rows, 4, "exactly four sentences");
-assert.ok(/Apps call one address/.test(els.lrFuncs.innerHTML) && /Faster response, higher throughput/.test(els.lrFuncs.innerHTML) && /another keeps answering/.test(els.lrFuncs.innerHTML) && /Add a machine to the list/.test(els.lrFuncs.innerHTML), "the four benefits are drawn");
+assert.ok(/Apps call one address/.test(els.lrFuncs.innerHTML) && /cut waiting and raise total throughput/.test(els.lrFuncs.innerHTML) && /another keeps answering/.test(els.lrFuncs.innerHTML) && /Add a machine to the list/.test(els.lrFuncs.innerHTML), "the four benefits are drawn");
 assert.ok(!/\d\.\d+ s/.test(els.lrFuncs.innerHTML), "no result numbers before a test has run");
 assert.strictEqual(els.lrConcl.hidden, true, "results stay hidden until a test has finished");
 assert.ok(/lr-plan/.test(els.lrRun.innerHTML), "stage list drawn");
