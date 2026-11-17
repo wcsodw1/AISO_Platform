@@ -38,28 +38,45 @@
   }
   /* results build up row by row while the test runs: mode "running" (some sizes still to come), "done" or "fail" (below 1.3x) */
   var LANGNAME = { en: ['English input', 'English 輸入'], zh: ['Chinese input', '中文輸入'] };
+  /* one line chart per metric: x = input size, two lines (without / with LiteLLM), value printed at every point */
+  var UNIT = { ttft_s: "s", tpot_ms: "ms", norm_tps: "tokens/s", agg_tps: "tokens/s" };
+  function niceStep(r) { var p = Math.pow(10, Math.floor(Math.log(r) / Math.LN10)), n = r / p; return (n <= 1 ? 1 : n <= 1.5 ? 1.5 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 3 ? 3 : n <= 4 ? 4 : n <= 5 ? 5 : 10) * p; }
+  function lineChart(m, by, all, sizes) {
+    var W = 540, H = 290, L = 56, R = 22, T = 34, B = 66, pw = W - L - R, ph = H - T - B, ks = ["short", "mid", "long"], vals = [];
+    ks.forEach(function (k) { if (by[k]) vals.push(by[k].a[m.f], by[k].ab[m.f]); });
+    var step = niceStep((vals.length ? Math.max.apply(null, vals) : 1) * 1.25 / 4), top = step * 4;
+    var X = function (i) { return L + pw * (i + 0.5) / 3; }, Y = function (v) { return T + ph - (v / top) * ph; };
+    var num = function (v) { return m.f === "ttft_s" ? f2(v) : f1(v); }, tk = function (v) { return step % 1 === 0 ? String(Math.round(v)) : v.toFixed(step < 0.1 ? 2 : 1); };
+    var g = "";
+    for (var t = 0; t <= 4; t++) g += '<line class="lr-gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(step * t).toFixed(1) + '" y2="' + Y(step * t).toFixed(1) + '"/><text class="lr-tk" x="' + (L - 8) + '" y="' + (Y(step * t) + 5).toFixed(1) + '" text-anchor="end">' + tk(step * t) + "</text>";
+    ks.forEach(function (k, i) {
+      g += '<text class="lr-xl" x="' + X(i).toFixed(1) + '" y="' + (H - 34) + '" text-anchor="middle">' + SIZE[k][0] + '</text><text class="lr-xs" x="' + X(i).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + SIZE[k][1] + (by[k] ? " · " + by[k].tok + " tok" : "") + "</text>";
+    });
+    ["a", "ab"].forEach(function (mk) {
+      var pts = ks.map(function (k, i) { return by[k] ? { x: X(i), y: Y(by[k][mk][m.f]), v: by[k][mk][m.f], o: by[k][mk === "a" ? "ab" : "a"][m.f] } : null; }).filter(Boolean);
+      if (pts.length > 1) g += '<polyline class="lr-ln ' + mk + '" points="' + pts.map(function (p) { return p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ") + '"/>';
+      pts.forEach(function (p) {
+        var above = p.v > p.o || (p.v === p.o && mk === "a");              // the higher of the two prints its value above, the lower one below
+        g += '<circle class="lr-pt ' + mk + '" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="6"/><text class="lr-pv ' + mk + '" x="' + p.x.toFixed(1) + '" y="' + (above ? p.y - 13 : p.y + 26).toFixed(1) + '" text-anchor="middle">' + num(p.v) + "</text>";
+      });
+    });
+    var hero = "…", cls = "";
+    if (all) { var mean = sizes.reduce(function (t, z) { return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / sizes.length; hero = m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2); cls = mean > (m.low ? 0 : 1) ? "good" : "bad"; }
+    return '<div class="lr-chart"><h4>' + m.name + '<small class="zhs">' + m.zh + '</small><em>' + UNIT[m.f] + " · " + (m.low ? "lower is better" : "higher is better") + '<small class="zhs">' + (m.low ? "越低越好" : "越高越好") + '</small></em></h4>' +
+      '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + m.name + ' without and with LiteLLM, by input size">' + g + "</svg>" +
+      '<p class="lr-kd"><b class="' + cls + '">' + hero + '</b><span>with LiteLLM, on average<small class="zhs">經 LiteLLM，平均</small></span></p></div>';
+  }
   function buildResults(sizes, mode, at, lang) {
     var el = $("lrConcl"), by = {}; sizes.forEach(function (z) { by[z.key] = z; });
     var all = sizes.length === 3;
-    var cards = METRICS.map(function (m) {
-      var rows = ["short", "mid", "long"].map(function (k) {
-        var z = by[k], lab = '<span class="lr-ms">' + SIZE[k][0] + '<small class="zhs">' + SIZE[k][1] + (z ? " · " + z.tok + " tok" : "") + "</small></span>";
-        if (!z) return '<div class="lr-mr wait">' + lab + '<span class="lr-mv"><i>' + (mode === "running" ? "measuring…" : "—") + "</i></span></div>";
-        var c = change(m, z.a[m.f], z.ab[m.f]);
-        return '<div class="lr-mr pop">' + lab + '<span class="lr-mv"><i class="no">' + m.show(z.a[m.f]) + '</i><em aria-hidden="true">→</em><i class="yes">' + m.show(z.ab[m.f]) + '</i></span><b class="' + (c.good ? "good" : "bad") + '">' + c.txt + "</b></div>";
-      }).join("");
-      var hero = "…";
-      if (all) { var mean = sizes.reduce(function (t, z) { return t + (m.low ? 1 - z.ab[m.f] / z.a[m.f] : z.ab[m.f] / z.a[m.f]); }, 0) / sizes.length; hero = m.low ? "−" + Math.round(mean * 100) + "%" : "×" + mean.toFixed(2); }
-      return '<div class="lr-kpi"><h4>' + m.name + '<small class="zhs">' + m.zh + '</small></h4><p class="lr-dir">' + (m.low ? "Lower is better" : "Higher is better") + '<small class="zhs">' + (m.low ? "越低越好" : "越高越好") + '</small></p>' + rows +
-        '<p class="lr-kd"><b>' + hero + '</b><span>on average<small class="zhs">平均</small></span></p></div>';
-    }).join("");
+    var cards = METRICS.map(function (m) { return lineChart(m, by, all, sizes); }).join("");
     var tag = mode === "running" ? '<em class="lr-run2">Measuring · ' + sizes.length + " / 3<small class=\"zhs\">量測中</small></em>"
       : mode === "prev" ? '<em class="lr-prevtag">PREVIOUS RUN · ' + esc(at || "") + '<small class="zhs">前一次結果</small></em>'
       : '<em class="lr-live">LIVE · ' + esc(D.liveAt || "") + "</em>";
     el.innerHTML = '<span class="lr-cl">TTFT · TPOT · TPS<small class="zhs">速度差異</small>' + tag + (lang && LANGNAME[lang] ? '<em class="lr-langtag">' + LANGNAME[lang][0] + '<small class="zhs">' + LANGNAME[lang][1] + "</small></em>" : "") +
       ((mode === "fail" || mode === "prevfail") ? '<em class="lr-below">Below 1.3×: not confirmed<small class="zhs">未達 1.3 倍，未達標</small></em>' : "") + '</span>' + notes +
-      '<p class="lr-cols"><span>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><em aria-hidden="true">→</em><span>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
-      '<div class="lr-kpis">' + cards + "</div>";
+      '<p class="lr-legend"><span><i class="a"></i>Without LiteLLM<small class="zhs">沒有 LiteLLM · ' + M.a + ' only</small></span><span><i class="ab"></i>With LiteLLM<small class="zhs">有 LiteLLM · ' + M.a + ' + ' + M.b + '</small></span></p>' +
+      '<div class="lr-charts">' + cards + "</div>";
     el.hidden = false; $("lrResNote").hidden = true;
   }
   function showPartial(list) {
@@ -203,7 +220,7 @@
     job = null; hasRun = false; shown = {}; shownVal = {}; D.live = false; logNext = 0;
     $("lrTerm").hidden = true; $("lrTerm").classList.remove("folded"); $("lrTermFold").setAttribute("aria-expanded", "true"); $("lrTermFold").firstChild.nodeValue = "Fold "; $("lrTermFold").querySelector("small").textContent = "收合"; $("lrTermBody").textContent = ""; $("lrTermN").textContent = "0 lines";
     $("lrConcl").hidden = true; $("lrConcl").innerHTML = "";
-    $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Results are shown once the test completes.<small class="zhs">測試完成後顯示結果</small>';
+    $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Results appear here as the test runs.<small class="zhs">測試進行時，結果顯示於此</small>';
     renderFuncs(); runUI("ready", ""); paintPrev(loadHist()[0] || null, "Last run");
   }
   var info = function (en, zh) { return en + '<small class="zhs">' + zh + "</small>"; };
