@@ -6,13 +6,14 @@
   var M = { a: "AISO1", b: "PRO6000", ma: "Gemma 4 26B Q4", mb: "Gemma 4 26B BF16" };
   var D = {
     tested: "2026-11-17",
-    load: "16 requests, 4 at once",
-    sec: { a: 14.38, b: 11.62, ab: 8.24 }, tps: { a: 80.7, b: 100.9, ab: 141.1 },
-    cost: { direct: 0.158, gw: 0.189, add: 0.033 },
+    load: "8 requests, 4 at once, median of 3 repeats; mean of 2 runs",
+    sec: { a: 7.1, b: 5.7, hand: 3.5, ab: 4.1 },
+    cost: { direct: 0.158, gw: 0.189, add: 0.04 },
     fail: { n: 10, direct: 0, gw: 10, median: 1.31 },
     ctl: { block: 6, cap: 0.0005 },
     usage: [["Key 1 · limited", "金鑰 1・限定", 0.00015], ["Key 2 · open", "金鑰 2・不設限", 0.000126]],
     notes: [
+      ["An app can also split between the two machines by itself and gets about the same speed (a little faster, since there is no gateway in between). The gain of LiteLLM is that no app has to write the split, the failover or the key checks.", "應用自己手動分流，速度差不多（略快一點，因為中間沒有閘道）；LiteLLM 的價值是每個應用都不用自己寫分流、備援和金鑰檢查"],
       [M.a + " runs Q4 and " + M.b + " runs BF16: not like-for-like. The gain shows gateway scaling, not a hardware ranking.", M.a + " 用 Q4、" + M.b + " 用 BF16，精度不同；倍數代表閘道分流效果，不是機器排名"],
       ["Both machines are shared with other users. Timings move a little between runs.", "兩台機器都與他人共用，每次跑的時間會有些浮動"],
       ["Failover: the first PoC run failed 2 of 10 (a retry could land on the dead machine again). We added a fixed fallback to " + M.a + ", reran, 10 of 10 passed.", "備援：PoC 第一次跑 10 個失敗 2 個（重試可能又選到壞掉的機器）；加上固定改送 " + M.a + " 的備援後重跑，10 個全過"],
@@ -24,7 +25,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var f1 = function (n) { return n.toFixed(1); }, f2 = function (n) { return n.toFixed(2); };
-  var gain, gainB; function recalc() { gain = D.sec.a / D.sec.ab; gainB = D.sec.b / D.sec.ab; } recalc();
+  var gain, gainB, gainH; function recalc() { gain = D.sec.a / D.sec.ab; gainB = D.sec.b / D.sec.ab; gainH = D.sec.hand / D.sec.ab; } recalc();
   var raf = null, timer = null, reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var stop = function () { if (raf) cancelAnimationFrame(raf); if (timer) clearInterval(timer); raf = timer = null; };
 
@@ -37,8 +38,9 @@
     var el = $("lrConcl");
     el.classList.toggle("prelim", !live);
     el.innerHTML = '<span class="lr-cl">' + (live ? 'Conclusion<small class="zhs">實測結論</small>' : 'Preliminary estimate<small class="zhs">初步估算</small><em class="lr-pend">Pending smoke test<small class="zhs">待 smoke test 確認</small></em>') + '</span>' + notes +
-      '<p class="lr-big">' + (live ? "" : "About ") + f1(gain) + '× faster: ' + M.a + ' + ' + M.b + ' behind one entry.<small>' + M.a + ' 加 ' + M.b + ' 共用一個入口，' + (live ? "快 " : "預估快約 ") + f1(gain) + ' 倍</small></p>' +
-      '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests answered in the PoC run.' + '<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求有 ' + D.fail.gw + ' 個正常回覆（PoC）' + '</small></p>' +
+      '<p class="lr-big">Two machines behind one entry: ' + (live ? "" : "about ") + f1(gain) + '× faster than one.<small>' + M.a + ' 加 ' + M.b + ' 共用一個入口，比單用 ' + M.a + (live ? " 快 " : " 預估快約 ") + f1(gain) + ' 倍</small></p>' +
+      '<p class="lr-big">Apps need no splitting or failover code.<small>應用不用自己寫分流與備援的程式</small></p>' +
+      '<p class="lr-big">' + M.b + ' cut off: ' + D.fail.gw + ' of ' + D.fail.n + ' requests answered in the PoC run.<small>' + M.b + ' 斷線時，' + D.fail.n + ' 個請求有 ' + D.fail.gw + ' 個正常回覆（PoC）</small></p>' +
       '<p class="lr-big">Cost: about ' + f2(D.cost.add) + ' s per request.<small>代價：每個請求多約 ' + f2(D.cost.add) + ' 秒</small></p>' +
       (live ? "" : '<p class="lr-hint">Confirmed only after the smoke test runs on this platform.<small class="zhs">要在平台上跑完 smoke test 才算確認</small></p>');
   }
@@ -66,9 +68,9 @@
   var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 ' + W + ' 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
   $("lrFlow").innerHTML = '<div class="lr-vs">' +
     '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 LiteLLM</small></h3>' + svg(svgWithout, "Three clients each connect to both machines: six links") +
-    '<p class="lr-pt"><b>6 links</b>, each app knows each machine and model name<small class="zhs">6 條連線，每個應用都要記得每台機器與模型名稱</small></p></div>' +
+    '<p class="lr-pt">To use both machines, every app needs <b>6 links</b> and its own split and failover code<small class="zhs">要兩台一起用，每個應用都要 6 條連線，並自己寫分流與備援</small></p></div>' +
     '<div class="lr-side lr-yes"><h3>With<small class="zhs">有 LiteLLM</small></h3>' + svg(svgWith, "Three clients connect to one gateway, which connects to both machines") +
-    '<p class="lr-pt"><b>1 place</b> to change: move or add a model, apps stay the same<small class="zhs">只改一個地方：換機器或加模型，應用都不用改</small></p></div></div>';
+    '<p class="lr-pt"><b>1 place</b> holds the split, failover and keys; apps stay the same<small class="zhs">分流、備援、金鑰都在一個地方，應用都不用改</small></p></div></div>';
 
   /* ---------- 2 · replays ---------- */
   var TABS = [["speed", "Speed", "速度"], ["fail", "Failover", "備援"], ["control", "Control", "管控"]];
@@ -86,15 +88,15 @@
 
   /* speed improvement: three bars on one time scale + the multiplier and the seconds saved */
   function impHtml() {
-    var mx = Math.max(D.sec.a, D.sec.b, D.sec.ab), saved = D.sec.a - D.sec.ab, pct = Math.round((1 - D.sec.ab / D.sec.a) * 100);
-    var rows = [["a", M.a + " only", "僅 " + M.a, "#8ab4ff"], ["b", M.b + " only", "僅 " + M.b, "#4fd1b0"], ["ab", "Both, one entry", "兩台，同一入口", "#d9cb8f"]].map(function (r) {
+    var mx = Math.max(D.sec.a, D.sec.b, D.sec.hand, D.sec.ab), saved = D.sec.a - D.sec.ab, pct = Math.round((1 - D.sec.ab / D.sec.a) * 100);
+    var rows = [["a", M.a + " only (today)", "只接 " + M.a + "（現況）", "#8ab4ff"], ["b", M.b + " only", "只接 " + M.b, "#4fd1b0"], ["hand", "Both, app splits by hand", "兩台，應用自己分流", "#9aa6b8"], ["ab", "Both, via LiteLLM", "兩台，經 LiteLLM", "#d9cb8f"]].map(function (r) {
       return '<div class="lr-bar' + (r[0] === "ab" ? " best" : "") + '"><span class="lr-name">' + r[1] + '<small class="zhs">' + r[2] + '</small></span><span class="lr-track"><span class="lr-fill" style="width:' + (D.sec[r[0]] / mx * 100).toFixed(1) + '%;background:' + r[3] + '"></span></span><b>' + f1(D.sec[r[0]]) + ' s</b></div>';
     }).join("");
-    return '<div class="lr-imp"><div class="lr-bars">' + rows + '</div><div class="lr-impk"><b>' + f1(gain) + '×</b><span>faster<small class="zhs">更快</small></span><span>saves ' + f1(saved) + ' s (' + pct + '%) vs ' + M.a + '<small class="zhs">比單用 ' + M.a + ' 少 ' + f1(saved) + ' 秒（' + pct + '%）</small></span><span>' + f1(gainB) + '× vs ' + M.b + ' alone<small class="zhs">比單用 ' + M.b + ' 快 ' + f1(gainB) + ' 倍</small></span></div></div>';
+    return '<div class="lr-imp"><div class="lr-bars">' + rows + '</div><div class="lr-impk"><b>' + f1(gain) + '×</b><span>faster than one machine<small class="zhs">比只接一台快</small></span><span>saves ' + f1(saved) + ' s (' + pct + '%)<small class="zhs">少 ' + f1(saved) + ' 秒（' + pct + '%）</small></span><span class="lr-same">Hand split is about as fast<small class="zhs">應用自己分流速度差不多</small></span></div></div>';
   }
   function speed() {
-    $("lrStage").innerHTML = solved("One machine is the bottleneck.", "單一機器是瓶頸") +
-      '<div class="lr-vs"><div class="lr-side lr-no"><h3>Without<small class="zhs">直連 ' + M.a + '</small></h3>' + lane("nA", M.a + " · " + M.ma) +
+    $("lrStage").innerHTML = solved("Each app is wired to one machine, so the other one sits idle.", "每個應用只接一台機器，另一台閒置") +
+      '<div class="lr-vs"><div class="lr-side lr-no"><h3>Without<small class="zhs">應用只接 ' + M.a + '（現況）</small></h3>' + lane("nA", M.a + " · " + M.ma) +
       '<div class="lr-res"><b id="nClock">0.0 s</b><span id="nDone">0 / 16</span></div></div>' +
       '<div class="lr-side lr-yes"><h3>With<small class="zhs">兩台分流</small></h3>' + lane("yA", M.a + " · " + M.ma) + lane("yB", M.b + " · " + M.mb) +
       '<div class="lr-res"><b id="yClock">0.0 s</b><span id="yDone">0 / 16</span></div></div></div>' +

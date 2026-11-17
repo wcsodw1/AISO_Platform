@@ -2,7 +2,7 @@
 
 One short run (about 70 s) that compares "without LiteLLM" (direct to the machine) with "with LiteLLM" (through the gateway):
   Preflight  gateway healthy, nothing else running on the platform, endpoints reachable
-  Speed      the same small load: machine A direct, machine B direct, gateway with both machines (needs machine B)
+  Speed      the same small load: machine A direct, machine B direct, both machines split by the app itself ("by hand"), gateway with both machines (needs machine B)
   Cost       short requests, direct vs gateway, interleaved
   Control    a key limited to one model: own model allowed, another model refused; an open key allowed
 
@@ -86,6 +86,17 @@ def _load(base, model, bearer, n, conc, tokens, timeout):
     t = time.time()
     with ThreadPoolExecutor(conc) as ex:
         rs = list(ex.map(lambda _: _chat(base, model, "用約80字介紹台北的夜市文化", tokens, bearer, timeout), range(n)))
+    wall = time.time() - t
+    ok = [r for r in rs if r["code"] == 200]
+    return {"wall_s": wall, "ok": len(ok), "n": n, "tok_s": sum(r["tok"] for r in ok) / wall if wall else 0}
+
+
+def _load_hand(a, b, n, conc, tokens, timeout):
+    """What an app has to do WITHOUT a gateway to use both machines: alternate between them itself."""
+    t = time.time()
+    pick = lambda i: a if i % 2 == 0 else b
+    with ThreadPoolExecutor(conc) as ex:
+        rs = list(ex.map(lambda i: _chat(pick(i)["url"], pick(i)["model"], "用約80字介紹台北的夜市文化", tokens, None, timeout), range(n)))
     wall = time.time() - t
     ok = [r for r in rs if r["code"] == 200]
     return {"wall_s": wall, "ok": len(ok), "n": n, "tok_s": sum(r["tok"] for r in ok) / wall if wall else 0}
@@ -215,18 +226,19 @@ class SmokeService:
             self._step(job, 1, "run", "measuring")
             n, c, tk = L["requests"], L["concurrency"], L["tokens"]
             _chat(A["url"], A["model"], "hi", 5, timeout=to); _chat(gw, cfg["group_alias"], "hi", 5, k_open, to)   # warm-up
-            runs = {"a": [], "b": [], "ab": []}
+            runs = {"a": [], "b": [], "hand": [], "ab": []}
             for _ in range(L["repeats"]):                      # one pass of each mode per repeat; the median of the repeats is reported
                 runs["a"].append(_load(A["url"], A["model"], None, n, c, tk, to)); self._check(job, deadline)
                 runs["b"].append(_load(B["url"], B["model"], None, n, c, tk, to)); self._check(job, deadline)
+                runs["hand"].append(_load_hand(A, B, n, c, tk, to)); self._check(job, deadline)
                 runs["ab"].append(_load(gw, cfg["group_alias"], k_open, n, c, tk, to)); self._check(job, deadline)
             ok = all(r["ok"] == r["n"] for k in runs for r in runs[k])
             med = lambda k, f: st.median(r[f] for r in runs[k])
-            ra, rb, rg = ({"wall_s": med(k, "wall_s"), "tok_s": med(k, "tok_s")} for k in ("a", "b", "ab"))
+            ra, rb, rh, rg = ({"wall_s": med(k, "wall_s"), "tok_s": med(k, "tok_s")} for k in ("a", "b", "hand", "ab"))
             sp = ra["wall_s"] / rg["wall_s"] if rg["wall_s"] else 0
-            res["speed"] = {"median_s": {"a": round(ra["wall_s"], 2), "b": round(rb["wall_s"], 2), "ab": round(rg["wall_s"], 2)},
-                            "tok_s": {"a": round(ra["tok_s"], 1), "b": round(rb["tok_s"], 1), "ab": round(rg["tok_s"], 1)},
-                            "speedup_vs_a": round(sp, 2), "all_ok": ok, "pass": ok and sp >= CRIT["speedup_min"]}
+            res["speed"] = {"median_s": {"a": round(ra["wall_s"], 2), "b": round(rb["wall_s"], 2), "hand": round(rh["wall_s"], 2), "ab": round(rg["wall_s"], 2)},
+                            "tok_s": {"a": round(ra["tok_s"], 1), "b": round(rb["tok_s"], 1), "hand": round(rh["tok_s"], 1), "ab": round(rg["tok_s"], 1)},
+                            "speedup_vs_a": round(sp, 2), "vs_hand": round(rh["wall_s"] / rg["wall_s"], 2) if rg["wall_s"] else 0, "all_ok": ok, "pass": ok and sp >= CRIT["speedup_min"]}
             self._step(job, 1, "ok" if res["speed"]["pass"] else "fail", "%.2fx vs %s" % (sp, A["name"]) if ok else "some requests failed")
 
         # 2 Cost

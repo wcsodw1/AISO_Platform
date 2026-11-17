@@ -149,3 +149,8 @@ main.lr .v2-hero .v2-sub{margin-top:10px}
 @media(max-width:760px){.lr .lr-imp{grid-template-columns:1fr}.lr .lr-imp .lr-bar{grid-template-columns:1fr;gap:4px}}
 .lr .lr-incl{display:inline-flex;align-items:center;gap:8px;font-size:17px;color:var(--ivory);cursor:pointer}.lr .lr-incl small{color:var(--muted);font-size:16px}
 .lr .lr-incl input{width:20px;height:20px;accent-color:var(--gold)}
+
+.lr .lr-impk .lr-same{margin-top:6px;padding-top:8px;border-top:1px solid var(--line)}
+.lr .lr-imp{grid-template-columns:minmax(0,1fr) minmax(240px,320px)}
+.lr .lr-impk{min-width:0}.lr .lr-impk>span{display:block;min-width:0;overflow-wrap:anywhere;white-space:normal}
+.lr .lr-impk .lr-same small.zhs{display:block;margin:2px 0 0;white-space:normal;overflow-wrap:anywhere}

@@ -87,6 +87,8 @@ class SmokeTests(unittest.TestCase):
         r = j["result"]
         self.assertTrue(r["all_pass"], r)
         self.assertGreaterEqual(r["speed"]["speedup_vs_a"], 1.3)
+        self.assertIn("hand", r["speed"]["median_s"])           # the fair baseline: the app splits between both machines itself
+        self.assertGreater(r["speed"]["vs_hand"], 0)
         self.assertEqual(r["control"], {"own": 200, "other": 403, "open": 200, "pass": True})
         self.assertEqual([s["state"] for s in j["steps"]], ["ok"] * 4)
         self.assertLess(r["cost"]["added_s"], 0.10)
