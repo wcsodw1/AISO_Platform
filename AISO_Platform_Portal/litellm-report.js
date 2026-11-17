@@ -211,6 +211,18 @@
       return '<li class="' + esc(x.state) + '"><div class="lr-ph"><b>' + (i + 1) + " · " + esc(p.name) + '<small class="zhs">' + esc(p.zh) + "</small></b>" + chip + "</div>" + q + (list ? '<ul class="lr-ck">' + list + "</ul>" : "") + "</li>";
     }).join("") + "</ol>";
   }
+  /* run time, top right of the terminal: counts up while the test runs, then stays as the total until Reset */
+  var t0 = 0, tEnd = 0, clockT = null;
+  function mmss(ms) { var s = Math.max(0, Math.floor(ms / 1000)); return ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + (s % 60)).slice(-2); }
+  function paintClock() {
+    var e = $("lrTermClock"); if (!e) return;
+    if (!t0) { e.innerHTML = ""; e.className = "lr-term-clock"; return; }
+    e.className = "lr-term-clock" + (tEnd ? " done" : "");
+    e.innerHTML = (tEnd ? "Total time<small class=\"zhs\">總運作時間</small>" : "Running time<small class=\"zhs\">運作時間</small>") + "<b>" + mmss((tEnd || Date.now()) - t0) + "</b>";
+  }
+  function clockStart() { t0 = Date.now(); tEnd = 0; if (clockT) clearInterval(clockT); clockT = setInterval(paintClock, 500); paintClock(); }
+  function clockStop() { if (!tEnd && t0) tEnd = Date.now(); if (clockT) { clearInterval(clockT); clockT = null; } paintClock(); }
+  function clockClear() { clockStop(); t0 = 0; tEnd = 0; paintClock(); }
   function runUI(mode, msg, st, items) {
     runEl.innerHTML = '<div class="lr-runrow"><button type="button" class="lr-runbtn' + (mode === "running" ? " busy" : "") + '" id="lrRunBtn"' + (mode === "ready" ? "" : " disabled") + '><span>' + (mode === "running" ? "Running" : "Run smoke test") + '</span><small class="zhs">' + (mode === "running" ? "執行中" : "實測") + '</small><i aria-hidden="true">→</i></button><span class="lr-runmsg">' + (msg || "") + "</span></div>" + planHtml(st, items);
     var row = runEl.querySelector(".lr-runrow");
@@ -234,7 +246,7 @@
   /* back to the state before any test: stages waiting, terminal and result hidden; the earlier runs stay available */
   function resetAll() {
     if (poll) { clearInterval(poll); poll = null; }
-    job = null; hasRun = false; shown = {}; shownVal = {}; D.live = false; logNext = 0;
+    job = null; hasRun = false; shown = {}; shownVal = {}; D.live = false; logNext = 0; clockClear();
     $("lrTerm").hidden = true; $("lrTerm").classList.remove("folded"); $("lrTermFold").setAttribute("aria-expanded", "true"); $("lrTermFold").firstChild.nodeValue = "Fold "; $("lrTermFold").querySelector("small").textContent = "收合"; $("lrTermBody").textContent = ""; $("lrTermN").textContent = "0 lines";
     $("lrConcl").hidden = true; $("lrConcl").innerHTML = "";
     $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Results appear here as the test runs.<small class="zhs">測試進行時，結果顯示於此</small>';
@@ -299,13 +311,14 @@
     runUI("running", "");
     RunGate.ticket().then(function (t) { return fetch(API + "/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": t }, body: JSON.stringify({ lang: inputLang }) }); })
       .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "HTTP " + r.status); return d; }); })
-      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: rows appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示一列</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
+      .then(function (d) { job = d.job_id; hasRun = true; runLang = inputLang; clockStart(); paintPrev(loadHist()[0] || null, "Previous run"); logNext = 0; shown = {}; shownVal = {}; termReset(""); D.live = false; $("lrConcl").hidden = true; $("lrResNote").hidden = false; $("lrResNote").innerHTML = 'Measuring: rows appear as each input size completes.<small class="zhs">量測中：每完成一種輸入長度即顯示一列</small>'; renderFuncs(); poll = setInterval(tick, 1000); tick(); })
       .catch(function (e) { runUI("ready", /Cancelled/.test(String(e && e.message)) ? info("Cancelled: no password entered.", "已取消：未輸入測試密碼") : esc(e.message || e)); });
   }
   function tick() {
     fetch(API + "/smoke/" + job + "?since=" + logNext, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
       if (d.log) { termAdd(d.log); logNext = d.log_next; }
       if (d.partial && d.partial.length && d.state === "running") showPartial(d.partial);
+      if (d.state !== "running" && d.state !== "queued") clockStop();
       runUI("running", "", d.steps, d.items);
       if (d.state === "running" || d.state === "queued") return;
       clearInterval(poll); poll = null;
@@ -313,7 +326,7 @@
         var stopped = (d.steps || []).map(function (x) { return x.state === "run" ? { state: "fail", detail: x.detail } : x; });
         var stoppedItems = (d.items || []).map(function (g) { return g.map(function (y) { return y.state === "run" ? { state: "fail", value: y.value } : y; }); });
         runUI("ready", info("Stopped: ", "已停止：") + esc(d.error || d.state), stopped, stoppedItems);
-    }).catch(function () { clearInterval(poll); poll = null; runUI("ready", info("Connection to the platform was lost.", "與平台的連線中斷")); });
+    }).catch(function () { clearInterval(poll); poll = null; clockStop(); runUI("ready", info("Connection to the platform was lost.", "與平台的連線中斷")); });
   }
   /* result: bench.sizes[{key, tokens, a:{ttft_s,tpot_ms,agg_tps,norm_tps}, ab:{...}, gain_agg}], bench.gain_agg, bench.pass */
   function applyLive(r, steps, items) {
