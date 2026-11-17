@@ -317,7 +317,12 @@
     fetch(API + "/status", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : Promise.reject(); }).then(function (d) {
       if (d && d.ok) { fetch(API + "/plan", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (pl) { if (pl && pl.steps) { PLAN = pl;  if (!job || !poll) runUI("ready", ""); } }).catch(function () {}); runUI("ready", ""); }
       else runUI("off", info("The gateway is not reachable from this platform.", "平台無法連線至閘道") + (d && d.reason ? " · " + esc(d.reason) : ""));
-    }).catch(function () { runUI("off", info("Available on the local platform only; requires the smoke-test backend on this computer.", "僅限本機平台使用；需在本機啟用 smoke test 後端")); });
+    }).catch(function () {
+      var host = (window.location && window.location.hostname) || "", onLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(host);
+      runUI("off", onLocal
+        ? info("This local platform has no smoke-test backend yet: update the platform to the latest version and add litellm.local.json.", "本機平台尚未啟用 smoke test 後端：請更新平台至最新版並設定 litellm.local.json")
+        : info("This online page is view-only; the test runs on the local platform.", "線上版僅供檢視；實測請在本機平台執行") + ' <a class="lr-openlocal" href="http://localhost:8765/litellm-report.html">Open local platform<small class="zhs">開啟本機平台</small></a>');
+    });
   }
   function startRun() {
     if (!window.RunGate) { runUI("ready", info("The test-password dialog is not loaded.", "測試密碼視窗尚未載入")); return; }
