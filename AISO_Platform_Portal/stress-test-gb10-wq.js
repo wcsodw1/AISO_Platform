@@ -17,6 +17,11 @@
   const dl = v => (Number.isFinite(v) ? `<span class="wq-d ${v > 0.05 ? "up" : v < -0.05 ? "dn" : ""}">${v > 0.05 ? "+" : v < -0.05 ? "−" : ""}${Math.abs(v).toFixed(1)}%</span>` : "");
   const kv = (a, b) => `<div><dt>${a}</dt><dd>${b}</dd></div>`;
   const S = (h, zh, body) => `<section class="report-section kvx"><header><h2>${h}<span class="zh">${zh}</span></h2></header>${body}</section>`;
+  /* ONE Parameters zone, two labelled blocks (David 2026-11-18): what we chose to test vs. how vLLM was really started */
+  const PZ = (keyBody, srvBody, foot) => `<section class="report-section kvx"><header><h2>Parameters<span class="zh">測試參數</span></h2></header>
+    <p class="kv-fine">Key parameters = what we chose to test; Server parameters = how vLLM was actually started and what it reported.<small class="zhs">Key parameters 是我們設定要測的條件；Server parameters 是 vLLM 實際啟動的設定與回報（取自測試結果檔，非手填）。</small></p>
+    <h3 class="kv-h3">Key parameters<small class="zhs">要測什麼</small></h3>${keyBody}
+    <h3 class="kv-h3">Server parameters<small class="zhs">vLLM 實際怎麼跑</small></h3>${srvBody}${foot || ""}</section>`;
   const why = e => (/No available memory for the cache blocks/.test(e || "") ? "沒有記憶體可放 KV cache" : "vLLM 啟動失敗");      // ONE sentence on the page; the original error is in the hover
   const failHtml = x => `<span class="wq-fail" title="${esc(String(x.start_error || "").replace(/~\//g, ""))}">Failed to start<small class="zhs">無法啟動 · ${why(x.start_error)}</small></span>`;
   const NA = '<span class="wq-na">N/A</span>';
@@ -90,7 +95,7 @@
   function wq() {
     const by = {}; (WQ.weights || []).forEach(w => { by[w.key] = w; }); BYK = by;
     const rowOf = (k, c) => { const w = by[k]; return w ? (w.rows || []).find(r => r.np === c.np && r.input === c.input && r.output === c.output) : null; };
-    const cases = []; [1, 3, 5].forEach(np => [65536, 131072].forEach(i => [256, 512].forEach(o => cases.push({ np, input: i, output: o, context: i + o }))));
+    const cases = []; [1, 3, 5].forEach(np => [8192, 65536, 131072].forEach(i => [256, 512].forEach(o => cases.push({ np, input: i, output: o, context: i + o }))));
     const lab = c => `NP${c.np} · ${kn(c.input)} · ${c.output}`;
     const pick = (list, key, label) => `<div class="cmp-pick"><span>${label}</span><div class="st-tabs cmp-tabs">${list.map(([v, t]) => `<button type="button" class="has${v === sel[key] ? " on" : ""}" data-wqsel="${key}" data-v="${v}">${esc(t)}</button>`).join("")}</div></div>`;
     const here = cases.filter(c => c.input === sel.input && c.output === sel.output), b0 = by.bf16 || {};
@@ -102,15 +107,15 @@
     const missing = W.filter(w => !by[w[0]] || !(by[w[0]].rows || []).length).map(w => { const x = by[w[0]]; return `<li><b>${esc(w[1])}</b> ${x && x.start_failed ? failHtml(x): NOT}${x && (x.attempts || []).length > 1 ? ` <small class="zhs">${x.attempts.length} attempts · ${x.attempts.length} 次嘗試</small>` : ""}</li>`; }).join("");
     const srv = W.map(w => by[w[0]]).filter(Boolean);
     const srvDl = `<dl class="st-params">${kv("Max model len", num(b0.max_model_len, 0))}${kv("Max num seqs", esc(b0.max_num_seqs || "—"))}${kv("Max batched tokens", `${num(b0.max_num_batched_tokens, 0)} · chunked prefill ${b0.chunked_prefill ? "ON" : "OFF"}`)}${kv("Prefix cache <small class=\"zhs\">前綴快取</small>", b0.prefix_caching ? "ON" : "OFF")}${kv("GPU memory share <small class=\"zhs\">記憶體比例</small>", esc(b0.gpu_memory_utilization || "—"))}${kv("Execution mode <small class=\"zhs\">執行模式</small>", "Eager (--enforce-eager)")}</dl>`;
-    const byW = srv.map(w => { const st = w.status === "COMPLETE" ? "Done 完成 (12/12)" : w.status === "PARTIAL" ? `Partial 部分 (${(w.rows || []).length}/12)` : w.start_failed ? `<span title="${esc(String(w.start_error).replace(/~\//g, ""))}">Failed to start 無法啟動 · ${why(w.start_error)}</span>` : "not run yet 未測";
+    const byW = srv.map(w => { const st = w.status === "COMPLETE" ? `Done 完成 (${(w.rows || []).filter(r => r.status === "PASS").length}/${cases.length})` : w.status === "PARTIAL" ? `Partial 部分 (${(w.rows || []).length}/${cases.length})` : w.start_failed ? `<span title="${esc(String(w.start_error).replace(/~\//g, ""))}">Failed to start 無法啟動 · ${why(w.start_error)}</span>` : "not run yet 未測";
       return kv(`${esc(w.label[0])} <small class="zhs">${esc(w.label[1])}</small>`, `${esc(w.model)}<br><small>vLLM extra args: ${esc((w.extra_vllm_args || []).join(" ") || "—")}</small><br><small>KV cache capacity: ${w.kv_cache_tokens ? num(w.kv_cache_tokens, 0) + " tokens (measured)" : "—"}</small><br><small>${st}</small>`); }).join("");
     const srvTab = `<h3 class="kv-h3">By weight precision<small class="zhs">依權重精度：檢查點 · 額外 vLLM 參數 · KV cache 實測容量 · 狀態</small></h3><dl class="st-params wq-by">${byW}</dl>`;
     $("gvWq").innerHTML = conclusion(cases, rowOf)
-      + S("Select conditions", "選擇條件", pick([[65536, "Input 64K"], [131072, "Input 128K"]], "input", 'Input <small class="zhs">輸入</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
-      + S("Key parameters", "測試參數", keyParams({ weights: "bf16 / fp8 / AWQ checkpoints", input: "64K (65,536) / 128K (131,072)", output: "256 / 512 tokens (forced, ignore_eos)", np: "1 / 3 / 5", seqs: b0.max_num_seqs, ctx: "input + output (132,096 max model len)", wlist: W.map(w => w[1]).join(" / ") }))
+      + S("Select conditions", "選擇條件", pick([[8192, "Input 8K"], [65536, "Input 64K"], [131072, "Input 128K"]], "input", 'Input <small class="zhs">輸入</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
+      + PZ(keyParams({ weights: "bf16 / fp8 / AWQ checkpoints", input: "8K (8,192) / 64K (65,536) / 128K (131,072)", output: "256 / 512 tokens (forced, ignore_eos)", np: "1 / 3 / 5", seqs: b0.max_num_seqs, ctx: "input + output (132,096 max model len)", wlist: W.map(w => w[1]).join(" / ") }), srvDl + srvTab, `<p class="kv-fine">${WQ.generated_at ? "Snapshot " + esc(String(WQ.generated_at).slice(0, 16).replace("T", " ")) : ""} <a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_weightquant.json" download>Download .JSON</a></p>`)
       + S("TTFT · TPOT · TPS", "四項指標", legend(withData(cases, rowOf)) + `<div id="wqCharts">${charts}</div>`)
-      + S("Values by scenario", "逐情境數值（12 組）", cmpTable(cases, rowOf, lab))
-      + S("Server parameters", "伺服器參數 · 取自測試結果檔，非手填", srvDl + srvTab + `<p class="kv-fine">${WQ.generated_at ? "Snapshot " + esc(String(WQ.generated_at).slice(0, 16).replace("T", " ")) : ""} <a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_weightquant.json" download>Download .JSON</a></p>`);
+      + S("Values by scenario", `逐情境數值（${cases.length} 組）`, cmpTable(cases, rowOf, lab))
+;
   }
 
   function show(v) {
