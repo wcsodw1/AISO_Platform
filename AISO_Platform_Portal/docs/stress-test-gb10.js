@@ -80,7 +80,7 @@ function concl(){
   const common=cs.filter(c=>pass.length>1&&pass.every(o=>cell(c,o))).pop();let speed="";
   /* short outputs: TPOT / TPS are dragged down by the 5 requests queueing on the input, so the comparison sentence uses TTFT */
   if(common){const lo=Math.min(...pass),hi=Math.max(...pass),a=cell(common,lo).ttft_s,b=cell(common,hi).ttft_s;speed=`<span class="gb-big">First word at <b>${kn(common)}</b>: out ${lo} <b>${a.toFixed(1)} s</b> · out ${hi} <b>${b.toFixed(1)} s</b></span>`}
-  el.innerHTML=K+`<span class="gb-big">${esc(label)} runs output <b>${pass.join(" · ")||"—"}</b></span>`+(fails.length?`<span class="gb-big gb-warn">Cannot run <b>${fails.map(esc).join(" · ")}</b></span>`:"")+speed;return}
+  el.innerHTML=K+`<span class="gb-big">${esc(label)} runs output <b>${pass.join(" · ")||"—"}</b></span>`+speed;return}
  const cs=ctxs().filter(c=>cell(c));
  if(!cs.length){el.innerHTML="";return}
  const top=Math.max(...cs),m=cell(top);
