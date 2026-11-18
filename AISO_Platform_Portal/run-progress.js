@@ -29,7 +29,9 @@
     return WQ.map(([k, label, zh]) => {
       const x = by[k], n = x ? x.pass : 0, nv = k === "nvfp4", pcs = nv ? `${n} passed` : `${n}/12 = ${(100 * n / 12).toFixed(1)}%`;      // NVFP4 runs 18 conditions (8K round + 64K/128K round), the backend counts 12: no x/12 for it
       if (!x) return { label, zh, status: "todo", detail: "not run yet · 未測" };
-      if (x.state === "running") return { label, zh, status: "ongoing", detail: nv ? "running · 執行中" : `12 cases · ${pcs}` };
+      if (x.state === "running") { const nw = g && g.now, K = i => Math.round(i / 1024) + "K";      // the case running right now (from the log), else the server is still starting
+        const at = nw ? `Now 目前：NP${nw.np} · Input ${K(nw.input)} · Output ${nw.output}` : ((g && g.cases && g.cases.length) ? "between cases · 換下一個情境" : "starting vLLM · 啟動模型中");
+        return { label, zh, status: "ongoing", detail: `${at}${nv ? "" : " · " + pcs}` }; }
       if (x.state === "done") return { label, zh, status: "done", detail: `${nv ? "" : "12 cases · "}${pcs}${x.fail ? " · " + x.fail + " failed" : ""}` };
       if (x.state === "failed") return { label, zh, status: "fail", detail: "", errRaw: x.error || "vLLM exited during start", word: "Failed to start 無法啟動" };
       return { label, zh, status: "fail", detail: `Stopped 中斷 · ${pcs}`, word: "Stopped 中斷" };
