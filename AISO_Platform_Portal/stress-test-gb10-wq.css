@@ -31,3 +31,4 @@
 .st .kvx .wq-fold>summary::before{content:"\25B8";color:var(--gold,#d8c779);font-size:18px;line-height:1}
 .st .kvx .wq-fold[open]>summary::before{content:"\25BE"}
 .st .kvx .wq-fold>summary h3{margin:0}
+.wq-warn{color:#e0a040;font-size:16px;cursor:help}
