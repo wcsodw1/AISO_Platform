@@ -5,7 +5,7 @@ const MODELS=[["Gemma26","Gemma 4 26B","#4fd1b0"],["Gemma31","Gemma 4 31B","#ff8
 const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false,dec:1},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false,dec:1},
- decode_tps:{short:"TPS",zh:"每請求 decode 速度（不含首字等待）",unit:"tok/s",higher:true,dec:1}};
+ decode_tps:{short:"TPS (Decode only)",zh:"純產生速度（不含首字等待）= TPOT 的倒數，每請求。B70 的 TPOT 定義與 B60 / AISO1 不同，不可直接比",unit:"tok/s",higher:true,dec:1}};
 const kn=n=>`${n/1024}K`;
 const tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
@@ -43,7 +43,7 @@ function renderTable(){
  const rows=present(NP).flatMap(([m,n])=>D.profile.input_tokens.map((inp,i)=>{const r=row(m,inp,NP);
   return `<tr>${i===0?`<td rowspan="${D.profile.input_tokens.length}" class="st-model">${n}</td>`:""}<td>${kn(inp)}</td>${cell(r,"ttft_s")}${cell(r,"tpot_ms")}${cell(r,"decode_tps")}</tr>`})).join("");
  $s("stTableSub").textContent=`NP${NP} · 3 次重複平均；TTFT ≥ 180 秒以紅字標示，仍為 Technical PASS。`;
- $s("stTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS<small>tok/s</small></th></tr></thead><tbody>${rows}</tbody>`;
+ $s("stTable").innerHTML=`<thead><tr><th>Model</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS (Decode only)<small>tok/s</small></th></tr></thead><tbody>${rows}</tbody>`;
 }
 function renderParity(){
  const label={SAME_REPO_PENDING_CROSS_MACHINE_SHA:"同 Repo，待跨機 SHA 核對",HISTORIC_SHA_MATCH_BUT_CURRENT_FILES_UNVERIFIED:"歷史 SHA 一致，需重驗本機檔案"};

@@ -19,6 +19,7 @@
   const METRICS = {
     ttft: { en: "TTFT", zh: "首字等待", unit: "s", low: true, get: r => r.ttft_s, dec: 1, hint: "Time to first token: how long until the answer starts. Lower is better." },
     tpot: { en: "TPOT", zh: "每字間隔", unit: "ms", low: true, get: r => r.tpot_ms, dec: 0, hint: "Time per output token after the first. Lower is better." },
+    decode: { en: "TPS (Decode only)", zh: "純產生速度（不含首字等待）", unit: "tok/s", low: false, get: r => (r.tpot_ms > 0 ? 1000 / r.tpot_ms : null), dec: 1, hint: "1000 ÷ TPOT, per request, without the first-token wait. Higher is better." },
     agg: { en: "TPS Aggregate", zh: "總吞吐", unit: "tok/s", low: false, get: r => r.aggregate_tps, dec: 1, hint: "All requests together. Higher is better." },
     norm: { en: "TPS Normalized", zh: "每請求速度", unit: "tok/s", low: false, get: r => r.aggregate_tps / r.np, dec: 1, thr: THR, hint: "Aggregate ÷ NP: what each user gets. Needs " + THR + "+ tok/s." }
   };
@@ -72,7 +73,7 @@
        exceptions (an NP where another framework wins) go into the hover Notes corner */
     const winsOf = k => { const X = METRICS[k], c = {}; NPS.forEach(np => { const v = FW.map(f => { const r = run(f, np); return r ? X.get(r) : null; }), b = best(v, X.low); if (b != null) FW.forEach((f, j) => { if (v[j] === b) (c[f] = c[f] || []).push(np); }); }); return c; };
     const top = c => Object.keys(c).sort((a, b) => c[b].length - c[a].length)[0];
-    const groups = [{ en: "TTFT", keys: ["ttft"] }, { en: "TPOT", keys: ["tpot"] }, { en: "TPS", keys: ["agg", "norm"] }];
+    const groups = [{ en: "TTFT", keys: ["ttft"] }, { en: "TPOT", keys: ["tpot"] }, { en: "TPS", keys: ["decode", "agg", "norm"] }];
     const winner = {}, obs = [];
     groups.forEach(g => { const cs = g.keys.map(winsOf), ws = cs.map(top); if (!ws[0]) return;
       const w = ws.every(x => x === ws[0]) ? ws[0] : null;
@@ -93,7 +94,7 @@
   }
 
   function renderFull() {
-    const cols = ["ttft", "tpot", "agg", "norm"];
+    const cols = ["ttft", "tpot", "decode", "agg", "norm"];
     let body = "";
     NPS.forEach(np => {
       const rs = FW.map(f => run(f, np));

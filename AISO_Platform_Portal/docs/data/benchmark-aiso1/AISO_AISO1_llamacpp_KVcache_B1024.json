@@ -1,0 +1,687 @@
+{
+ "machine": "AISO1",
+ "framework": "llama.cpp (Vulkan)",
+ "test": "KV cache precision, K = V",
+ "protocol": {
+  "batch": 1024,
+  "ubatch": 512,
+  "context_per_slot": 18432,
+  "flash_attention": "off (NP1/2/4) · on (NP8)",
+  "output_tokens": 1024,
+  "repeats": 3
+ },
+ "baseline": "f16 of the same campaign",
+ "campaigns": [
+  "AISO1_llamacpp_KV_B1024_NP1_20261118_081723_518497",
+  "AISO1_llamacpp_KV_B1024_NP8_20261118_134408_739758"
+ ],
+ "kv_types": [
+  "bf16",
+  "f16",
+  "f32",
+  "iq4_nl",
+  "q4_0",
+  "q4_1",
+  "q5_0",
+  "q5_1",
+  "q8_0"
+ ],
+ "running": true,
+ "generated_at": "2026-11-18T14:40:01",
+ "rows": [
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "gemma26",
+   "input": 4096,
+   "ttft_s": 6.763428082534422,
+   "tpot_ms": 32.37183576628187,
+   "aggregate_tps": 25.677215849859795,
+   "norm_tps": 25.677215849859795
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "gemma26",
+   "input": 8192,
+   "ttft_s": 11.996412535818914,
+   "tpot_ms": 54.88903510529013,
+   "aggregate_tps": 15.028374159891348,
+   "norm_tps": 15.028374159891348
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "gemma26",
+   "input": 16384,
+   "ttft_s": 24.558177388894062,
+   "tpot_ms": 69.73225231737301,
+   "aggregate_tps": 10.682634510900876,
+   "norm_tps": 10.682634510900876
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "gemma31",
+   "input": 4096,
+   "ttft_s": 30.217672511780012,
+   "tpot_ms": 156.95459713067515,
+   "aggregate_tps": 5.367376613218737,
+   "norm_tps": 5.367376613218737
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "gemma31",
+   "input": 8192,
+   "ttft_s": 54.04064541356638,
+   "tpot_ms": 274.83340959665816,
+   "aggregate_tps": 3.0550453037977316,
+   "norm_tps": 3.0550453037977316
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "gemma31",
+   "input": 16384,
+   "ttft_s": 108.28124652989209,
+   "tpot_ms": 291.7709499342642,
+   "aggregate_tps": 2.517953306457267,
+   "norm_tps": 2.517953306457267
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "laguna",
+   "input": 4096,
+   "ttft_s": 7.323960806087901,
+   "tpot_ms": 26.823148634357565,
+   "aggregate_tps": 29.455911671859244,
+   "norm_tps": 29.455911671859244
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "laguna",
+   "input": 8192,
+   "ttft_s": 15.396095889620483,
+   "tpot_ms": 32.69850813658376,
+   "aggregate_tps": 20.963579755705865,
+   "norm_tps": 20.963579755705865
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "laguna",
+   "input": 16384,
+   "ttft_s": 34.35245423189675,
+   "tpot_ms": 42.07710260234023,
+   "aggregate_tps": 13.230572220331569,
+   "norm_tps": 13.230572220331569
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "nemotron",
+   "input": 4096,
+   "ttft_s": 2.683859368786216,
+   "tpot_ms": 17.40814239950775,
+   "aggregate_tps": 49.97046174157347,
+   "norm_tps": 49.97046174157347
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "nemotron",
+   "input": 8192,
+   "ttft_s": 5.7066079004046815,
+   "tpot_ms": 19.014019121404687,
+   "aggregate_tps": 40.703575462453614,
+   "norm_tps": 40.703575462453614
+  },
+  {
+   "np": 1,
+   "kv": "f16",
+   "model": "nemotron",
+   "input": 16384,
+   "ttft_s": 12.709930091941109,
+   "tpot_ms": 20.827068973808473,
+   "aggregate_tps": 30.10352451079562,
+   "norm_tps": 30.10352451079562
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "gemma26",
+   "input": 4096,
+   "ttft_s": 7.310079532985886,
+   "tpot_ms": 42.04795352732851,
+   "aggregate_tps": 20.347918393811877,
+   "norm_tps": 20.347918393811877
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "gemma26",
+   "input": 8192,
+   "ttft_s": 13.296164608560503,
+   "tpot_ms": 73.14222011868118,
+   "aggregate_tps": 11.620533940734797,
+   "norm_tps": 11.620533940734797
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "gemma26",
+   "input": 16384,
+   "ttft_s": 29.947607105442632,
+   "tpot_ms": 76.46355005700363,
+   "aggregate_tps": 9.466601161760066,
+   "norm_tps": 9.466601161760066
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "gemma31",
+   "input": 4096,
+   "ttft_s": 31.2046801095518,
+   "tpot_ms": 207.1301125303462,
+   "aggregate_tps": 4.212281432993445,
+   "norm_tps": 4.212281432993445
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "gemma31",
+   "input": 8192,
+   "ttft_s": 57.86405286736166,
+   "tpot_ms": 313.93649426913123,
+   "aggregate_tps": 2.7016988719410437,
+   "norm_tps": 2.7016988719410437
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "gemma31",
+   "input": 16384,
+   "ttft_s": 129.57655498913178,
+   "tpot_ms": 335.5278780554297,
+   "aggregate_tps": 2.1657329785659645,
+   "norm_tps": 2.1657329785659645
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "laguna",
+   "input": 4096,
+   "ttft_s": 8.333148441743106,
+   "tpot_ms": 37.09578871500608,
+   "aggregate_tps": 22.125207652823395,
+   "norm_tps": 22.125207652823395
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "laguna",
+   "input": 8192,
+   "ttft_s": 18.83852969730894,
+   "tpot_ms": 42.66766487047533,
+   "aggregate_tps": 16.38730290929886,
+   "norm_tps": 16.38730290929886
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "laguna",
+   "input": 16384,
+   "ttft_s": 44.189935127583645,
+   "tpot_ms": 54.86972925762117,
+   "aggregate_tps": 10.207179148510761,
+   "norm_tps": 10.207179148510761
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "nemotron",
+   "input": 4096,
+   "ttft_s": 2.814063994990041,
+   "tpot_ms": 17.426551430422112,
+   "aggregate_tps": 49.61937481527111,
+   "norm_tps": 49.61937481527111
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "nemotron",
+   "input": 8192,
+   "ttft_s": 6.019536732540776,
+   "tpot_ms": 18.400234574468428,
+   "aggregate_tps": 41.22306896847817,
+   "norm_tps": 41.22306896847817
+  },
+  {
+   "np": 1,
+   "kv": "bf16",
+   "model": "nemotron",
+   "input": 16384,
+   "ttft_s": 14.024443498191735,
+   "tpot_ms": 20.440663819487455,
+   "aggregate_tps": 29.31167079936396,
+   "norm_tps": 29.31167079936396
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "gemma26",
+   "input": 4096,
+   "ttft_s": 7.021476453635842,
+   "tpot_ms": 57.703532424199146,
+   "aggregate_tps": 15.502953355235732,
+   "norm_tps": 15.502953355235732
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "gemma26",
+   "input": 8192,
+   "ttft_s": 12.10497662362953,
+   "tpot_ms": 95.1677632511133,
+   "aggregate_tps": 9.354885898713835,
+   "norm_tps": 9.354885898713835
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "gemma26",
+   "input": 16384,
+   "ttft_s": 25.231902547491092,
+   "tpot_ms": 104.2441198283381,
+   "aggregate_tps": 7.7650146151783686,
+   "norm_tps": 7.7650146151783686
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "gemma31",
+   "input": 4096,
+   "ttft_s": 33.64527306721235,
+   "tpot_ms": 334.70774451622714,
+   "aggregate_tps": 2.7230417702482317,
+   "norm_tps": 2.7230417702482317
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "gemma31",
+   "input": 8192,
+   "ttft_s": 58.64258865391215,
+   "tpot_ms": 445.2382842934262,
+   "aggregate_tps": 1.9917495636534785,
+   "norm_tps": 1.9917495636534785
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "gemma31",
+   "input": 16384,
+   "ttft_s": 117.31359754207854,
+   "tpot_ms": 445.17363170944776,
+   "aggregate_tps": 1.789100398065581,
+   "norm_tps": 1.789100398065581
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "laguna",
+   "input": 4096,
+   "ttft_s": 7.442899766843766,
+   "tpot_ms": 57.34021904516896,
+   "aggregate_tps": 15.491284153531494,
+   "norm_tps": 15.491284153531494
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "laguna",
+   "input": 8192,
+   "ttft_s": 15.603233607020229,
+   "tpot_ms": 70.69370933010586,
+   "aggregate_tps": 11.646584904018072,
+   "norm_tps": 11.646584904018072
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "laguna",
+   "input": 16384,
+   "ttft_s": 34.86137474623198,
+   "tpot_ms": 92.35380907852837,
+   "aggregate_tps": 7.917160952157063,
+   "norm_tps": 7.917160952157063
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "nemotron",
+   "input": 4096,
+   "ttft_s": 2.771998335296909,
+   "tpot_ms": 18.45595183147742,
+   "aggregate_tps": 47.300470666638894,
+   "norm_tps": 47.300470666638894
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "nemotron",
+   "input": 8192,
+   "ttft_s": 5.726038131862879,
+   "tpot_ms": 19.892435792181733,
+   "aggregate_tps": 39.276068293416394,
+   "norm_tps": 39.276068293416394
+  },
+  {
+   "np": 1,
+   "kv": "f32",
+   "model": "nemotron",
+   "input": 16384,
+   "ttft_s": 12.70147048899283,
+   "tpot_ms": 23.156116940821565,
+   "aggregate_tps": 28.139552235249862,
+   "norm_tps": 28.139552235249862
+  },
+  {
+   "np": 8,
+   "kv": "f16",
+   "model": "gemma26",
+   "input": 4096,
+   "ttft_s": 20.03146733083607,
+   "tpot_ms": 91.76500506485372,
+   "aggregate_tps": 71.81804911962102,
+   "norm_tps": 8.977256139952628
+  },
+  {
+   "np": 8,
+   "kv": "f16",
+   "model": "gemma26",
+   "input": 8192,
+   "ttft_s": 42.88545725933121,
+   "tpot_ms": 119.50581958104345,
+   "aggregate_tps": 49.18344848854262,
+   "norm_tps": 6.147931061067828
+  },
+  {
+   "np": 8,
+   "kv": "f16",
+   "model": "gemma26",
+   "input": 16384,
+   "ttft_s": 98.41257224711201,
+   "tpot_ms": 175.07582871928724,
+   "aggregate_tps": 29.17339240872803,
+   "norm_tps": 3.646674051091004
+  }
+ ],
+ "smoke": [
+  {
+   "kv": "f16",
+   "model": "gemma26",
+   "status": "PASS"
+  },
+  {
+   "kv": "f16",
+   "model": "gemma31",
+   "status": "PASS"
+  },
+  {
+   "kv": "f16",
+   "model": "laguna",
+   "status": "PASS"
+  },
+  {
+   "kv": "f16",
+   "model": "nemotron",
+   "status": "PASS"
+  },
+  {
+   "kv": "bf16",
+   "model": "gemma26",
+   "status": "PASS"
+  },
+  {
+   "kv": "bf16",
+   "model": "gemma31",
+   "status": "PASS"
+  },
+  {
+   "kv": "bf16",
+   "model": "laguna",
+   "status": "PASS"
+  },
+  {
+   "kv": "bf16",
+   "model": "nemotron",
+   "status": "PASS"
+  },
+  {
+   "kv": "f32",
+   "model": "gemma26",
+   "status": "PASS"
+  },
+  {
+   "kv": "f32",
+   "model": "gemma31",
+   "status": "PASS"
+  },
+  {
+   "kv": "f32",
+   "model": "laguna",
+   "status": "PASS"
+  },
+  {
+   "kv": "f32",
+   "model": "nemotron",
+   "status": "PASS"
+  },
+  {
+   "kv": "f8_e4m3",
+   "model": "gemma26",
+   "status": "UNSUPPORTED_FLAGS"
+  },
+  {
+   "kv": "f8_e4m3",
+   "model": "gemma31",
+   "status": "UNSUPPORTED_FLAGS"
+  },
+  {
+   "kv": "f8_e4m3",
+   "model": "laguna",
+   "status": "UNSUPPORTED_FLAGS"
+  },
+  {
+   "kv": "f8_e4m3",
+   "model": "nemotron",
+   "status": "UNSUPPORTED_FLAGS"
+  },
+  {
+   "kv": "q8_0",
+   "model": "gemma26",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q8_0",
+   "model": "gemma31",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q8_0",
+   "model": "laguna",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q8_0",
+   "model": "nemotron",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_0",
+   "model": "gemma26",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_0",
+   "model": "gemma31",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_0",
+   "model": "laguna",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_0",
+   "model": "nemotron",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_1",
+   "model": "gemma26",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_1",
+   "model": "gemma31",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_1",
+   "model": "laguna",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q5_1",
+   "model": "nemotron",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_0",
+   "model": "gemma26",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_0",
+   "model": "gemma31",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_0",
+   "model": "laguna",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_0",
+   "model": "nemotron",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_1",
+   "model": "gemma26",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_1",
+   "model": "gemma31",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_1",
+   "model": "laguna",
+   "status": "FAIL"
+  },
+  {
+   "kv": "q4_1",
+   "model": "nemotron",
+   "status": "FAIL"
+  },
+  {
+   "kv": "iq4_nl",
+   "model": "gemma26",
+   "status": "FAIL"
+  },
+  {
+   "kv": "iq4_nl",
+   "model": "gemma31",
+   "status": "FAIL"
+  },
+  {
+   "kv": "iq4_nl",
+   "model": "laguna",
+   "status": "FAIL"
+  },
+  {
+   "kv": "iq4_nl",
+   "model": "nemotron",
+   "status": "FAIL"
+  }
+ ],
+ "smoke_np8": [
+  {
+   "kv": "f16",
+   "model": "gemma26",
+   "status": "PASS"
+  },
+  {
+   "kv": "f16",
+   "model": "gemma31",
+   "status": "PASS"
+  },
+  {
+   "kv": "f16",
+   "model": "laguna",
+   "status": "PASS"
+  },
+  {
+   "kv": "f16",
+   "model": "nemotron",
+   "status": "PASS"
+  },
+  {
+   "kv": "q8_0",
+   "model": "gemma26",
+   "status": "PASS"
+  },
+  {
+   "kv": "q8_0",
+   "model": "gemma31",
+   "status": "PASS"
+  },
+  {
+   "kv": "q8_0",
+   "model": "laguna",
+   "status": "PASS"
+  },
+  {
+   "kv": "q8_0",
+   "model": "nemotron",
+   "status": "PASS"
+  },
+  {
+   "kv": "q4_0",
+   "model": "gemma26",
+   "status": "PASS"
+  },
+  {
+   "kv": "q4_0",
+   "model": "gemma31",
+   "status": "PASS"
+  },
+  {
+   "kv": "q4_0",
+   "model": "laguna",
+   "status": "PASS"
+  },
+  {
+   "kv": "q4_0",
+   "model": "nemotron",
+   "status": "PASS"
+  }
+ ]
+}

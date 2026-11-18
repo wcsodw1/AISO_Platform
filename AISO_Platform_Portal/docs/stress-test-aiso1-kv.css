@@ -58,3 +58,11 @@
 .st .kvx .kv-same .na{color:var(--muted,#98a0ad)}
 .st .kvx .kv-mh{margin:26px 0 8px;font-size:22px;color:var(--gold,#d8c779)}.st .kvx .kv-mh:first-child{margin-top:0}
 .st #secPick .cmp-tabs button small{margin-left:8px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+
+/* Coverage + Troubleshooting: collapsed to the title, opens on hover (David 2026-11-18). Touch screens have no hover, so they stay open. */
+@media (hover:hover){
+.st #secCover:not(:hover):not(:focus-within)>:not(header),.st #secTrouble:not(:hover):not(:focus-within)>:not(header),.st #secTrouble:not(:hover):not(:focus-within)>header .tb-tabs{display:none}
+.st #secCover>header h2::after,.st #secTrouble>header h2::after{content:" ▾";font-size:.6em;color:var(--muted,#98a0ad)}
+.st #secCover:hover>header h2::after,.st #secTrouble:hover>header h2::after{content:" ▴"}
+.st #secCover:not(:hover):not(:focus-within),.st #secTrouble:not(:hover):not(:focus-within){padding-bottom:12px}
+}

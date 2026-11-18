@@ -67,7 +67,7 @@ function renderCold(){
 let CUR=null;   // selected concurrency (C1 / C2 / C5): one line chart per metric across the input lengths, like the NP selector on the B60 / B70 pages
 function renderMetrics(){
  // Same approach as the Intel B60 / B70 pages: shared line charts (bench-viz.js), one-sentence summary beside "full values".
- const width=Math.max(320,($v("v2Metrics").clientWidth||900)-100),kk=i=>`${Math.round(i/1000)}K`,cs=[...new Set(SC.map(([,c])=>c))].sort((a,b)=>a-b);
+ const width=Math.min(780,Math.max(320,($v("v2Metrics").clientWidth||900)-100)),kk=i=>`${Math.round(i/1000)}K`,cs=[...new Set(SC.map(([,c])=>c))].sort((a,b)=>a-b);
  if(!cs.includes(CUR))CUR=cs[0];
  const groups=SC.filter(([,c])=>c===CUR).map(([i,c])=>({label:kk(i),sub:`${tok(i)} tokens`,i:`${i}/${c}`}));
  const series=MODES.map(m=>({key:m,label:NAME[m],color:COL[m]}));

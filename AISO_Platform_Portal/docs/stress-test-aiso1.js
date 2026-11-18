@@ -6,6 +6,7 @@ const COLOR="#8f9bff",MACHINE="aiso1";
 const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false},
+ decode_only_tps:{short:"TPS (Decode only)",zh:"純產生速度＝1000÷TPOT，不含首字等待",unit:"tok/s",higher:true},
  norm_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token（含首字等待）",unit:"tok/s",higher:true},
  aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
@@ -42,12 +43,12 @@ function renderPick(){
   renderAll()});
 }
 function renderSetup(){
- const d=DATA[FW],p=d.profile,r=(k,v)=>v==null||v===""||v==="UNVERIFIED"?"":`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`,runs=cellRuns(),c=(d.config||{})[MODEL]||{};
+ const d=FW==="all"?{profile:{},config:{},caveat:null,not_run:[]}:DATA[FW],p=d.profile,r=(k,v)=>v==null||v===""||v==="UNVERIFIED"?"":`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`,runs=cellRuns(),c=(d.config||{})[MODEL]||{};
  const lc=FW==="llamacpp",hist=!!(d.caveat&&d.caveat.level==="historical_unverified");
  $s("stSetup").innerHTML="";
  const ins=[...new Set(runs.map(x=>x.input))].map(kn).join(" / ");
  const gpu=p.gpu_evidence;
- $s("stParams").innerHTML=[r("Machine 機器","AISO1 · Radeon 8060S 統一記憶體"),r("Framework",fwLabel(FW)),r("Model 模型",`${mName(MODEL)}${runs[0]&&runs[0].format?" · "+runs[0].format:""}`),r("Input 輸入",ins),r("Output 輸出",p.output_tokens?tok(p.output_tokens)+" tokens":"1,024 tokens"),r("NP 並發",NP),r("Repeat 重複","3 次取平均"),
+ $s("stParams").innerHTML=[r("Machine 機器","AISO1 · Radeon 8060S 統一記憶體"),r("Framework",fwLabel(FW)),r("Model 模型",`${mName(MODEL)}${MODEL!=="all"&&runs[0]&&runs[0].format?" · "+runs[0].format:""}`),r("Input 輸入",ins),r("Output 輸出",p.output_tokens?tok(p.output_tokens)+" tokens":"1,024 tokens"),r("NP 並發",NP),r("Repeat 重複","3 次取平均"),
   r(lc?"Batch size":"Batch / token budget",p.batch||c.batch),lc&&r("Ubatch",p.ubatch),r("Context / slot",p.per_slot_context||c.max_context),r("Slots",p.slots||c.max_seqs),lc&&r("總 Context",p.total_kv_by_np?p.total_kv_by_np[NP]:(p.per_slot_context?p.per_slot_context*NP:"")),
   r("KV cache",p.kv_cache_type),r("Prefix cache",p.prefix_cache),r("Flash Attention",p.flash_attention),r("Split",p.split||c.tp),r("Unified KV",p.unified_kv),r("Continuous batching",p.cont_batching),r("Context shift",p.context_shift),r("GPU layers",p.gpu_layers),r("Runtime",p.runtime),r("GPU 型號佐證",gpu)].filter(Boolean).join("")||'<div><dt>參數</dt><dd>未核實</dd></div>';
  const cv=d.caveat;
@@ -117,7 +118,7 @@ function renderAll(){renderPick();renderSetup();renderMetrics();renderCompare();
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json())]).then(([reg])=>{
  REG=reg;
  return Promise.all(reg.datasets.filter(x=>x.machine===MACHINE).map(x=>fetch("data/"+x.file.replace(/^data\//,""),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file);return r.json()}).then(d=>{
-  DATA[x.framework]={profile:d.profile||{},runs:(d[x.runs_key]||[]).map(r=>({...r,norm_tps:r.aggregate_tps/r.np})),caveat:d.comparability||null,config:d.config_by_model||{},partial:d.partial_runs||[],not_run:d.not_run||[],evidence_until:d.evidence_until,file:x.file}})));
+  DATA[x.framework]={profile:d.profile||{},runs:(d[x.runs_key]||[]).map(r=>({...r,norm_tps:r.aggregate_tps/r.np,decode_only_tps:r.tpot_ms>0?1000/r.tpot_ms:null})),caveat:d.comparability||null,config:d.config_by_model||{},partial:d.partial_runs||[],not_run:d.not_run||[],evidence_until:d.evidence_until,file:x.file}})));
 }).then(()=>{
  const combos=[...REG.frameworks].sort((a,b)=>(b.key==="llamacpp")-(a.key==="llamacpp")).flatMap(f=>REG.models.flatMap(m=>[...new Set(runsOf(f.key).filter(r=>r.model===m.key).map(r=>r.np))].sort((a,b)=>a-b).map(n=>[f.key,m.key,n])));
  [FW,MODEL,NP]=combos[0]||[REG.frameworks[0].key,REG.models[0].key,1];

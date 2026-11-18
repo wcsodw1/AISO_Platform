@@ -489,3 +489,13 @@ main .report-section > header > div:has(> .section-label){display:flex;align-ite
 @media(max-width:700px){main .report-section > header > div:has(> .section-label){flex-wrap:wrap}}
 main .report-section > header > div:has(> .section-label) > .section-label{font-size:26px;font-weight:800;letter-spacing:.1em;margin:0;white-space:nowrap;color:var(--gold)}
 main .report-section > header > div:has(> .section-label) > h2{margin:0;flex:1 1 0;min-width:0}
+
+/* Memory Budget hero = PF_UI two layers: big ivory title, one gold note line (David 2026-11-13) */
+main .bm-hero .v2-sub{margin:10px 0 0;font-size:20px;color:var(--gold,#d8c779);max-width:none}
+main .bm-hero .v2-sub .zh-i{margin-left:12px;color:var(--gold,#d8c779)}
+main .bm-hero h1{color:var(--ivory,#f3efe5)}
+/* top conclusion */
+.sz-top{margin:6px 0 18px;padding:14px 20px;border-left:4px solid var(--gold,#d8c779);border-radius:8px;background:rgba(216,199,121,.08);display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 26px}
+.sz-top:empty{display:none}.sz-top .sz-k{color:var(--gold,#d8c779);font-size:18px}.sz-top .sz-k small{margin-left:8px}
+.sz-top .sz-big{font-size:24px;font-weight:600;color:var(--ivory,#f3efe5)}.sz-top .sz-big b{font-weight:800}
+@media(max-width:640px){.sz-top .sz-big{font-size:19px}}

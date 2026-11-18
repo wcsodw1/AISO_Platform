@@ -41,14 +41,33 @@ function notes(){
   <div><dt>Source<small class="zhs">來源</small></dt><dd>${esc(DS.source_file)}</dd></div></dl>
   <p class="v2-fine">${esc(DS.comparability.text)}</p>`;
 }
+const num=(v,d=1)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+function params(){
+ const p=DS.profile,r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`;
+ $s("pParams").innerHTML=[r("Machine <small class=\"zhs\">機器</small>",esc(p.machine)),r("Framework <small class=\"zhs\">框架</small>","vLLM · runtime unverified"),r("Model <small class=\"zhs\">模型</small>",esc(MODEL)),
+  r("Input <small class=\"zhs\">輸入</small>",INPUTS.map(kn).join(" / ")),r("Output <small class=\"zhs\">輸出</small>",(OUT).toLocaleString("en-US")+" tokens"),r("NP <small class=\"zhs\">並發</small>",String(NP)),
+  r("GPUs <small class=\"zhs\">GPU</small>",`${p.gpus_used} used of ${p.gpu_count_system}`),r("Modes <small class=\"zhs\">模式</small>","Without aiDAPTIV · Cold (Run1) · Warm (Run2/3 avg)"),r("Source <small class=\"zhs\">來源</small>",esc(DS.source_file))].join("");
+}
+function table(){
+ const f=(o,k,mk,d)=>{const v=o&&o[k]&&o[k][mk];return `<td>${num(k==="ttft_ms"?v/1000:v,d)}</td>`};
+ const rows=INPUTS.map(i=>{const r=cell(i);if(!r)return `<tr class="st-ovrow"><td>${kn(i)}</td><td colspan="12"><span class="st-wait">未測 Not tested</span></td></tr>`;
+  return `<tr><td>${kn(i)}</td>${SERIES.map(s=>f(r,"ttft_ms",s.key,2)).join("")}${SERIES.map(s=>f(r,"tpot_ms",s.key,1)).join("")}${SERIES.map(s=>f(r,"normalized_tps",s.key,1)).join("")}${SERIES.map(s=>f(r,"aggregate_tps",s.key,1)).join("")}</tr>`}).join("");
+ const grp=(t,u)=>`<th class="l" colspan="3">${t}<small>${u}</small></th>`;
+ $s("pTableSub").textContent=`${MODEL} · Output ${OUT/1024}K · NP${NP} · Without / Cold / Warm 並排；「—」= 該欄沒有資料。`;
+ $s("pTable").innerHTML=`<thead><tr><th rowspan="2">Input</th>${grp("TTFT","s")}${grp("TPOT","ms")}${grp("TPS Norm","tok/s/請求")}${grp("Aggregate","tok/s")}</tr><tr>${[0,1,2,3].map(()=>SERIES.map(s=>`<th>${esc(s.sum)}</th>`).join("")).join("")}</tr></thead><tbody>${rows}</tbody>`;
+}
+function cover(){
+ const rows=models().flatMap(m=>outs(m).map(o=>{const n=nps(m,o);return `<tr><td>${esc(m)}</td><td>Output ${o/1024}K</td><td>NP${n.join(" / NP")} · ${runs().filter(r=>r.model===m&&r.output===o).length} 組</td></tr>`})).join("");
+ $s("pCover").innerHTML=`<thead><tr><th>Model</th><th>Output</th><th class="l">PRO6000 已有資料</th></tr></thead><tbody>${rows}</tbody>`;
+}
 function repeats(){
  const el=$s("pRepeat");if(!el||typeof RC==="undefined")return;
  el.innerHTML=RC.html({width:el.clientWidth,machines:[{key:"without",label:"Without aiDAPTIV",color:SERIES[0].color}],runsFor:()=>runs().filter(r=>r.model===MODEL&&r.output===OUT&&r.np===NP&&r.repeats&&r.repeats.without).map(r=>({np:r.np,input:r.input,repeats:{ttft_s:r.repeats.without.ttft_s}})),metric:"ttft_s",inputs:INPUTS,np:NP,title:`${MODEL} · Output ${OUT/1024}K · NP${NP}`});
  RC.bind(el);
 }
-function render(){controls();metrics();repeats();notes()}
+function render(){controls();params();metrics();table();cover();repeats();notes()}
 document.addEventListener("hvopen",()=>repeats());
 fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
  const e=(reg.single_machines||[]).find(x=>x.machine==="pro6000");if(!e)throw new Error("registry: pro6000 missing");
- return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})
-}).then(d=>{DS=d;render()}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
+ window.__pfile=e.file;return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})
+}).then(d=>{DS=d;$s("pDl").href=window.__pfile||"#";render();$s("pFoot").textContent=`資料更新至 ${DS.evidence_until}；由 data/benchmark-registry.json 登錄的 PRO6000 資料集自動帶入。`}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
