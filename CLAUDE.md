@@ -72,6 +72,7 @@ Every reply ends with the **NT 筆記** block (also whenever David types `NT`), 
 1. VIS 報告 → Ryan double check and confirm
 2. B60 3 推論框架 comparison (`framework-compare.html`)
 3. Viola 確認專案進度
+4. OrientAI 測試與報告給 Pierre Team（Ryan 11/16 建議）→ RAG + skills 的 E2E 情境效能測試，以及多 sessions 併發測試（David 已回「收到」）
 
 Update this list when David adds or removes items.
 
