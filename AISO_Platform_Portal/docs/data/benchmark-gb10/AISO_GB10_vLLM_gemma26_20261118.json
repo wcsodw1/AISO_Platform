@@ -51,7 +51,7 @@
    "label": "NP5",
    "zh": "並發 5",
    "detail": "input=32K/64K, output: 64, 512, 1024",
-   "status": "ongoing"
+   "status": "done"
   }
  ],
  "attempts": [
@@ -62,6 +62,16 @@
   },
   {
    "dir": "gemma26_vllm_fp8_run_20261118_112716",
+   "phase": "run",
+   "rows": 2
+  },
+  {
+   "dir": "gemma26_vllm_fp8_run_20261118_113809",
+   "phase": "run",
+   "rows": 2
+  },
+  {
+   "dir": "gemma26_vllm_fp8_run_20261118_114459",
    "phase": "run",
    "rows": 2
   },
@@ -204,6 +214,122 @@
    "phase": "run",
    "model": "Gemma 4 26B A4B",
    "np": 5,
+   "context": 32768,
+   "input": 32704,
+   "output": 64,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 20.948,
+   "ttft_max_s": 34.805,
+   "tpot_ms": 280.63,
+   "aggregate_tps": 8.191,
+   "normalized_tps": 1.638,
+   "wall_s": 39.07,
+   "kv_cache_tokens": 322703,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 34.80487680435181,
+     "tpot_ms": 67.66380204094781,
+     "e2e_s": 39.06769633293152,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 27.910300493240356,
+     "tpot_ms": 174.2424245864626,
+     "e2e_s": 38.8875732421875,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 20.94487762451172,
+     "tpot_ms": 281.43176956782264,
+     "e2e_s": 38.675079107284546,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 14.005414009094238,
+     "tpot_ms": 387.38089137607153,
+     "e2e_s": 38.41041016578674,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 7.072713375091553,
+     "tpot_ms": 492.4397355034238,
+     "e2e_s": 38.09641671180725,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_113809"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 32768,
+   "input": 32256,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 21.052,
+   "ttft_max_s": 34.652,
+   "tpot_ms": 96.1,
+   "aggregate_tps": 36.261,
+   "normalized_tps": 7.252,
+   "wall_s": 70.6,
+   "kv_cache_tokens": 310668,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 28.066747903823853,
+     "tpot_ms": 82.88063974996369,
+     "e2e_s": 70.4187548160553,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 14.179653644561768,
+     "tpot_ms": 109.11782193790444,
+     "e2e_s": 69.93886065483093,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 7.250885725021362,
+     "tpot_ms": 122.05742809870472,
+     "e2e_s": 69.62223148345947,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 34.65203881263733,
+     "tpot_ms": 70.34862951289884,
+     "e2e_s": 70.60018849372864,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 21.11209988594055,
+     "tpot_ms": 96.07110098150144,
+     "e2e_s": 70.2044324874878,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_114459"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
    "context": 65536,
    "input": 64512,
    "output": 1024,
@@ -257,6 +383,50 @@
     }
    ],
    "source_dir": "gemma26_vllm_fp8_run_20261118_112716"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 65536,
+   "input": null,
+   "output": 64,
+   "repeat": 1,
+   "status": "SKIP",
+   "ttft_s": null,
+   "ttft_max_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": null,
+   "normalized_tps": null,
+   "wall_s": null,
+   "kv_cache_tokens": 322703,
+   "kv_needed_tokens": 327680,
+   "gpu_memory_utilization": 0.7,
+   "error": "KV cache too small: 5 x 65,536 = 327,680 tokens > 322,703",
+   "requests": [],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_113809"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 65536,
+   "input": null,
+   "output": 512,
+   "repeat": 1,
+   "status": "SKIP",
+   "ttft_s": null,
+   "ttft_max_s": null,
+   "tpot_ms": null,
+   "aggregate_tps": null,
+   "normalized_tps": null,
+   "wall_s": null,
+   "kv_cache_tokens": 310668,
+   "kv_needed_tokens": 327680,
+   "gpu_memory_utilization": 0.7,
+   "error": "KV cache too small: 5 x 65,536 = 327,680 tokens > 310,668",
+   "requests": [],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_114459"
   },
   {
    "phase": "smoke",
