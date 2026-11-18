@@ -38,8 +38,9 @@
 
     <section class="report-section" id="secPick">
       <header><h2>Test<span class="zh">測試條件</span></h2></header>
-      <div class="cmp-pick"><span><em>1</em>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="pNp" role="tablist" aria-label="NP"></div></div>
-      <div class="cmp-pick"><span><em>2</em>Output<small class="zhs">輸出長度</small></span><div class="st-tabs cmp-tabs" id="pOut" role="tablist" aria-label="Output"></div></div>
+      <div class="cmp-pick" id="pSetRow" style="display:none"><span><em>1</em>Test set<small class="zhs">測試組</small></span><div class="st-tabs cmp-tabs" id="pSet" role="tablist" aria-label="Test set"></div></div>
+      <div class="cmp-pick"><span><em>2</em>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="pNp" role="tablist" aria-label="NP"></div></div>
+      <div class="cmp-pick"><span><em>3</em>Output<small class="zhs">輸出長度</small></span><div class="st-tabs cmp-tabs" id="pOut" role="tablist" aria-label="Output"></div></div>
       <p class="v2-fine" id="pKv"></p>
     </section>
 
@@ -60,7 +61,7 @@
     </section>
     <section class="report-section hv-fold hv-closed" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
     <p class="v2-fine" id="stErr"></p>
-  </main><script src="bench-viz.js?v=22"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-gb10.js?v=11"></script><script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"gb10"})</script>
+  </main><script src="bench-viz.js?v=22"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-gb10.js?v=12"></script><script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"gb10"})</script>
 <script src="debug-notes.js?v=3"></script>
 <script src="research-menu.js?v=1" defer></script>
 <script src="ui-min-type.js?v=2" defer></script>

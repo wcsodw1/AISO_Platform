@@ -99,6 +99,12 @@
    "dir": "gemma26_vllm_fp8_smoke_20261118_105415",
    "phase": "smoke",
    "rows": 1
+  },
+  {
+   "dir": "gemma26_vllm_fp8_ryan_20261118_123446",
+   "phase": "run",
+   "set": "ryan",
+   "rows": 12
   }
  ],
  "gb10_runs": [
@@ -555,6 +561,612 @@
     }
    ],
    "source_dir": "gemma26_vllm_fp8_smoke_20261118_105415"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 1,
+   "context": 65536,
+   "session_tokens": 65792,
+   "input": 65536,
+   "output": 256,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 17.904,
+   "ttft_max_s": 17.904,
+   "tpot_ms": 46.95,
+   "aggregate_tps": 8.569,
+   "normalized_tps": 8.569,
+   "wall_s": 29.88,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 17.903888702392578,
+     "tpot_ms": 46.9514715905283,
+     "e2e_s": 29.876513957977295,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 1,
+   "context": 65536,
+   "session_tokens": 66048,
+   "input": 65536,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 17.983,
+   "ttft_max_s": 17.983,
+   "tpot_ms": 47.25,
+   "aggregate_tps": 12.154,
+   "normalized_tps": 12.154,
+   "wall_s": 42.13,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 17.982645750045776,
+     "tpot_ms": 47.24690218960936,
+     "e2e_s": 42.12581276893616,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 1,
+   "context": 131072,
+   "session_tokens": 131328,
+   "input": 131072,
+   "output": 256,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 51.99,
+   "ttft_max_s": 51.99,
+   "tpot_ms": 49.98,
+   "aggregate_tps": 3.955,
+   "normalized_tps": 3.955,
+   "wall_s": 64.73,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 51.99025225639343,
+     "tpot_ms": 49.9787732666614,
+     "e2e_s": 64.73483943939209,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 1,
+   "context": 131072,
+   "session_tokens": 131584,
+   "input": 131072,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 52.181,
+   "ttft_max_s": 52.181,
+   "tpot_ms": 50.24,
+   "aggregate_tps": 6.577,
+   "normalized_tps": 6.577,
+   "wall_s": 77.85,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 52.18078398704529,
+     "tpot_ms": 50.23575062387843,
+     "e2e_s": 77.85125255584717,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 3,
+   "context": 65536,
+   "session_tokens": 65792,
+   "input": 65536,
+   "output": 256,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 36.796,
+   "ttft_max_s": 54.726,
+   "tpot_ms": 138.59,
+   "aggregate_tps": 10.584,
+   "normalized_tps": 3.528,
+   "wall_s": 72.56,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 18.111119508743286,
+     "tpot_ms": 210.02112837398752,
+     "e2e_s": 71.66650724411011,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 37.551191568374634,
+     "tpot_ms": 135.79769134521484,
+     "e2e_s": 72.17960286140442,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 54.725637435913086,
+     "tpot_ms": 69.93646341211655,
+     "e2e_s": 72.55943560600281,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 3,
+   "context": 65536,
+   "session_tokens": 66048,
+   "input": 65536,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 36.732,
+   "ttft_max_s": 54.448,
+   "tpot_ms": 104.66,
+   "aggregate_tps": 16.947,
+   "normalized_tps": 5.649,
+   "wall_s": 90.64,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 54.447606325149536,
+     "tpot_ms": 70.82058025666178,
+     "e2e_s": 90.63692283630371,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 37.617087841033936,
+     "tpot_ms": 103.01431377806543,
+     "e2e_s": 90.25740218162537,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 18.13264274597168,
+     "tpot_ms": 140.1362176510686,
+     "e2e_s": 89.74224996566772,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 3,
+   "context": 131072,
+   "session_tokens": 131328,
+   "input": 131072,
+   "output": 256,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 105.41,
+   "ttft_max_s": 157.677,
+   "tpot_ms": 277.78,
+   "aggregate_tps": 4.336,
+   "normalized_tps": 1.445,
+   "wall_s": 177.13,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 157.6769061088562,
+     "tpot_ms": 76.29343481624828,
+     "e2e_s": 177.1317319869995,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 106.20604228973389,
+     "tpot_ms": 275.0032677369959,
+     "e2e_s": 176.33187556266785,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 52.34688663482666,
+     "tpot_ms": 482.03785653207814,
+     "e2e_s": 175.2665400505066,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 3,
+   "context": 131072,
+   "session_tokens": 131584,
+   "input": 131072,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 105.439,
+   "ttft_max_s": 157.569,
+   "tpot_ms": 178.42,
+   "aggregate_tps": 7.777,
+   "normalized_tps": 2.592,
+   "wall_s": 197.5,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 52.41865396499634,
+     "tpot_ms": 280.26143911999964,
+     "e2e_s": 195.63224935531616,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 157.56852078437805,
+     "tpot_ms": 78.13740849728221,
+     "e2e_s": 197.49673652648926,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 106.32856583595276,
+     "tpot_ms": 176.84674076371465,
+     "e2e_s": 196.69725036621094,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 65536,
+   "session_tokens": 65792,
+   "input": 65536,
+   "output": 256,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 55.331,
+   "ttft_max_s": 91.233,
+   "tpot_ms": 213.77,
+   "aggregate_tps": 11.552,
+   "normalized_tps": 2.31,
+   "wall_s": 110.81,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 91.233478307724,
+     "tpot_ms": 76.75020273993997,
+     "e2e_s": 110.80478000640869,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 37.621368169784546,
+     "tpot_ms": 281.4650993721158,
+     "e2e_s": 109.39496850967407,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 73.90959787368774,
+     "tpot_ms": 143.20177564433976,
+     "e2e_s": 110.42605066299438,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 55.752445697784424,
+     "tpot_ms": 212.61542077158012,
+     "e2e_s": 109.96937799453735,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 18.137803077697754,
+     "tpot_ms": 354.8289242912741,
+     "e2e_s": 108.61917877197266,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 65536,
+   "session_tokens": 66048,
+   "input": 65536,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 55.25,
+   "ttft_max_s": 90.748,
+   "tpot_ms": 145.23,
+   "aggregate_tps": 19.628,
+   "normalized_tps": 3.926,
+   "wall_s": 130.42,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 37.66815733909607,
+     "tpot_ms": 178.7618568965367,
+     "e2e_s": 129.01546621322632,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 73.8691816329956,
+     "tpot_ms": 109.92793141045915,
+     "e2e_s": 130.04235458374023,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 18.201728105545044,
+     "tpot_ms": 215.3394716826437,
+     "e2e_s": 128.24019813537598,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 55.764626026153564,
+     "tpot_ms": 144.4645450539785,
+     "e2e_s": 129.58600854873657,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 90.74842548370361,
+     "tpot_ms": 77.6391020026459,
+     "e2e_s": 130.42200660705566,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 131072,
+   "session_tokens": 131328,
+   "input": 131072,
+   "output": 256,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 158.287,
+   "ttft_max_s": 262.742,
+   "tpot_ms": 488.93,
+   "aggregate_tps": 4.49,
+   "normalized_tps": 0.898,
+   "wall_s": 285.06,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 262.74163794517517,
+     "tpot_ms": 87.53783282111672,
+     "e2e_s": 285.06378531455994,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 106.30305886268616,
+     "tpot_ms": 688.8513312620275,
+     "e2e_s": 281.9601483345032,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 52.47599673271179,
+     "tpot_ms": 893.4439116833257,
+     "e2e_s": 280.30419421195984,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 158.73350620269775,
+     "tpot_ms": 488.26535823298434,
+     "e2e_s": 283.24117255210876,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 211.1800856590271,
+     "tpot_ms": 286.566536099303,
+     "e2e_s": 284.25455236434937,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  },
+  {
+   "set": "ryan",
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 131072,
+   "session_tokens": 131584,
+   "input": 131072,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 158.176,
+   "ttft_max_s": 262.333,
+   "tpot_ms": 289.83,
+   "aggregate_tps": 8.302,
+   "normalized_tps": 1.66,
+   "wall_s": 308.36,
+   "kv_cache_tokens": 966137,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 211.07579898834229,
+     "tpot_ms": 188.8112933201799,
+     "e2e_s": 307.5583698749542,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 52.462936878204346,
+     "tpot_ms": 491.52662936022136,
+     "e2e_s": 303.63304448127747,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 262.33274507522583,
+     "tpot_ms": 90.07673954077197,
+     "e2e_s": 308.3619589805603,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 158.6791501045227,
+     "tpot_ms": 289.3873096212249,
+     "e2e_s": 306.5560653209686,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 106.32723069190979,
+     "tpot_ms": 389.3428926598536,
+     "e2e_s": 305.28144884109497,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_ryan_20261118_123446"
+  }
+ ],
+ "profile_ryan": {
+  "weights": "bf16 (not quantized)",
+  "kv_cache_dtype": "fp8",
+  "max_model_len": 132096,
+  "max_num_seqs": 5,
+  "max_num_batched_tokens": 8192,
+  "extra_vllm_args": [
+   "--enforce-eager",
+   "--moe-backend",
+   "triton"
+  ],
+  "gpu_memory_utilization": 0.7,
+  "prefix_caching": false,
+  "request": "ignore_eos, min_tokens=max_tokens, temperature 0, seed 42",
+  "order": "NP ascending, then input, then output; every case sent, none skipped from a KV estimate",
+  "metrics": {
+   "ttft": "first_content - start (s)",
+   "tpot": "(done - first_content)/(output_tokens-1) (ms)",
+   "aggregate": "sum output tokens / (last done - first start)",
+   "normalized": "aggregate / NP"
+  }
+ },
+ "note_ryan": "Ryan 條件（TPI-Ryan 2026-11-18）：NP 1 / 3 / 5 × Input 64K（65,536）/ 128K（131,072）× Output 256 / 512，KV cache fp8，模型權重 bf16（未量化），不開 prefix caching；每組 1 次、一次開機跑完 12 組。Input 為精確輸入 token 數，session 總長 = 輸入 + 輸出，與另一組「context = 輸入 + 輸出」的測試不同，不可直接比較。數值取自 GB10 上 summary.csv 與 case_*.json，未經人工改寫。",
+ "progress_ryan": [
+  {
+   "label": "Preflight",
+   "zh": "預檢",
+   "status": "done"
+  },
+  {
+   "label": "Smoke",
+   "zh": "冒煙",
+   "detail": "np=2, input=8K, output=64",
+   "status": "done"
+  },
+  {
+   "label": "Ryan matrix",
+   "zh": "Ryan 條件",
+   "detail": "np=1/3/5, input=64K/128K, output=256/512, KV fp8",
+   "status": "done"
   }
  ]
 }
