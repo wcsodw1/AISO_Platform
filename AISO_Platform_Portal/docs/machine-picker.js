@@ -10,6 +10,7 @@ window.MachinePicker = (function () {
   const V = [
     { k: "nvidia", name: "NVIDIA", stack: "CUDA", models: [
       { id: "pro6000", n: "RTX PRO 6000", t: "s", online: true, spec: "8 × RTX PRO 6000 Blackwell · 96 GB / GPU", fw: "vLLM · llama.cpp", result: "stress-test-pro6000.html", run: "benchmark.html#/pick/nvidia/pro6000-tpi" },
+      { id: "gb10", n: "GB10", t: "m", online: true, spec: "NVIDIA GB10 · 128 GB unified memory", fw: "vLLM", result: "stress-test-gb10.html", run: "benchmark.html#/pick/nvidia/gb10" },
       { id: "h200", n: "H200", t: "s" }, { id: "b300", n: "B300", t: "s" }] },
     { k: "amd", name: "AMD", stack: "Vulkan · ROCm", models: [
       { id: "aiso1", compare: true, n: "AISO1 · AI MAX+ 395", t: "m", online: true, spec: "Ryzen AI Max+ 395 · Radeon iGPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-aiso1.html", run: "benchmark.html#/pick/amd/aiso1-amd" },
