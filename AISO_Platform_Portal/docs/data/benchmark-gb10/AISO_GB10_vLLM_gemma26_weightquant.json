@@ -9,6 +9,7 @@
    5
   ],
   "inputs": [
+   8192,
    65536,
    131072
   ],
@@ -20,10 +21,12 @@
   "kv_cache_dtype": "fp8",
   "baseline": "bf16 (not quantized)"
  },
- "generated_at": "2026-11-18T14:59:51",
+ "generated_at": "2026-11-18T16:58:12",
  "weights": [
   {
    "key": "bf16",
+   "set": "ryan",
+   "expect": 12,
    "label": [
     "bf16",
     "bf16（不量化）"
@@ -212,19 +215,129 @@
      "normalized_tps": 1.66,
      "kv_tight": false,
      "kv_cache_tokens": 966137.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 1.597,
+     "ttft_max_s": 1.597,
+     "error": "",
+     "tpot_ms": 44.34,
+     "aggregate_tps": 19.84,
+     "normalized_tps": 19.84,
+     "kv_tight": false,
+     "kv_cache_tokens": 102796.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 1.391,
+     "ttft_max_s": 1.391,
+     "error": "",
+     "tpot_ms": 44.17,
+     "aggregate_tps": 21.367,
+     "normalized_tps": 21.367,
+     "kv_tight": false,
+     "kv_cache_tokens": 102796.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 3.257,
+     "ttft_max_s": 4.21,
+     "error": "",
+     "tpot_ms": 66.08,
+     "aggregate_tps": 38.075,
+     "normalized_tps": 12.692,
+     "kv_tight": false,
+     "kv_cache_tokens": 102796.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 3.262,
+     "ttft_max_s": 4.222,
+     "error": "",
+     "tpot_ms": 64.67,
+     "aggregate_tps": 42.232,
+     "normalized_tps": 14.077,
+     "kv_tight": false,
+     "kv_cache_tokens": 102796.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 5.001,
+     "ttft_max_s": 6.979,
+     "error": "",
+     "tpot_ms": 72.49,
+     "aggregate_tps": 54.221,
+     "normalized_tps": 10.844,
+     "kv_tight": false,
+     "kv_cache_tokens": 102796.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 5.008,
+     "ttft_max_s": 6.991,
+     "error": "",
+     "tpot_ms": 69.32,
+     "aggregate_tps": 63.131,
+     "normalized_tps": 12.626,
+     "kv_tight": false,
+     "kv_cache_tokens": 102796.0
     }
    ],
    "cases_expected": 12,
    "started": "20261118_123446",
    "start_error": null,
    "status": "COMPLETE",
+   "sets": {
+    "ryan": {
+     "status": "COMPLETE",
+     "kv_cache_tokens": 966137.0,
+     "max_model_len": 132096,
+     "max_num_seqs": 5,
+     "start_error": null,
+     "rows": 12
+    },
+    "in8k": {
+     "status": "COMPLETE",
+     "kv_cache_tokens": 102796.0,
+     "max_model_len": 9216,
+     "max_num_seqs": 5,
+     "start_error": null,
+     "rows": 6
+    }
+   },
    "attempts": [
     {
+     "set": "in8k",
+     "dir_time": "20261118_164914",
+     "pass": 6,
+     "error": null
+    },
+    {
+     "set": "ryan",
      "dir_time": "20261118_145125",
      "pass": 0,
      "error": null
     },
     {
+     "set": "ryan",
      "dir_time": "20261118_123446",
      "pass": 12,
      "error": null
@@ -234,6 +347,8 @@
   },
   {
    "key": "fp8",
+   "set": "ryan",
+   "expect": 12,
    "label": [
     "fp8 online",
     "fp8 線上量化"
@@ -424,14 +539,123 @@
      "normalized_tps": 1.783,
      "kv_tight": false,
      "kv_cache_tokens": 1230191.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 1.253,
+     "ttft_max_s": 1.253,
+     "error": "",
+     "tpot_ms": 28.51,
+     "aggregate_tps": 30.034,
+     "normalized_tps": 30.034,
+     "kv_tight": false,
+     "kv_cache_tokens": 259872.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 1.239,
+     "ttft_max_s": 1.239,
+     "error": "",
+     "tpot_ms": 28.52,
+     "aggregate_tps": 32.384,
+     "normalized_tps": 32.384,
+     "kv_tight": false,
+     "kv_cache_tokens": 259872.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 2.97,
+     "ttft_max_s": 3.717,
+     "error": "",
+     "tpot_ms": 42.14,
+     "aggregate_tps": 55.849,
+     "normalized_tps": 18.616,
+     "kv_tight": false,
+     "kv_cache_tokens": 259872.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 2.979,
+     "ttft_max_s": 3.726,
+     "error": "",
+     "tpot_ms": 39.96,
+     "aggregate_tps": 65.552,
+     "normalized_tps": 21.851,
+     "kv_tight": false,
+     "kv_cache_tokens": 259872.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 4.597,
+     "ttft_max_s": 6.18,
+     "error": "",
+     "tpot_ms": 49.05,
+     "aggregate_tps": 74.537,
+     "normalized_tps": 14.907,
+     "kv_tight": false,
+     "kv_cache_tokens": 259872.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 4.6,
+     "ttft_max_s": 6.184,
+     "error": "",
+     "tpot_ms": 46.08,
+     "aggregate_tps": 90.724,
+     "normalized_tps": 18.145,
+     "kv_tight": false,
+     "kv_cache_tokens": 259872.0
     }
    ],
    "cases_expected": 12,
    "started": "20261118_132708",
    "start_error": null,
    "status": "COMPLETE",
+   "sets": {
+    "ryan": {
+     "status": "COMPLETE",
+     "kv_cache_tokens": 1230191.0,
+     "max_model_len": 132096,
+     "max_num_seqs": 5,
+     "start_error": null,
+     "rows": 12
+    },
+    "in8k": {
+     "status": "COMPLETE",
+     "kv_cache_tokens": 259872.0,
+     "max_model_len": 9216,
+     "max_num_seqs": 5,
+     "start_error": null,
+     "rows": 6
+    }
+   },
    "attempts": [
     {
+     "set": "in8k",
+     "dir_time": "20261118_163432",
+     "pass": 6,
+     "error": null
+    },
+    {
+     "set": "ryan",
      "dir_time": "20261118_132708",
      "pass": 12,
      "error": null
@@ -441,6 +665,8 @@
   },
   {
    "key": "fp8pre",
+   "set": "ryan",
+   "expect": 12,
    "label": [
     "fp8 pre-quantized",
     "fp8 預量化"
@@ -627,14 +853,123 @@
      "normalized_tps": 1.656,
      "kv_tight": true,
      "kv_cache_tokens": 227404.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 1.234,
+     "ttft_max_s": 1.234,
+     "error": "",
+     "tpot_ms": 28.62,
+     "aggregate_tps": 30.003,
+     "normalized_tps": 30.003,
+     "kv_tight": false,
+     "kv_cache_tokens": 50747.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 1.226,
+     "ttft_max_s": 1.226,
+     "error": "",
+     "tpot_ms": 28.64,
+     "aggregate_tps": 32.277,
+     "normalized_tps": 32.277,
+     "kv_tight": false,
+     "kv_cache_tokens": 50747.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 2.907,
+     "ttft_max_s": 3.679,
+     "error": "",
+     "tpot_ms": 41.4,
+     "aggregate_tps": 56.877,
+     "normalized_tps": 18.959,
+     "kv_tight": false,
+     "kv_cache_tokens": 50747.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 2.899,
+     "ttft_max_s": 3.67,
+     "error": "",
+     "tpot_ms": 40.11,
+     "aggregate_tps": 65.546,
+     "normalized_tps": 21.849,
+     "kv_tight": false,
+     "kv_cache_tokens": 50747.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 4.476,
+     "ttft_max_s": 6.1,
+     "error": "",
+     "tpot_ms": 49.08,
+     "aggregate_tps": 75.013,
+     "normalized_tps": 15.003,
+     "kv_tight": false,
+     "kv_cache_tokens": 50747.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 4.477,
+     "ttft_max_s": 6.104,
+     "error": "",
+     "tpot_ms": 46.11,
+     "aggregate_tps": 91.068,
+     "normalized_tps": 18.214,
+     "kv_tight": false,
+     "kv_cache_tokens": 50747.0
     }
    ],
    "cases_expected": 12,
    "started": "20261118_141126",
    "start_error": null,
    "status": "COMPLETE",
+   "sets": {
+    "ryan": {
+     "status": "COMPLETE",
+     "kv_cache_tokens": 227404.0,
+     "max_model_len": 132096,
+     "max_num_seqs": 5,
+     "start_error": null,
+     "rows": 12
+    },
+    "in8k": {
+     "status": "COMPLETE",
+     "kv_cache_tokens": 50747.0,
+     "max_model_len": 9216,
+     "max_num_seqs": 5,
+     "start_error": null,
+     "rows": 6
+    }
+   },
    "attempts": [
     {
+     "set": "in8k",
+     "dir_time": "20261118_164224",
+     "pass": 6,
+     "error": null
+    },
+    {
+     "set": "ryan",
      "dir_time": "20261118_141126",
      "pass": 12,
      "error": null
@@ -644,6 +979,8 @@
   },
   {
    "key": "int8",
+   "set": "ryan",
+   "expect": 12,
    "label": [
     "int8 AWQ",
     "int8 AWQ"
@@ -667,8 +1004,19 @@
    "started": "20261118_144144",
    "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
    "status": "NO_RESULT",
+   "sets": {
+    "ryan": {
+     "status": "NO_RESULT",
+     "kv_cache_tokens": null,
+     "max_model_len": 132096,
+     "max_num_seqs": 5,
+     "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
+     "rows": 0
+    }
+   },
    "attempts": [
     {
+     "set": "ryan",
      "dir_time": "20261118_144144",
      "pass": 0,
      "error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin"
@@ -678,6 +1026,8 @@
   },
   {
    "key": "int4",
+   "set": "ryan",
+   "expect": 12,
    "label": [
     "int4 AWQ",
     "int4 AWQ"
@@ -701,18 +1051,31 @@
    "started": "20261118_144550",
    "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
    "status": "NO_RESULT",
+   "sets": {
+    "ryan": {
+     "status": "NO_RESULT",
+     "kv_cache_tokens": null,
+     "max_model_len": 132096,
+     "max_num_seqs": 5,
+     "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
+     "rows": 0
+    }
+   },
    "attempts": [
     {
+     "set": "ryan",
      "dir_time": "20261118_145128",
      "pass": 0,
      "error": null
     },
     {
+     "set": "ryan",
      "dir_time": "20261118_144550",
      "pass": 0,
      "error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin"
     },
     {
+     "set": "ryan",
      "dir_time": "20261118_140804",
      "pass": 0,
      "error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin"
