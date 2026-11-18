@@ -96,7 +96,8 @@
   // same wording as machine-picker.js on the hub (kept in step by hand: two machines)
   const HUBCARD = {
     pro6000: { vendor: "NVIDIA", tier: ["Server", "伺服器"], name: "RTX PRO 6000", spec: "8 × RTX PRO 6000 Blackwell · 96 GB / GPU" },
-    aiso1: { vendor: "AMD", tier: ["Mini-workstation", "迷你工作站"], name: "AISO1 · AI MAX+ 395", spec: "Ryzen AI Max+ 395 · Radeon iGPU" }
+    aiso1: { vendor: "AMD", tier: ["Mini-workstation", "迷你工作站"], name: "AISO1 · AI MAX+ 395", spec: "Ryzen AI Max+ 395 · Radeon iGPU" },
+    gb10: { vendor: "NVIDIA", tier: ["Mini-workstation", "迷你工作站"], name: "GB10", spec: "NVIDIA GB10 · 128 GB unified memory" }
   };
   function stage() {
     const name = ($("selectedUnitTitle") && $("selectedUnitTitle").textContent.trim()) || "";
@@ -238,7 +239,7 @@
   }
 
   // one executor per (machine, engine): the engine picked on step 1 decides which one answers
-  const ENGINES = { pro6000: { vllm: "pro6000", llamacpp: "pro6000_llamacpp" }, aiso1: { llamacpp: "aiso1" } };
+  const ENGINES = { pro6000: { vllm: "pro6000", llamacpp: "pro6000_llamacpp" }, aiso1: { llamacpp: "aiso1" }, gb10: { vllm: "gb10" } };
   const baseOf = id => String(id || "").split("_")[0];
   const normE = x => String(x).toLowerCase().replace(/[^a-z0-9]/g, "");
   const execId = () => EXEC.execId || machineId();
@@ -249,7 +250,7 @@
     if (!WEB && !primeFromCache()) EXEC.loading = true;
     detectExec().then(() => { EXEC.loading = false; render(); });
   }
-  const machineId = () => { const m = location.hash.match(/^#\/pick\/[a-z]+\/([a-z0-9-]+)/); return m ? ({ "aiso1-amd": "aiso1", "pro6000-tpi": "pro6000" }[m[1]] || null) : null; };
+  const machineId = () => { const m = location.hash.match(/^#\/pick\/[a-z]+\/([a-z0-9-]+)/); return m ? ({ "aiso1-amd": "aiso1", "pro6000-tpi": "pro6000", "gb10": "gb10" }[m[1]] || null) : null; };
   // clean smoke progress: one row per model; the raw log is folded away
   // rough duration of one model's smoke (seconds, from the runs on this machine): loading the model dominates
   const EST = { gemma26: 60, gemma31: 210, laguna: 60, nemotron: 90, "GPT-OSS-20B": 300 };
