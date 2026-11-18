@@ -30,12 +30,12 @@ function cell(ctx,o){
 function pick(list,cur){return list.includes(cur)?cur:list[0]}
 function card(group,items,cur){return items.map(([k,l])=>`<button type="button" role="tab" class="has${String(k)===String(cur)?" on":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
 function controls(){
- $s("pSetRow").style.display=hasRyan()?"":"none";$s("pSet").innerHTML=card("set",[["ctx","Context tests 長上下文"],["ryan","Ryan conditions Input 64K / 128K"]],SET);
+ $s("pSetRow").style.display=hasRyan()?"":"none";$s("pSet").innerHTML=card("set",[["ctx","Context 32K – 256K 總長度"],["ryan","Input 64K / 128K 輸入長度"]],SET);
  NP=nps().includes(NP)?NP:(nps().includes("5")?"5":(nps().find(k=>k[0]!=="s")||nps()[0]));   // opens on NP5 (David 2026-11-18), else the first real run - never on Smoke
  const os=outs(NP),keys=(os.length>1?[CMP]:[]).concat(os);OUT=keys.includes(OUT)?OUT:keys[0];
  $s("pNp").innerHTML=card("np",nps().map(k=>[k,k[0]==="s"?`Smoke NP${k.slice(1)}`:`NP${k}`]),NP);
  $s("pOut").innerHTML=card("out",keys.map(k=>k===CMP?[CMP,"Compare outputs 輸出比較"]:[k,"Output "+k]),OUT);
- document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.dataset.g==="set"){SET=b.dataset.k;NP=undefined;OUT=undefined}else if(b.dataset.g==="np"){NP=b.dataset.k;OUT=undefined}else OUT=b.dataset.k===CMP?CMP:+b.dataset.k;render()});
+ document.querySelectorAll("#secSet .cmp-tabs button,#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.dataset.g==="set"){SET=b.dataset.k;NP=undefined;OUT=undefined}else if(b.dataset.g==="np"){NP=b.dataset.k;OUT=undefined}else OUT=b.dataset.k===CMP?CMP:+b.dataset.k;render()});
  const kv=[...new Map(sel().filter(r=>r.kv_cache_tokens).map(r=>[r.gpu_memory_utilization,r.kv_cache_tokens])).entries()];
  const bad=sel().filter(r=>r.status!=="PASS");
  $s("pKv").innerHTML=(kv.length?`KV cache capacity<small class="zhs">KV cache 實測容量</small>：${kv.map(([u,t])=>`${t.toLocaleString("en-US")} tokens（memory ${u}）`).join("；")}`:"")
@@ -108,7 +108,14 @@ function progress(){
  const _unused=null,ico={done:"✓",ongoing:"●",todo:"○",fail:"✕"},word={done:"Done 完成",ongoing:"Running 執行中",todo:"To do 待測",fail:"Failed 未通過"};
  $s("pProgress").innerHTML=list.map((x,i)=>{const st=ico[x.status]?x.status:"todo";return `<li class="gb-st gb-${st}"><i aria-hidden="true">${ico[st]}</i><div><b>${esc(x.label)}${x.zh?`<small class="zhs">${esc(x.zh)}</small>`:""}</b>${x.detail?`<span>${esc(x.detail)}</span>`:""}</div><em>${word[st]}</em></li>`}).join("");
 }
-function render(){controls();concl();metrics();requests();notes();progress()}
+/* Parameters panel (David 2026-11-18): every setting at the top, including the input tokens. Data: params_<set> written by scripts/build_gb10_params.py from the real server_command.txt + server.log. */
+function params(){
+ const P=DS["params_"+SET],row=([l,z,v])=>`<div><dt>${esc(l)}<small class="zhs">${esc(z)}</small></dt><dd>${esc(v)}</dd></div>`;
+ $s("pParams").innerHTML=P?`<h3 class="pt-h">Key parameters<small class="zhs">測試參數</small></h3><dl class="v2-params">${P.key.map(row).join("")}</dl>
+  <h3 class="pt-h">Server parameters<small class="zhs">伺服器參數 · 取自伺服器紀錄，非手填</small></h3><dl class="v2-params">${P.server.map(row).join("")}</dl>
+  <p class="v2-fine">Source 來源：${esc(P.source)}</p>`:"";
+}
+function render(){controls();params();concl();metrics();requests();notes();progress()}
 fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
  const e=(reg.single_machines||[]).find(x=>x.machine==="gb10");if(!e)throw new Error("registry: gb10 missing");
  return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})

@@ -73,7 +73,7 @@ def main():
     ds["progress_ryan"] = [
         {"label": "Preflight", "zh": "預檢", "status": "done"},
         {"label": "Smoke", "zh": "冒煙", "detail": "np=2, input=8K, output=64", "status": "done"},
-        {"label": "Ryan matrix", "zh": "Ryan 條件", "detail": "np=1/3/5, input=64K/128K, output=256/512, KV fp8",
+        {"label": "Input 64K / 128K", "zh": "輸入 64K / 128K", "detail": "np=1/3/5, input=64K/128K, output=256/512, KV fp8",
          "status": "done" if all(r["status"] == "PASS" for r in rows) and len(rows) == 12 else "fail"},
     ]
     data_path.write_text(json.dumps(ds, ensure_ascii=False, indent=1) + "\n")
