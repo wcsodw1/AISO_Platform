@@ -81,6 +81,11 @@
    "rows": 1
   },
   {
+   "dir": "gemma26_vllm_fp8_run_20261118_120345",
+   "phase": "run",
+   "rows": 1
+  },
+  {
    "dir": "gemma26_vllm_fp8_smoke_20261118_105132",
    "phase": "smoke",
    "rows": 0
@@ -400,29 +405,6 @@
    "model": "Gemma 4 26B A4B",
    "np": 5,
    "context": 65536,
-   "input": null,
-   "output": 512,
-   "repeat": 1,
-   "status": "SKIP",
-   "ttft_s": null,
-   "ttft_max_s": null,
-   "tpot_ms": null,
-   "aggregate_tps": null,
-   "normalized_tps": null,
-   "wall_s": null,
-   "kv_cache_tokens": 310668,
-   "kv_needed_tokens": 327680,
-   "kv_tight": false,
-   "gpu_memory_utilization": 0.7,
-   "error": "KV cache too small: 5 x 65,536 = 327,680 tokens > 310,668",
-   "requests": [],
-   "source_dir": "gemma26_vllm_fp8_run_20261118_114459"
-  },
-  {
-   "phase": "run",
-   "model": "Gemma 4 26B A4B",
-   "np": 5,
-   "context": 65536,
    "input": 65472,
    "output": 64,
    "repeat": 1,
@@ -476,6 +458,65 @@
     }
    ],
    "source_dir": "gemma26_vllm_fp8_run_20261118_115555"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 65536,
+   "input": 65024,
+   "output": 512,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 53.508,
+   "ttft_max_s": 89.052,
+   "tpot_ms": 144.98,
+   "aggregate_tps": 19.917,
+   "normalized_tps": 3.983,
+   "wall_s": 128.53,
+   "kv_cache_tokens": 576275,
+   "kv_needed_tokens": null,
+   "kv_tight": false,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 17.867177963256836,
+     "tpot_ms": 212.49962226285393,
+     "e2e_s": 126.4544849395752,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 89.05236887931824,
+     "tpot_ms": 77.25600160497976,
+     "e2e_s": 128.5301856994629,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 71.45083260536194,
+     "tpot_ms": 110.96790018846843,
+     "e2e_s": 128.1554296016693,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 53.525628089904785,
+     "tpot_ms": 145.16191566527007,
+     "e2e_s": 127.70336699485779,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 35.646469593048096,
+     "tpot_ms": 179.03906258584936,
+     "e2e_s": 127.13543057441711,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_120345"
   },
   {
    "phase": "smoke",
