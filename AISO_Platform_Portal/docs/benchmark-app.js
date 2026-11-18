@@ -379,6 +379,7 @@ $("liveExport").onclick=()=>saveBlob("live-benchmark-results.json",new Blob([JSO
 // Public-safe navigation catalog; real service details arrive only after authentication.
 const unitCatalog=[
   {id:"pro6000-tpi",vendor:"nvidia",name:"NVIDIA RTX PRO6000",tier:"Server-Workstation",detail:"TPI · 8 × RTX PRO 6000 Blackwell · 96 GB / GPU",gpu:"RTX PRO 6000 Blackwell Server Edition",count:8,vram:96,frameworks:["vllm","llamacpp"]},
+  {id:"gb10",vendor:"nvidia",name:"NVIDIA GB10",tier:"Mini-workstation",detail:"GB10 · 128 GB unified memory (CPU + GPU)",gpu:"NVIDIA GB10",count:1,vram:null,frameworks:["vllm"]},
   {id:"aiso1-amd",vendor:"amd",name:"AISO1",tier:"Mini-workstation",detail:"AMD Ryzen AI Max+ 395 · 服務連線待設定",gpu:"Radeon iGPU",count:1,vram:null,frameworks:["llamacpp","vllm","sglang"]},
   {id:"intel-b70",vendor:"intel",name:"Intel Arc Pro B70",tier:"Mini-workstation",detail:"2 × Arc Pro B70 · 32 GB / GPU",gpu:"Arc Pro B70",count:2,vram:32,frameworks:["vllm","sglang","llamacpp"]}
 ];
