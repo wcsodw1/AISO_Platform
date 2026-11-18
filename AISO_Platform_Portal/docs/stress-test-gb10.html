@@ -14,8 +14,10 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
-  <link rel="stylesheet" href="gptoss-v2.css?v=51">
+  <link rel="stylesheet" href="gptoss-v2.css?v=59">
   <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="stress-test-aiso1-kv.css?v=97">
+  <link rel="stylesheet" href="stress-test-gb10-wq.css?v=5">
   <link rel="stylesheet" href="tesla.css?v=46">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="stress-test-gb10.css?v=3">
@@ -34,39 +36,49 @@
       <p class="v2-sub">Long-context vLLM test, not comparable with other machines<span class="zh-i">長上下文測法，與其他機器條件不同，不可直接比較</span></p>
     </section>
 
-    <section class="report-section" id="secSet">
+    <nav class="st-view" id="gbView" role="tablist" aria-label="Test">
+      <button type="button" role="tab" data-view="smoke" aria-selected="false">Smoke<small>冒煙測試</small></button>
+      <button type="button" role="tab" data-view="std" aria-selected="false">Standard<small>標準測試</small></button>
+      <button type="button" role="tab" data-view="wq" class="on" aria-selected="true">Weight quantization<small>權重量化</small></button>
+    </nav>
+
+    <section class="report-section gv-std" id="secSet">
       <div class="cmp-pick" id="pSetRow" style="display:none"><span><em>1</em>Test set<small class="zhs">測試組</small></span><div class="st-tabs cmp-tabs" id="pSet" role="tablist" aria-label="Test set"></div></div>
     </section>
 
-    <section class="report-section" id="secParams"><header><h2>Parameters<span class="zh">測試參數</span></h2></header><div id="pParams"></div></section>
+    <section class="report-section gv-std" id="secParams"><header><h2>Parameters<span class="zh">測試參數</span></h2></header><div id="pParams"></div></section>
 
-    <section class="report-section gb-prog" id="secProgress"><header><h2>Progress<span class="zh">測試進度</span></h2></header><ol class="gb-steps" id="pProgress"></ol></section>
+    <section class="report-section gb-prog gv-std hv-fold hv-closed" id="secProgress"><header><h2>Progress<span class="zh">測試進度</span></h2></header><ol class="gb-steps" id="pProgress"></ol></section>
 
-    <section class="report-section" id="secPick">
+    <section class="report-section gv-std" id="secPick">
       <header><h2>Test<span class="zh">測試條件</span></h2></header>
       <div class="cmp-pick"><span><em>2</em>Concurrency<small class="zhs">並發</small></span><div class="st-tabs cmp-tabs" id="pNp" role="tablist" aria-label="NP"></div></div>
       <div class="cmp-pick"><span><em>3</em>Output<small class="zhs">輸出長度</small></span><div class="st-tabs cmp-tabs" id="pOut" role="tablist" aria-label="Output"></div></div>
       <p class="v2-fine" id="pKv"></p>
     </section>
 
-    <section class="report-section" id="secMetrics">
+    <section class="report-section gv-std" id="secMetrics">
       <header><h2>TTFT · TPOT · TPS<span class="zh">四項指標</span></h2></header>
       <p class="gb-concl" id="pConcl"></p>
       <div id="pMetrics"></div>
     </section>
 
-    <section class="report-section hv-fold hv-closed" id="secReq">
+    <div id="gvStdCmp" class="gv-wrap gv-std" hidden></div>
+    <div id="gvSmoke" class="gv-wrap" hidden></div>
+    <div id="gvWq" class="gv-wrap" hidden></div>
+
+    <section class="report-section hv-fold hv-closed gv-std" id="secReq">
       <header><h2>Per request<span class="zh">逐請求數值</span></h2></header>
       <div id="pReq"></div>
     </section>
 
-    <section class="report-section hv-fold hv-closed" id="secNote">
+    <section class="report-section hv-fold hv-closed gv-std" id="secNote">
       <header><h2>Notes<span class="zh">備註</span></h2></header>
       <div id="pNotes"></div>
     </section>
     <section class="report-section hv-fold hv-closed" id="secTerminal"><header><h2>Terminal<span class="zh">終端機</span></h2></header><div id="aisoTerm"></div></section>
     <p class="v2-fine" id="stErr"></p>
-  </main><script src="bench-viz.js?v=22"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-gb10.js?v=14"></script><script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"gb10"})</script>
+  </main><script src="bench-viz.js?v=26"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-gb10.js?v=14"></script><script src="stress-test-gb10-wq.js?v=12"></script><script src="terminal.js?v=8"></script><script>AisoTerm.mount(document.getElementById("aisoTerm"),{machine:"gb10"})</script>
 <script src="debug-notes.js?v=3"></script>
 <script src="research-menu.js?v=1" defer></script>
 <script src="ui-min-type.js?v=2" defer></script>
