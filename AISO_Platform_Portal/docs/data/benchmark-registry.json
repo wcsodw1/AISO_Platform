@@ -114,6 +114,15 @@
    "runs_key": "pro6000_runs",
    "page": "stress-test-pro6000.html",
    "comparable": false
+  },
+  {
+   "machine": "gb10",
+   "label": "GB10",
+   "framework": "vllm",
+   "file": "data/benchmark-gb10/AISO_GB10_vLLM_gemma26_20261118.json",
+   "runs_key": "gb10_runs",
+   "page": "stress-test-gb10.html",
+   "comparable": false
   }
  ]
 }

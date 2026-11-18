@@ -158,6 +158,53 @@
           "note": "Use live discovery to verify the configured running service."
         }
       }
+    },
+    {
+      "machine_id": "gb10",
+      "display_name": "NVIDIA GB10 — 128 GB unified",
+      "vendor": "nvidia",
+      "gpu_model": "NVIDIA GB10 (Grace Blackwell)",
+      "gpu_count": 1,
+      "vram_gb": null,
+      "ram_gb": 128,
+      "os": "Ubuntu (DGX OS)",
+      "memory_note": "Unified memory: CPU and GPU share one 128 GB pool; other services on the box (OrientAI) take part of it.",
+      "ssh": {
+        "host": "REPLACE_WITH_HOST",
+        "port": 22,
+        "user": "REPLACE_WITH_USER",
+        "auth_profile": "gb10-key",
+        "host_key_fingerprint": ""
+      },
+      "paths": {
+        "benchmark_root": "Configured locally",
+        "model_dir": "Configured locally",
+        "results_dir": "results"
+      },
+      "last_connection_check": null,
+      "frameworks": {
+        "vllm": {
+          "status": "verified",
+          "backend": "CUDA",
+          "model_format": "Safetensors",
+          "container": "lmcache/vllm-openai:nightly-2026-11-02",
+          "port": 18090,
+          "runner": "GB10_vllm_gemma26_5user_longctx.py",
+          "models": [
+            "gemma26"
+          ],
+          "note": "Smoke and long-context runs imported (scripts/ingest_gb10_longctx.py). The server binds 127.0.0.1 on GB10: reach it through an SSH tunnel for live runs."
+        }
+      },
+      "live_services": {
+        "vllm": [
+          {
+            "id": "gemma26",
+            "label": "Gemma 4 26B (fp8 KV)",
+            "endpoint": "http://127.0.0.1:18090/v1"
+          }
+        ]
+      }
     }
   ]
 }

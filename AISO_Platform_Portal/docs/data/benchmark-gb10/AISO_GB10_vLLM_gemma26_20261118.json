@@ -1,0 +1,153 @@
+{
+ "dataset": "AISO_GB10_vLLM_gemma26_20261118",
+ "evidence_until": "2026-11-18",
+ "generated_on": "2026-11-18",
+ "note": "GB10（NVIDIA DGX Spark 類，128 GB 統一記憶體）vLLM 長上下文測試：Gemma 4 26B A4B、fp8 KV cache、不開 prefix caching。每個條件 NP 個請求同時送出；context = 輸入 + 輸出。數值取自 GB10 上 summary.csv 與 case_*.json，未經人工改寫。",
+ "comparability": {
+  "level": "not_comparable",
+  "text": "GB10 為新機器、長上下文（8K–256K）測法，與 B60 / B70 / AISO1 的 1K–16K 壓力測試及 PRO6000 的 aiDAPTIV VIS 測法條件不同，不可直接比較。"
+ },
+ "profile": {
+  "machine": "NVIDIA GB10 · 128 GB 統一記憶體（CPU 與 GPU 共用）",
+  "framework": "vLLM",
+  "model": "google/gemma-4-26B-A4B-it",
+  "kv_cache_dtype": "fp8",
+  "image": "lmcache/vllm-openai:nightly-2026-11-02",
+  "extra_vllm_args": [
+   "--enforce-eager",
+   "--moe-backend",
+   "triton"
+  ],
+  "prefix_caching": false,
+  "chunked_prefill": true,
+  "max_num_batched_tokens": 8192,
+  "metrics": {
+   "ttft": "first_content - start (s)",
+   "tpot": "(done - first_content)/(output_tokens-1) (ms)",
+   "aggregate": "sum output tokens / (last done - first start)",
+   "normalized": "aggregate / users"
+  },
+  "runtime": "VERIFIED_ON_MACHINE"
+ },
+ "attempts": [
+  {
+   "dir": "gemma26_vllm_fp8_run_20261118_111543",
+   "phase": "run",
+   "rows": 2
+  },
+  {
+   "dir": "gemma26_vllm_fp8_smoke_20261118_105132",
+   "phase": "smoke",
+   "rows": 0
+  },
+  {
+   "dir": "gemma26_vllm_fp8_smoke_20261118_105231",
+   "phase": "smoke",
+   "rows": 0
+  },
+  {
+   "dir": "gemma26_vllm_fp8_smoke_20261118_105415",
+   "phase": "smoke",
+   "rows": 1
+  }
+ ],
+ "gb10_runs": [
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 1,
+   "context": 131072,
+   "input": 130048,
+   "output": 1024,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 51.322,
+   "ttft_max_s": 51.322,
+   "tpot_ms": 49.55,
+   "aggregate_tps": 10.038,
+   "normalized_tps": 10.038,
+   "wall_s": 102.01,
+   "kv_cache_tokens": 970684,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 51.32169318199158,
+     "tpot_ms": 49.55350571946548,
+     "e2e_s": 102.01492953300476,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_111543"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 1,
+   "context": 262144,
+   "input": 261120,
+   "output": 1024,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 167.923,
+   "ttft_max_s": 167.923,
+   "tpot_ms": 55.19,
+   "aggregate_tps": 4.564,
+   "normalized_tps": 4.564,
+   "wall_s": 224.38,
+   "kv_cache_tokens": 970684,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 167.92274355888367,
+     "tpot_ms": 55.18753530925553,
+     "e2e_s": 224.37959218025208,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_111543"
+  },
+  {
+   "phase": "smoke",
+   "model": "Gemma 4 26B A4B",
+   "np": 2,
+   "context": 8192,
+   "input": 8128,
+   "output": 64,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 2.721,
+   "ttft_max_s": 3.358,
+   "tpot_ms": 59.19,
+   "aggregate_tps": 19.784,
+   "normalized_tps": 9.892,
+   "wall_s": 6.47,
+   "kv_cache_tokens": 231943,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.54,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 2.083204746246338,
+     "tpot_ms": 68.98548111083015,
+     "e2e_s": 6.429290056228638,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 3.3581292629241943,
+     "tpot_ms": 49.38937368847075,
+     "e2e_s": 6.469659805297852,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_smoke_20261118_105415"
+  }
+ ]
+}
