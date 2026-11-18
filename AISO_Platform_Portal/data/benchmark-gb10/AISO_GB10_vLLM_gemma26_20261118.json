@@ -29,9 +29,39 @@
   },
   "runtime": "VERIFIED_ON_MACHINE"
  },
+ "progress": [
+  {
+   "label": "Preflight",
+   "zh": "預檢",
+   "status": "done"
+  },
+  {
+   "label": "Smoke",
+   "zh": "冒煙",
+   "detail": "np=2, input=8K, output=64",
+   "status": "done"
+  },
+  {
+   "label": "Standard NP1",
+   "zh": "標準測試",
+   "detail": "np=1, input=128K/256K, output=1024",
+   "status": "done"
+  },
+  {
+   "label": "NP5",
+   "zh": "並發 5",
+   "detail": "input=32K/64K, output: 64, 512, 1024",
+   "status": "ongoing"
+  }
+ ],
  "attempts": [
   {
    "dir": "gemma26_vllm_fp8_run_20261118_111543",
+   "phase": "run",
+   "rows": 2
+  },
+  {
+   "dir": "gemma26_vllm_fp8_run_20261118_112716",
    "phase": "run",
    "rows": 2
   },
@@ -111,6 +141,122 @@
     }
    ],
    "source_dir": "gemma26_vllm_fp8_run_20261118_111543"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 32768,
+   "input": 31744,
+   "output": 1024,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 20.473,
+   "ttft_max_s": 33.592,
+   "tpot_ms": 82.48,
+   "aggregate_tps": 48.629,
+   "normalized_tps": 9.726,
+   "wall_s": 105.29,
+   "kv_cache_tokens": 381198,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 33.591575145721436,
+     "tpot_ms": 70.08345875222662,
+     "e2e_s": 105.28695344924927,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 6.919616460800171,
+     "tpot_ms": 95.2073777292947,
+     "e2e_s": 104.31676387786865,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 13.75904893875122,
+     "tpot_ms": 88.82918898544237,
+     "e2e_s": 104.63130927085876,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 27.46761727333069,
+     "tpot_ms": 75.89528194736991,
+     "e2e_s": 105.10849070549011,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 20.626601934432983,
+     "tpot_ms": 82.3733179683443,
+     "e2e_s": 104.8945062160492,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_112716"
+  },
+  {
+   "phase": "run",
+   "model": "Gemma 4 26B A4B",
+   "np": 5,
+   "context": 65536,
+   "input": 64512,
+   "output": 1024,
+   "repeat": 1,
+   "status": "PASS",
+   "ttft_s": 53.232,
+   "ttft_max_s": 88.277,
+   "tpot_ms": 110.4,
+   "aggregate_tps": 30.639,
+   "normalized_tps": 6.128,
+   "wall_s": 167.11,
+   "kv_cache_tokens": 381198,
+   "kv_needed_tokens": null,
+   "gpu_memory_utilization": 0.7,
+   "error": "",
+   "requests": [
+    {
+     "ttft_s": 17.8203067779541,
+     "tpot_ms": 143.91018847915782,
+     "e2e_s": 165.04042959213257,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 35.54582667350769,
+     "tpot_ms": 127.24444383749864,
+     "e2e_s": 165.7168927192688,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 71.17217087745667,
+     "tpot_ms": 93.40982353232823,
+     "e2e_s": 166.73042035102844,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 88.27655506134033,
+     "tpot_ms": 77.05419107849181,
+     "e2e_s": 167.10299253463745,
+     "status": "PASS",
+     "error": ""
+    },
+    {
+     "ttft_s": 53.3472855091095,
+     "tpot_ms": 110.39530217123172,
+     "e2e_s": 166.28167963027954,
+     "status": "PASS",
+     "error": ""
+    }
+   ],
+   "source_dir": "gemma26_vllm_fp8_run_20261118_112716"
   },
   {
    "phase": "smoke",
