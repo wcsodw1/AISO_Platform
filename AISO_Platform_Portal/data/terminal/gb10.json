@@ -1,14 +1,14 @@
 {
  "title": "GB10 · vLLM",
- "completed": true,
- "summary": "Finished",
- "source": "Verbatim lines from the GB10 run logs in ~/gb10_benchmark (smoke.log, np1.log, np5.log, np5_out64.log, np5_out512.log); home paths shortened to ~/, and the list of other services' containers replaced by one line.",
+ "completed": false,
+ "summary": "Running",
+ "source": "Verbatim lines from the GB10 run logs in ~/gb10_benchmark (smoke.log, np1.log, np5.log, np5_out64.log, np5_out512.log, np5_64k_out64.log); home paths shortened to ~/, and the list of other services' containers replaced by one line.",
  "target": "GB10",
  "runner": {
   "file": "GB10_vllm_gemma26_5user_longctx.py",
   "where": "~/gb10_benchmark on GB10",
-  "sha256": "dc0b5dfc30c7dc39a8329837e29a33e11012128e0628606ad9f45f2b9de3ed65",
-  "command": "cd ~/gb10_benchmark && . ./env.sh\npython3 -u GB10_vllm_gemma26_5user_longctx.py smoke > smoke.log 2>&1\nexport GPU_MEM_UTIL=0.70\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 1 --contexts 131072,262144 --output 1024 > np1.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 1024 > np5.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 64 > np5_out64.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 512 > np5_out512.log 2>&1",
+  "sha256": "a035d0124144f45fd3e3f9a6fd7edcf53f712a1fcc2084aeed8549ca04a5ec98",
+  "command": "cd ~/gb10_benchmark && . ./env.sh\npython3 -u GB10_vllm_gemma26_5user_longctx.py smoke > smoke.log 2>&1\nexport GPU_MEM_UTIL=0.70\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 1 --contexts 131072,262144 --output 1024 > np1.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 1024 > np5.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 64 > np5_out64.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 512 > np5_out512.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 65536 --output 64 --send-anyway > np5_64k_out64.log 2>&1",
   "note": "Each run starts its own vLLM container (sb-gb10-vllm) and removes it at the end. Results: ~/gb10_benchmark/results/<run>/ (summary.csv, case_*.json)."
  },
  "presets": [
@@ -46,7 +46,7 @@
  "transcript": [
   {
    "k": "dim",
-   "t": "# GB10 · vLLM long context · finished"
+   "t": "# GB10 · vLLM long context · still running (snapshot of the terminal)"
   },
   {
    "k": "cmd",
@@ -359,6 +359,58 @@
   {
    "k": "ok",
    "t": "DONE ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_114459"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 65536 --output 64 --send-anyway > np5_64k_out64.log 2>&1"
+  },
+  {
+   "k": "out",
+   "t": "NVIDIA GB10, [N/A], [N/A]"
+  },
+  {
+   "k": "out",
+   "t": "image: lmcache/vllm-openai:nightly-2026-11-02 sha256:2aefd4be5090"
+  },
+  {
+   "k": "out",
+   "t": "model: google/gemma-4-26B-A4B-it | served name: gemma4-26b | KV cache dtype: fp8"
+  },
+  {
+   "k": "ok",
+   "t": "PREFLIGHT_OK"
+  },
+  {
+   "k": "out",
+   "t": "starting vLLM (own container sb-gb10-vllm) ..."
+  },
+  {
+   "k": "out",
+   "t": "KV cache capacity: 356569 tokens"
+  },
+  {
+   "k": "out",
+   "t": "[64K] building 5 prompts of 65472 input tokens (+64 output = 65536 context)"
+  },
+  {
+   "k": "ok",
+   "t": "[64K] warm-up PASS"
+  },
+  {
+   "k": "out",
+   "t": "[64K] repeat 1/1: 5 requests at once ..."
+  },
+  {
+   "k": "ok",
+   "t": "  PASS  TTFT mean 53.8s (max 89.7s)  TPOT 626.3 ms  TPS aggregate 3.40 / normalized 0.68 tok/s"
+  },
+  {
+   "k": "out",
+   "t": "SUMMARY_CSV ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_115555/summary.csv"
+  },
+  {
+   "k": "ok",
+   "t": "DONE ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_115555"
   }
  ]
 }

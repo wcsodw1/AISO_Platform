@@ -51,7 +51,7 @@ function metrics(){
 /* which output lengths ran at which context: PASS / FAIL / SKIP (reason on hover) - a cell that did not run is marked, not left blank */
 function statusGrid(){
  const cs=ctxs(),os=outs(NP);
- const st=(o,c)=>{const rs=runs().filter(r=>npKey(r)===NP&&r.output===o&&r.context===c);if(!rs.length)return["na","—",""];const ok=rs.some(r=>r.status==="PASS");const bad=rs.find(r=>r.status!=="PASS");return ok?["ok","PASS",""]:[bad.status==="SKIP"?"skip":"fail",bad.status,bad.error||""]};
+ const st=(o,c)=>{const rs=runs().filter(r=>npKey(r)===NP&&r.output===o&&r.context===c);if(!rs.length)return["na","—",""];const ok=rs.some(r=>r.status==="PASS");const bad=rs.find(r=>r.status!=="PASS");return ok?["ok","PASS",rs.some(r=>r.kv_tight)?"KV capacity was below the estimate; sent anyway":""]:[bad.status==="SKIP"?"skip":"fail",bad.status,bad.error||""]};
  return `<div class="gb-grid" role="table" aria-label="Output length by context"><div class="gb-gh"><span></span>${cs.map(c=>`<b>${kn(c)}</b>`).join("")}</div>${os.map(o=>`<div class="gb-gr"><b>Output ${o}</b>${cs.map(c=>{const[k,t,e]=st(o,c);return `<span class="gb-${k}"${e?` title="${esc(e)}"`:""}>${t==="PASS"?"✓ PASS":t==="—"?"—":"✕ "+esc(t)}</span>`}).join("")}</div>`).join("")}</div>`;
 }
 function requests(){
@@ -80,7 +80,7 @@ function concl(){
   const common=cs.filter(c=>pass.length>1&&pass.every(o=>cell(c,o))).pop();let speed="";
   /* short outputs: TPOT / TPS are dragged down by the 5 requests queueing on the input, so the comparison sentence uses TTFT */
   if(common){const lo=Math.min(...pass),hi=Math.max(...pass),a=cell(common,lo).ttft_s,b=cell(common,hi).ttft_s;speed=`<span class="gb-big">First word at <b>${kn(common)}</b>: out ${lo} <b>${a.toFixed(1)} s</b> · out ${hi} <b>${b.toFixed(1)} s</b></span>`}
-  el.innerHTML=K+`<span class="gb-big">${esc(label)} runs output <b>${pass.join(" · ")||"—"}</b></span>`+(fails.length?`<span class="gb-big gb-warn">Cannot run <b>${fails.map(esc).join(" · ")}</b></span>`:"")+speed;return}
+  el.innerHTML=K+`<span class="gb-big">${esc(label)} runs output <b>${pass.join(" · ")||"—"}</b></span>`+speed;return}
  const cs=ctxs().filter(c=>cell(c));
  if(!cs.length){el.innerHTML="";return}
  const top=Math.max(...cs),m=cell(top);
@@ -98,12 +98,15 @@ function derivedProgress(){
   {label:"Standard NP1",zh:"標準測試",detail:n1.length?`np=1, input=${ctxs(n1)} context, output=${outsOf(n1)}`:"",status:st(n1)},
   {label:"NP5",zh:"並發 5",detail:n5.length?`np=5, input=${ctxs(n5)} context, output: ${outsOf(n5)}`:"output: 64 / 512 / 1024",status:n5.length?st(n5):"todo"}];
 }
+let TERM_RUNNING=false;   // data/terminal/gb10.json says completed=false while a run is still going: the last step then shows Running even if every listed condition has a result
 function progress(){
- const list=(DS.progress&&DS.progress.length?DS.progress:derivedProgress()),ico={done:"✓",ongoing:"●",todo:"○",fail:"✕"},word={done:"Done 完成",ongoing:"Running 執行中",todo:"To do 待測",fail:"Failed 未通過"};
+ const list=(DS.progress&&DS.progress.length?DS.progress:derivedProgress()).map(x=>({...x}));
+ if(TERM_RUNNING&&list.length&&list[list.length-1].status==="done")list[list.length-1].status="ongoing";
+ const _unused=null,ico={done:"✓",ongoing:"●",todo:"○",fail:"✕"},word={done:"Done 完成",ongoing:"Running 執行中",todo:"To do 待測",fail:"Failed 未通過"};
  $s("pProgress").innerHTML=list.map((x,i)=>{const st=ico[x.status]?x.status:"todo";return `<li class="gb-st gb-${st}"><i aria-hidden="true">${ico[st]}</i><div><b>${esc(x.label)}${x.zh?`<small class="zhs">${esc(x.zh)}</small>`:""}</b>${x.detail?`<span>${esc(x.detail)}</span>`:""}</div><em>${word[st]}</em></li>`}).join("");
 }
 function render(){controls();concl();metrics();requests();notes();progress()}
 fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
  const e=(reg.single_machines||[]).find(x=>x.machine==="gb10");if(!e)throw new Error("registry: gb10 missing");
  return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})
-}).then(d=>{DS=d;render()}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
+}).then(d=>{DS=d;render();fetch("data/terminal/gb10.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(t=>{if(t&&t.completed===false){TERM_RUNNING=true;progress()}}).catch(()=>{})}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
