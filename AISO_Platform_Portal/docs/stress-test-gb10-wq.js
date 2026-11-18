@@ -16,6 +16,7 @@
   const mean = a => { a = a.filter(Number.isFinite); return a.length ? a.reduce((s, x) => s + x, 0) / a.length : null; };
   const dl = v => (Number.isFinite(v) ? `<span class="wq-d ${v > 0.05 ? "up" : v < -0.05 ? "dn" : ""}">${v > 0.05 ? "+" : v < -0.05 ? "−" : ""}${Math.abs(v).toFixed(1)}%</span>` : "");
   const kv = (a, b) => `<div><dt>${a}</dt><dd>${b}</dd></div>`;
+  const F = (h, zh, body) => `<section class="report-section kvx hv-fold hv-closed"><header><h2>${h}<span class="zh">${zh}</span></h2></header>${body}</section>`;
   const S = (h, zh, body) => `<section class="report-section kvx"><header><h2>${h}<span class="zh">${zh}</span></h2></header>${body}</section>`;
   /* ONE Parameters zone, two labelled blocks (David 2026-11-18): what we chose to test vs. how vLLM was really started */
   const PZ = (keyBody, srvBody, foot) => `<section class="report-section kvx"><header><h2>Parameters<span class="zh">測試參數</span></h2></header>
@@ -26,7 +27,7 @@
   const failHtml = x => `<span class="wq-fail" title="${esc(String(x.start_error || "").replace(/~\//g, ""))}">Failed to start<small class="zhs">無法啟動 · ${why(x.start_error)}</small></span>`;
   const NA = '<span class="wq-na">N/A</span>';
   const NOT = '<span class="wq-not">not run yet<small class="zhs">未測</small></span>';
-  let BYK = {}, DS = null, WQ = null, view = "wq", sel = { input: 65536, output: 256 };
+  let BYK = {}, DS = null, WQ = null, view = "wq", sel = { input: 8192, output: 256 };
 
   /* ---------- Parameters box with the AISO1 field names (vLLM has no value for some: N/A) ---------- */
   function keyParams(o) {
@@ -114,7 +115,7 @@
       + S("Select conditions", "選擇條件", pick([[8192, "Input 8K"], [65536, "Input 64K"], [131072, "Input 128K"]], "input", 'Input <small class="zhs">輸入</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
       + PZ(keyParams({ weights: "bf16 / fp8 / AWQ checkpoints", input: "8K (8,192) / 64K (65,536) / 128K (131,072)", output: "256 / 512 tokens (forced, ignore_eos)", np: "1 / 3 / 5", seqs: b0.max_num_seqs, ctx: "input + output (132,096 max model len)", wlist: W.map(w => w[1]).join(" / ") }), srvDl + srvTab, `<p class="kv-fine">${WQ.generated_at ? "Snapshot " + esc(String(WQ.generated_at).slice(0, 16).replace("T", " ")) : ""} <a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_weightquant.json" download>Download .JSON</a></p>`)
       + S("TTFT · TPOT · TPS", "四項指標", legend(withData(cases, rowOf)) + `<div id="wqCharts">${charts}</div>`)
-      + S("Values by scenario", `逐情境數值（${cases.length} 組）`, cmpTable(cases, rowOf, lab))
+      + F("Values by scenario", `逐情境數值（${cases.length} 組）`, cmpTable(cases, rowOf, lab))
 ;
   }
 
@@ -154,3 +155,4 @@
     const h = (location.hash || "").slice(1); show(["smoke", "std", "wq"].includes(h) ? h : "wq");
   }).catch(e => { const x = $("stErr"); if (x) x.textContent = "載入失敗：" + e.message; });
 })();
+if (window.HoverFold) { const m = document.querySelector("main"); if (m) new MutationObserver(() => HoverFold.init(document)).observe(m, { childList: true, subtree: true }); HoverFold.init(document); }
