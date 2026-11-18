@@ -20,8 +20,8 @@
   /* ONE Parameters zone, two labelled blocks (David 2026-11-18): what we chose to test vs. how vLLM was really started */
   const PZ = (keyBody, srvBody, foot) => `<section class="report-section kvx"><header><h2>Parameters<span class="zh">測試參數</span></h2></header>
     <p class="kv-fine">Key parameters = what we chose to test; Server parameters = how vLLM was actually started and what it reported.<small class="zhs">Key parameters 是我們設定要測的條件；Server parameters 是 vLLM 實際啟動的設定與回報（取自測試結果檔，非手填）。</small></p>
-    <h3 class="kv-h3">Key parameters<small class="zhs">要測什麼</small></h3>${keyBody}
-    <h3 class="kv-h3">Server parameters<small class="zhs">vLLM 實際怎麼跑</small></h3>${srvBody}${foot || ""}</section>`;
+    <details class="wq-fold" open><summary><h3 class="kv-h3">Key parameters<small class="zhs">要測什麼</small></h3></summary>${keyBody}</details>
+    <details class="wq-fold"><summary><h3 class="kv-h3">Server parameters<small class="zhs">vLLM 實際怎麼跑</small></h3></summary>${srvBody}${foot || ""}</details></section>`;
   const why = e => (/No available memory for the cache blocks/.test(e || "") ? "沒有記憶體可放 KV cache" : "vLLM 啟動失敗");      // ONE sentence on the page; the original error is in the hover
   const failHtml = x => `<span class="wq-fail" title="${esc(String(x.start_error || "").replace(/~\//g, ""))}">Failed to start<small class="zhs">無法啟動 · ${why(x.start_error)}</small></span>`;
   const NA = '<span class="wq-na">N/A</span>';
