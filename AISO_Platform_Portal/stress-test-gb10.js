@@ -46,7 +46,7 @@ function metrics(){
  const series=cmp?os.map((o,i)=>({key:String(o),label:"Output "+o,sum:"Out "+o,color:OUTCOLORS[i%OUTCOLORS.length]})):SERIES;
  $s("pMetrics").innerHTML=BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:ctxs().map(c=>({label:kn(c),sub:c.toLocaleString("en-US"),c})),series,
   get:(mk,g)=>{const r=cmp?cell(g.c,+mk):cell(g.c);return r&&Number.isFinite(r[k])?{[k]:r[k]}:null},
-  baseline:null,width:w,context:`${model} · Output ${cmp?os.join(" / "):OUT} · ${label}`,message:"",rowHead:"Context",tableNote:"context = 輸入 + 輸出 token"})))+(cmp?statusGrid():"");
+  baseline:null,width:w,dodge:cmp,skip:cmp?(mk,g)=>runs().some(r=>npKey(r)===NP&&r.output===+mk&&r.context===g.c&&r.status!=="PASS"):null,context:`${model} · Output ${cmp?os.join(" / "):OUT} · ${label}`,message:"",rowHead:"Context",tableNote:"context = 輸入 + 輸出 token"})))+(cmp?statusGrid():"");
 }
 /* which output lengths ran at which context: PASS / FAIL / SKIP (reason on hover) - a cell that did not run is marked, not left blank */
 function statusGrid(){
