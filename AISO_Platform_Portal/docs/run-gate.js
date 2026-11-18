@@ -11,12 +11,12 @@ window.RunGate = (function () {
     return rest === "/jobs" || rest === "/live/start" || (rest.startsWith("/jobs/") && rest.endsWith("/retry-failed"));
   };
   let pending = null;   // one dialog at a time: a second click returns the same dialog instead of opening another
-  function ticket() {
+  function ticket(scope) {      // scope "kvcache": one password for the whole KV cache sequence (reusable token, 2 hours, only for /api/benchmark/kvcache/*)
     if (pending) return pending;
     pending = new Promise((resolve, reject) => {
       const wrap = document.createElement("div");
       wrap.className = "rg-back";
-      wrap.innerHTML = `<form class="rg-box" role="dialog" aria-modal="true" aria-label="Test password"><h3>Run benchmark<small>實測</small></h3><p>請輸入測試密碼才能開始執行<br><span>Enter the test password to start this run.</span></p><input type="password" name="pw" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="測試密碼 Test password" required><p class="rg-err" role="alert"></p><div class="rg-row"><button type="button" class="rg-cancel">取消 Cancel</button><button type="submit" class="rg-go">開始 Run</button></div></form>`;
+      wrap.innerHTML = `<form class="rg-box" role="dialog" aria-modal="true" aria-label="Test password"><h3>Run benchmark<small>實測</small></h3><p>請輸入測試密碼才能開始執行${scope ? "（KV cache 各步驟共用，2 小時內不用再輸入）" : ""}<br><span>${scope ? "Enter the test password once for the KV cache steps (valid 2 hours)." : "Enter the test password to start this run."}</span></p><input type="password" name="pw" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="測試密碼 Test password" required><p class="rg-err" role="alert"></p><div class="rg-row"><button type="button" class="rg-cancel">取消 Cancel</button><button type="submit" class="rg-go">開始 Run</button></div></form>`;
       document.body.appendChild(wrap);
       const form = wrap.querySelector("form"), input = form.pw, err = form.querySelector(".rg-err"), go = form.querySelector(".rg-go");
       const close = () => { input.value = ""; wrap.remove(); document.removeEventListener("keydown", onKey); };
@@ -26,10 +26,10 @@ window.RunGate = (function () {
       form.onsubmit = async e => {
         e.preventDefault(); go.disabled = true; err.textContent = "";
         try {
-          const r = await fetch("/api/run-auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: input.value }) });
+          const r = await fetch("/api/run-auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(scope ? { password: input.value, scope } : { password: input.value }) });
           const d = await r.json().catch(() => ({}));
           if (!r.ok) { err.textContent = d.error || `HTTP ${r.status}`; input.select(); go.disabled = false; return; }
-          close(); resolve(d.ticket);
+          close(); window.RunGate.last = d; resolve(d.ticket);
         } catch (x) { err.textContent = String(x.message || x); go.disabled = false; }
       };
       input.focus();

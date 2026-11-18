@@ -1,0 +1,39 @@
+{
+ "id": "pro6000-platform-smoke",
+ "version": "1.4",
+ "machine": "pro6000",
+ "target_alias": "TPIUSER-PRO6000-MNT",
+ "framework": "vLLM (aiDAPTIV image, Without aiDAPTIV)",
+ "protocol": "vis-smoke",
+ "scope": "SMOKE_ONLY_NOT_FORMAL",
+ "runner_file": "benchmark/runners/pro6000_platform_smoke.py",
+ "runner_sha256": "f0db59fc28a7d3ec1861845e9f47c20140b0c6057c37eb2063327d7b7162dee6",
+ "deploy_to": "~/aiso_platform_runs/pro6000_platform_smoke.py",
+ "writes_to": "~/aiso_platform_runs/platform_runs/<run_id>/ (own folder; the machine's benchmark tree results/ and logs/ are never touched)",
+ "params": {
+  "np": 1,
+  "input_tokens": 4000,
+  "output_tokens": 200,
+  "repeat": 1,
+  "gpu": "1 only",
+  "port": 8001,
+  "per_model_limit_s": 1800,
+  "image": "aidaptiv:vNXUN_3_03_AA"
+ },
+ "models": [
+  "GPT-OSS-20B"
+ ],
+ "selection": "one model, or all one-GPU models once",
+ "requires": [
+  "GPU 1 free (< 1024 MiB used)",
+  "docker image aidaptiv:vNXUN_3_03_AA",
+  "~/Desktop/TPI_AISO_NEW (models, benchmark_serving.py)"
+ ],
+ "progress_lines": [
+  "LOADING: <model>",
+  "vllm/<model> NP=1 input=4000 R=1 PASS|FAIL agg=<tok/s> ttft_ms=<ms> tpot_ms=<ms>",
+  "SMOKE_STATUS: {...}"
+ ],
+ "params_adjustable": "np 1-4, input 128-16000, output 16-1024, input+output <= 19500 (repeat fixed 1)",
+ "kinds": "smoke (default) and standard (--mode standard: Input x NP x Repeat, results stay in platform_runs/standard_<stamp>/, never written into a campaign)"
+}

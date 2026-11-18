@@ -65,3 +65,6 @@ htmlcov/
 **/benchmark-private/
 **/machines.local.json
 **/litellm.local.json
+
+# machine-specific values for the platform executor (never committed)
+**/executor.local.json

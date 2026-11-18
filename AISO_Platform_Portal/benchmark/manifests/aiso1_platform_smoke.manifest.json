@@ -1,0 +1,40 @@
+{
+ "id": "aiso1-platform-smoke",
+ "version": "1.2",
+ "machine": "aiso1",
+ "target_alias": "AISO1-key",
+ "framework": "llama.cpp",
+ "protocol": "B1024",
+ "scope": "SMOKE_ONLY_NOT_FORMAL",
+ "runner_file": "benchmark/runners/aiso1_platform_smoke.py",
+ "runner_sha256": "47f74561f7a28a531d0b01c766821c32799d68d5f225087b82a29cd577833802",
+ "deploy_to": "~/aiso1_benchmark/platform/aiso1_platform_smoke.py",
+ "writes_to": "~/aiso1_benchmark/platform_runs/<run_id>/ (own folder; no existing campaign is touched)",
+ "params": {
+  "np": 1,
+  "input_tokens": 4096,
+  "output_tokens": 1024,
+  "repeat": 1,
+  "port": 18082,
+  "per_model_limit_s": 1800
+ },
+ "models": [
+  "gemma26",
+  "gemma31",
+  "laguna",
+  "nemotron"
+ ],
+ "selection": "one model, or all models once",
+ "requires": [
+  "~/aiso1_benchmark/retest_B1024_20261110/AISO1_B1024.py",
+  "preflight plan (load_plan)",
+  "benchmark_retest_v4.lock free"
+ ],
+ "progress_lines": [
+  "LOADING: <model>",
+  "llamacpp/<model> NP=1 input=4096 R=1 PASS|FAIL agg=<tok/s>",
+  "SMOKE_STATUS: {...}"
+ ],
+ "params_adjustable": "np 1-4, input 256-16384, repeat 1-3 (output fixed 1024 by the B1024 protocol)",
+ "kinds": "smoke (default) and standard (--mode standard: Input x NP x Repeat, output 1024; results stay in platform_runs/standard_<stamp>/, never written into a campaign)"
+}

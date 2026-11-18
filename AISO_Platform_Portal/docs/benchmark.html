@@ -16,8 +16,8 @@
   <link rel="stylesheet" href="benchmark.css?v=family-33">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="tesla.css?v=47">
-  <link rel="stylesheet" href="run-wizard.css?v=30">
-  <link rel="stylesheet" href="run-progress.css?v=1">
+  <link rel="stylesheet" href="run-wizard.css?v=40">
+  <link rel="stylesheet" href="run-progress.css?v=3">
   <script>document.documentElement.classList.add("rw-boot");setTimeout(function(){document.documentElement.classList.remove("rw-boot")},2500)</script>
   <style>body>*{transition:opacity .22s ease}html.rw-boot body>*:not(.site-header):not(.access-gate){opacity:0}</style>
 </head>
@@ -118,7 +118,7 @@
       </div>
       <div class="form-actions"><button id="liveStart" class="primary" type="button">▶ 開始測試</button><button id="liveDiscover" type="button">偵測實機模型</button><button id="liveStop" type="button" disabled>停止</button><button id="liveExport" type="button" disabled>下載實測 JSON</button><button id="liveToResults" type="button">查看結果 →</button></div>
       <div class="manual-row"><button id="terminalToggle" type="button" aria-expanded="false">&gt;_ Terminal</button></div>
-      <section id="termPanel" class="term" hidden><header><b>TERMINAL</b><span id="termState">idle</span><button id="termClear" type="button">Clear</button></header><pre id="termBody" aria-live="polite"></pre></section>
+      <section id="termPanel" class="term" hidden><header><b>TERMINAL</b><span id="termState">idle</span><button id="termGrow" type="button" aria-expanded="false">Expand<small>展開</small> ▾</button><button id="termCopy" type="button">Copy<small>複製</small></button><button id="termClear" type="button">Clear</button></header><pre id="termBody" aria-live="polite"></pre></section>
       <div class="manual-row"><b>Terminal · 終端機</b></div><div id="aisoTermRun"></div>
       <p id="liveStatus" aria-live="polite">連線後選擇實機服務。</p>
       <p class="report-notice">測試進度見上方 Terminal；完成後的數據在「結果」頁籤。</p>
@@ -152,7 +152,7 @@
     <section class="job-section" data-v="result"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
     </div>
   </main>
-  <script src="terminal.js?v=8"></script><script src="benchmark-entry.js?v=1"></script><script src="run-gate.js?v=2"></script><script src="benchmark-app.js?v=picker-17"></script><script src="run-wizard.js?v=70"></script><script src="run-progress.js?v=1"></script><script>AisoTerm.mount(document.getElementById("aisoTermRun"),{machine:/\/gb10\b/.test(location.hash)?"gb10":"b70",machines:[["b70","Intel B70 · llama.cpp (completed 48/48)"],["b60","Intel B60 · llama.cpp (completed 36/36)"],["aiso1","AISO1 · llama.cpp (in progress)"],["gb10","GB10 · vLLM long context"]]})</script>
+  <script src="terminal.js?v=8"></script><script src="benchmark-entry.js?v=1"></script><script src="run-gate.js?v=3"></script><script src="benchmark-app.js?v=picker-17"></script><script src="kvcache-panel.js?v=14"></script><script src="gb10-panel.js?v=3"></script><script src="run-wizard.js?v=80"></script><script src="hover-fold.js?v=2"></script><script src="run-progress.js?v=6"></script><script>AisoTerm.mount(document.getElementById("aisoTermRun"),{machine:/\/gb10\b/.test(location.hash)?"gb10":"b70",machines:[["b70","Intel B70 · llama.cpp (completed 48/48)"],["b60","Intel B60 · llama.cpp (completed 36/36)"],["aiso1","AISO1 · llama.cpp (in progress)"],["gb10","GB10 · vLLM long context"]]})</script>
 <script src="research-menu.js?v=1" defer></script>
 <script src="ui-min-type.js?v=2" defer></script>
 <script src="update-check.js?v=2" defer></script>

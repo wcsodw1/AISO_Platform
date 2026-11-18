@@ -9,9 +9,10 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from benchmark.run_auth import LOCK_AFTER_FAILS, PASSWORD_ENV, RUN_TICKET_TTL, RunAuth, RunAuthError, is_run_request  # noqa: E402
+from benchmark.run_auth import LOCK_AFTER_FAILS, PASSWORD_ENV, RUN_SESSION_TTL, RUN_TICKET_TTL, RunAuth, RunAuthError, is_run_request  # noqa: E402
 
 PW = secrets.token_urlsafe(12)       # generated per run: no password literal in the repository
+BAD = secrets.token_urlsafe(12)      # a different random value for the "wrong password" cases (also no literal)
 
 
 class Clock:
@@ -34,6 +35,30 @@ class RunAuthUnitTest(unittest.TestCase):
             os.environ.pop(PASSWORD_ENV, None)
         else:
             os.environ[PASSWORD_ENV] = self._saved
+
+    def test_kvcache_session_is_reusable_but_only_for_kvcache_requests(self):
+        s = self.auth.issue(PW, "kvcache")
+        self.assertTrue(s["reusable"] and s["expires_in"] == RUN_SESSION_TTL)
+        for _ in range(3):
+            self.assertTrue(self.auth.consume(s["ticket"], "kvcache"), "one password for the whole KV cache sequence")
+        self.assertFalse(self.auth.consume(s["ticket"]), "never accepted by an ordinary run request")
+        self.assertFalse(self.auth.consume(s["ticket"], "other"))
+
+    def test_kvcache_session_expires_and_needs_the_password(self):
+        with self.assertRaises(RunAuthError):
+            self.auth.issue(BAD, "kvcache")
+        with self.assertRaises(RunAuthError):
+            self.auth.issue(PW, "anything-else")
+        s = self.auth.issue(PW, "kvcache")
+        self.clock.t += RUN_SESSION_TTL + 1
+        self.assertFalse(self.auth.consume(s["ticket"], "kvcache"))
+
+    def test_session_token_does_not_disturb_one_time_tickets(self):
+        s = self.auth.issue(PW, "kvcache")["ticket"]
+        one = self.auth.issue(PW)["ticket"]
+        self.assertTrue(self.auth.consume(one))
+        self.assertFalse(self.auth.consume(one))
+        self.assertTrue(self.auth.consume(s, "kvcache"))
 
     def test_ticket_is_single_use(self):
         t = self.auth.issue(PW)["ticket"]

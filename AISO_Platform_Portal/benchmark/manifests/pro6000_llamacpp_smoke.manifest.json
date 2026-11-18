@@ -1,0 +1,38 @@
+{
+ "id": "pro6000-llamacpp-platform-smoke",
+ "version": "1.0",
+ "machine": "pro6000",
+ "target_alias": "TPIUSER-PRO6000-MNT",
+ "framework": "llama.cpp (CUDA image ghcr.io/ggml-org/llama.cpp:server-cuda)",
+ "protocol": "llamacpp-smoke",
+ "scope": "SMOKE_ONLY_NOT_FORMAL",
+ "runner_file": "benchmark/runners/pro6000_llamacpp_smoke.py",
+ "runner_sha256": "d535bcf56a76d9e3cc42b78706fde45fb51229e442e575523367c8d6ee2154e4",
+ "deploy_to": "~/aiso_platform_runs_llamacpp/pro6000_llamacpp_smoke.py",
+ "writes_to": "~/aiso_platform_runs_llamacpp/platform_runs/<run_id>/ (own folder; nothing else on the machine is touched, nothing is downloaded)",
+ "params": {
+  "np": 1,
+  "input_tokens": 4096,
+  "output_tokens": 128,
+  "repeat": 1,
+  "gpu": "1 only",
+  "host_port": 18083,
+  "per_model_limit_s": 1800,
+  "image": "ghcr.io/ggml-org/llama.cpp:server-cuda"
+ },
+ "models": [
+  "gemma26"
+ ],
+ "selection": "one model, or all one-GPU models once",
+ "requires": [
+  "GPU 1 free (< 1024 MiB used)",
+  "docker image ghcr.io/ggml-org/llama.cpp:server-cuda",
+  "GGUF already on the host: gemma-4-26B-A4B-it BF16 (comparison quantizations Q4_0 / Q4_K_M are NOT on this host)"
+ ],
+ "progress_lines": [
+  "LOADING: <model>",
+  "llamacpp/<model> NP=<n> input=<i> R=1 PASS|FAIL agg=<tok/s> ttft_ms=<ms> tpot_ms=<ms>",
+  "SMOKE_STATUS: {...}"
+ ],
+ "params_adjustable": "np 1-4, input 128-16000, output 16-1024 (repeat fixed 1); timing is llama-server's own (server-side)"
+}

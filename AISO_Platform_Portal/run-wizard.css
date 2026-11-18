@@ -42,7 +42,7 @@ body.rw-on #livePanel .manual-row{display:none!important}
 .rw-prog li.ok i,.rw-prog li.ok span{color:#6fdc9a}.rw-prog li.bad i,.rw-prog li.bad span{color:#ed786f}.rw-prog li.run i,.rw-prog li.run span{color:#e0a040}
 .rw-logd{margin-top:10px}.rw-logd summary{cursor:pointer;color:var(--muted);font-size:17px}.rw-logd .rw-log{max-height:200px}
 .rw-term-h small{margin-left:12px}.rw-shell{margin-top:14px}.rw-shell summary{cursor:pointer;color:var(--muted);font-size:17px}
-body.rw-on #aisoTermRun,body.rw-on #livePanel .manual-row{display:none!important}
+body.rw-on #livePanel #aisoTermRun,body.rw-on #livePanel .manual-row{display:none!important}      /* only the old in-page copy: once terminal.js has moved the shell into the corner flyout (Terminal tab), it must stay visible */
 /* runner machines: the Results tab shows formal results only (own panel); the empty legacy report blocks are hidden */
 body.rw-exec #parameterPage [data-v=result]:not(#rwResults){display:none!important}
 .rw-sub{margin:22px 0 6px;font-size:22px;color:var(--gold)}.rw-sub small{margin-left:10px;color:var(--muted)}
@@ -149,3 +149,60 @@ body.rw-on .bm-auth{display:none!important}
 
 /* website version: no connect bar, no terminal / logs (only "contact us") */
 .rw-web #liveConnect,.rw-web #rwConnectSlot,.rw-web #aisoTermRun,.rw-web .bm-auth,.rw-web #exportLogs,.rw-web #terminalToggle{display:none!important}
+
+/* KV cache test (kvcache-panel.js): numbered steps, smoke grid, result tables */
+.kv-tabs{gap:10px}.kv-tabs .rw-btn.sel{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.kv-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.kv-step{display:grid;grid-template-columns:34px 1fr auto auto;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(244,239,228,.18);border-radius:12px;font-size:18px;color:var(--ivory)}
+.kv-step .mw-next,.kv-step .rw-btn{width:auto;min-height:44px;margin:0;padding:0 18px;font-size:17px}
+.kv-n{display:grid;place-items:center;width:30px;height:30px;border-radius:999px;background:var(--gold,#d8c779);color:#15171d;font-weight:800;font-size:16px}
+.kv-note{margin:0;font-size:16px;line-height:1.5;color:var(--muted)}
+.kv-h{margin:14px 0 6px;font-size:18px;color:var(--ivory)}
+.kv-wrap{overflow-x:auto;border:1px solid rgba(244,239,228,.14);border-radius:10px}.kv-scroll{max-height:360px;overflow-y:auto}
+.kv-tab{width:100%;border-collapse:collapse;font-size:16px;color:var(--ivory)}
+.kv-tab th,.kv-tab td{padding:6px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(244,239,228,.08)}
+.kv-tab thead th{position:sticky;top:0;background:#15171d;color:var(--muted);font-weight:600}
+.kv-tab td.ok{color:#6fdc9a}.kv-tab td.bad{color:#e0a283}.kv-tab td.wait{color:var(--muted)}
+.kv-log{border:1px solid rgba(244,239,228,.14);border-radius:10px;background:#0f1218;overflow:hidden}
+.kv-lh{display:flex;align-items:center;gap:10px;margin:0;padding:10px 14px;border-bottom:1px solid rgba(244,239,228,.1);font-size:16px;color:var(--ivory)}
+.kv-dot{width:10px;height:10px;border-radius:50%;background:#7b8494}.kv-dot.on{background:#6fdc9a;box-shadow:0 0 0 0 rgba(111,220,154,.6);animation:kvpulse 1.6s infinite}
+@keyframes kvpulse{70%{box-shadow:0 0 0 8px rgba(111,220,154,0)}100%{box-shadow:0 0 0 0 rgba(111,220,154,0)}}
+.kv-log pre{margin:0;padding:10px 14px;max-height:240px;overflow:auto;font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#cfd6e4;white-space:pre-wrap;overflow-wrap:anywhere}
+.kv-t{display:grid;gap:4px;min-width:0}.kv-desc{font-size:16px;line-height:1.45;color:var(--muted)}
+.kv-now{margin:0;padding:8px 14px;font-size:17px;font-weight:700;color:var(--gold,#d8c779);border-bottom:1px solid rgba(244,239,228,.1)}
+.kv-raw{border-top:1px solid rgba(244,239,228,.1)}.kv-raw summary{padding:8px 14px;font-size:16px;color:var(--muted);cursor:pointer}.kv-raw pre{max-height:200px;color:#98a0ad}
+.kv-n.ok{background:#6fdc9a;color:#0f1a14}.kv-n.now{background:transparent;border:2px solid #6fdc9a}.kv-n.now .kv-dot{display:block}
+.kv-step{grid-template-columns:34px 1fr auto}.kv-step.is-done{border-color:rgba(111,220,154,.45)}.kv-step.is-now{border-color:var(--gold,#d8c779);background:rgba(200,184,117,.08)}
+.kv-act{gap:10px}.kv-act .mw-next{flex:1;margin:0}.kv-stop{min-height:58px;padding:0 22px;font-size:20px}
+/* Run log toolbar: Expand / Collapse and Copy next to Clear */
+.term header #termGrow,.term header #termCopy,.term header #termClear{margin-left:0;padding:6px 12px;border:1px solid rgba(244,239,228,.25);border-radius:8px;background:transparent;color:#f3efe5;font:700 15px/1 ui-monospace,Menlo,monospace;letter-spacing:.02em;cursor:pointer}
+.term header #termGrow{margin-left:auto}.term header #termGrow small,.term header #termCopy small{margin-left:6px;font-family:inherit;font-size:14px;font-weight:500;color:#c9c2ad}
+.term header #termGrow:hover,.term header #termCopy:hover,.term header #termClear:hover{border-color:rgba(216,199,121,.7)}
+.term.term-big pre{max-height:none;min-height:300px}
+
+/* phone (David 2026-11-18 "手機版要清楚"): test kinds as full-width rows, the corner Terminal tab out of the way, controls with room to tap */
+@media(max-width:700px){
+ .rw-kinds{max-width:none;margin-top:20px}
+ .rw-kind{grid-template-columns:1fr auto;grid-template-areas:"kn em" "b b";gap:2px 12px;padding:12px 16px}
+ .rw-kind .rw-kn{grid-area:kn}.rw-kind em{grid-area:em;text-align:right}.rw-kind b{grid-area:b;font-size:20px;line-height:1.25}
+ .mw-big{font-size:38px}
+ .tm-fly{top:auto;bottom:84px}.tm-fly-tab{padding:10px 14px}.tm-fly-tab .bz{display:none}
+ .kv-step{grid-template-columns:34px 1fr;gap:10px}.kv-step .rw-st{grid-column:2}
+ .kv-act{flex-direction:column}.kv-act .mw-next,.kv-stop{width:100%}
+ .term header{flex-wrap:wrap}.term header #termGrow{margin-left:0}
+ .rw-term{padding:14px 12px}
+}
+.kv-where .kv-tab td{position:relative;text-align:center;min-width:64px;padding:8px 6px;overflow:hidden}.kv-where .kv-tab td b{position:relative;z-index:1;font-size:16px}
+.kv-where .kv-tab td i{position:absolute;left:0;bottom:0;height:4px;background:var(--gold,#d8c779);opacity:.8}
+.kv-where .kv-ok{color:#6fdc9a}.kv-where .kv-ok i{background:#6fdc9a}.kv-where .kv-wait,.kv-where .kv-na{color:var(--muted)}.kv-where .kv-part{color:var(--ivory)}
+.kv-where .kv-cur{background:rgba(111,220,154,.14);outline:1px solid #6fdc9a;outline-offset:-1px}
+@media(max-width:700px){.kv-where .kv-tab th,.kv-where .kv-tab td{padding:8px 4px;font-size:15px}.kv-where .kv-tab td{min-width:52px}}
+.kv-spec{margin:0 0 6px}.kv-spec dt,.kv-spec dd{font-size:16px}.kv-spec dd{text-align:right}
+.kv-h4{margin:14px 0 6px;font-size:20px;color:var(--ivory)}.kv-h4 small{margin-left:8px}
+.kv-bar{display:block;height:6px;margin-top:8px;border-radius:3px;background:rgba(244,239,228,.14);overflow:hidden}.kv-bar i{display:block;height:100%;background:var(--gold,#d8c779)}
+.kv-step.is-done .kv-bar i{background:#6fdc9a}.kv-pc{display:block;margin-top:4px;font-size:16px;font-weight:700;color:var(--ivory)}
+.kv-step .rw-st.wait{color:var(--muted)}
+.kv-spec>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:baseline}
+.kv-spec dd{text-align:left;white-space:normal;overflow-wrap:anywhere;margin:0}
+.mw-panel{min-width:0}.mw-opts{min-width:0}
+@media(max-width:700px){.kv-spec>div{grid-template-columns:1fr;gap:2px}}

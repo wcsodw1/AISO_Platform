@@ -1,0 +1,31 @@
+{
+ "id": "aiso1-kvcache",
+ "version": "1.0",
+ "machine": "aiso1",
+ "target_alias": "AISO1-key",
+ "framework": "llama.cpp",
+ "protocol": "B1024 + KV cache type (K = V)",
+ "note": "The two scripts are David's (ChatGPT session, 2026-11-18), copied byte for byte; the platform only deploys them (sha256 checked) and starts their own modes. They keep their own campaign folders and are never edited here. The chain script (platform-owned) runs every step in order with one click. The NP8 Flash-Attention-on wrapper (np8fa: f16 / q8_0 / q4_0) is platform-owned; it loads the unchanged NP1 script.",
+ "scripts": {
+  "np1": {
+   "runner_file": "benchmark/runners/aiso1_kvcache_matrix.py",
+   "deploy_to": "~/aiso1_benchmark/kv_cache_B1024_np1/AISO1_KVCache_Matrix_B1024.py",
+   "runner_sha256": "f813fd39977df6184943213407fe1f22a4b04c1bf45d34b21936b73a01dbaf5a"
+  },
+  "np24": {
+   "runner_file": "benchmark/runners/aiso1_kvcache_np24_later.py",
+   "deploy_to": "~/aiso1_benchmark/kv_cache_B1024_np24/AISO1_KVCache_NP24_later.py",
+   "runner_sha256": "78a3a2975081ce227771fb22622d0a7f01fca20618cc23a4891402ff5184863c"
+  },
+  "np8fa": {
+   "runner_file": "benchmark/runners/aiso1_kvcache_np8_fa.py",
+   "deploy_to": "~/aiso1_benchmark/kv_cache_B1024_np8fa/AISO1_KVCache_NP8_FA.py",
+   "runner_sha256": "5a46be4617efbbba60206e9128c20829d9b30a455225608bb82754d9315640ed"
+  },
+  "chain": {
+   "runner_file": "benchmark/runners/aiso1_kvcache_chain.sh",
+   "deploy_to": "~/aiso1_benchmark/kv_cache_B1024_np1/AISO1_KVCache_chain.sh",
+   "runner_sha256": "0a1069df8ccc02b77a172df43ccbc2e2b54f18a6fc50b77cd82fd82254aabca4"
+  }
+ }
+}
