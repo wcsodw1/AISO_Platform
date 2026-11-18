@@ -33,7 +33,7 @@ function controls(){
  const os=outs(NP),keys=(os.length>1?[CMP]:[]).concat(os);OUT=keys.includes(OUT)?OUT:keys[0];
  $s("pNp").innerHTML=card("np",nps().map(k=>[k,k[0]==="s"?`Smoke NP${k.slice(1)}`:`NP${k}`]),NP);
  $s("pOut").innerHTML=card("out",keys.map(k=>k===CMP?[CMP,"Compare outputs 輸出比較"]:[k,"Output "+k]),OUT);
- document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.dataset.g==="np")NP=b.dataset.k;else OUT=b.dataset.k===CMP?CMP:+b.dataset.k;render()});
+ document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.dataset.g==="np"){NP=b.dataset.k;OUT=undefined}else OUT=b.dataset.k===CMP?CMP:+b.dataset.k;render()});
  const kv=[...new Map(sel().filter(r=>r.kv_cache_tokens).map(r=>[r.gpu_memory_utilization,r.kv_cache_tokens])).entries()];
  const bad=sel().filter(r=>r.status!=="PASS");
  $s("pKv").innerHTML=(kv.length?`KV cache capacity<small class="zhs">KV cache 實測容量</small>：${kv.map(([u,t])=>`${t.toLocaleString("en-US")} tokens（memory ${u}）`).join("；")}`:"")
@@ -67,6 +67,7 @@ function notes(){
   <div><dt>Memory share<small class="zhs">記憶體比例</small></dt><dd>${esc(u)}<small class="zhs">GB10 為統一記憶體，需留空間給系統</small></dd></div>
   <div><dt>vLLM args<small class="zhs">額外參數</small></dt><dd>${esc((p.extra_vllm_args||[]).join(" "))}</dd></div>
   <div><dt>Metrics<small class="zhs">算法</small></dt><dd>${Object.entries(p.metrics||{}).map(([k,v])=>`${esc(k)}: ${esc(v)}`).join("<br>")}</dd></div>
+  <div><dt>Short outputs<small class="zhs">短輸出</small></dt><dd>TPOT / TPS include the input queueing of the 5 requests<small class="zhs">短輸出的 TPOT、TPS 受輸入排隊影響，以 TTFT 為準</small></dd></div>
   <div><dt>Source<small class="zhs">來源</small></dt><dd>${esc(DS.dataset)} · ${[...new Set(runs().map(r=>r.source_dir))].map(esc).join("<br>")}</dd></div></dl>
   <p class="v2-fine">${esc(DS.note)}</p><p class="v2-fine">${esc(DS.comparability.text)}</p>`;
 }
@@ -77,7 +78,8 @@ function concl(){
   const os=outs(NP),cs=ctxs(),pass=os.filter(o=>cs.some(c=>cell(c,o))),fails=[];
   os.forEach(o=>cs.forEach(c=>{const rs=runs().filter(r=>npKey(r)===NP&&r.output===o&&r.context===c);if(rs.length&&!rs.some(r=>r.status==="PASS"))fails.push(`${o} @ ${kn(c)}`)}));
   const common=cs.filter(c=>pass.length>1&&pass.every(o=>cell(c,o))).pop();let speed="";
-  if(common){const lo=Math.min(...pass),hi=Math.max(...pass),a=cell(common,lo).normalized_tps,b=cell(common,hi).normalized_tps;speed=`<span class="gb-big">At <b>${kn(common)}</b>: out ${lo} <b>${a.toFixed(1)}</b> → out ${hi} <b>${b.toFixed(1)} tok/s</b> per request (${b<a?"−":"+"}${Math.abs((b/a-1)*100).toFixed(0)}%)</span>`}
+  /* short outputs: TPOT / TPS are dragged down by the 5 requests queueing on the input, so the comparison sentence uses TTFT */
+  if(common){const lo=Math.min(...pass),hi=Math.max(...pass),a=cell(common,lo).ttft_s,b=cell(common,hi).ttft_s;speed=`<span class="gb-big">First word at <b>${kn(common)}</b>: out ${lo} <b>${a.toFixed(1)} s</b> · out ${hi} <b>${b.toFixed(1)} s</b></span>`}
   el.innerHTML=K+`<span class="gb-big">${esc(label)} runs output <b>${pass.join(" · ")||"—"}</b></span>`+(fails.length?`<span class="gb-big gb-warn">Cannot run <b>${fails.map(esc).join(" · ")}</b></span>`:"")+speed;return}
  const cs=ctxs().filter(c=>cell(c));
  if(!cs.length){el.innerHTML="";return}
