@@ -1,0 +1,11 @@
+{
+ "id": "gb10-matrix",
+ "version": "1.0",
+ "machine": "gb10",
+ "target_alias": "GB10-key",
+ "framework": "vLLM",
+ "note": "The matrix script is the GB10 session's own (~/gb10_benchmark/GB10_vllm_gemma26_matrix.py on the machine). The platform never overwrites it: it starts it in place and refuses when its sha256 on the machine differs from this manifest.",
+ "runner_file": "benchmark/runners/gb10_vllm_matrix.py",
+ "remote": "~/gb10_benchmark/GB10_vllm_gemma26_matrix.py",
+ "runner_sha256": "dbc47ee70d3191ffd7b209006fa0ea37acc6fdedb20432075e4bef85364f3c29"
+}

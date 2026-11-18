@@ -36,7 +36,11 @@ def load_dir(d):
         return params, phase, []
     rows = []
     for r in csv.DictReader(summary.open()):
-        ctx, rep = int(r["context"]), int(r["repeat"])
+        ctx, rep = int(r["context"]), num(r["repeat"], int) or 1
+        status, error = r["status"], r.get("error", "")
+        if status == "KV_INSUFFICIENT":      # the runner did not send the case: NP x context is larger than the KV cache of that server start
+            status = "SKIP"
+            error = error or f"KV cache too small: {r['users']} x {ctx:,} = {num(r['kv_needed_tokens'], int):,} tokens > {num(r['kv_cache_tokens'], int):,}"
         case = d / f"case_{r['label']}_r{rep}.json"
         reqs = []
         if case.exists():
@@ -49,9 +53,9 @@ def load_dir(d):
             "np": int(r["users"]),
             "context": ctx,
             "input": num(r["input_tokens"], int),
-            "output": num(r["output_tokens"], int),
+            "output": num(r["output_tokens"], int) or params.get("output_tokens"),      # a SKIP row has no tokens: the run's own setting
             "repeat": rep,
-            "status": r["status"],
+            "status": status,
             "ttft_s": num(r["ttft_mean_s"]),
             "ttft_max_s": num(r["ttft_max_s"]),
             "tpot_ms": num(r["tpot_mean_ms"]),
@@ -60,18 +64,55 @@ def load_dir(d):
             "wall_s": num(r["wall_s"]),
             "kv_cache_tokens": num(r["kv_cache_tokens"], int),
             "kv_needed_tokens": num(r["kv_needed_tokens"], int),
+            "kv_tight": status != "SKIP" and bool(num(r["kv_needed_tokens"], int)),      # sent although NP x context > KV cache (--send-anyway)
             "gpu_memory_utilization": params.get("gpu_memory_utilization"),
-            "error": r.get("error", ""),
+            "error": error,
             "requests": reqs,
             "source_dir": d.name,
         })
     return params, phase, rows
 
 
+NP5_OUTPUTS = (64, 512, 1024)
+NP5_CONTEXTS = (32768, 65536)
+
+
+def kn(n):
+    return f"{n // 1024}K"
+
+
+def step(rows, label, zh, detail, want, running):
+    """done = every wanted case reported (PASS or not); fail = a reported case did not PASS; ongoing = some reported or a run going; else todo."""
+    got = {(r["np"], r["context"], r["output"]): r["status"] for r in rows}
+    seen = [w for w in want if w in got]
+    if want and len(seen) == len(want):
+        status = "fail" if any(got[w] == "FAIL" for w in want) else "done"      # SKIP (did not fit) is a measured answer, not a failure
+    elif seen or running:
+        status = "ongoing"
+    else:
+        status = "todo"
+    return {"label": label, "zh": zh, "detail": detail, "status": status}
+
+
+def progress(runs, running):
+    smoke = [r for r in runs if r["phase"] == "smoke"]
+    real = [r for r in runs if r["phase"] == "run"]
+    np1 = sorted({r["context"] for r in real if r["np"] == 1}) or [131072, 262144]
+    s = smoke[-1] if smoke else None
+    steps = [{"label": "Preflight", "zh": "預檢", "status": "done" if runs else "todo"},
+             step(smoke, "Smoke", "冒煙", f"np={s['np']}, input={kn(s['context'])}, output={s['output']}" if s else "np=2, input=8K, output=64",
+                  [(s["np"], s["context"], s["output"])] if s else [], False),
+             step(real, "Standard NP1", "標準測試", f"np=1, input={'/'.join(kn(c) for c in np1)}, output=1024", [(1, c, 1024) for c in np1], False),
+             step(real, "NP5", "並發 5", f"input={'/'.join(kn(c) for c in NP5_CONTEXTS)}, output: {', '.join(map(str, NP5_OUTPUTS))}",
+                  [(5, c, o) for o in NP5_OUTPUTS for c in NP5_CONTEXTS], running)]
+    return steps
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("dirs", nargs="+")
     ap.add_argument("--out")
+    ap.add_argument("--running", action="store_true", help="a GB10 run is still in progress (marks the unfinished step as ongoing)")
     a = ap.parse_args()
     runs, attempts, params_seen = [], [], []
     for d in a.dirs:
@@ -79,6 +120,9 @@ def main():
         attempts.append({"dir": Path(d).name, "phase": phase, "rows": len(rows)})
         params_seen.append(p)
         runs += rows
+    # a condition measured later replaces an earlier SKIP of the same condition (the SKIP was only a prediction)
+    measured = {(r["phase"], r["np"], r["context"], r["output"]) for r in runs if r["status"] != "SKIP"}
+    runs = [r for r in runs if r["status"] != "SKIP" or (r["phase"], r["np"], r["context"], r["output"]) not in measured]
     if not runs:
         sys.exit("no rows found (no summary.csv in any folder)")
     p = params_seen[-1]
@@ -107,6 +151,7 @@ def main():
             "metrics": p.get("metrics", {}),
             "runtime": "VERIFIED_ON_MACHINE",
         },
+        "progress": progress(runs, a.running),
         "attempts": attempts,
         "gb10_runs": runs,
     }
