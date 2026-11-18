@@ -20,14 +20,17 @@ MANIFEST = BASE / "manifests" / "gb10_matrix.manifest.json"
 MACHINE = "gb10"
 NPS, INPUTS, OUTPUTS = (1, 3, 5), (65536, 131072), (256, 512)
 TOTAL = len(NPS) * len(INPUTS) * len(OUTPUTS)
+TOTAL_8K = len(NPS) * len(OUTPUTS)      # the Input 8K set: NP 1/3/5 x Output 256/512 (hand-started runs, logs in8k_*.log / nvfp4_in8k.log)
+EXPECT = {"nvfp4": TOTAL + TOTAL_8K}      # NVFP4 is tested on both sets (18 conditions)
 QUANT = "--quantization fp8"
-BF16 = {"MODEL": "google/gemma-4-26B-A4B-it", "EXTRA_VLLM_ARGS": "--enforce-eager --moe-backend triton"}
+BF16 = {"MODEL": "google/gemma-4-26B-A4B-it", "HF_HOME": "/opt/orientai/models/huggingface", "EXTRA_VLLM_ARGS": "--enforce-eager --moe-backend triton"}
 PRE = {"HF_HOME": "$HOME/gb10_models/hf", "EXTRA_VLLM_ARGS": "--enforce-eager"}
 WEIGHTS = {
     "bf16": {"label": ["bf16", "bf16（不量化）"], "tag": "bf16", "env": {**BF16, "WEIGHTS_LABEL": "bf16 (not quantized)"}},
     "fp8": {"label": ["fp8 online", "fp8 線上量化"], "tag": "fp8", "env": {**BF16, "EXTRA_VLLM_ARGS": BF16["EXTRA_VLLM_ARGS"] + " " + QUANT, "WEIGHTS_LABEL": "fp8 online quantization (weights quantized at load)"}},
     "fp8pre": {"label": ["fp8 pre-quantized", "fp8 預量化"], "tag": "fp8pre", "env": {**PRE, "MODEL": "RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic", "WEIGHTS_LABEL": "fp8 pre-quantized checkpoint RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic"}},
     "int8": {"label": ["int8 AWQ", "int8 AWQ"], "tag": "int8", "env": {**PRE, "MODEL": "cyankiwi/gemma-4-26B-A4B-it-AWQ-8bit", "WEIGHTS_LABEL": "int8 AWQ (pre-quantized checkpoint cyankiwi/gemma-4-26B-A4B-it-AWQ-8bit)"}},
+    "nvfp4": {"label": ["NVFP4", "NVFP4（NVIDIA 官方）"], "tag": "nvfp4", "env": {**PRE, "MODEL": "nvidia/Gemma-4-26B-A4B-NVFP4", "WEIGHTS_LABEL": "NVFP4 (NVIDIA ModelOpt checkpoint nvidia/Gemma-4-26B-A4B-NVFP4)"}},
     "int4": {"label": ["int4 AWQ", "int4 AWQ"], "tag": "int4", "env": {**PRE, "MODEL": "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit", "WEIGHTS_LABEL": "int4 AWQ (pre-quantized checkpoint cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit)"}},
 }
 _SAFE = re.compile(r"^(?!.*\$[({])[^\"\\`;|&<>\n]+$")      # inside double quotes: no quote, backslash, backtick, ; | & < >, no $( or ${ (a plain $HOME is wanted)
@@ -35,7 +38,7 @@ _CASE = re.compile(r"^CASE NP(\d+) input (\d+) output (\d+)")
 _RES = re.compile(r"^\s+(PASS|FAIL) NP(\d+) in(\d+) out(\d+)(.*)$")
 _NUM = lambda k, t: (lambda m: float(m.group(1)) if m else None)(re.search(k + r"\s+([\d.]+)", t))
 
-STATUS_SH = ("for f in $(ls -t $HOME/gb10_benchmark/ryan_*.log 2>/dev/null); do p=$(grep -c '^  PASS' $f); x=$(grep -c '^  FAIL' $f); d=$(grep -c '^DONE' $f); e=''; "
+STATUS_SH = ("for f in $(ls -t $HOME/gb10_benchmark/ryan_*.log $HOME/gb10_benchmark/in8k_*.log $HOME/gb10_benchmark/nvfp4_*.log 2>/dev/null); do p=$(grep -c '^  PASS' $f); x=$(grep -c '^  FAIL' $f); d=$(grep -c '^DONE' $f); e=''; "
              "if [ \"$p\" = 0 ]; then q=$(grep -m1 -oE 'see server.log in /[^ ]+' $f | awk '{print $NF}'); [ -n \"$q\" ] && e=$(grep -h -m1 '^ValueError: ' \"$q/server.log\" 2>/dev/null | cut -c1-240); [ -z \"$e\" ] && e=$(grep -h -m1 '^RuntimeError: ' \"$q/server.log\" 2>/dev/null | cut -c1-240); "
              "[ -z \"$e\" ] && e=$(grep -m1 -E '^(RuntimeError|[A-Za-z.]*Error): ' $f | cut -c1-240); fi; "
              "printf 'LOGSTAT\\t%s\\t%s\\t%s\\t%s\\t%s\\n' $(basename $f) $p $x $d \"$e\"; done; "
@@ -80,25 +83,35 @@ def by_weights(stats, running, current):
             groups.setdefault(w, []).append(x)
     out = {}
     for w, xs in groups.items():
-        best = max(xs, key=lambda x: (x["pass"], -xs.index(x)))
-        newest = xs[0]
+        r8 = [x for x in xs if "in8k" in x["log"]]                    # Input 8K set (6 conditions)
+        rl = [x for x in xs if "in8k" not in x["log"]]                # long set 64K / 128K (12 conditions)
+        base = rl or r8
+        best = max(base, key=lambda x: (x["pass"], -base.index(x)))
+        pass_8k = max((x["pass"] for x in r8), default=0)
+        pass_total = (best["pass"] if rl else 0) + pass_8k
+        total = EXPECT.get(w, TOTAL + (TOTAL_8K if r8 else 0))
         if running and current == w:
             state = "running"
-        elif best["pass"] >= TOTAL:
+        elif pass_total >= total:
             state = "done"
-        elif best["pass"] > 0:
+        elif pass_total > 0:
             state = "stopped"
         elif any(x["error"] for x in xs):
             state = "failed"
         else:
             state = "stopped"
         err = next((x["error"] for x in xs if x["error"]), "")
-        out[w] = {"state": state, "pass": best["pass"], "fail": best["fail"], "done": best["done"], "log": best["log"], "error": err if state == "failed" else "", "attempts": [{"log": x["log"], "pass": x["pass"], "fail": x["fail"], "error": x["error"]} for x in xs]}
+        out[w] = {"state": state, "pass": best["pass"] if rl else 0, "fail": best["fail"], "done": best["done"], "log": best["log"], "pass_8k": pass_8k, "pass_total": pass_total, "total": total,
+                  "error": err if state == "failed" else "", "attempts": [{"log": x["log"], "pass": x["pass"], "fail": x["fail"], "error": x["error"]} for x in xs]}
+    if running and current and current not in out:      # running now, no result log yet (first minutes of a start, or a hand-started run with its own log name)
+        out[current] = {"state": "running", "pass": 0, "fail": 0, "done": False, "log": "", "pass_8k": 0, "pass_total": 0, "total": EXPECT.get(current, TOTAL), "error": "", "attempts": []}
     return out
 
 
 def weights_of(log):
     """Which weights a ryan_*.log belongs to, from its name (the platform's own ryan_plat_<w>_ and the hand-started ryan_w<x>.log)."""
+    if re.match(r"nvfp4_", log or ""):
+        return "nvfp4"      # nvfp4_in8k.log / nvfp4_ryan.log (hand-started)
     m = re.search(r"(?:ryan|in8k)_(?:plat_)?w?(bf16|fp8pre|fp8|int8|int4)", log or "")      # in8k_*: the Input 8K set (2026-11-18)
     if not m and re.match(r"ryan_matrix", log or ""):
         return "bf16"        # the first matrix run (not quantized) was started by hand without a weights tag

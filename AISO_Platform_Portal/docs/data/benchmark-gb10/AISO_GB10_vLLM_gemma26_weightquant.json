@@ -1,7 +1,7 @@
 {
  "machine": "GB10",
  "framework": "vLLM",
- "test": "Weight quantization, Gemma 4 26B MoE, KV cache fp8, long context",
+ "test": "Weight quantization, Gemma 4 26B MoE, KV cache fp8 (+ bf16 with KV auto), 8K and long context",
  "protocol": {
   "nps": [
    1,
@@ -19,20 +19,20 @@
   ],
   "repeats": 1,
   "kv_cache_dtype": "fp8",
-  "baseline": "bf16 (not quantized)"
+  "baseline": "bf16 (not quantized)",
+  "cases_per_weights": 18
  },
- "generated_at": "2026-11-18T16:58:12",
+ "generated_at": "2026-11-18T21:50:51",
  "weights": [
   {
    "key": "bf16",
-   "set": "ryan",
-   "expect": 12,
    "label": [
     "bf16",
     "bf16（不量化）"
    ],
    "weights": "bf16 (not quantized)",
    "model": "google/gemma-4-26B-A4B-it",
+   "kv_cache_dtype": "fp8",
    "extra_vllm_args": [
     "--enforce-eager",
     "--moe-backend",
@@ -301,43 +301,25 @@
      "kv_cache_tokens": 102796.0
     }
    ],
-   "cases_expected": 12,
+   "cases_expected": 18,
    "started": "20261118_123446",
    "start_error": null,
    "status": "COMPLETE",
-   "sets": {
-    "ryan": {
-     "status": "COMPLETE",
-     "kv_cache_tokens": 966137.0,
-     "max_model_len": 132096,
-     "max_num_seqs": 5,
-     "start_error": null,
-     "rows": 12
-    },
-    "in8k": {
-     "status": "COMPLETE",
-     "kv_cache_tokens": 102796.0,
-     "max_model_len": 9216,
-     "max_num_seqs": 5,
-     "start_error": null,
-     "rows": 6
-    }
-   },
    "attempts": [
     {
-     "set": "in8k",
+     "set": "8k",
      "dir_time": "20261118_164914",
      "pass": 6,
      "error": null
     },
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_145125",
      "pass": 0,
      "error": null
     },
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_123446",
      "pass": 12,
      "error": null
@@ -346,15 +328,606 @@
    "start_failed": false
   },
   {
+   "key": "bf16_kvauto",
+   "label": [
+    "bf16 · KV auto",
+    "bf16 · KV cache 全精度（auto）"
+   ],
+   "weights": "bf16 (not quantized)",
+   "model": "google/gemma-4-26B-A4B-it",
+   "kv_cache_dtype": "auto",
+   "extra_vllm_args": [
+    "--enforce-eager",
+    "--moe-backend",
+    "triton"
+   ],
+   "gpu_memory_utilization": 0.7,
+   "max_model_len": 132096,
+   "max_num_seqs": 5,
+   "max_num_batched_tokens": 8192,
+   "prefix_caching": false,
+   "chunked_prefill": true,
+   "image": "lmcache/vllm-openai:nightly-2026-11-02",
+   "request": "ignore_eos, min_tokens=max_tokens, temperature 0, seed 42",
+   "kv_cache_tokens": 455250.0,
+   "rows": [
+    {
+     "np": 1,
+     "input": 65536,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 29.546,
+     "ttft_max_s": 29.546,
+     "error": "",
+     "tpot_ms": 49.8,
+     "aggregate_tps": 6.06,
+     "normalized_tps": 6.06,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 1,
+     "input": 65536,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 29.236,
+     "ttft_max_s": 29.236,
+     "error": "",
+     "tpot_ms": 50.05,
+     "aggregate_tps": 9.341,
+     "normalized_tps": 9.341,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 1,
+     "input": 131072,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 96.101,
+     "ttft_max_s": 96.101,
+     "error": "",
+     "tpot_ms": 55.64,
+     "aggregate_tps": 2.321,
+     "normalized_tps": 2.321,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 1,
+     "input": 131072,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 96.073,
+     "ttft_max_s": 96.073,
+     "error": "",
+     "tpot_ms": 55.66,
+     "aggregate_tps": 4.112,
+     "normalized_tps": 4.112,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 3,
+     "input": 65536,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 59.121,
+     "ttft_max_s": 88.138,
+     "error": "",
+     "tpot_ms": 190.28,
+     "aggregate_tps": 7.105,
+     "normalized_tps": 2.368,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 3,
+     "input": 65536,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 59.002,
+     "ttft_max_s": 87.795,
+     "error": "",
+     "tpot_ms": 134.58,
+     "aggregate_tps": 11.978,
+     "normalized_tps": 3.993,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 3,
+     "input": 131072,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 193.401,
+     "ttft_max_s": 289.913,
+     "error": "",
+     "tpot_ms": 466.58,
+     "aggregate_tps": 2.451,
+     "normalized_tps": 0.817,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 3,
+     "input": 131072,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 193.283,
+     "ttft_max_s": 289.432,
+     "error": "",
+     "tpot_ms": 280.69,
+     "aggregate_tps": 4.548,
+     "normalized_tps": 1.516,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 5,
+     "input": 65536,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 88.849,
+     "ttft_max_s": 146.893,
+     "error": "",
+     "tpot_ms": 314.46,
+     "aggregate_tps": 7.525,
+     "normalized_tps": 1.505,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 5,
+     "input": 65536,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 88.738,
+     "ttft_max_s": 146.398,
+     "error": "",
+     "tpot_ms": 203.05,
+     "aggregate_tps": 13.226,
+     "normalized_tps": 2.645,
+     "kv_tight": false,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 5,
+     "input": 131072,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 290.396,
+     "ttft_max_s": 483.256,
+     "error": "",
+     "tpot_ms": 858.97,
+     "aggregate_tps": 2.501,
+     "normalized_tps": 0.5,
+     "kv_tight": true,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 5,
+     "input": 131072,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 290.406,
+     "ttft_max_s": 482.816,
+     "error": "",
+     "tpot_ms": 488.68,
+     "aggregate_tps": 4.718,
+     "normalized_tps": 0.944,
+     "kv_tight": true,
+     "kv_cache_tokens": 455250.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 1.651,
+     "ttft_max_s": 1.651,
+     "error": "",
+     "tpot_ms": 44.61,
+     "aggregate_tps": 19.651,
+     "normalized_tps": 19.651,
+     "kv_tight": false,
+     "kv_cache_tokens": 42336.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 1.625,
+     "ttft_max_s": 1.625,
+     "error": "",
+     "tpot_ms": 44.74,
+     "aggregate_tps": 20.91,
+     "normalized_tps": 20.91,
+     "kv_tight": false,
+     "kv_cache_tokens": 42336.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 3.865,
+     "ttft_max_s": 4.995,
+     "error": "",
+     "tpot_ms": 68.93,
+     "aggregate_tps": 35.71,
+     "normalized_tps": 11.903,
+     "kv_tight": false,
+     "kv_cache_tokens": 42336.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 3.822,
+     "ttft_max_s": 4.953,
+     "error": "",
+     "tpot_ms": 67.85,
+     "aggregate_tps": 39.837,
+     "normalized_tps": 13.279,
+     "kv_tight": false,
+     "kv_cache_tokens": 42336.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 5.866,
+     "ttft_max_s": 8.198,
+     "error": "",
+     "tpot_ms": 77.35,
+     "aggregate_tps": 49.777,
+     "normalized_tps": 9.955,
+     "kv_tight": false,
+     "kv_cache_tokens": 42336.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 5.864,
+     "ttft_max_s": 8.205,
+     "error": "",
+     "tpot_ms": 73.05,
+     "aggregate_tps": 59.099,
+     "normalized_tps": 11.82,
+     "kv_tight": true,
+     "kv_cache_tokens": 42336.0
+    }
+   ],
+   "cases_expected": 18,
+   "started": "20261118_174251",
+   "start_error": null,
+   "status": "COMPLETE",
+   "attempts": [
+    {
+     "set": "long",
+     "dir_time": "20261118_174251",
+     "pass": 12,
+     "error": null
+    },
+    {
+     "set": "8k",
+     "dir_time": "20261118_173359",
+     "pass": 6,
+     "error": null
+    }
+   ],
+   "start_failed": false
+  },
+  {
+   "key": "nvfp4",
+   "label": [
+    "NVFP4",
+    "NVFP4（NVIDIA 官方）"
+   ],
+   "weights": "nvfp4 (NVIDIA ModelOpt checkpoint nvidia/Gemma-4-26B-A4B-NVFP4)",
+   "model": "nvidia/Gemma-4-26B-A4B-NVFP4",
+   "kv_cache_dtype": "fp8",
+   "extra_vllm_args": [
+    "--enforce-eager"
+   ],
+   "gpu_memory_utilization": 0.7,
+   "max_model_len": 132096,
+   "max_num_seqs": 5,
+   "max_num_batched_tokens": 8192,
+   "prefix_caching": false,
+   "chunked_prefill": true,
+   "image": "lmcache/vllm-openai:nightly-2026-11-02",
+   "request": "ignore_eos, min_tokens=max_tokens, temperature 0, seed 42",
+   "kv_cache_tokens": 1147177.0,
+   "rows": [
+    {
+     "np": 1,
+     "input": 65536,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 16.038,
+     "ttft_max_s": 16.038,
+     "error": "",
+     "tpot_ms": 39.37,
+     "aggregate_tps": 9.817,
+     "normalized_tps": 9.817,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 1,
+     "input": 65536,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 16.049,
+     "ttft_max_s": 16.049,
+     "error": "",
+     "tpot_ms": 39.67,
+     "aggregate_tps": 14.097,
+     "normalized_tps": 14.097,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 1,
+     "input": 131072,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 48.241,
+     "ttft_max_s": 48.241,
+     "error": "",
+     "tpot_ms": 42.41,
+     "aggregate_tps": 4.335,
+     "normalized_tps": 4.335,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 1,
+     "input": 131072,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 48.46,
+     "ttft_max_s": 48.46,
+     "error": "",
+     "tpot_ms": 42.69,
+     "aggregate_tps": 7.285,
+     "normalized_tps": 7.285,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 3,
+     "input": 65536,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 32.769,
+     "ttft_max_s": 48.496,
+     "error": "",
+     "tpot_ms": 105.33,
+     "aggregate_tps": 12.808,
+     "normalized_tps": 4.269,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 3,
+     "input": 65536,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 32.868,
+     "ttft_max_s": 48.624,
+     "error": "",
+     "tpot_ms": 75.4,
+     "aggregate_tps": 21.414,
+     "normalized_tps": 7.138,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 3,
+     "input": 131072,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 97.803,
+     "ttft_max_s": 146.078,
+     "error": "",
+     "tpot_ms": 239.11,
+     "aggregate_tps": 4.815,
+     "normalized_tps": 1.605,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 3,
+     "input": 131072,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 97.59,
+     "ttft_max_s": 145.771,
+     "error": "",
+     "tpot_ms": 146.23,
+     "aggregate_tps": 8.877,
+     "normalized_tps": 2.959,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 5,
+     "input": 65536,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 49.327,
+     "ttft_max_s": 81.019,
+     "error": "",
+     "tpot_ms": 175.09,
+     "aggregate_tps": 13.523,
+     "normalized_tps": 2.705,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 5,
+     "input": 65536,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 49.366,
+     "ttft_max_s": 80.993,
+     "error": "",
+     "tpot_ms": 114.8,
+     "aggregate_tps": 23.547,
+     "normalized_tps": 4.709,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 5,
+     "input": 131072,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 146.283,
+     "ttft_max_s": 242.607,
+     "error": "",
+     "tpot_ms": 435.99,
+     "aggregate_tps": 4.942,
+     "normalized_tps": 0.988,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 5,
+     "input": 131072,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 145.994,
+     "ttft_max_s": 242.144,
+     "error": "",
+     "tpot_ms": 252.03,
+     "aggregate_tps": 9.264,
+     "normalized_tps": 1.853,
+     "kv_tight": false,
+     "kv_cache_tokens": 1147177.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 1.171,
+     "ttft_max_s": 1.171,
+     "error": "",
+     "tpot_ms": 36.44,
+     "aggregate_tps": 24.47,
+     "normalized_tps": 24.47,
+     "kv_tight": false,
+     "kv_cache_tokens": 231245.0
+    },
+    {
+     "np": 1,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 1.144,
+     "ttft_max_s": 1.144,
+     "error": "",
+     "tpot_ms": 36.46,
+     "aggregate_tps": 25.894,
+     "normalized_tps": 25.894,
+     "kv_tight": false,
+     "kv_cache_tokens": 231245.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 2.694,
+     "ttft_max_s": 3.429,
+     "error": "",
+     "tpot_ms": 40.02,
+     "aggregate_tps": 59.333,
+     "normalized_tps": 19.778,
+     "kv_tight": false,
+     "kv_cache_tokens": 231245.0
+    },
+    {
+     "np": 3,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 2.705,
+     "ttft_max_s": 3.442,
+     "error": "",
+     "tpot_ms": 38.58,
+     "aggregate_tps": 68.38,
+     "normalized_tps": 22.793,
+     "kv_tight": false,
+     "kv_cache_tokens": 231245.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 256,
+     "status": "PASS",
+     "ttft_s": 4.15,
+     "ttft_max_s": 5.693,
+     "error": "",
+     "tpot_ms": 47.82,
+     "aggregate_tps": 77.933,
+     "normalized_tps": 15.587,
+     "kv_tight": false,
+     "kv_cache_tokens": 231245.0
+    },
+    {
+     "np": 5,
+     "input": 8192,
+     "output": 512,
+     "status": "PASS",
+     "ttft_s": 4.154,
+     "ttft_max_s": 5.7,
+     "error": "",
+     "tpot_ms": 44.95,
+     "aggregate_tps": 94.113,
+     "normalized_tps": 18.823,
+     "kv_tight": false,
+     "kv_cache_tokens": 231245.0
+    }
+   ],
+   "cases_expected": 18,
+   "started": "20261118_190153",
+   "start_error": null,
+   "status": "COMPLETE",
+   "attempts": [
+    {
+     "set": "long",
+     "dir_time": "20261118_190153",
+     "pass": 12,
+     "error": null
+    },
+    {
+     "set": "8k",
+     "dir_time": "20261118_183312",
+     "pass": 6,
+     "error": null
+    }
+   ],
+   "start_failed": false
+  },
+  {
    "key": "fp8",
-   "set": "ryan",
-   "expect": 12,
    "label": [
     "fp8 online",
     "fp8 線上量化"
    ],
    "weights": "fp8 (vLLM online dynamic quantization from bf16 checkpoint, --quantization fp8)",
    "model": "google/gemma-4-26B-A4B-it",
+   "kv_cache_dtype": "fp8",
    "extra_vllm_args": [
     "--enforce-eager",
     "--moe-backend",
@@ -625,37 +1198,19 @@
      "kv_cache_tokens": 259872.0
     }
    ],
-   "cases_expected": 12,
+   "cases_expected": 18,
    "started": "20261118_132708",
    "start_error": null,
    "status": "COMPLETE",
-   "sets": {
-    "ryan": {
-     "status": "COMPLETE",
-     "kv_cache_tokens": 1230191.0,
-     "max_model_len": 132096,
-     "max_num_seqs": 5,
-     "start_error": null,
-     "rows": 12
-    },
-    "in8k": {
-     "status": "COMPLETE",
-     "kv_cache_tokens": 259872.0,
-     "max_model_len": 9216,
-     "max_num_seqs": 5,
-     "start_error": null,
-     "rows": 6
-    }
-   },
    "attempts": [
     {
-     "set": "in8k",
+     "set": "8k",
      "dir_time": "20261118_163432",
      "pass": 6,
      "error": null
     },
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_132708",
      "pass": 12,
      "error": null
@@ -665,14 +1220,13 @@
   },
   {
    "key": "fp8pre",
-   "set": "ryan",
-   "expect": 12,
    "label": [
     "fp8 pre-quantized",
     "fp8 預量化"
    ],
    "weights": "fp8 (pre-quantized checkpoint RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic)",
    "model": "RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic",
+   "kv_cache_dtype": "fp8",
    "extra_vllm_args": [
     "--enforce-eager"
    ],
@@ -939,37 +1493,19 @@
      "kv_cache_tokens": 50747.0
     }
    ],
-   "cases_expected": 12,
+   "cases_expected": 18,
    "started": "20261118_141126",
    "start_error": null,
    "status": "COMPLETE",
-   "sets": {
-    "ryan": {
-     "status": "COMPLETE",
-     "kv_cache_tokens": 227404.0,
-     "max_model_len": 132096,
-     "max_num_seqs": 5,
-     "start_error": null,
-     "rows": 12
-    },
-    "in8k": {
-     "status": "COMPLETE",
-     "kv_cache_tokens": 50747.0,
-     "max_model_len": 9216,
-     "max_num_seqs": 5,
-     "start_error": null,
-     "rows": 6
-    }
-   },
    "attempts": [
     {
-     "set": "in8k",
+     "set": "8k",
      "dir_time": "20261118_164224",
      "pass": 6,
      "error": null
     },
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_141126",
      "pass": 12,
      "error": null
@@ -979,14 +1515,13 @@
   },
   {
    "key": "int8",
-   "set": "ryan",
-   "expect": 12,
    "label": [
     "int8 AWQ",
     "int8 AWQ"
    ],
    "weights": "int8 AWQ (pre-quantized checkpoint cyankiwi/gemma-4-26B-A4B-it-AWQ-8bit)",
    "model": "cyankiwi/gemma-4-26B-A4B-it-AWQ-8bit",
+   "kv_cache_dtype": "fp8",
    "extra_vllm_args": [
     "--enforce-eager"
    ],
@@ -1000,23 +1535,13 @@
    "request": "ignore_eos, min_tokens=max_tokens, temperature 0, seed 42",
    "kv_cache_tokens": null,
    "rows": [],
-   "cases_expected": 12,
+   "cases_expected": 18,
    "started": "20261118_144144",
    "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
    "status": "NO_RESULT",
-   "sets": {
-    "ryan": {
-     "status": "NO_RESULT",
-     "kv_cache_tokens": null,
-     "max_model_len": 132096,
-     "max_num_seqs": 5,
-     "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
-     "rows": 0
-    }
-   },
    "attempts": [
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_144144",
      "pass": 0,
      "error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin"
@@ -1026,14 +1551,13 @@
   },
   {
    "key": "int4",
-   "set": "ryan",
-   "expect": 12,
    "label": [
     "int4 AWQ",
     "int4 AWQ"
    ],
    "weights": "int4 AWQ (pre-quantized checkpoint cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit)",
    "model": "cyankiwi/gemma-4-26B-A4B-it-AWQ-4bit",
+   "kv_cache_dtype": "fp8",
    "extra_vllm_args": [
     "--enforce-eager"
    ],
@@ -1047,35 +1571,25 @@
    "request": "ignore_eos, min_tokens=max_tokens, temperature 0, seed 42",
    "kv_cache_tokens": null,
    "rows": [],
-   "cases_expected": 12,
+   "cases_expected": 18,
    "started": "20261118_144550",
    "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
    "status": "NO_RESULT",
-   "sets": {
-    "ryan": {
-     "status": "NO_RESULT",
-     "kv_cache_tokens": null,
-     "max_model_len": 132096,
-     "max_num_seqs": 5,
-     "start_error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin",
-     "rows": 0
-    }
-   },
    "attempts": [
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_145128",
      "pass": 0,
      "error": null
     },
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_144550",
      "pass": 0,
      "error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin"
     },
     {
-     "set": "ryan",
+     "set": "long",
      "dir_time": "20261118_140804",
      "pass": 0,
      "error": "ValueError: No available memory for the cache blocks. The extensible KV cache already takes all device memory left after the model and its activations; decrease `max_model_len` or `max_num_seqs`, or the model needs a device with more memory. See https://docs.vllm.ai/en/latest/configuration/conservin"
