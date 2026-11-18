@@ -142,13 +142,35 @@ window.BV=(function(){
  function block(o){
   const d=o.def,chart=charts(o);
   const legend=o.series.map((s,j)=>o.dodge?`<span><b style="color:${s.color};font-size:18px;line-height:1">${["●","■","▲","◆"][j%4]}</b>${esc(s.label)}</span>`:`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
-  const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>
+  const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>${MEAN[o.k]?`<p class="bv-mean" title="${esc(MEAN[o.k][2])}">${esc(MEAN[o.k][0])}<small class="zhs">${esc(MEAN[o.k][1])}</small></p>`:""}
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${o.baseline?"":esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
   if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;
   return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div>${o.noWarn?"":anomalies(o)}<div class="bv-foot">${o.noSummary?"<span></span>":`<p class="bv-sum">${summary(o)}</p>`}<button type="button" class="bv-more" aria-expanded="false">Full values<small class="zhs">完整數值</small> ▾</button></div><div class="bv-detail" hidden><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div></div>`;
  }
+/* one line under every metric title (David 2026-11-18): what the number means; the full formula is in the hover */
+ const MEAN={
+  ttft_s:["Time from sending the request to the first word (long inputs: mostly prefill). Lower is better.","首字延遲：從送出請求到收到第一個字的秒數（長輸入主要花在預填）。越低越好。","TTFT = first word received - request sent (s)"],
+  tpot_ms:["After the first word, the average ms per generated word. Lower is better.","每個字的間隔：第一個字之後，平均每產生一個字要幾毫秒。越低越好。","TPOT = (finish - first word) / (output tokens - 1) (ms); measured by the client unless the page says otherwise"],
+  decode_only_tps:["1000 ÷ TPOT: words per second per request, without the first-word wait. Higher is better.","純產生速度：1000 ÷ TPOT，每個請求每秒產生幾個字，不含首字等待。越高越好。","Decode TPS = 1000 / TPOT (tok/s), per request - the inverse of TPOT, not summed over requests"],
+  normalized_tps:["Output words of one request ÷ its total time (first-word wait included). Higher is better.","每請求每秒輸出：這個請求的輸出字數 ÷ 總花費時間（含首字等待）。越高越好。","Normalized TPS = aggregate TPS / NP"],
+  aggregate_tps:["Output words of all requests ÷ time from the first request sent to the last finished (wait included). Higher is better.","合計每秒輸出：全部請求的輸出字數 ÷ 從第一個請求送出到最後一個完成的時間（含首字等待）。越高越好。","Aggregate TPS = sum of output tokens / (last done - first start)"]};
+ MEAN.norm_tps=MEAN.normalized_tps;
+ const DEC_DEF={short:"TPS (Decode only)",zh:"純產生速度（不含首字等待）",unit:"tok/s",higher:true};
+ /* every page that shows TPOT also gets TPS (Decode only) = 1000 / TPOT per request (empty or 0 TPOT: no value, never estimated) */
+ function withDecode(list){
+  if(list.some(o=>o.k==="decode_only_tps"))return list;
+  const out=[];
+  list.forEach(o=>{
+   out.push(o);
+   if(o.k!=="tpot_ms")return;
+   const get=(key,g)=>{const r=o.get(key,g),t=r&&Number(r.tpot_ms);return Number.isFinite(t)&&t>0?{...r,decode_only_tps:1000/t,ttft_over_180s:false}:null};
+   out.push({...o,k:"decode_only_tps",def:DEC_DEF,get,tableNote:(o.tableNote?o.tableNote+"；":"")+"TPOT is client-measured on B60 / AISO1 / GB10 and server-reported for B70 vLLM / SGLang: Decode TPS is not directly comparable across machines. TPOT 定義因機器而異，Decode TPS 不可跨機器直接比較。"});
+  });
+  return out;
+ }
  function blocks(list){
-  const isTps=o=>/^(norm|normalized|aggregate)_tps$/.test(o.k),isLat=o=>o.k==="ttft_s"||o.k==="tpot_ms";
+  list=withDecode(list);
+  const isTps=o=>/^(norm|normalized|aggregate|decode_only)_tps$/.test(o.k),isLat=o=>o.k==="ttft_s"||o.k==="tpot_ms";
   const tps=list.filter(isTps),iN=list.findIndex(o=>/^(norm|normalized)_tps$/.test(o.k)),iA=list.findIndex(o=>o.k==="aggregate_tps");
   const sh=iN>=0&&iA>=0&&list[iN].baseline&&list[iA].baseline&&summary(list[iN])&&summary(list[iN])===summary(list[iA])?summary(list[iN]):null;
   const grp=(title,zh,body,sum)=>`<div class="bv-group"><div class="bv-tps"><h3 class="bv-h">${title}<span class="zh-i">${zh}</span></h3>${sum?`<p class="bv-sum">${sum}</p>`:""}</div>${body}</div>`;

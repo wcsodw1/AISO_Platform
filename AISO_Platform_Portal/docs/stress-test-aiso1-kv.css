@@ -1,0 +1,60 @@
+/* AISO1 page: Standard test | KV cache quantization switch and the KV view (stress-test-aiso1-kv.js) */
+.st .st-view{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 22px}
+.st .st-view button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:240px;padding:12px 22px;border:1px solid rgba(244,239,228,.28);border-radius:14px;background:transparent;color:var(--ivory,#f4efe4);font:inherit;font-size:22px;font-weight:700;cursor:pointer;text-align:left}
+.st .st-view button small{font-size:16px;font-weight:500;color:var(--muted,#98a0ad)}
+.st .st-view button:hover{border-color:rgba(200,184,117,.8)}.st .st-view button.on{border-color:var(--gold,#d8c779);background:rgba(200,184,117,.12)}
+.st .kvx{position:relative}
+.st .kvx .cmp-pick{display:block;margin:22px 0 0}.st .kvx .cmp-pick:first-of-type{margin-top:8px}
+.st .kvx .cmp-pick>span{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;color:var(--ivory,#f4efe4);font-size:20px;font-weight:700}
+.st .kvx .cmp-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:0}.st .kvx .kv-np{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.st .kvx .cmp-tabs button{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;min-height:64px;padding:10px 20px;border-radius:12px;border:1px solid rgba(244,239,228,.28);background:transparent;color:var(--ivory,#f4efe4);font-size:18px;font-weight:700;text-align:left;cursor:pointer}
+.st .kvx .cmp-tabs button small{font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+.st .kvx .cmp-tabs button:not(.has){opacity:.35;cursor:not-allowed}.st .kvx .cmp-tabs button.has:hover{border-color:rgba(200,184,117,.8)}
+.st .kvx .cmp-tabs button.on{background:rgba(200,184,117,.12);border-color:var(--gold,#d8c779)}
+.st .kvx .kv-big{margin:0 0 14px;font-size:28px;line-height:1.25;color:var(--ivory,#f4efe4);font-weight:700}.st .kvx .kv-big small{margin-left:10px;font-size:18px;font-weight:500;color:var(--muted,#98a0ad)}
+.st .kvx .kv-list{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:10px}
+.st .kvx .kv-list li{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;font-size:24px;color:var(--ivory,#f4efe4)}
+.st .kvx .kv-pill{padding:2px 14px;border:1px solid;border-radius:999px;font-weight:700}
+.st .kvx .kv-d{font-size:20px;color:var(--muted,#98a0ad)}
+.st .kvx .kv-fine{margin:0;font-size:16px;color:var(--muted,#98a0ad)}.st .kvx .kv-fine small{margin-left:8px}
+.st .kvx .kv-run{margin:0 0 14px;font-size:18px;font-weight:700;color:#6fdc9a}.st .kvx .kv-run small{margin-left:8px;font-size:16px;font-weight:500;color:var(--muted,#98a0ad)}
+.st .kvx .kv-smoke td.ok{color:#6fdc9a}.st .kvx .kv-smoke td.bad{color:#e0a283}.st .kvx .kv-smoke td.wait{color:var(--muted,#98a0ad)}
+.st .kvx .kv-smoke th,.st .kvx .kv-smoke td{font-size:17px}
+/* Notes 備註: small corner, unrolls toward the bottom-left on hover (PF_UI) */
+.st .kvx .kv-notes{position:absolute;top:18px;right:18px;z-index:5;max-width:min(560px,80vw);text-align:right}
+.st .kvx .kv-notes>b{display:inline-block;padding:6px 14px;border:1px solid rgba(224,160,64,.6);border-radius:999px;color:#e0a040;font-size:16px;cursor:default}.st .kvx .kv-notes>b small{margin-left:6px;font-size:16px;font-weight:500}
+.st .kvx .kv-notes>div{display:none;margin-top:8px;padding:14px 18px;border:1px solid rgba(224,160,64,.5);border-radius:14px;background:#15130f;text-align:left;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.st .kvx .kv-notes:hover>div,.st .kvx .kv-notes:focus-within>div,.st .kvx .kv-notes:focus>div{display:block}
+.st .kvx .kv-notes p{margin:0 0 8px;font-size:16px;line-height:1.55;color:var(--ivory,#f4efe4)}.st .kvx .kv-notes p:last-child{margin:0;color:#c9c2ad}
+@media(max-width:700px){.st .st-view button{min-width:0;flex:1}.st .kvx .kv-notes{position:static;text-align:left;margin-bottom:10px}}
+.st .kvx .kv-plan>summary{cursor:pointer;list-style:none}.st .kvx .kv-plan>summary::-webkit-details-marker{display:none}
+.st .kvx .kv-plan>summary h2{display:inline;margin:0}.st .kvx .kv-plan>summary::after{content:" ▾";color:var(--gold,#d8c779);font-size:20px}.st .kvx .kv-plan[open]>summary::after{content:" ▴"}
+.st .kvx .kv-plan .kv-fine{margin:14px 0}
+.st .kvx .kv-plan-t td,.st .kvx .kv-plan-t th{font-size:16px;vertical-align:top;white-space:normal;text-align:left}
+.st .kvx .kv-plan-t td small,.st .kvx .kv-plan-t th small{display:block;margin-top:3px;color:var(--muted,#98a0ad);font-size:16px;font-weight:400}
+.st .kvx .kv-plan-t td:nth-child(2) b{font-size:17px;color:var(--ivory,#f4efe4)}
+.st .kvx .kv-plan-t td:first-child{white-space:nowrap;font-weight:700}
+.st .kvx .kv-plan-t .lv-must td:first-child{color:var(--gold,#d8c779)}
+.st .kvx .kv-plan-t .st-running{color:#6fdc9a;font-weight:700}.st .kvx .kv-plan-t .st-next{color:#e0a040;font-weight:700}.st .kvx .kv-plan-t .st-todo{color:var(--muted,#98a0ad)}
+.st .v2-setup:empty{display:none}
+@media(max-width:700px){
+ .st .st-view{flex-direction:column;gap:10px;padding:0}
+ .st .st-view button{width:100%;min-width:0;font-size:20px;overflow-wrap:anywhere}
+ .st .kvx .cmp-tabs,.st .kvx .kv-np{grid-template-columns:1fr 1fr}
+ .st .kvx .kv-list li{font-size:20px}.st .kvx .kv-d{font-size:17px}.st .kvx .kv-big{font-size:22px}.st .kvx .kv-big small{display:block;margin:4px 0 0}
+}
+/* Same input, every precision (David 2026-11-18): one Input + one Output, every KV precision against f16 */
+.st .kvx .kv-sub{margin:0 0 14px;font-size:18px;color:var(--gold,#d8c779)}.st .kvx .kv-sub small{margin-left:8px}
+.st .kvx .kv-same th,.st .kvx .kv-same td{font-size:17px;text-align:left;vertical-align:top}
+.st .kvx .kv-same thead th small{display:block;margin-top:3px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+.st .kvx .kv-same tbody th{font-size:20px;white-space:nowrap}
+.st .kvx .kv-same td b{display:block;font-size:24px;color:var(--ivory,#f4efe4);font-variant-numeric:tabular-nums}
+.st .kvx .kv-same td .v2-d{display:block;margin-top:2px;font-size:17px}
+.st .kvx .kv-same .kv-bar{display:block;height:6px;margin-top:8px;border-radius:3px;opacity:.85}
+.st .kvx .kv-same .kv-dir{color:var(--gold,#d8c779)}
+.st .kvx .kv-h3{margin:20px 0 12px;font-size:22px;color:var(--gold,#d8c779)}.st .kvx .kv-h3 small{margin-left:10px;font-size:16px;color:var(--muted,#98a0ad);font-weight:400}
+.st .kvx .st-params dd small,.st .kvx .st-params dt small{font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+.st .kvx .kv-same .kv-mrow th{padding-top:22px;font-size:22px;color:var(--gold,#d8c779);border-bottom:1px solid rgba(200,184,117,.4)}
+.st .kvx .kv-same .na{color:var(--muted,#98a0ad)}
+.st .kvx .kv-mh{margin:26px 0 8px;font-size:22px;color:var(--gold,#d8c779)}.st .kvx .kv-mh:first-child{margin-top:0}
+.st #secPick .cmp-tabs button small{margin-left:8px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}

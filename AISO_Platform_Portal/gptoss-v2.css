@@ -445,3 +445,12 @@ h1 .zhs,h2 .zhs,h3 .zhs{font-size:17px}
 .bv-mh .bv-spec>span{display:grid;gap:1px}
 .bv-mh .bv-spec b{font-size:16px;color:var(--gold);font-weight:700}
 .bv-mh .bv-spec small{color:var(--muted);font-size:16px;font-weight:500}
+
+/* David 2026-11-18: narrower line charts so the gaps between lines are visible; the difference ratio is a small whitish-grey note (still >= 16px, PF_UI) */
+.bv-block .v2-chart{max-width:830px;margin-left:auto;margin-right:auto}.bv-foot{max-width:830px;margin-left:auto;margin-right:auto}
+.bv-sum{font-size:16px;font-weight:400;color:rgba(244,239,228,.72)}.bv-sum .zhs{font-size:16px;color:rgba(244,239,228,.6)}
+
+/* all BV line charts (every benchmark page): fixed narrow width, centred, scaled down on small screens instead of a side scroll */
+.v2-chartwrap.bv-fit{overflow:visible}.bv-block .v2-chart,.bv-block .bv-foot{max-width:830px;margin-left:auto;margin-right:auto}
+
+.bv-mean{margin:2px 0 8px;font-size:16px;line-height:1.5;color:var(--muted,#98a0ad)}.bv-mean small{margin-left:8px;font-size:16px}
