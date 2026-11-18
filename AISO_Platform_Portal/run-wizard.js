@@ -136,7 +136,7 @@
     if (EXEC.on && id === "run" && EXEC.kind === "standard") {
       const s = EXEC.status || {}, busyNow = !!s.busy, f = EXEC.formal || [], total = f.reduce((a, r) => a + r.n, 0), pr = stdParams(), n = stdCases();
       const row = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
-      const page = ({ aiso1: "stress-test-aiso1.html", pro6000: "stress-test-pro6000.html" })[baseOf(EXEC.machine)] || "stress-test-compare.html";
+      const page = ({ aiso1: "stress-test-aiso1.html", pro6000: "stress-test-pro6000.html", gb10: "stress-test-gb10.html" })[baseOf(EXEC.machine)] || "stress-test-compare.html";
       const bad = s.external ? "The GPU is in use by other work on this shared machine - start is off until it is free." : !EXEC.stdspec ? "This engine has no standard test yet - only the smoke test (the comparison models are not on this machine)." : !(n > 0) ? "Check the Input / NP lists." : "";
       return { title: bi("Standard test", "標準測試"), ok: false, next: "", last: true,
         body: `<dl class="rw-sum">${row("Machine", ($("selectedUnitTitle") || {}).textContent || EXEC.machine)}${row("Models", (EXEC.pick || "all") === "all" ? EXEC.models.map(m => m.id).join(", ") : EXEC.pick)}${EXEC.stdspec ? row("Test", `Standard · Input ${pr.inputs.join("/")} × NP ${pr.nps.join("/")} × ${pr.repeats}`) + row("Cases", isFinite(n) ? String(n) : "—") : row("Test", "Smoke only on this engine")}${row("On the platform", total + " conditions" + (f.length ? " (" + f.map(r => r.framework + " " + r.n).join(", ") + ")" : ""))}</dl>
@@ -381,7 +381,7 @@
     const host = $("parameterPage"); if (!host || !EXEC.on) return;
     let sec = $("rwResults");
     if (!sec) { sec = document.createElement("section"); sec.id = "rwResults"; sec.className = "report-section"; sec.setAttribute("data-v", "result"); host.appendChild(sec); }
-    const page = ({ aiso1: "stress-test-aiso1.html", pro6000: "stress-test-pro6000.html" })[baseOf(EXEC.machine)] || "stress-test-compare.html";
+    const page = ({ aiso1: "stress-test-aiso1.html", pro6000: "stress-test-pro6000.html", gb10: "stress-test-gb10.html" })[baseOf(EXEC.machine)] || "stress-test-compare.html";
     const f = EXEC.formal || [], total = f.reduce((a, r) => a + r.n, 0), until = f.map(r => r.until).sort().pop() || "";
     const prog = smokeProg(EXEC.status || {}), ids = Object.keys(prog), pass = ids.filter(k => prog[k].state === "pass").length;
     const merged = mergedOf(EXEC.status || {});

@@ -1,0 +1,22 @@
+/* Run page progress panel: numbered steps with a round status mark, one status line, the Run log */
+#runProgress[hidden]{display:none}
+.rp-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rp-st{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 18px;border:1px solid rgba(244,239,228,.18);border-radius:12px}
+.rp-st i{width:30px;height:30px;line-height:26px;border:2px solid currentColor;border-radius:50%;font-style:normal;font-size:17px;font-weight:800;text-align:center}
+.rp-st b{font-size:19px;color:var(--ivory,#f3efe5)}.rp-st b .zhs{margin-left:10px}.rp-st span{display:block;margin-top:2px;font-size:16px;color:var(--muted,#9aa6b8)}
+.rp-st em{font-style:italic;font-size:16px;white-space:nowrap}
+.rp-done i,.rp-done em{color:#6fdc9a}.rp-done{border-color:rgba(111,220,154,.4)}
+.rp-ongoing i,.rp-ongoing em{color:#e0a040}.rp-ongoing{border-color:rgba(224,160,64,.65);background:rgba(224,160,64,.07)}.rp-ongoing i{font-size:12px;animation:rpp 1.4s ease-in-out infinite}
+.rp-todo i,.rp-todo em{color:var(--muted,#9aa6b8)}.rp-fail i,.rp-fail em{color:#ff6b6b}.rp-fail{border-color:rgba(255,107,107,.55)}
+@keyframes rpp{50%{opacity:.35}}@media(prefers-reduced-motion:reduce){.rp-ongoing i{animation:none}}
+.rp-line{margin:14px 2px 0;font-size:18px;font-weight:700;color:var(--gold,#d8c779)}.rp-line small{margin-left:8px;font-weight:500}
+.rp-lh{margin:20px 0 8px;font-size:20px}.rp-lh small{margin-left:8px;font-weight:500}
+.rp-log{margin:0;padding:14px 16px;max-height:340px;overflow:auto;border:1px solid rgba(244,239,228,.14);border-radius:12px;background:#0b0d12;font:16px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c9cfdb;white-space:pre-wrap;word-break:break-word}
+.rp-log .rp-cmd{color:var(--gold,#d8c779)}.rp-log .rp-cmd::before{content:"$ "}.rp-log .rp-ok{color:#6fdc9a}.rp-log .rp-warn{color:#e0a040}
+@media(max-width:640px){.rp-st{grid-template-columns:28px minmax(0,1fr)}.rp-st em{grid-column:2}}
+
+/* Progress + Run log only after the model and the test are chosen (David 2026-11-18) */
+body[data-rw-step]:not([data-rw-step="run"]) #runProgress{display:none!important}
+.hv-fold>header .hv-sum{margin-left:14px;font-size:18px;font-weight:600;color:var(--muted,#98a0ad)}.hv-fold>header .hv-sum small{margin-left:6px;font-size:16px}
+#runProgress.hv-fold>header{cursor:pointer;position:relative;padding-right:44px}#runProgress.hv-fold>header::after{content:"▾";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--gold,#d9b45a)}
+#runProgress.hv-closed>header::after{transform:translateY(-50%) rotate(-90deg)}#runProgress.hv-closed>:not(header){display:none!important}

@@ -142,7 +142,7 @@ window.BV=(function(){
  function block(o){
   const d=o.def,chart=charts(o);
   const legend=o.series.map((s,j)=>o.dodge?`<span><b style="color:${s.color};font-size:18px;line-height:1">${["●","■","▲","◆"][j%4]}</b>${esc(s.label)}</span>`:`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
-  const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>${MEAN[o.k]?`<p class="bv-mean" title="${esc(MEAN[o.k][2])}">${esc(MEAN[o.k][0])}<small class="zhs">${esc(MEAN[o.k][1])}</small></p>`:""}
+  const head=`<h3 class="bv-h">${esc(d.short).replace("Decode",'<em class="bv-dec">Decode</em>')}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>${MEAN[o.k]?`<p class="bv-mean" title="${esc(MEAN[o.k][2])}">${esc(MEAN[o.k][0])}<small class="zhs">${esc(MEAN[o.k][1])}</small></p>`:""}
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${o.baseline?"":esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
   if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;
   return `<div class="bv-block">${head}<div class="v2-chart">${chart}</div>${o.noWarn?"":anomalies(o)}<div class="bv-foot">${o.noSummary?"<span></span>":`<p class="bv-sum">${summary(o)}</p>`}<button type="button" class="bv-more" aria-expanded="false">Full values<small class="zhs">完整數值</small> ▾</button></div><div class="bv-detail" hidden><h3 class="v2-sub3">${esc(d.short)} 數據<span class="zh-i">${esc(o.tableNote||"")}</span></h3>${table(o)}</div></div>`;

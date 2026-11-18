@@ -15,8 +15,9 @@
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
   <link rel="stylesheet" href="terminal.css?v=9">
-  <link rel="stylesheet" href="tesla.css?v=46">
+  <link rel="stylesheet" href="tesla.css?v=47">
   <link rel="stylesheet" href="run-wizard.css?v=30">
+  <link rel="stylesheet" href="run-progress.css?v=1">
   <script>document.documentElement.classList.add("rw-boot");setTimeout(function(){document.documentElement.classList.remove("rw-boot")},2500)</script>
   <style>body>*{transition:opacity .22s ease}html.rw-boot body>*:not(.site-header):not(.access-gate){opacity:0}</style>
 </head>
@@ -96,6 +97,8 @@
       </details>
     </section>
 
+    <section class="report-section" id="runProgress" hidden></section>
+
     <section class="report-section" id="livePanel" data-v="run">
       <header class="live-head"><div><p class="section-label">LIVE / REAL INFERENCE</p><h2>參數與執行</h2></div><button id="paramHelp" class="info big" type="button" aria-label="參數說明" title="所有參數說明">?</button></header>
       <div id="liveConnect" class="live-connect"><b>① 先連線</b><input id="tokenInput2" type="password" autocomplete="off" placeholder="貼上本機 Bearer Token（啟動 launcher 時印在終端機）"><button id="connectButton2" type="button" class="primary">Connect</button><span id="liveConnectMsg">未連線，下面的按鈕要連線後才能用。</span></div>
@@ -149,7 +152,7 @@
     <section class="job-section" data-v="result"><header><div><p class="section-label">LOCAL MOCK JOBS</p><h2>Execution history</h2></div><span>Never promoted to PASS</span></header><div id="jobList"><p>No authenticated local jobs loaded.</p></div></section>
     </div>
   </main>
-  <script src="terminal.js?v=8"></script><script src="benchmark-entry.js?v=1"></script><script src="run-gate.js?v=2"></script><script src="benchmark-app.js?v=picker-16"></script><script src="run-wizard.js?v=68"></script><script>AisoTerm.mount(document.getElementById("aisoTermRun"),{machine:"b70",machines:[["b70","Intel B70 · llama.cpp (completed 48/48)"],["b60","Intel B60 · llama.cpp (completed 36/36)"],["aiso1","AISO1 · llama.cpp (in progress)"]]})</script>
+  <script src="terminal.js?v=8"></script><script src="benchmark-entry.js?v=1"></script><script src="run-gate.js?v=2"></script><script src="benchmark-app.js?v=picker-16"></script><script src="run-wizard.js?v=69"></script><script src="run-progress.js?v=1"></script><script>AisoTerm.mount(document.getElementById("aisoTermRun"),{machine:/\/gb10\b/.test(location.hash)?"gb10":"b70",machines:[["b70","Intel B70 · llama.cpp (completed 48/48)"],["b60","Intel B60 · llama.cpp (completed 36/36)"],["aiso1","AISO1 · llama.cpp (in progress)"],["gb10","GB10 · vLLM long context"]]})</script>
 <script src="research-menu.js?v=1" defer></script>
 <script src="ui-min-type.js?v=2" defer></script>
 <script src="update-check.js?v=2" defer></script>
