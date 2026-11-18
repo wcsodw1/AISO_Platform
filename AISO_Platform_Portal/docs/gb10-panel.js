@@ -5,7 +5,7 @@
 (function () {
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const bi = (en, zh) => `${en}<small class="zhs">${zh}</small>`;
-  const W = { bf16: ["bf16", "bf16（不量化）"], fp8: ["fp8 online", "fp8 線上量化"], fp8pre: ["fp8 pre-quantized", "fp8 預量化"], int8: ["int8 AWQ", "int8 AWQ"], int4: ["int4 AWQ", "int4 AWQ"] };
+  const W = { bf16: ["bf16", "bf16（不量化）"], fp8: ["fp8 online", "fp8 線上量化"], fp8pre: ["fp8 pre-quantized", "fp8 預量化"], int8: ["int8 AWQ", "int8 AWQ"], nvfp4: ["NVFP4", "NVFP4（NVIDIA 官方）"], int4: ["int4 AWQ", "int4 AWQ"] };
   const NPS = [1, 3, 5], INS = [65536, 131072], OUTS = [256, 512], TOTAL = 12;
   const kn = n => `${n / 1024}K`;
   const G = { status: null, weights: "bf16", msg: "", starting: false, poll: null, render: null, at: 0, loading: false, term: false, seenLog: null, seenN: 0, last: "", wasBusy: false };
