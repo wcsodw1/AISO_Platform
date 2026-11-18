@@ -1163,10 +1163,249 @@
    "status": "done"
   },
   {
-   "label": "Ryan matrix",
-   "zh": "Ryan 條件",
+   "label": "Input 64K / 128K",
+   "zh": "輸入 64K / 128K",
    "detail": "np=1/3/5, input=64K/128K, output=256/512, KV fp8",
    "status": "done"
   }
- ]
+ ],
+ "params_ryan": {
+  "key": [
+   [
+    "Input",
+    "輸入",
+    "64K (65,536) / 128K (131,072) tokens, exact"
+   ],
+   [
+    "Output",
+    "輸出",
+    "256 / 512 tokens (forced, ignore_eos)"
+   ],
+   [
+    "NP (concurrency)",
+    "並發",
+    "1 / 3 / 5"
+   ],
+   [
+    "Session length",
+    "單一請求總長",
+    "input + output (e.g. 64K input + 512 output = 66,048 tokens)"
+   ],
+   [
+    "Repeat",
+    "重複",
+    "1 run, not averaged (B60 / B70 / AISO1 average 3 runs)"
+   ],
+   [
+    "KV cache type",
+    "KV cache 型別",
+    "fp8 (weights stay bf16)"
+   ],
+   [
+    "Weight quantization",
+    "權重量化",
+    "bf16 = tested · fp8 / int8 / int4 weights = not run yet 待測"
+   ]
+  ],
+  "server": [
+   [
+    "Framework",
+    "推論框架",
+    "vLLM v0.33.0rc1.dev485+g0e5b2ba11"
+   ],
+   [
+    "Attention backend",
+    "注意力後端",
+    "TRITON_ATTN (auto-selected: Gemma 4 has two head sizes (256 sliding / 512 full), FA4 not available)"
+   ],
+   [
+    "MoE backend",
+    "MoE 後端",
+    "Triton"
+   ],
+   [
+    "Execution mode",
+    "執行模式",
+    "Eager - torch.compile and CUDA graphs OFF (--enforce-eager)"
+   ],
+   [
+    "Dtype · quantization",
+    "權重精度",
+    "bfloat16 · weights not quantized"
+   ],
+   [
+    "KV cache type",
+    "KV cache 型別",
+    "fp8"
+   ],
+   [
+    "Max model len",
+    "單一請求最大長度",
+    "132,096 tokens (per request)"
+   ],
+   [
+    "Max num seqs",
+    "同時請求數上限",
+    "5"
+   ],
+   [
+    "Max batched tokens",
+    "每批 token 上限",
+    "8,192 · chunked prefill ON"
+   ],
+   [
+    "Prefix cache",
+    "前綴快取",
+    "OFF"
+   ],
+   [
+    "GPU memory share",
+    "記憶體比例",
+    "0.7 (85.18 GiB)"
+   ],
+   [
+    "Weights + other memory",
+    "模型與固定用量",
+    "48.6 GiB"
+   ],
+   [
+    "KV cache capacity",
+    "KV cache 實測容量",
+    "966,137 tokens (35.85 GiB)"
+   ],
+   [
+    "Parallelism",
+    "平行度",
+    "TP 1 · PP 1 · 1 GPU (unified memory)"
+   ],
+   [
+    "Request",
+    "請求方式",
+    "streaming /v1/completions · all NP requests released at the same moment · ignore_eos · min_tokens = max_tokens · temperature 0 · seed 42"
+   ],
+   [
+    "Warm-up",
+    "暖機",
+    "1 request of 2,048 input tokens, 8 output tokens, excluded from results"
+   ]
+  ],
+  "source": "gemma26_vllm_fp8_ryan_20261118_123446: server_command.txt + server.log (1 vLLM start for all 12 conditions)"
+ },
+ "params_ctx": {
+  "key": [
+   [
+    "Context (input + output)",
+    "總長度",
+    "32K (32,768) / 64K (65,536) / 128K (131,072) / 256K (262,144) tokens; input = context - output"
+   ],
+   [
+    "Output",
+    "輸出",
+    "64 / 512 / 1024 tokens (forced, ignore_eos)"
+   ],
+   [
+    "NP (concurrency)",
+    "並發",
+    "1 / 5 (+ Smoke NP2 at 8K)"
+   ],
+   [
+    "Repeat",
+    "重複",
+    "1 run, not averaged (B60 / B70 / AISO1 average 3 runs)"
+   ],
+   [
+    "KV cache type",
+    "KV cache 型別",
+    "fp8 (weights stay bf16)"
+   ],
+   [
+    "Weight quantization",
+    "權重量化",
+    "bf16 = tested · fp8 / int8 / int4 weights = not run yet 待測"
+   ]
+  ],
+  "server": [
+   [
+    "Framework",
+    "推論框架",
+    "vLLM v0.33.0rc1.dev485+g0e5b2ba11"
+   ],
+   [
+    "Attention backend",
+    "注意力後端",
+    "TRITON_ATTN (auto-selected: Gemma 4 has two head sizes (256 sliding / 512 full), FA4 not available)"
+   ],
+   [
+    "MoE backend",
+    "MoE 後端",
+    "Triton"
+   ],
+   [
+    "Execution mode",
+    "執行模式",
+    "Eager - torch.compile and CUDA graphs OFF (--enforce-eager)"
+   ],
+   [
+    "Dtype · quantization",
+    "權重精度",
+    "bfloat16 · weights not quantized"
+   ],
+   [
+    "KV cache type",
+    "KV cache 型別",
+    "fp8"
+   ],
+   [
+    "Max model len",
+    "單一請求最大長度",
+    "8,192 / 65,536 / 262,144 (differs per start)"
+   ],
+   [
+    "Max num seqs",
+    "同時請求數上限",
+    "1 / 2 / 5"
+   ],
+   [
+    "Max batched tokens",
+    "每批 token 上限",
+    "8,192 · chunked prefill ON"
+   ],
+   [
+    "Prefix cache",
+    "前綴快取",
+    "OFF"
+   ],
+   [
+    "GPU memory share",
+    "記憶體比例",
+    "0.54 / 0.7"
+   ],
+   [
+    "Weights + other memory",
+    "模型與固定用量",
+    "27.93 – 49.52 GiB"
+   ],
+   [
+    "KV cache capacity",
+    "KV cache 實測容量",
+    "231,943 – 970,684 tokens (varies per start)"
+   ],
+   [
+    "Parallelism",
+    "平行度",
+    "TP 1 · PP 1 · 1 GPU (unified memory)"
+   ],
+   [
+    "Request",
+    "請求方式",
+    "streaming /v1/completions · all NP requests released at the same moment · ignore_eos · min_tokens = max_tokens · temperature 0 · seed 42"
+   ],
+   [
+    "Warm-up",
+    "暖機",
+    "1 request of 2,048 input tokens, 8 output tokens, excluded from results"
+   ]
+  ],
+  "source": "7 vLLM starts: gemma26_vllm_fp8_run_20261118_111543, gemma26_vllm_fp8_run_20261118_112716, gemma26_vllm_fp8_run_20261118_113809, gemma26_vllm_fp8_run_20261118_114459, gemma26_vllm_fp8_run_20261118_115555, gemma26_vllm_fp8_run_20261118_120345, gemma26_vllm_fp8_smoke_20261118_105415"
+ }
 }
