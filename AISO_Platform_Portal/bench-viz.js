@@ -48,9 +48,12 @@ window.BV=(function(){
  }
 
  /* line chart: same data and axis as the bars; one line per series across the input lengths */
+ const gwOf=o=>{const n=o.groups.length,L=68,R=30,W=Math.min(780,Math.max(o.width||0,n*150+L+R));return (W-L-R)/n};
+ const SHAPES=["circle","square","triangle","diamond"];
+ const mark=(shape,cx,cy,r,fill,tip="")=>shape==="square"?`<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="1.5" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</rect>`:shape==="triangle"?`<polygon points="${cx},${cy-r-1.5} ${cx+r+1.5},${cy+r} ${cx-r-1.5},${cy+r}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:shape==="diamond"?`<polygon points="${cx},${cy-r-2} ${cx+r+2},${cy} ${cx},${cy+r+2} ${cx-r-2},${cy}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
  function lineSvg(o){
-  const {k,def,groups,series,get,width}=o,n=groups.length;
-  const L=68,R=30,T=50,B=80,H=364,ih=H-T-B,W=Math.max(width||0,n*150+L+R),gw=(W-L-R)/n;
+  const {k,def,groups,series,get,width}=o,n=groups.length,dodge=o.dodge?Math.min(40,Math.max(0,(gwOf(o)-60)/Math.max(1,series.length-1))):0,off=j=>dodge?(j-(series.length-1)/2)*dodge:0;
+  const L=68,R=30,T=50,B=80,H=364,ih=H-T-B,W=Math.min(780,Math.max(width||0,n*150+L+R)),gw=(W-L-R)/n;   // never wider than 780 px: a narrow chart makes the slope of the lines easy to see (David 2026-11-18); it scales down, never scrolls
   const vals=groups.flatMap(g=>series.map(s=>get(s.key,g)).filter(Boolean).map(r=>r[k]));
   if(!vals.length)return null;
   const top=Math.max(...vals),st=step(top),y=v=>T+ih-v/top*ih,x=q=>L+gw*(q+.5);
@@ -59,21 +62,25 @@ window.BV=(function(){
   s+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${esc(def.unit)}</text>`;
   series.forEach((se,j)=>{
    let d="",pen=false;
-   groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${x(q).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
-   if(d)s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+   groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${(x(q)+off(j)).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
+   if(d)s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="3"${o.dodge&&j%2?' stroke-dasharray="9 6"':""} stroke-linejoin="round" stroke-linecap="round"/>`;
   });
   /* points + number labels, one input at a time: a point right under another labels below it, and then the labels of ALL series at this input
      are pushed apart (>= 20 px) so two or three close values never print on top of each other (the "2:69" bug David saw) */
   groups.forEach((g,q)=>{
-   const pts=series.map(se=>{const r=get(se.key,g);return r?{se,r,v:r[k],py:y(r[k])}:null}).filter(Boolean);
+   const pts=series.map((se,j)=>{const r=get(se.key,g);return r?{se,j,r,v:r[k],py:y(r[k])}:null}).filter(Boolean);
+   if(o.dodge)pts.forEach(p=>{p.ly=p.py-12});
+   else{
    pts.forEach(p=>{const close=pts.some(o=>o!==p&&o.py<p.py&&p.py-o.py<26);p.ly=close?p.py+24:p.py-12});
-   let last=-1e9;pts.slice().sort((a,b)=>a.ly-b.ly||a.py-b.py).forEach(p=>{p.ly=Math.max(p.ly,last+20);last=p.ly});
+   let last=-1e9;pts.slice().sort((a,b)=>a.ly-b.ly||a.py-b.py).forEach(p=>{p.ly=Math.max(p.ly,last+20);last=p.ly});}
    pts.forEach(p=>{const red=k==="ttft_s"&&p.r.ttft_over_180s;
-    s+=`<circle cx="${x(q)}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2"><title>${esc(p.se.label)} · ${esc(g.label)}: ${fmt(k,p.v)} ${esc(def.unit)}</title></circle>`;
-    s+=`<text class="bl ${red?"dn":"up2"}" x="${x(q)}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
+    const cx=x(q)+off(p.j),tip=`<title>${esc(p.se.label)} · ${esc(g.label)}: ${fmt(k,p.v)} ${esc(def.unit)}</title>`;
+    s+=o.dodge?mark(SHAPES[p.j%SHAPES.length],cx,p.py,6,p.se.color,tip):`<circle cx="${cx}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
+    s+=`<text class="bl ${red?"dn":"up2"}" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
+   if(o.skip)series.forEach((se,j)=>{if(!get(se.key,g)&&o.skip(se.key,g))s+=`<text class="bl dn" x="${x(q)+off(j)}" y="${y(0)-8}" text-anchor="middle" style="font-size:20px">✕<title>${esc(se.label)} · ${esc(g.label)}: SKIP</title></text>`});
   });
   groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
-  return `<div class="v2-chartwrap"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
+  return `<div class="v2-chartwrap bv-fit"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
  }
  /* Bar | Line | Both switch, remembered per browser; one handler flips every chart block on the page */
  const MODES=[["bar","Bar","長條"],["line","Line","折線"],["both","Both","兩者"]];
@@ -134,7 +141,7 @@ window.BV=(function(){
  /* one metric block: title + (badge · conclusion · legend) + chart + table */
  function block(o){
   const d=o.def,chart=charts(o);
-  const legend=o.series.map(s=>`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
+  const legend=o.series.map((s,j)=>o.dodge?`<span><b style="color:${s.color};font-size:18px;line-height:1">${["●","■","▲","◆"][j%4]}</b>${esc(s.label)}</span>`:`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
   const head=`<h3 class="bv-h">${esc(d.short)}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${o.baseline?"":esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
   if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;

@@ -29,7 +29,7 @@ function cell(ctx,o){
 function pick(list,cur){return list.includes(cur)?cur:list[0]}
 function card(group,items,cur){return items.map(([k,l])=>`<button type="button" role="tab" class="has${String(k)===String(cur)?" on":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
 function controls(){
- NP=nps().includes(NP)?NP:(nps().find(k=>k[0]!=="s")||nps()[0]);   // opens on the first real run, not on Smoke
+ NP=nps().includes(NP)?NP:(nps().includes("5")?"5":(nps().find(k=>k[0]!=="s")||nps()[0]));   // opens on NP5 (David 2026-11-18), else the first real run - never on Smoke
  const os=outs(NP),keys=(os.length>1?[CMP]:[]).concat(os);OUT=keys.includes(OUT)?OUT:keys[0];
  $s("pNp").innerHTML=card("np",nps().map(k=>[k,k[0]==="s"?`Smoke NP${k.slice(1)}`:`NP${k}`]),NP);
  $s("pOut").innerHTML=card("out",keys.map(k=>k===CMP?[CMP,"Compare outputs 輸出比較"]:[k,"Output "+k]),OUT);
@@ -46,7 +46,7 @@ function metrics(){
  const series=cmp?os.map((o,i)=>({key:String(o),label:"Output "+o,sum:"Out "+o,color:OUTCOLORS[i%OUTCOLORS.length]})):SERIES;
  $s("pMetrics").innerHTML=BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:ctxs().map(c=>({label:kn(c),sub:c.toLocaleString("en-US"),c})),series,
   get:(mk,g)=>{const r=cmp?cell(g.c,+mk):cell(g.c);return r&&Number.isFinite(r[k])?{[k]:r[k]}:null},
-  baseline:null,width:w,context:`${model} · Output ${cmp?os.join(" / "):OUT} · ${label}`,message:"",rowHead:"Context",tableNote:"context = 輸入 + 輸出 token"})))+(cmp?statusGrid():"");
+  baseline:null,width:w,dodge:cmp,skip:cmp?(mk,g)=>runs().some(r=>npKey(r)===NP&&r.output===+mk&&r.context===g.c&&r.status!=="PASS"):null,context:`${model} · Output ${cmp?os.join(" / "):OUT} · ${label}`,message:"",rowHead:"Context",tableNote:"context = 輸入 + 輸出 token"})))+(cmp?statusGrid():"");
 }
 /* which output lengths ran at which context: PASS / FAIL / SKIP (reason on hover) - a cell that did not run is marked, not left blank */
 function statusGrid(){
