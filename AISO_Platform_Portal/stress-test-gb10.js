@@ -29,7 +29,7 @@ function cell(ctx,o){
 function pick(list,cur){return list.includes(cur)?cur:list[0]}
 function card(group,items,cur){return items.map(([k,l])=>`<button type="button" role="tab" class="has${String(k)===String(cur)?" on":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
 function controls(){
- NP=nps().includes(NP)?NP:(nps().find(k=>k[0]!=="s")||nps()[0]);   // opens on the first real run, not on Smoke
+ NP=nps().includes(NP)?NP:(nps().includes("5")?"5":(nps().find(k=>k[0]!=="s")||nps()[0]));   // opens on NP5 (David 2026-11-18), else the first real run - never on Smoke
  const os=outs(NP),keys=(os.length>1?[CMP]:[]).concat(os);OUT=keys.includes(OUT)?OUT:keys[0];
  $s("pNp").innerHTML=card("np",nps().map(k=>[k,k[0]==="s"?`Smoke NP${k.slice(1)}`:`NP${k}`]),NP);
  $s("pOut").innerHTML=card("out",keys.map(k=>k===CMP?[CMP,"Compare outputs 輸出比較"]:[k,"Output "+k]),OUT);
