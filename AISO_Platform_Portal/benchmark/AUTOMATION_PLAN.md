@@ -55,3 +55,12 @@ Run spec → **[Step 1] Run orchestration** → runner on the machine → live l
 Fake runner → job → live events → ingest → dataset → export → conclusions, asserting each hand-off. Only then connect the real machines.
 
 Status of each step: see `AUTOMATION_STATUS.md`.
+
+
+## Workflow (2026-11-11) — three big items per machine
+`benchmark/workflow.py` + `workflow.html` (localhost only) + `GET /api/workflow/status?machine=aiso1|pro6000` (read-only).
+1. **Terminal** — connect (SSH key) · answers a command.
+2. **Test benchmark** — GPUs free · smoke test · full benchmark.
+3. **Data** — dataset on the platform · result page.
+Each item shows a status (ok / check / failed / blocked / to do) and one line saying where it is now. Only read-only commands are sent (`true`, `hostname`, `nvidia-smi --query-gpu`). The smoke test and full run are NOT started by this module: they need approval, the test password (run_auth) and a free GPU.
+Status 2026-11-11: AISO1 — Terminal failed (key refused, password only) → benchmark blocked → data ok (40 conditions). PRO6000 — Terminal ok → 1 of 8 GPUs free (shared host), smoke not run → data ok (80 conditions).

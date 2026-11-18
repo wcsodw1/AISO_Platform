@@ -22,3 +22,26 @@
   dd.querySelectorAll(".nd-g").forEach(function(g){var f=g.querySelector(".nd-fly"),chk=function(){g.classList.remove("flip");var r=g.getBoundingClientRect();if(r.right+f.offsetWidth>innerWidth-8)g.classList.add("flip")};g.addEventListener("mouseenter",chk);g.addEventListener("focus",chk)});
  }).catch(function(){});
 })();
+
+/* Phone / tablet: there is no hover. First tap on Home / Benchmark / Research opens its menu (a panel under the header, full width), a second tap follows the link;
+   inside the Research menu a tap on Finished / On process / Wait select opens that list under it (an accordion, nothing opens to the side). Tap outside closes. */
+(function () {
+  const mq = window.matchMedia("(max-width:700px)");
+  const closeAll = () => document.querySelectorAll(".site-nav .nav-menu.open").forEach(m => { m.classList.remove("open"); const b = m.firstElementChild; if (b && b.setAttribute) b.setAttribute("aria-expanded", "false"); });
+  function place(m) { const h = document.querySelector(".site-header, .topbar"), dd = m.querySelector(".nav-dropdown"); if (h && dd) dd.style.top = Math.round(h.getBoundingClientRect().bottom + 6) + "px"; }
+  document.addEventListener("click", e => {
+    if (!mq.matches) return;
+    const g = e.target.closest(".nav-research .nd-g");
+    if (g) { g.classList.toggle("nd-open"); return; }
+    const t = e.target.closest(".site-nav .nav-menu > a, .site-nav .nav-menu > button");
+    if (t) {
+      const m = t.parentElement;
+      if (m.classList.contains("open")) { closeAll(); return; }      // second tap: the link / button works as before
+      e.preventDefault(); e.stopImmediatePropagation();
+      closeAll(); m.classList.add("open"); place(m); t.setAttribute("aria-expanded", "true");
+      return;
+    }
+    if (!e.target.closest(".nav-dropdown")) closeAll();
+  }, true);
+  window.addEventListener("scroll", () => { const m = document.querySelector(".site-nav .nav-menu.open"); if (m) place(m); }, { passive: true });
+})();

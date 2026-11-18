@@ -127,6 +127,8 @@ main.v2 .report-section>header h2,main.v2 .v2-pane>h2,main.v2 .v2-pane h2,main.v
 main.v2 .report-section>header h2 .zh,main.v2 .report-section>header h2 span,main.v2 .v2-pane h2 span,main.v2 .v2-pane h2 small,main.v2 .bv-tps .bv-h .zh-i{color:var(--muted,#9aa6b8)}
 /* same accent title on the remaining benchmark pages (Run page, LMCache, aiDAPTIV) and the parameter sub-titles */
 main h2:not(.mw-big):not(.mw-q),main h3.pt-h{color:var(--gold,#d8c779)}
+/* home category cards (Consumer / Workstation / Server / Data Center): title is plain IVORY, the Chinese pill stays the small gold note (David 2026-11-13 「顏色」) */
+main .category-card-main h2:not(.mw-big):not(.mw-q),main .interface-copy h2:not(.mw-big):not(.mw-q),main .bh-copy h2:not(.mw-big):not(.mw-q){color:var(--ivory,#f3efe5)}
 main h2:not(.mw-big):not(.mw-q) .zh,main h2:not(.mw-big):not(.mw-q) .zhs,main h2:not(.mw-big):not(.mw-q) small,main h3.pt-h .zhs,main h3.pt-h small{color:var(--muted,#9aa6b8)}
 .v2-setup .v2-pane h2,.v2-setup .pt-h{color:var(--gold,#d8c779)}
 .mw-back-s{align-self:flex-start;margin-top:6px;font-size:22px;color:var(--muted);background:none;border:0;cursor:pointer;padding:4px 2px}.mw-back-s small{font-size:16px;margin-left:6px;color:var(--muted)}.mw-back-s:hover{color:var(--gold)}

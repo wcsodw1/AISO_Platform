@@ -61,11 +61,12 @@
     const notes = tight.length ? F("Notes", "備註", `<ul class="kv-list">${tight.map(c => `<li>${esc(lab(c))}<span class="kv-d">full precision: tokens needed were above the KV capacity, vLLM queued the requests and the case still finished.<small class="zhs">全精度：需要的 token 數超過 KV 容量，vLLM 排隊處理，仍跑完。</small></span></li>`).join("")}</ul>`) : "";
     $("gvKv").innerHTML = conclusion(cs)
       + S("Select conditions", "選擇條件", pick([[8192, "Input 8K"], [65536, "Input 64K"], [131072, "Input 128K"]], "input", 'Input <small class="zhs">輸入</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
+      + S("Parameters", "測試參數", `<h3 class="kv-h3">Key parameters<small class="zhs">測試參數</small></h3><dl class="st-params"><div><dt>Machine <small class="zhs">機器</small></dt><dd>GB10 · 128 GB unified memory</dd></div><div><dt>Framework</dt><dd>vLLM</dd></div><div><dt>Weights <small class="zhs">權重</small></dt><dd>bf16 (not quantized)</dd></div>
+        <div><dt>KV cache type <small class="zhs">KV cache 型別（變數）</small></dt><dd>fp8 / full precision (auto)</dd></div><div><dt>NP <small class="zhs">並發</small></dt><dd>1 / 3 / 5</dd></div><div><dt>Input <small class="zhs">輸入</small></dt><dd>8K / 64K / 128K</dd></div>
+        <div><dt>Output <small class="zhs">輸出</small></dt><dd>256 / 512 tokens</dd></div><div><dt>Repeat <small class="zhs">重複</small></dt><dd>1 run per case, not averaged</dd></div></dl>
+        <h3 class="kv-h3">Server parameters<small class="zhs">伺服器參數 · 取自測試結果檔</small></h3><dl class="st-params">${capRow('KV capacity · fp8 <small class="zhs">KV 容量</small>', "fp8")}${capRow('KV capacity · full precision <small class="zhs">KV 容量</small>', "auto")}</dl>`)
       + S("TTFT · TPOT · TPS", "四項指標", legend() + `<div id="kvCharts">${charts}</div>`)
       + F("Values by scenario", `逐情境數值（${cs.length} 組）`, table(cs))
-      + S("Parameters", "測試參數", `<dl class="st-params"><div><dt>Weights <small class="zhs">權重</small></dt><dd>bf16 (not quantized)</dd></div><div><dt>KV cache type <small class="zhs">KV cache 型別</small></dt><dd>fp8 / full precision (auto)</dd></div><div><dt>NP <small class="zhs">並發</small></dt><dd>1 / 3 / 5</dd></div>
-        <div><dt>Input <small class="zhs">輸入</small></dt><dd>8K / 64K / 128K</dd></div><div><dt>Output <small class="zhs">輸出</small></dt><dd>256 / 512 tokens</dd></div><div><dt>Repeat <small class="zhs">重複</small></dt><dd>1 run per case, not averaged</dd></div>
-        ${capRow('KV capacity · fp8 <small class="zhs">KV 容量</small>', "fp8")}${capRow('KV capacity · full precision <small class="zhs">KV 容量</small>', "auto")}</dl>`)
       + notes;
     if (window.HoverFold) HoverFold.init(document);
   }

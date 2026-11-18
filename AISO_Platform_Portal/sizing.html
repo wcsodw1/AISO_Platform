@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="description" content="AISO GPU Sizing — 以 Memory Budget 估算客戶需要的 GPU 與伺服器數量。">
-  <title>AISO — GPU Sizing</title>
+  <title>AISO — Memory Budget</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="site-header.css?v=1.28.4">
+  <link rel="stylesheet" href="site-header.css?v=1.28.9m">
   <script src="access-gate.js?v=1.29.0"></script>
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-33">
-  <link rel="stylesheet" href="sizing.css?v=55">
-  <link rel="stylesheet" href="tesla.css?v=47">
+  <link rel="stylesheet" href="sizing.css?v=57m">
+  <link rel="stylesheet" href="tesla.css?v=50m">
 </head>
 <body>
   <header class="site-header">
@@ -25,19 +25,21 @@
   </header>
 
   <main>
-    <section class="bm-hero"><div><a class="pg-back" href="./"><span aria-hidden="true">←</span> Back to home<span class="bz">返回首頁</span></a><p class="eyebrow">SIZING / MEMORY BUDGET <span class="hint" tabindex="0" role="note">💡<span class="hintbox">先用 Memory Budget 算出「放得下」需要多少 GPU，再用 Throughput 與 HA 決定伺服器台數。結果是容量下限，採購前仍須用實際模型與 workload benchmark 驗證。</span></span></p><h1>GPU<br><em>SIZING</em></h1></div></section>
+    <section class="bm-hero"><div><a class="pg-back" href="./"><span aria-hidden="true">←</span> Back to home<span class="bz">返回首頁</span></a><h1>Memory<br><em>Budget</em></h1><p class="v2-sub">How much GPU memory does it need?<span class="zh-i">需要多少 GPU 記憶體才放得下</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">先用 Memory Budget 算出「放得下」需要多少 GPU，再用 Throughput 與 HA 決定伺服器台數。結果是容量下限，採購前仍須用實際模型與 workload benchmark 驗證。</span></span></p></div></section>
 
     <div class="sz-modes" id="szMode" role="tablist" aria-label="模式"><button type="button" role="tab" class="on" aria-selected="true" data-m="single">Single model<span class="bz">單一模型</span></button><button type="button" role="tab" aria-selected="false" data-m="multi">Multi-model (VIS)<span class="bz">多模型（VIS 情境）</span></button></div>
 
+    <p class="sz-top" id="szTop" aria-live="polite"></p>
     <div id="szSingle">
     <section class="report-section sz-inputs" id="szInputs" aria-label="參數">
       <header><div><p class="section-label">STEP 1</p><h2>Select parameters<span class="bz">參數選擇</span> <span class="hint" tabindex="0" role="note">💡<span class="hintbox">客戶需求：改這裡，下方的計算公式與建議配置會即時連動。必填與選填各自收在下拉，滑鼠移到標籤即展開。</span></span></h2></div></header>
       <div class="sz-params"><div class="sz-in-grid">
-            <fieldset><legend>① Model<span class="bz">模型</span></legend>
+            <fieldset><legend>① Model &amp; precision<span class="bz">模型與精度</span></legend>
               <label><span class="lbl">Model preset<span class="bz">模型預設</span></span><select autocomplete="off" id="szModel"></select></label>
               <label><span class="lbl">Total parameters (B)<span class="bz">總參數量</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">MoE 請填全部專家的總數，不是 active 參數。</span></span></span><input autocomplete="off" id="szParams" type="number" min="1" step="1"></label>
               <label><span class="lbl">Weight precision<span class="bz">權重精度</span></span><select autocomplete="off" id="szWBits"><option value="16">BF16 / FP16（16-bit）</option><option value="8">FP8 / INT8（8-bit）</option><option value="4">4-bit（AWQ/GPTQ/Q4）</option></select></label>
               <label><span class="lbl">Quantization metadata overhead (%)<span class="bz">量化 metadata 加成</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">量化的 scale／zero-point 等額外空間，4-bit 約 10%，BF16 填 0。</span></span></span><input autocomplete="off" id="szMeta" type="number" min="0" max="50" step="1" value="10"></label>
+              <label><span class="lbl">KV cache precision<span class="bz">KV Cache 精度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="szKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
               <label><span class="lbl">Transformer layers<span class="bz">層數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 num_hidden_layers。</span></span></span><input autocomplete="off" id="szLayers" type="number" min="1" step="1"></label>
               <label><span class="lbl">KV heads<span class="bz">KV 頭數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 num_key_value_heads。</span></span></span><input autocomplete="off" id="szKvHeads" type="number" min="1" step="1"></label>
               <label><span class="lbl">Head dimension<span class="bz">頭維度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">config.json 的 head_dim（沒有時為 hidden_size ÷ attention heads）。</span></span></span><input autocomplete="off" id="szHeadDim" type="number" min="1" step="1"></label>
@@ -49,7 +51,6 @@
             </fieldset>
 
             <fieldset><legend>② Context &amp; concurrency<span class="bz">Context 與併發</span></legend>
-              <label><span class="lbl">KV cache precision<span class="bz">KV Cache 精度</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">FP16 改 FP8 可少一半 KV，品質需自行驗證。</span></span></span><select autocomplete="off" id="szKvBits"><option value="16">16-bit（BF16）</option><option value="8">8-bit（FP8）</option></select></label>
               <label><span class="lbl">Context per request (tokens)<span class="bz">每個請求</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">問答 8K、Coding Agent 32K、長文件 128K；KV 約與長度成正比。</span></span></span><input autocomplete="off" id="szContext" type="number" min="256" step="1024" value="32768"></label>
               <label><span class="lbl">Concurrent requests<span class="bz">同時推論請求數</span><span class="hint" tabindex="0" role="note">💡<span class="hintbox">同一瞬間在 GPU 上處理的請求數，不是總人數。</span></span></span><input autocomplete="off" id="szConc" type="number" min="1" step="1" value="20"></label>
               <div class="sz-est"><b>Estimate from users<span class="bz">由人數估算並行請求</span></b>
@@ -193,8 +194,24 @@
   </main>
   <script src="sizing-core.js?v=30"></script>
   <script src="sizing.js?v=31"></script>
+<script>
+/* one-line conclusion at the top (PF_UI: point first): mirrors the visible mode's total + recommended configuration.
+   It writes only when the text changed - otherwise the observer below would re-trigger itself forever. */
+(function(){var top=document.getElementById("szTop");if(!top)return;
+ function vis(el){return el&&el.offsetParent!==null}
+ function show(html){if(top.getAttribute("data-h")!==html){top.setAttribute("data-h",html);top.innerHTML=html}}
+ function upd(){var box=[].slice.call(document.querySelectorAll(".sz-result")).filter(vis)[0];if(!box){show("");return}
+  var b=box.querySelector("b"),j=box.querySelector(".sz-jump"),tot=b?b.textContent.trim():"",rec=j?j.textContent.replace(/[\u2193\s]+/," ").replace(/^\s*Recommended\s*建議配置\s*[·\-–]?\s*/,"").trim():"";
+  if(!tot||tot==="—"){show("");return}
+  show('<b class="sz-k">Conclusion<small class="zhs">結論</small></b><span class="sz-big">Needs <b>'+tot.replace(/</g,"&lt;")+'</b></span>'+(rec&&rec!=="—"?'<span class="sz-big">Suggested <b>'+rec.replace(/</g,"&lt;")+'</b></span>':""))}
+ var t=null;function later(){clearTimeout(t);t=setTimeout(upd,80)}
+ new MutationObserver(later).observe(document.querySelector("main"),{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["hidden"]});
+ document.addEventListener("input",later);document.addEventListener("click",later);later()})();
+</script>
+
   <script src="sizing-multi.js?v=20"></script>
-<script src="research-menu.js?v=1" defer></script>
+<script src="research-menu.js?v=2m" defer></script>
+<script src="update-check.js?v=2" defer></script>
 <script src="ui-min-type.js?v=2" defer></script>
 <script src="update-check.js?v=2" defer></script>
 </body></html>
