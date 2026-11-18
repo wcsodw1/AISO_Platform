@@ -23,8 +23,8 @@
     <p class="kv-fine">Key parameters = what we chose to test; Server parameters = how vLLM was actually started and what it reported.<small class="zhs">Key parameters 是我們設定要測的條件；Server parameters 是 vLLM 實際啟動的設定與回報（取自測試結果檔，非手填）。</small></p>
     <details class="wq-fold" open><summary><h3 class="kv-h3">Key parameters<small class="zhs">要測什麼</small></h3></summary>${keyBody}</details>
     <details class="wq-fold"><summary><h3 class="kv-h3">Server parameters<small class="zhs">vLLM 實際怎麼跑</small></h3></summary>${srvBody}${foot || ""}</details></section>`;
-  const why = e => (/No available memory for the cache blocks/.test(e || "") ? "沒有記憶體可放 KV cache" : "vLLM 啟動失敗");      // ONE sentence on the page; the original error is in the hover
-  const failHtml = x => `<span class="wq-fail" title="${esc(String(x.start_error || "").replace(/~\//g, ""))}">Failed to start<small class="zhs">無法啟動 · ${why(x.start_error)}</small></span>`;
+  const why = (e, n) => (/No available memory for the cache blocks/.test(e || "") ? (n > 0 ? `已嘗試 ${n} 次，` : "") + "vLLM（此版本）在 KV cache 規劃階段報錯；模型已載入，非記憶體不足" : "vLLM 啟動失敗");      // ONE sentence on the page; the original error is in the hover
+  const failHtml = x => `<span class="wq-fail" title="${esc(String(x.start_error || "").replace(/~\//g, ""))}">Failed to start<small class="zhs">無法啟動 · ${why(x.start_error, (x.attempts || []).length)}</small></span>`;
   const NA = '<span class="wq-na">N/A</span>';
   const NOT = '<span class="wq-not">not run yet<small class="zhs">未測</small></span>';
   let BYK = {}, DS = null, WQ = null, view = "wq", sel = { input: 8192, output: 256 };
@@ -108,7 +108,7 @@
     const missing = W.filter(w => !by[w[0]] || !(by[w[0]].rows || []).length).map(w => { const x = by[w[0]]; return `<li><b>${esc(w[1])}</b> ${x && x.start_failed ? failHtml(x): NOT}${x && (x.attempts || []).length > 1 ? ` <small class="zhs">${x.attempts.length} attempts · ${x.attempts.length} 次嘗試</small>` : ""}</li>`; }).join("");
     const srv = W.map(w => by[w[0]]).filter(Boolean);
     const srvDl = `<dl class="st-params">${kv("Max model len", num(b0.max_model_len, 0))}${kv("Max num seqs", esc(b0.max_num_seqs || "—"))}${kv("Max batched tokens", `${num(b0.max_num_batched_tokens, 0)} · chunked prefill ${b0.chunked_prefill ? "ON" : "OFF"}`)}${kv("Prefix cache <small class=\"zhs\">前綴快取</small>", b0.prefix_caching ? "ON" : "OFF")}${kv("GPU memory share <small class=\"zhs\">記憶體比例</small>", esc(b0.gpu_memory_utilization || "—"))}${kv("Execution mode <small class=\"zhs\">執行模式</small>", "Eager (--enforce-eager)")}</dl>`;
-    const byW = srv.map(w => { const st = w.status === "COMPLETE" ? `Done 完成 (${(w.rows || []).filter(r => r.status === "PASS").length}/${cases.length})` : w.status === "PARTIAL" ? `Partial 部分 (${(w.rows || []).length}/${cases.length})` : w.start_failed ? `<span title="${esc(String(w.start_error).replace(/~\//g, ""))}">Failed to start 無法啟動 · ${why(w.start_error)}</span>` : "not run yet 未測";
+    const byW = srv.map(w => { const st = w.status === "COMPLETE" ? `Done 完成 (${(w.rows || []).filter(r => r.status === "PASS").length}/${cases.length})` : w.status === "PARTIAL" ? `Partial 部分 (${(w.rows || []).length}/${cases.length})` : w.start_failed ? `<span title="${esc(String(w.start_error).replace(/~\//g, ""))}">Failed to start 無法啟動 · ${why(w.start_error, (w.attempts || []).length)}</span>` : "not run yet 未測";
       return kv(`${esc(w.label[0])} <small class="zhs">${esc(w.label[1])}</small>`, `${esc(w.model)}<br><small>vLLM extra args: ${esc((w.extra_vllm_args || []).join(" ") || "—")}</small><br><small>KV cache capacity: ${w.kv_cache_tokens ? num(w.kv_cache_tokens, 0) + " tokens (measured)" : "—"}</small><br><small>${st}</small>`); }).join("");
     const srvTab = `<h3 class="kv-h3">By weight precision<small class="zhs">依權重精度：檢查點 · 額外 vLLM 參數 · KV cache 實測容量 · 狀態</small></h3><dl class="st-params wq-by">${byW}</dl>`;
     $("gvWq").innerHTML = conclusion(cases, rowOf)
