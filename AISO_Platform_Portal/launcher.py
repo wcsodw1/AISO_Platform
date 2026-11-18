@@ -22,6 +22,12 @@ from pathlib import Path
 from exporter import export_catalog
 from benchmark.benchmark_runner import JobManager, prepare
 from benchmark import api as machine_bench_api
+from benchmark import workflow as bench_workflow
+from benchmark import executor as bench_executor
+from benchmark import kvcache as bench_kvcache
+from benchmark import gb10_matrix as bench_gb10
+from benchmark.applog import AppLog, should_log
+from benchmark.local_access import is_local_page_request
 from benchmark.terminal import TerminalError, TerminalService
 from benchmark.run_auth import RunAuth, RunAuthError, is_run_request
 from benchmark.litellm_smoke import SmokeError, SmokeService
@@ -35,6 +41,8 @@ BENCHMARK_BEARER_TOKEN = (
 os.environ["AISO_BENCHMARK_TOKEN"] = BENCHMARK_BEARER_TOKEN
 
 BASE = Path(__file__).resolve().parent
+# unit tests start handlers in-process: they must not write into the real backend log
+APPLOG = AppLog(Path(os.environ.get("AISO_LOG_PATH") or (os.devnull if "unittest" in __import__("sys").modules else str(BASE / "logs" / "launcher.log"))))   # backend log (read it with: tail -f AISO_Platform_Portal/logs/launcher.log)
 RUN_AUTH = RunAuth()
 LITELLM_SMOKE = SmokeService(BASE, busy_check=lambda: "A benchmark job is running on this platform" if BENCHMARK_JOBS.snapshot().get("active") else None)
 TERMINAL = TerminalService(BASE.parent)   # shell starts in the repository root; disabled unless AISO_TERMINAL_PASSWORD is set
@@ -184,6 +192,12 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(BASE), **kwargs)
 
+    def log_message(self, fmt, *args):
+        line = '%s - - [%s] %s' % (self.client_address[0], self.log_date_time_string(), fmt % args)
+        if should_log(line):
+            APPLOG.write(line)
+            print(line, flush=True)
+
     def end_headers(self):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "same-origin")
@@ -210,7 +224,7 @@ class Handler(SimpleHTTPRequestHandler):
         return is_loopback_client(self.client_address[0])
 
     def send_machine_bench(self, method, body=None):
-        result = machine_bench_api.handle(method, self.path, body, self.headers.get("Authorization"))
+        result = machine_bench_api.handle(method, self.path, body, ("Bearer " + BENCHMARK_BEARER_TOKEN) if self.local_page() else self.headers.get("Authorization"))
         if result.content_type.startswith("application/json") and not result.filename:
             return self.send_json(result.body, result.status)
         payload = result.body if isinstance(result.body, bytes) else str(result.body).encode()
@@ -223,7 +237,12 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def local_page(self):
+        return is_local_page_request(self.client_address[0], self.headers)
+
     def has_benchmark_token(self):
+        if self.local_page():      # a page opened on this computer needs no token (see benchmark/local_access.py); runs still need the test password
+            return True
         authorization = self.headers.get("Authorization", "")
         scheme, _, supplied = authorization.partition(" ")
         return scheme.lower() == "bearer" and bool(supplied) and hmac.compare_digest(supplied, BENCHMARK_BEARER_TOKEN)
@@ -340,10 +359,30 @@ class Handler(SimpleHTTPRequestHandler):
             return self.handle_litellm("GET", url.path, query=url.query)
         if url.path.startswith("/api/terminal/"):
             return self.handle_terminal("GET")
+        if url.path == "/api/workflow/status":      # read-only status of the benchmark workflow (localhost only, see the /api/ guard above)
+            machine = query.get("machine", [""])[0]
+            if machine not in bench_workflow.MACHINES:
+                return self.send_json({"error": "unknown machine"}, 404)
+            return self.send_json(bench_workflow.check(machine, Path(__file__).resolve().parent))
         if url.path.startswith(("/api/benchmark/", machine_bench_api.PREFIX + "/")) and not self.require_benchmark_auth():
             return
         if url.path.startswith(machine_bench_api.PREFIX + "/"):
             return self.send_machine_bench("GET")
+        if url.path == "/api/benchmark/gb10matrix/status":      # read-only (benchmark/gb10_matrix.py): follows a run started here or by hand
+            result = bench_gb10.status()
+            APPLOG.event("gb10matrix.status", ok=result.get("ok"), error=result.get("error", ""), busy=result.get("busy", ""))
+            return self.send_json(result)
+        if url.path == "/api/benchmark/kvcache/status":      # read-only (benchmark/kvcache.py): installed scripts, campaign state, tables, log tail
+            result = bench_kvcache.status()
+            APPLOG.event("kvcache.status", ok=result.get("ok"), error=result.get("error", ""), busy=result.get("busy", ""))
+            return self.send_json(result)
+        if url.path in ("/api/benchmark/executor/models", "/api/benchmark/executor/status"):   # read-only, fixed allowlist (benchmark/executor.py)
+            machine = query.get("machine", [""])[0]
+            if machine not in bench_executor.CFG:
+                return self.send_json({"error": "This machine has no executor yet."}, 404)
+            result = bench_executor.models(machine) if url.path.endswith("/models") else bench_executor.status(machine)
+            APPLOG.event("executor." + url.path.rsplit("/", 1)[1], machine=machine, ok=result.get("ok"), error=result.get("error", ""), busy=result.get("busy", ""))
+            return self.send_json(result)
         if url.path == "/api/benchmark/jobs":
             return self.send_json(BENCHMARK_JOBS.snapshot())
         if url.path == "/api/scan":
@@ -421,8 +460,12 @@ class Handler(SimpleHTTPRequestHandler):
                 if origin and urllib.parse.urlparse(origin).netloc != self.headers.get("Host"):
                     return self.send_json({"error": "Same-origin request required"}, 403)
                 try:
-                    return self.send_json(RUN_AUTH.issue(self.parse_json_body().get("password", "")))
+                    body = self.parse_json_body()
+                    ticket = RUN_AUTH.issue(body.get("password", ""), body.get("scope") or None)
+                    APPLOG.event("run_auth.ok", scope=ticket.get("scope", "once"))
+                    return self.send_json(ticket)
                 except RunAuthError as error:
+                    APPLOG.event("run_auth.denied", status=error.status, reason=str(error))
                     return self.send_json({"error": str(error)}, error.status)
             if self.path.startswith("/api/litellm/"):
                 return self.handle_litellm("POST", self.path.split("?", 1)[0], origin)
@@ -438,10 +481,48 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json({"error": "Cross-site request blocked"}, 403)
                 if int(self.headers.get("Content-Length", "0")) > 16384:
                     return self.send_json({"error": "Manifest too large"}, 413)
-                if is_run_request("POST", self.path, machine_bench_api.PREFIX) and not RUN_AUTH.consume(self.headers.get("X-Run-Ticket", "")):
+                if is_run_request("POST", self.path, machine_bench_api.PREFIX) and not RUN_AUTH.consume(self.headers.get("X-Run-Ticket", ""), "kvcache" if self.path.split("?", 1)[0].startswith("/api/benchmark/kvcache/") else None):
                     return self.send_json({"error": "Test password required: enter it again to run a benchmark.", "code": "run-password-required"}, 401)
                 if self.path.startswith(machine_bench_api.PREFIX + "/"):
                     return self.send_machine_bench("POST", self.parse_json_body())
+                if self.path == "/api/benchmark/executor/smoke":      # gated above by the one-time test-password ticket
+                    body = self.parse_json_body()
+                    machine = str(body.get("machine", ""))
+                    if machine not in bench_executor.CFG:
+                        return self.send_json({"error": "This machine has no executor yet."}, 404)
+                    picked = body.get("models") or ["all"]
+                    if not isinstance(picked, list) or not all(isinstance(m, str) and re.fullmatch(r"[A-Za-z0-9._-]{1,40}", m) for m in picked):
+                        return self.send_json({"error": "models must be a list of model ids or [\"all\"]"}, 400)
+                    kind = str(body.get("kind") or "smoke")
+                    result = bench_executor.start_run(machine, picked, body.get("params"), kind)
+                    APPLOG.event("executor.smoke_start", machine=machine, kind=kind, models=",".join(picked), params=json.dumps(body.get("params") or {}), ok=result["ok"], detail=result.get("message") or result.get("error", ""))
+                    return self.send_json(result, 202 if result["ok"] else 409)
+                if self.path == "/api/benchmark/gb10matrix/start":      # gated above by the one-time test-password ticket
+                    weights = str(self.parse_json_body().get("weights", ""))
+                    result = bench_gb10.start(weights)
+                    APPLOG.event("gb10matrix.start", weights=weights, ok=result["ok"], detail=result.get("message") or result.get("error", ""))
+                    return self.send_json(result, 202 if result["ok"] else 409)
+                if self.path == "/api/benchmark/gb10matrix/stop":      # gated above by the one-time test-password ticket
+                    result = bench_gb10.stop()
+                    APPLOG.event("gb10matrix.stop", ok=result["ok"], detail=result.get("message") or result.get("error", ""))
+                    return self.send_json(result, 200 if result["ok"] else 409)
+                if self.path == "/api/benchmark/kvcache/start":      # gated above by the one-time test-password ticket
+                    body = self.parse_json_body()
+                    stage, step = str(body.get("stage", "")), str(body.get("step", ""))
+                    result = bench_kvcache.start(stage, step)
+                    APPLOG.event("kvcache.start", stage=stage, step=step, ok=result["ok"], detail=result.get("message") or result.get("error", ""))
+                    return self.send_json(result, 202 if result["ok"] else 409)
+                if self.path == "/api/benchmark/kvcache/stop":      # gated above by the one-time test-password ticket
+                    result = bench_kvcache.stop()
+                    APPLOG.event("kvcache.stop", ok=result["ok"], detail=result.get("message") or result.get("error", ""))
+                    return self.send_json(result, 200 if result["ok"] else 409)
+                if self.path == "/api/benchmark/executor/stop":      # gated above by the one-time test-password ticket
+                    machine = str(self.parse_json_body().get("machine", ""))
+                    if machine not in bench_executor.CFG:
+                        return self.send_json({"error": "This machine has no executor yet."}, 404)
+                    result = bench_executor.stop(machine)
+                    APPLOG.event("executor.stop", machine=machine, ok=result["ok"], detail=result.get("message") or result.get("error", ""))
+                    return self.send_json(result, 200 if result["ok"] else 409)
                 if self.path == "/api/benchmark/preflight":
                     target, _ = prepare(self.parse_json_body())
                     return self.send_json({"ok": True, "runtime": target["runtime"], "format": target["format"], "message": "本機設定檢查通過；開始後仍會驗證服務回傳的 token 數。"})
@@ -507,6 +588,7 @@ def main():
     print(f"[AISO] Local management portal: {url}")
     print(f"[AISO] Data root: {data_root()}")
     print(f"[AISO] Benchmark Bearer Token (loopback only): {BENCHMARK_BEARER_TOKEN}")
+    APPLOG.event("server.start", port=PORT, terminal="enabled" if TERMINAL.enabled() else "disabled", executor=",".join(bench_executor.CFG))
     print("[AISO] Remote access: use an SSH Tunnel; do not expose this port directly.")
     if CONFIG.get("open_browser", True) and not args.no_browser:
         threading.Timer(0.5, lambda: webbrowser.open(url)).start()

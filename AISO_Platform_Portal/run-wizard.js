@@ -20,6 +20,12 @@
   const setVal = (id, v) => { const e = $(id); if (!e) return; e.value = String(v); e.dispatchEvent(new Event("input", { bubbles: true })); e.dispatchEvent(new Event("change", { bubbles: true })); };
   const visible = e => !!e && e.style.display !== "none" && !e.closest("[hidden]");
 
+  let progressHome = null;
+  function parkProgress() {          // the Progress block (run-progress.js) is shown right under the wizard card on the Run step, and parked back before every redraw
+    const n = $("runProgress");
+    if (n && !progressHome) progressHome = { parent: n.parentNode, next: n.nextSibling };
+    if (n && progressHome && n.parentNode !== progressHome.parent) progressHome.parent.insertBefore(n, progressHome.next);
+  }
   function parkConnect() {            // the existing "connect with token" row is moved into the wizard while needed, and parked back before every re-render
     const c = $("liveConnect");
     if (c && connectHome && c.parentNode !== connectHome.parent) connectHome.parent.insertBefore(c, connectHome.next);
@@ -89,9 +95,10 @@
   }
   function kindsHtml() {
     if (!EXEC.on) return "";
+    if (S()[st.step][0] !== "run") return "";      // the test kinds (Smoke / Standard / KV cache) appear only after the engine and the model are chosen - the same on every machine (David 2026-11-18)
     const m = mergedOf(EXEC.status || {}), ids = Object.keys(m), pass = ids.filter(k => m[k].state === "pass").length;
     const k = (kind, n, en, zh, note) => `<li><button type="button" class="rw-kind${EXEC.kind === kind ? " sel" : ""}" data-act="ekind" data-kind="${kind}"><span class="rw-kn">Step ${n}</span><b>${en}<small class="zhs">${zh}</small></b><em>${note}</em></button></li>`;
-    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}</ol>`;
+    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>`;
   }
   // same wording as machine-picker.js on the hub (kept in step by hand: two machines)
   const HUBCARD = {
@@ -108,7 +115,7 @@
     const hub = HUBCARD[machineId()];
     if (hub) {      // the same left side as the Benchmark hub (vendor · scale, name, spec, chips), so going from one screen to the next only changes the right side; the first chip is the machine state instead of "Online"
       const busy = EXEC.status && EXEC.status.busy;
-      const state = WEB && !EXEC.on ? "" : !EXEC.on && !EXEC.loading ? `<span class="mw-chip off">${bi("● Not loaded", "未載入")}</span>` : !EXEC.status ? `<span class="mw-chip wait">${bi("● Checking", "檢查中")}</span>` : busy ? `<span class="mw-chip busy">${bi("● Busy", "忙碌中")}</span>` : EXEC.status.external ? `<span class="mw-chip busy">${bi("● In use by others", "他人使用中")}</span>` : `<span class="mw-chip on">${bi("● Idle", "閒置")}</span>`;
+      const state = WEB && !EXEC.on ? "" : !EXEC.on && !EXEC.loading ? `<span class="mw-chip off">${bi("● Not loaded", "未載入")}</span>` : !EXEC.status ? `<span class="mw-chip wait">${bi("● Checking", "檢查中")}</span>` : busy ? `<span class="mw-chip busy">${bi("● Busy", "忙碌中")}</span>` : EXEC.status.kv_running ? `<span class="mw-chip busy">${bi("● KV cache test running", "KV cache 測試中")}</span>` : EXEC.status.external ? `<span class="mw-chip busy">${bi("● In use by others", "他人使用中")}</span>` : `<span class="mw-chip on">${bi("● Idle", "閒置")}</span>`;
       return `<p class="mw-kicker">${esc(hub.vendor)} · ${bi(hub.tier[0], hub.tier[1])}</p><h2 class="mw-big">${esc(hub.name)}</h2><p class="mw-spec">${esc(hub.spec)}</p>
       <div class="mw-chips">${state}${engChip}${EXEC.needLocal ? `<span class="mw-chip off">${bi("View only", "僅檢視")}</span>` : ""}</div>${kindsHtml()}`;
     }
@@ -134,6 +141,8 @@
         body: opt("xm:all", `<b>${bi("All models", "全部模型")}</b>`, "", pick === "all") +
           EXEC.models.map(m => opt("xm:" + m.id, `<b>${esc(m.id)}</b>`, esc(specText(m.id)), pick === m.id)).join("") };
     }
+    if (EXEC.on && id === "run" && EXEC.kind === "gb10m" && window.GbPanel) { window.GbPanel.init(render); return window.GbPanel.question(); }
+    if (EXEC.on && id === "run" && EXEC.kind === "kvcache" && window.KvPanel) { window.KvPanel.init(render); return window.KvPanel.question(); }
     if (EXEC.on && id === "run" && EXEC.kind === "standard") {
       const s = EXEC.status || {}, busyNow = !!s.busy, f = EXEC.formal || [], total = f.reduce((a, r) => a + r.n, 0), pr = stdParams(), n = stdCases();
       const row = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
@@ -201,7 +210,10 @@
 
   function render() {
     if (!root) return;
-    parkConnect(); parkTerm();
+    // the Run log is moved out and back on every redraw, which resets its scroll to the top: remember where the reader was (at the bottom = keep following the new lines)
+    const tb = $("termBody"), keep = tb && tb.isConnected ? { top: tb.scrollTop, bottom: tb.scrollHeight - tb.scrollTop - tb.clientHeight < 120 } : null;
+    parkConnect(); parkTerm(); parkProgress();
+    document.body.dataset.rwStep = S()[st.step][0];      // run-progress.css shows the Progress / Run log block only on the "run" step (after the model and the test were chosen)
     const q = question(), bars = S().map((_, i) => `<span class="${i <= st.step ? "on" : ""}"></span>`).join("");
     root.innerHTML = `<div class="mw"><div class="mw-stage">${stage()}</div><div class="mw-panel"><div class="mw-bars" aria-label="Step ${st.step + 1} of ${S().length}">${bars}</div>
       ${EXEC.on && EXEC.status && EXEC.status.busy && S()[st.step][0] !== "run" ? benchHtml() : ""}
@@ -212,10 +224,12 @@
     if (q.last) {
       const box = document.createElement("section"); box.className = "rw-term";
       box.innerHTML = `<h3 class="rw-term-h">${bi("Run log", "執行紀錄")}<small class="zhs">${bi("read-only · live progress of the run", "唯讀 · 即時顯示進行狀態")}</small></h3><div id="rwTermSlot"></div>`;
+      const prog = $("runProgress"); if (prog) root.appendChild(prog);      // progress first (where the test is), the Run log under it
       root.appendChild(box);
       // the Terminal here is only the live progress of the run; the password-protected real shell is not part of the Run page (starting a run is already approved by the backend after the test password)
       const log = $("termPanel");
       if (log) { $("rwTermSlot").appendChild(log); log.hidden = false; const hb = log.querySelector("header b"); if (hb) hb.textContent = "RUN LOG"; }
+      if (tb) tb.scrollTop = !keep || keep.bottom ? tb.scrollHeight : keep.top;
       // notices belong in the Terminal, not on the card
       if (!EXEC.hinted && typeof tlog === "function") { EXEC.hinted = true; tlog("The test password is asked first. Nothing runs without it. 開始前會先要求輸入測試密碼，沒有密碼不會執行。"); }
     }
@@ -329,7 +343,7 @@
   }
   // the Terminal block under the card shows the run as it goes (only while a run is going / was started from this page)
   function streamToTerminal(s) {
-    if (!s || !s.ok) return;
+    if (!s || !s.ok || EXEC.kind === "kvcache" || EXEC.kind === "gb10m") return;      // the KV cache panel writes its own log into the Run log
     window.__rwBusy = !!s.busy;
     const ts = document.getElementById("termState"); if (ts) ts.textContent = s.busy ? "running" : (EXEC.watch ? "done" : "idle");
     if (s.busy && !EXEC.watch) EXEC.watch = true;
@@ -493,6 +507,19 @@
     termIds.forEach(id => { const n = $(id); if (n) termHome[id] = { parent: n.parentNode, next: n.nextSibling }; });
     const c = $("liveConnect"); if (c) connectHome = { parent: c.parentNode, next: c.nextSibling };
     document.body.classList.add("rw-on");
+    // Run log: Expand / Collapse (all lines, downward) and Copy (the whole log as text) - David 2026-11-18
+    const grow = $("termGrow"), copy = $("termCopy"), body = $("termBody");
+    if (grow && body) grow.onclick = () => { const big = $("termPanel").classList.toggle("term-big"); grow.setAttribute("aria-expanded", String(big)); grow.innerHTML = big ? 'Collapse<small>收合</small> ▴' : 'Expand<small>展開</small> ▾'; if (big) body.scrollTop = body.scrollHeight; };
+    if (copy && body) copy.onclick = async () => {
+      const text = body.innerText.replace(/\n{2,}/g, "\n").trim();
+      let ok = false;
+      try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {       // the LAN address is not a secure context: fall back to a hidden text box
+        const t = document.createElement("textarea"); t.value = text; t.style.position = "fixed"; t.style.opacity = "0"; document.body.appendChild(t); t.select();
+        try { ok = document.execCommand("copy"); } catch (x) { ok = false; } t.remove();
+      }
+      copy.innerHTML = ok ? 'Copied<small>已複製</small> ✓' : 'Copy failed<small>複製失敗</small>';
+      setTimeout(() => { copy.innerHTML = 'Copy<small>複製</small>'; }, 1800);
+    };
     root.addEventListener("click", e => {
       const o = e.target.closest(".mw-opt"), b = e.target.closest(".mw-back"), a = e.target.closest("[data-act]");
       if (o && o.getAttribute("aria-disabled") !== "true") { pick(o.dataset.id); if (/^(fw|mdl|mode|xm|xt):/.test(o.dataset.id)) st.step = Math.min(S().length - 1, st.step + 1); render(); }
@@ -505,8 +532,14 @@
         else if (act === "ebase") { switchEngine(machineId()); }
         else if (act === "epdd") { EXEC.pdOpen = !EXEC.pdOpen; render(); }
         else if (act === "eparamreset") { resetParams(); render(); }
-        else if (act === "ekind") { EXEC.kind = a.dataset.kind; render(); }
-        else if (act === "erefresh") { loadExecStatus(); }
+        else if (act === "ekind") { const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { if (EXEC.kind === "gb10m" && was !== "gb10m") window.GbPanel.attachTerminal(); else if (EXEC.kind !== "gb10m") window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
+        else if (act === "gbw") { window.GbPanel.setWeights(a.dataset.w); }
+        else if (act === "gbstart") { window.GbPanel.start(); }
+        else if (act === "gbstop") { window.GbPanel.stop(); }
+        else if (act === "erefresh") { if (EXEC.kind === "gb10m" && window.GbPanel) window.GbPanel.load(); loadExecStatus(); if (EXEC.kind === "kvcache" && window.KvPanel) window.KvPanel.load(); }
+        else if (act === "kvstage") { window.KvPanel.setStage(a.dataset.stage); }
+        else if (act === "kvstart") { window.KvPanel.start(a.dataset.stage, a.dataset.step); }
+        else if (act === "kvstop") { window.KvPanel.stop(); }
         else if (act === "eresult") { if (typeof setView === "function") setView("result"); const r = $("rwResults"); if (r) r.scrollIntoView({ behavior: "smooth", block: "start" }); }
         else if (act === "esmoke") { startSmoke(); }
         else if (act === "estandard") { startSmoke(undefined, "standard"); }

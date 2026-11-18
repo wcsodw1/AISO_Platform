@@ -74,7 +74,7 @@
       "machine_id": "aiso1-amd",
       "display_name": "AISO1 - AMD Ryzen AI Max+ 395",
       "vendor": "amd",
-      "gpu_model": "Radeon iGPU (gfx1151)",
+      "gpu_model": "Radeon iGPU",
       "gpu_count": 1,
       "vram_gb": null,
       "ram_gb": null,

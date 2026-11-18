@@ -1,0 +1,42 @@
+{
+ "id": "gb10-platform-smoke",
+ "version": "1.2",
+ "machine": "gb10",
+ "target_alias": "GB10-key",
+ "framework": "vLLM (lmcache/vllm-openai:nightly-2026-11-02)",
+ "protocol": "token-id-stream",
+ "scope": "SMOKE_ONLY_NOT_FORMAL",
+ "runner_file": "benchmark/runners/gb10_platform_smoke.py",
+ "runner_sha256": "8e033f4239713d17a40afa7e691533b1a94a26a1924b3e442156f13207d04a5f",
+ "deploy_to": "~/aiso_platform_runs/gb10_platform_smoke.py",
+ "writes_to": "~/aiso_platform_runs/platform_runs/<run_id>/ (own folder; ~/gb10_benchmark is never touched)",
+ "params": {
+  "np": 1,
+  "input_tokens": 4096,
+  "output_tokens": 1024,
+  "repeat": 1,
+  "port": 18091,
+  "gpu_memory_utilization": 0.7,
+  "kv_cache_dtype": "fp8",
+  "image": "lmcache/vllm-openai:nightly-2026-11-02"
+ },
+ "models": [
+  "gemma26"
+ ],
+ "selection": "all (one model)",
+ "requires": [
+  "no other GB10 benchmark or sb-gb10-* / aiso_platform_gb10_* container",
+  "at least 60 GB MemAvailable (other services stopped by the operator)",
+  "model in the HF cache dir (offline)",
+  "NP x (input + output) above the KV cache vLLM reports is still sent (vLLM queues / preempts); the line carries '(KV tight: need > kv tokens)'"
+ ],
+ "progress_lines": [
+  "LOADING: <model>",
+  "vllm/<model> NP=<n> input=<i> R=<r> PASS|FAIL agg=<tok/s> ttft_ms=<ms> tpot_ms=<ms>",
+  "SMOKE_STATUS: {...}",
+  "STANDARD_PLAN: {...}",
+  "STANDARD_STATUS: {...}"
+ ],
+ "params_adjustable": "np 1-5, input 128-131072, output 16-1024; standard: up to 4 inputs and 4 NPs, repeats 1-3",
+ "kinds": "smoke (default) and standard (--mode standard)"
+}
