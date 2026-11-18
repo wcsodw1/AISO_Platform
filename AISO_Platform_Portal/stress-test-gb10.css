@@ -4,3 +4,10 @@
 .gb-concl .gb-big{font-size:24px;color:var(--ivory,#f3efe5)}.gb-concl .gb-big b{font-weight:800}
 .st .v2-hero .v2-sub{color:var(--gold,#d8c779);font-size:20px}.st .v2-hero .v2-sub .zh-i{color:var(--gold,#d8c779);margin-left:12px}
 @media(max-width:640px){.gb-concl .gb-big{font-size:19px}}
+/* output-length comparison: PASS / FAIL grid under the charts */
+.gb-concl .gb-warn{color:#ff8a76}
+.gb-grid{margin:18px 0 4px;display:grid;gap:8px}.gb-gh,.gb-gr{display:grid;grid-template-columns:150px repeat(auto-fit,minmax(110px,1fr));gap:8px;align-items:center}
+.gb-gh b{color:var(--muted,#9aa6b8);font-size:17px}.gb-gr>b{font-size:18px;color:var(--ivory,#f3efe5)}
+.gb-gr span{padding:8px 12px;border-radius:10px;border:1px solid rgba(244,239,228,.2);font-size:17px;font-weight:700;text-align:center}
+.gb-gr .gb-ok{color:#6fdc9a;border-color:rgba(111,220,154,.5)}.gb-gr .gb-fail{color:#ff6b6b;border-color:rgba(255,107,107,.6);background:rgba(255,107,107,.08)}.gb-gr .gb-skip{color:#e0a040;border-color:rgba(224,160,64,.55)}.gb-gr .gb-na{color:var(--muted,#9aa6b8)}
+@media(max-width:640px){.gb-gh,.gb-gr{grid-template-columns:96px repeat(auto-fit,minmax(70px,1fr))}.gb-gr>b{font-size:16px}.gb-gr span{padding:6px 8px;font-size:15px}}

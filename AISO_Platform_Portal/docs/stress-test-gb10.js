@@ -15,35 +15,47 @@ const runs=()=>DS.gb10_runs;
 const npKey=r=>(r.phase==="smoke"?"s":"")+r.np;
 const nps=()=>[...new Set(runs().map(npKey))].sort((a,b)=>(a[0]==="s")-(b[0]==="s")||parseInt(a.replace("s",""))-parseInt(b.replace("s","")));
 const outs=k=>[...new Set(runs().filter(r=>npKey(r)===k).map(r=>r.output))].sort((a,b)=>a-b);
-const sel=()=>runs().filter(r=>npKey(r)===NP&&r.output===OUT);
+const CMP="cmp";                       // "Compare outputs" view (David 2026-11-18): one chart, one line per output length (64 / 512 / 1024)
+const OUTCOLORS=["#76b900","#8ab4ff","#d8c779","#e0a040"];
+const sel=()=>runs().filter(r=>npKey(r)===NP&&(OUT===CMP||r.output===OUT));
+const okRuns=(o,c)=>runs().filter(r=>npKey(r)===NP&&r.output===o&&r.context===c&&r.status==="PASS");
 const ctxs=()=>[...new Set(sel().map(r=>r.context))].sort((a,b)=>a-b);
 // several repeats of one context are averaged; a context with no PASS shows as empty
-function cell(ctx){
- const ok=sel().filter(r=>r.context===ctx&&r.status==="PASS");if(!ok.length)return null;
+function cell(ctx,o){
+ const ok=(o!=null?okRuns(o,ctx):sel().filter(r=>r.context===ctx&&r.status==="PASS"));if(!ok.length)return null;
  const avg=k=>ok.reduce((s,r)=>s+r[k],0)/ok.length;
  return Object.fromEntries(Object.keys(METRICS).map(k=>[k,avg(k)]));
 }
 function pick(list,cur){return list.includes(cur)?cur:list[0]}
 function card(group,items,cur){return items.map(([k,l])=>`<button type="button" role="tab" class="has${String(k)===String(cur)?" on":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
 function controls(){
- NP=pick(nps(),NP);OUT=pick(outs(NP),OUT);
+ NP=pick(nps(),NP);
+ const os=outs(NP),keys=(os.length>1?[CMP]:[]).concat(os);OUT=keys.includes(OUT)?OUT:keys[0];
  $s("pNp").innerHTML=card("np",nps().map(k=>[k,k[0]==="s"?`Smoke NP${k.slice(1)}`:`NP${k}`]),NP);
- $s("pOut").innerHTML=card("out",outs(NP).map(o=>[o,"Output "+o]),OUT);
- document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.dataset.g==="np")NP=b.dataset.k;else OUT=+b.dataset.k;render()});
+ $s("pOut").innerHTML=card("out",keys.map(k=>k===CMP?[CMP,"Compare outputs 輸出比較"]:[k,"Output "+k]),OUT);
+ document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{if(b.dataset.g==="np")NP=b.dataset.k;else OUT=b.dataset.k===CMP?CMP:+b.dataset.k;render()});
  const kv=[...new Map(sel().filter(r=>r.kv_cache_tokens).map(r=>[r.gpu_memory_utilization,r.kv_cache_tokens])).entries()];
  const bad=sel().filter(r=>r.status!=="PASS");
  $s("pKv").innerHTML=(kv.length?`KV cache capacity<small class="zhs">KV cache 實測容量</small>：${kv.map(([u,t])=>`${t.toLocaleString("en-US")} tokens（memory ${u}）`).join("；")}`:"")
-  +(bad.length?`<br>⚠ ${bad.map(r=>`${kn(r.context)} ${esc(r.status)}${r.error?"："+esc(r.error):""}`).join("；")}`:"");
+  +(bad.length?`<br>⚠ ${bad.map(r=>`${kn(r.context)} · out ${r.output} ${esc(r.status)}${r.error?"："+esc(r.error):""}`).join("；")}`:"");
 }
 function metrics(){
  const w=Math.max(320,($s("pMetrics").clientWidth||860)-100);
- const label=NP[0]==="s"?`Smoke NP${NP.slice(1)}`:`NP${NP}`;
- $s("pMetrics").innerHTML=BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:ctxs().map(c=>({label:kn(c),sub:c.toLocaleString("en-US"),c})),series:SERIES,
-  get:(mk,g)=>{const r=cell(g.c);return r&&Number.isFinite(r[k])?{[k]:r[k]}:null},
-  baseline:null,width:w,context:`${DS.profile.model.split("/").pop()} · Output ${OUT} · ${label}`,message:"",rowHead:"Context",tableNote:"context = 輸入 + 輸出 token"})));
+ const label=NP[0]==="s"?`Smoke NP${NP.slice(1)}`:`NP${NP}`,model=DS.profile.model.split("/").pop();
+ const cmp=OUT===CMP,os=outs(NP);
+ const series=cmp?os.map((o,i)=>({key:String(o),label:"Output "+o,sum:"Out "+o,color:OUTCOLORS[i%OUTCOLORS.length]})):SERIES;
+ $s("pMetrics").innerHTML=BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:ctxs().map(c=>({label:kn(c),sub:c.toLocaleString("en-US"),c})),series,
+  get:(mk,g)=>{const r=cmp?cell(g.c,+mk):cell(g.c);return r&&Number.isFinite(r[k])?{[k]:r[k]}:null},
+  baseline:null,width:w,context:`${model} · Output ${cmp?os.join(" / "):OUT} · ${label}`,message:"",rowHead:"Context",tableNote:"context = 輸入 + 輸出 token"})))+(cmp?statusGrid():"");
+}
+/* which output lengths ran at which context: PASS / FAIL / SKIP (reason on hover) - a cell that did not run is marked, not left blank */
+function statusGrid(){
+ const cs=ctxs(),os=outs(NP);
+ const st=(o,c)=>{const rs=runs().filter(r=>npKey(r)===NP&&r.output===o&&r.context===c);if(!rs.length)return["na","—",""];const ok=rs.some(r=>r.status==="PASS");const bad=rs.find(r=>r.status!=="PASS");return ok?["ok","PASS",""]:[bad.status==="SKIP"?"skip":"fail",bad.status,bad.error||""]};
+ return `<div class="gb-grid" role="table" aria-label="Output length by context"><div class="gb-gh"><span></span>${cs.map(c=>`<b>${kn(c)}</b>`).join("")}</div>${os.map(o=>`<div class="gb-gr"><b>Output ${o}</b>${cs.map(c=>{const[k,t,e]=st(o,c);return `<span class="gb-${k}"${e?` title="${esc(e)}"`:""}>${t==="PASS"?"✓ PASS":t==="—"?"—":"✕ "+esc(t)}</span>`}).join("")}</div>`).join("")}</div>`;
 }
 function requests(){
- const rows=sel().flatMap(r=>r.requests.map((q,i)=>`<tr><td>${kn(r.context)}<small class="bv-sub">r${r.repeat}</small></td><td>#${i+1}</td><td>${esc(q.status)}</td><td>${Number.isFinite(q.ttft_s)?q.ttft_s.toFixed(2):"—"}</td><td>${Number.isFinite(q.tpot_ms)?q.tpot_ms.toFixed(1):"—"}</td><td>${Number.isFinite(q.e2e_s)?q.e2e_s.toFixed(1):"—"}</td></tr>`)).join("");
+ const rows=sel().flatMap(r=>r.requests.map((q,i)=>`<tr><td>${kn(r.context)}<small class="bv-sub">out ${r.output} · r${r.repeat}</small></td><td>#${i+1}</td><td>${esc(q.status)}</td><td>${Number.isFinite(q.ttft_s)?q.ttft_s.toFixed(2):"—"}</td><td>${Number.isFinite(q.tpot_ms)?q.tpot_ms.toFixed(1):"—"}</td><td>${Number.isFinite(q.e2e_s)?q.e2e_s.toFixed(1):"—"}</td></tr>`)).join("");
  $s("pReq").innerHTML=rows?`<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Context</th><th>Request<small>請求</small></th><th>Status</th><th>TTFT<small>s</small></th><th>TPOT<small>ms/token</small></th><th>E2E<small>s</small></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="v2-fine">沒有逐請求資料。</p>';
 }
 function notes(){
@@ -60,10 +72,17 @@ function notes(){
 }
 /* one conclusion on top (PF_UI): the longest context this condition completed, and what a user gets there */
 function concl(){
- const cs=ctxs().filter(c=>cell(c));const el=$s("pConcl");
+ const el=$s("pConcl"),label=NP[0]==="s"?`Smoke NP${NP.slice(1)}`:`NP${NP}`,K='<b class="gb-k">Conclusion<small class="zhs">結論</small></b>';
+ if(OUT===CMP){
+  const os=outs(NP),cs=ctxs(),pass=os.filter(o=>cs.some(c=>cell(c,o))),fails=[];
+  os.forEach(o=>cs.forEach(c=>{const rs=runs().filter(r=>npKey(r)===NP&&r.output===o&&r.context===c);if(rs.length&&!rs.some(r=>r.status==="PASS"))fails.push(`${o} @ ${kn(c)}`)}));
+  const common=cs.filter(c=>pass.length>1&&pass.every(o=>cell(c,o))).pop();let speed="";
+  if(common){const lo=Math.min(...pass),hi=Math.max(...pass),a=cell(common,lo).normalized_tps,b=cell(common,hi).normalized_tps;speed=`<span class="gb-big">At <b>${kn(common)}</b>: out ${lo} <b>${a.toFixed(1)}</b> → out ${hi} <b>${b.toFixed(1)} tok/s</b> per request (${b<a?"−":"+"}${Math.abs((b/a-1)*100).toFixed(0)}%)</span>`}
+  el.innerHTML=K+`<span class="gb-big">${esc(label)} runs output <b>${pass.join(" · ")||"—"}</b></span>`+(fails.length?`<span class="gb-big gb-warn">Cannot run <b>${fails.map(esc).join(" · ")}</b></span>`:"")+speed;return}
+ const cs=ctxs().filter(c=>cell(c));
  if(!cs.length){el.innerHTML="";return}
- const top=Math.max(...cs),m=cell(top),label=NP[0]==="s"?`Smoke NP${NP.slice(1)}`:`NP${NP}`;
- el.innerHTML=`<b class="gb-k">Conclusion<small class="zhs">結論</small></b><span class="gb-big">${esc(label)} runs up to <b>${kn(top)}</b> context</span><span class="gb-big">First word <b>${m.ttft_s.toFixed(1)} s</b></span><span class="gb-big"><b>${m.normalized_tps.toFixed(1)} tok/s</b> per request</span>`;
+ const top=Math.max(...cs),m=cell(top);
+ el.innerHTML=K+`<span class="gb-big">${esc(label)} runs up to <b>${kn(top)}</b> context</span><span class="gb-big">First word <b>${m.ttft_s.toFixed(1)} s</b></span><span class="gb-big"><b>${m.normalized_tps.toFixed(1)} tok/s</b> per request</span>`;
 }
 function render(){controls();concl();metrics();requests();notes()}
 fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
