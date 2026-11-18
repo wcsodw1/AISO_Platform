@@ -13,7 +13,7 @@ const kn=n=>n>=1024?Math.round(n/1024)+"K":String(n);
 let DS,NP,OUT;
 const runs=()=>DS.gb10_runs;
 const npKey=r=>(r.phase==="smoke"?"s":"")+r.np;
-const nps=()=>[...new Set(runs().map(npKey))].sort((a,b)=>(a[0]==="s")-(b[0]==="s")||parseInt(a.replace("s",""))-parseInt(b.replace("s","")));
+const nps=()=>[...new Set(runs().map(npKey))].sort((a,b)=>(b[0]==="s")-(a[0]==="s")||parseInt(a.replace("s",""))-parseInt(b.replace("s","")));   // Smoke first (leftmost), then NP1, NP5 ... in test order
 const outs=k=>[...new Set(runs().filter(r=>npKey(r)===k).map(r=>r.output))].sort((a,b)=>a-b);
 const CMP="cmp";                       // "Compare outputs" view (David 2026-11-18): one chart, one line per output length (64 / 512 / 1024)
 const OUTCOLORS=["#76b900","#8ab4ff","#d8c779","#e0a040"];
@@ -29,7 +29,7 @@ function cell(ctx,o){
 function pick(list,cur){return list.includes(cur)?cur:list[0]}
 function card(group,items,cur){return items.map(([k,l])=>`<button type="button" role="tab" class="has${String(k)===String(cur)?" on":""}" aria-selected="${String(k)===String(cur)}" data-g="${group}" data-k="${k}">${esc(l)}</button>`).join("")}
 function controls(){
- NP=pick(nps(),NP);
+ NP=nps().includes(NP)?NP:(nps().find(k=>k[0]!=="s")||nps()[0]);   // opens on the first real run, not on Smoke
  const os=outs(NP),keys=(os.length>1?[CMP]:[]).concat(os);OUT=keys.includes(OUT)?OUT:keys[0];
  $s("pNp").innerHTML=card("np",nps().map(k=>[k,k[0]==="s"?`Smoke NP${k.slice(1)}`:`NP${k}`]),NP);
  $s("pOut").innerHTML=card("out",keys.map(k=>k===CMP?[CMP,"Compare outputs 輸出比較"]:[k,"Output "+k]),OUT);
@@ -84,7 +84,23 @@ function concl(){
  const top=Math.max(...cs),m=cell(top);
  el.innerHTML=K+`<span class="gb-big">${esc(label)} runs up to <b>${kn(top)}</b> context</span><span class="gb-big">First word <b>${m.ttft_s.toFixed(1)} s</b></span><span class="gb-big"><b>${m.normalized_tps.toFixed(1)} tok/s</b> per request</span>`;
 }
-function render(){controls();concl();metrics();requests();notes()}
+/* What was tested (David 2026-11-18): numbered steps with a status. The test session writes "progress" into the data file ([{label, detail, status: done|ongoing|todo|fail}]);
+   without it the steps are derived from the runs (only done / todo - "ongoing" cannot be known from results alone). */
+function derivedProgress(){
+ const R=runs(),has=f=>R.filter(f),ok=l=>l.some(r=>r.status==="PASS"),ctxs=l=>[...new Set(l.map(r=>r.context))].sort((a,b)=>a-b).map(kn).join(" · "),outsOf=l=>[...new Set(l.map(r=>r.output))].sort((a,b)=>a-b).join(" / ");
+ const sm=has(r=>r.phase==="smoke"),n1=has(r=>r.phase!=="smoke"&&r.np===1),n5=has(r=>r.phase!=="smoke"&&r.np===5);
+ const st=l=>!l.length?"todo":ok(l)&&l.every(r=>r.status==="PASS")?"done":"fail";
+ return [
+  {label:"Preflight",zh:"預檢",detail:"",status:R.length?"done":"todo"},
+  {label:"Smoke",zh:"冒煙",detail:sm.length?`np=${sm[0].np}, input=${ctxs(sm)} context, output=${outsOf(sm)}`:"",status:st(sm)},
+  {label:"Standard NP1",zh:"標準測試",detail:n1.length?`np=1, input=${ctxs(n1)} context, output=${outsOf(n1)}`:"",status:st(n1)},
+  {label:"NP5",zh:"並發 5",detail:n5.length?`np=5, input=${ctxs(n5)} context, output: ${outsOf(n5)}`:"output: 64 / 512 / 1024",status:n5.length?st(n5):"todo"}];
+}
+function progress(){
+ const list=(DS.progress&&DS.progress.length?DS.progress:derivedProgress()),ico={done:"✓",ongoing:"●",todo:"○",fail:"✕"},word={done:"Done 完成",ongoing:"Running 執行中",todo:"To do 待測",fail:"Failed 未通過"};
+ $s("pProgress").innerHTML=list.map((x,i)=>{const st=ico[x.status]?x.status:"todo";return `<li class="gb-st gb-${st}"><i aria-hidden="true">${ico[st]}</i><div><b>${esc(x.label)}${x.zh?`<small class="zhs">${esc(x.zh)}</small>`:""}</b>${x.detail?`<span>${esc(x.detail)}</span>`:""}</div><em>${word[st]}</em></li>`}).join("");
+}
+function render(){controls();concl();metrics();requests();notes();progress()}
 fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
  const e=(reg.single_machines||[]).find(x=>x.machine==="gb10");if(!e)throw new Error("registry: gb10 missing");
  return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})

@@ -1,0 +1,276 @@
+{
+ "title": "GB10 · vLLM",
+ "completed": false,
+ "summary": "Running",
+ "source": "Verbatim lines from the GB10 run logs in ~/gb10_benchmark (smoke.log, np1.log, np5.log, np5_out64.log); home paths shortened to ~/, and the list of other services' containers replaced by one line.",
+ "target": "GB10",
+ "runner": {
+  "file": "GB10_vllm_gemma26_5user_longctx.py",
+  "where": "~/gb10_benchmark on GB10",
+  "sha256": "dc0b5dfc30c7dc39a8329837e29a33e11012128e0628606ad9f45f2b9de3ed65",
+  "command": "cd ~/gb10_benchmark && . ./env.sh\npython3 -u GB10_vllm_gemma26_5user_longctx.py smoke > smoke.log 2>&1\nexport GPU_MEM_UTIL=0.70\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 1 --contexts 131072,262144 --output 1024 > np1.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 1024 > np5.log 2>&1\npython3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 64 > np5_out64.log 2>&1",
+  "note": "Each run starts its own vLLM container (sb-gb10-vllm) and removes it at the end. Results: ~/gb10_benchmark/results/<run>/ (summary.csv, case_*.json)."
+ },
+ "presets": [
+  {
+   "label": "Active runs (read-only)",
+   "command": "ps -eo pid,etime,args | grep -E \"[l]ongctx.py|[g]b10_platform_smoke\" || true"
+  },
+  {
+   "label": "GB10 vLLM containers (read-only)",
+   "command": "docker ps --filter name=gb10 --format \"{{.Names}} {{.Status}}\""
+  },
+  {
+   "label": "Latest summary (read-only)",
+   "command": "cat \"$(ls -t ~/gb10_benchmark/results/*/summary.csv | head -1)\""
+  },
+  {
+   "label": "Free memory (read-only)",
+   "command": "grep MemAvailable /proc/meminfo"
+  }
+ ],
+ "manifest": {
+  "machine": "NVIDIA GB10 · 128 GB 統一記憶體（CPU 與 GPU 共用）",
+  "framework": "vLLM",
+  "image": "lmcache/vllm-openai:nightly-2026-11-02",
+  "model": "google/gemma-4-26B-A4B-it",
+  "kv_cache_dtype": "fp8",
+  "prefix_caching": false,
+  "extra_vllm_args": [
+   "--enforce-eager",
+   "--moe-backend",
+   "triton"
+  ]
+ },
+ "manifest_note": null,
+ "transcript": [
+  {
+   "k": "dim",
+   "t": "# GB10 · vLLM long context · still running (snapshot of the terminal)"
+  },
+  {
+   "k": "cmd",
+   "t": "cd ~/gb10_benchmark && . ./env.sh"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u GB10_vllm_gemma26_5user_longctx.py smoke > smoke.log 2>&1"
+  },
+  {
+   "k": "out",
+   "t": "NVIDIA GB10, [N/A], [N/A]"
+  },
+  {
+   "k": "out",
+   "t": "image: lmcache/vllm-openai:nightly-2026-11-02 sha256:2aefd4be5090"
+  },
+  {
+   "k": "out",
+   "t": "NOTE other services on this machine are not touched"
+  },
+  {
+   "k": "out",
+   "t": "model: google/gemma-4-26B-A4B-it | served name: gemma4-26b | KV cache dtype: fp8"
+  },
+  {
+   "k": "ok",
+   "t": "PREFLIGHT_OK"
+  },
+  {
+   "k": "out",
+   "t": "starting vLLM (own container sb-gb10-vllm) ..."
+  },
+  {
+   "k": "out",
+   "t": "KV cache capacity: 231943 tokens"
+  },
+  {
+   "k": "out",
+   "t": "[8K] building 2 prompts of 8128 input tokens (+64 output = 8192 context)"
+  },
+  {
+   "k": "ok",
+   "t": "[8K] warm-up PASS"
+  },
+  {
+   "k": "out",
+   "t": "[8K] repeat 1/1: 2 requests at once ..."
+  },
+  {
+   "k": "ok",
+   "t": "  PASS  TTFT mean 2.7s (max 3.4s)  TPOT 59.2 ms  TPS aggregate 19.78 / normalized 9.89 tok/s"
+  },
+  {
+   "k": "out",
+   "t": "SUMMARY_CSV ~/gb10_benchmark/results/gemma26_vllm_fp8_smoke_20261118_105415/summary.csv"
+  },
+  {
+   "k": "ok",
+   "t": "DONE ~/gb10_benchmark/results/gemma26_vllm_fp8_smoke_20261118_105415"
+  },
+  {
+   "k": "cmd",
+   "t": "export GPU_MEM_UTIL=0.70"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u GB10_vllm_gemma26_5user_longctx.py run --users 1 --contexts 131072,262144 --output 1024 > np1.log 2>&1"
+  },
+  {
+   "k": "out",
+   "t": "NVIDIA GB10, [N/A], [N/A]"
+  },
+  {
+   "k": "out",
+   "t": "image: lmcache/vllm-openai:nightly-2026-11-02 sha256:2aefd4be5090"
+  },
+  {
+   "k": "out",
+   "t": "model: google/gemma-4-26B-A4B-it | served name: gemma4-26b | KV cache dtype: fp8"
+  },
+  {
+   "k": "ok",
+   "t": "PREFLIGHT_OK"
+  },
+  {
+   "k": "out",
+   "t": "starting vLLM (own container sb-gb10-vllm) ..."
+  },
+  {
+   "k": "out",
+   "t": "KV cache capacity: 970684 tokens"
+  },
+  {
+   "k": "out",
+   "t": "[128K] building 1 prompts of 130048 input tokens (+1024 output = 131072 context)"
+  },
+  {
+   "k": "ok",
+   "t": "[128K] warm-up PASS"
+  },
+  {
+   "k": "out",
+   "t": "[128K] repeat 1/1: 1 requests at once ..."
+  },
+  {
+   "k": "ok",
+   "t": "  PASS  TTFT mean 51.3s (max 51.3s)  TPOT 49.6 ms  TPS aggregate 10.04 / normalized 10.04 tok/s"
+  },
+  {
+   "k": "out",
+   "t": "[256K] building 1 prompts of 261120 input tokens (+1024 output = 262144 context)"
+  },
+  {
+   "k": "ok",
+   "t": "[256K] warm-up PASS"
+  },
+  {
+   "k": "out",
+   "t": "[256K] repeat 1/1: 1 requests at once ..."
+  },
+  {
+   "k": "ok",
+   "t": "  PASS  TTFT mean 167.9s (max 167.9s)  TPOT 55.2 ms  TPS aggregate 4.56 / normalized 4.56 tok/s"
+  },
+  {
+   "k": "out",
+   "t": "SUMMARY_CSV ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_111543/summary.csv"
+  },
+  {
+   "k": "ok",
+   "t": "DONE ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_111543"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 1024 > np5.log 2>&1"
+  },
+  {
+   "k": "out",
+   "t": "NVIDIA GB10, [N/A], [N/A]"
+  },
+  {
+   "k": "out",
+   "t": "image: lmcache/vllm-openai:nightly-2026-11-02 sha256:2aefd4be5090"
+  },
+  {
+   "k": "out",
+   "t": "model: google/gemma-4-26B-A4B-it | served name: gemma4-26b | KV cache dtype: fp8"
+  },
+  {
+   "k": "ok",
+   "t": "PREFLIGHT_OK"
+  },
+  {
+   "k": "out",
+   "t": "starting vLLM (own container sb-gb10-vllm) ..."
+  },
+  {
+   "k": "out",
+   "t": "KV cache capacity: 381198 tokens"
+  },
+  {
+   "k": "out",
+   "t": "[32K] building 5 prompts of 31744 input tokens (+1024 output = 32768 context)"
+  },
+  {
+   "k": "ok",
+   "t": "[32K] warm-up PASS"
+  },
+  {
+   "k": "out",
+   "t": "[32K] repeat 1/1: 5 requests at once ..."
+  },
+  {
+   "k": "ok",
+   "t": "  PASS  TTFT mean 20.5s (max 33.6s)  TPOT 82.5 ms  TPS aggregate 48.63 / normalized 9.73 tok/s"
+  },
+  {
+   "k": "out",
+   "t": "[64K] building 5 prompts of 64512 input tokens (+1024 output = 65536 context)"
+  },
+  {
+   "k": "ok",
+   "t": "[64K] warm-up PASS"
+  },
+  {
+   "k": "out",
+   "t": "[64K] repeat 1/1: 5 requests at once ..."
+  },
+  {
+   "k": "ok",
+   "t": "  PASS  TTFT mean 53.2s (max 88.3s)  TPOT 110.4 ms  TPS aggregate 30.64 / normalized 6.13 tok/s"
+  },
+  {
+   "k": "out",
+   "t": "SUMMARY_CSV ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_112716/summary.csv"
+  },
+  {
+   "k": "ok",
+   "t": "DONE ~/gb10_benchmark/results/gemma26_vllm_fp8_run_20261118_112716"
+  },
+  {
+   "k": "cmd",
+   "t": "python3 -u GB10_vllm_gemma26_5user_longctx.py run --users 5 --contexts 32768,65536 --output 64 > np5_out64.log 2>&1"
+  },
+  {
+   "k": "out",
+   "t": "NVIDIA GB10, [N/A], [N/A]"
+  },
+  {
+   "k": "out",
+   "t": "image: lmcache/vllm-openai:nightly-2026-11-02 sha256:2aefd4be5090"
+  },
+  {
+   "k": "out",
+   "t": "model: google/gemma-4-26B-A4B-it | served name: gemma4-26b | KV cache dtype: fp8"
+  },
+  {
+   "k": "ok",
+   "t": "PREFLIGHT_OK"
+  },
+  {
+   "k": "out",
+   "t": "starting vLLM (own container sb-gb10-vllm) ..."
+  }
+ ]
+}

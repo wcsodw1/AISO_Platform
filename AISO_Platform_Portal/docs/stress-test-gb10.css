@@ -11,3 +11,17 @@
 .gb-gr span{padding:8px 12px;border-radius:10px;border:1px solid rgba(244,239,228,.2);font-size:17px;font-weight:700;text-align:center}
 .gb-gr .gb-ok{color:#6fdc9a;border-color:rgba(111,220,154,.5)}.gb-gr .gb-fail{color:#ff6b6b;border-color:rgba(255,107,107,.6);background:rgba(255,107,107,.08)}.gb-gr .gb-skip{color:#e0a040;border-color:rgba(224,160,64,.55)}.gb-gr .gb-na{color:var(--muted,#9aa6b8)}
 @media(max-width:640px){.gb-gh,.gb-gr{grid-template-columns:96px repeat(auto-fit,minmax(70px,1fr))}.gb-gr>b{font-size:16px}.gb-gr span{padding:6px 8px;font-size:15px}}
+/* What was tested: numbered steps with a status */
+.gb-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.gb-st{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 16px;border:1px solid rgba(244,239,228,.18);border-radius:12px}
+.gb-st i{font-style:normal;font-size:22px;font-weight:800;text-align:center}.gb-st b{font-size:19px;color:var(--ivory,#f3efe5)}.gb-st b .zhs{margin-left:10px}
+.gb-st span{display:block;margin-top:2px;font-size:16px;color:var(--muted,#9aa6b8)}.gb-st em{font-style:normal;font-size:16px;font-weight:700;white-space:nowrap}
+.gb-done i,.gb-done em{color:#6fdc9a}.gb-done{border-color:rgba(111,220,154,.4)}
+.gb-ongoing i,.gb-ongoing em{color:#e0a040}.gb-ongoing{border-color:rgba(224,160,64,.65);background:rgba(224,160,64,.07)}.gb-ongoing i{animation:gbp 1.4s ease-in-out infinite}
+.gb-todo i,.gb-todo em{color:var(--muted,#9aa6b8)}.gb-fail i,.gb-fail em{color:#ff6b6b}.gb-fail{border-color:rgba(255,107,107,.55)}
+@keyframes gbp{50%{opacity:.35}}@media(prefers-reduced-motion:reduce){.gb-ongoing i{animation:none}}
+@media(max-width:640px){.gb-st{grid-template-columns:28px minmax(0,1fr);}.gb-st em{grid-column:2}}
+/* steps look like the AISO1 run screen: round status mark, name, one short line, status word on the right */
+.gb-st{grid-template-columns:34px minmax(0,1fr) auto;padding:12px 18px}
+.gb-st i{width:30px;height:30px;line-height:26px;border:2px solid currentColor;border-radius:50%;font-size:17px}
+.gb-ongoing i{font-size:12px}.gb-st em{font-style:italic;font-weight:500}.gb-st span{font-size:16px}
