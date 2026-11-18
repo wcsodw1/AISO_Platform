@@ -48,7 +48,8 @@
       const r = rowOf(w[0], c), b = rowOf("bf16", c);
       if (!r) { const x = BYK[w[0]]; return x && x.start_failed ? `<td class="wq-f" title="${esc(String(x.start_error || "").replace(/~\//g, ""))}"><b>Failed to start</b><small>無法啟動</small></td>` : `<td class="wq-g">${NOT}</td>`; }
       if (r.status !== "PASS") return `<td class="wq-f" title="${esc(r.error || "")}"><b>FAIL</b><small>${esc((r.error || "no error recorded").slice(0, 60))}</small></td>`;
-      return `<td><b>${num(r[k], m.d)}</b>${w[0] !== "bf16" && b && b.status === "PASS" ? " " + dl(gain(r[k], b[k], m.higher)) : w[0] === "bf16" ? ' <span class="wq-d">baseline</span>' : ""}</td>`;
+      const tw = r.kv_tight ? ` <span class="wq-warn" title="KV cache 容量不足，請求被排隊，TPOT／Decode TPS 不可直接與其他精度比 · KV cache too small, requests queued; TPOT / Decode TPS not comparable">⚠</span>` : "";
+      return `<td><b>${num(r[k], m.d)}</b>${tw}${w[0] !== "bf16" && b && b.status === "PASS" ? " " + dl(gain(r[k], b[k], m.higher)) : w[0] === "bf16" ? ' <span class="wq-d">baseline</span>' : ""}</td>`;
     }).join("")).join("")}</tr>`).join("");
     return `<p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc wq-tab"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
   }

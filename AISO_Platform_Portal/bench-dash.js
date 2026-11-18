@@ -10,7 +10,8 @@ const MET={
  ttft_s:{t:"TTFT 首字延遲",u:"s",tip:"第一個非空文字 SSE 到達時間 − 請求開始；越低越好。≥180 s 仍為 Technical PASS。"},
  tpot_ms:{t:"TPOT 字間隔",u:"ms/token",tip:"1000×(stream_done − first_content)/(輸出 token − 1)；越低越好。"},
  decode_tps:{t:"TPS (Normalized) 每請求輸出速度",u:"tok/s",tip:"Aggregate ÷ NP，每個請求自己的速度；越高越好。"},
- aggregate_tps:{t:"TPS (Aggregate) 合計輸出速度",u:"tok/s",tip:"總輸出 token ÷（最後 stream_done − 第一個 request_start），含首字等待；越高越好。"}};
+ aggregate_tps:{t:"TPS (Aggregate) 合計輸出速度",u:"tok/s",tip:"總輸出 token ÷（最後 stream_done − 第一個 request_start），含首字等待；越高越好。"},
+ decode_only:{t:"TPS (Decode only) 純產生速度",u:"tok/s",tip:"1000 ÷ TPOT（不含首字等待）；越高越好。TPOT 為用戶端量到的估計值。"}};
 let S=null,model=null,hooks=[];
 
 function nice(max){
@@ -37,7 +38,7 @@ function barPanel(k,title,tip,thr){
 }
 
 function tsPanel(k,scen,series,id){
- const m=MET[k],get=(fk,s)=>{const r=(S.DATA[fk]?S.DATA[fk].b60_runs:[]).find(r=>r.model===model&&r.np===s.np&&r.input===s.i);return r?r[k]:null};
+ const m=MET[k],get=(fk,s)=>{const r=(S.DATA[fk]?S.DATA[fk].b60_runs:[]).find(r=>r.model===model&&r.np===s.np&&r.input===s.i);return r?(k==="decode_only"?(r.tpot_ms>0?1000/r.tpot_ms:null):r[k]):null};
  const vals=series.map(s=>scen.map(sc=>get(s.key,sc)));
  const all=vals.flat().filter(Number.isFinite),W=620,H=250,L=52,R=14,T=14,B=52,n=scen.length;
  const {top,ticks}=nice(Math.max(...all,0.0001));
