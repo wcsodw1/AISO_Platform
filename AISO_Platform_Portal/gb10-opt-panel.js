@@ -52,7 +52,7 @@
         <h4 class="kv-h4">${bi(mine ? "Progress (live)" : "Measured results", mine ? "進度（即時）" : "已量測結果")}</h4>${nowBox}${grid(rows, mine, nowKey)}
         <div class="rw-row kv-act"><button type="button" class="mw-next" disabled>${bi("Start", "開始")}</button></div>
         <p class="kv-note">${bi("Starting this from the platform is not wired yet; the numbers above were measured on the machine. Live progress and the Run log appear here whenever one of these runs is going.", "從平台按 Start 還沒接上；上表是機器上實測的結果。這類測試進行時，這裡與 Run log 會即時顯示進度。")}</p>
-        <div class="rw-row"><a class="rw-btn" href="stress-test-gb10.html">${bi("Open the results", "開啟結果頁")} →</a></div>` };
+        <div class="rw-row"><a class="rw-btn" href="stress-test-gb10.html#opt">${bi("Open the results and reports", "開啟結果與報告")} →</a></div>` };
   }
   window.GbOpt = {
     init(render) { G.render = render; loadData(); if (window.GbPanel) window.GbPanel.init(render); },
