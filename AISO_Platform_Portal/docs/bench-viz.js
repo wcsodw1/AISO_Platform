@@ -164,7 +164,7 @@ window.BV=(function(){
    out.push(o);
    if(o.k!=="tpot_ms")return;
    const get=(key,g)=>{const r=o.get(key,g),t=r&&Number(r.tpot_ms);return Number.isFinite(t)&&t>0?{...r,decode_only_tps:1000/t,ttft_over_180s:false}:null};
-   out.push({...o,k:"decode_only_tps",def:DEC_DEF,get,tableNote:(o.tableNote?o.tableNote+"；":"")+"TPOT is client-measured on B60 / AISO1 / GB10 and server-reported for B70 vLLM / SGLang: Decode TPS is not directly comparable across machines. TPOT 定義因機器而異，Decode TPS 不可跨機器直接比較。"});
+   out.push({...o,k:"decode_only_tps",def:DEC_DEF,get,tableNote:(o.tableNote?o.tableNote+"；":"")+"TPOT is client-measured on B60 / AISO1 / GB10 and server-reported for B70 (llama.cpp, vLLM, SGLang): Decode TPS is not directly comparable across machines. TPOT 定義因機器而異，Decode TPS 不可跨機器直接比較。"});
   });
   return out;
  }

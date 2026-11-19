@@ -52,7 +52,7 @@
     </section>
 
     <section class="report-section" id="secMetrics">
-      <header><h2>TTFT · TPOT · TPS<span class="zh" id="zhMetrics">四項指標 · B60 · B70 · AISO1 長條圖</span></h2></header>
+      <header><h2>TTFT · TPOT · TPS<span class="zh" id="zhMetrics">五項指標 · B60 · B70 · AISO1 長條圖</span></h2></header>
       <div id="stMetrics"></div>
     </section>
 
@@ -66,7 +66,7 @@
       <header><h2>完整數值<span class="zh">四個指標 · 含 TPS Aggregate</span></h2></header>
       <p class="v2-fine" id="stTableSub"></p>
       <p class="v2-hint">← 左右滑動 →</p><div class="table-wrap"><table class="v2-table v2-sc" id="stTable"></table></div>
-      <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度；Aggregate = NP × Output tokens ÷ E2E（含首字等待）。只有 NP 與 Input 完全相同的長條才有可比性；B70 為 NP 2 / 4、Input 4K–64K，B60 為 NP 1 / 2 / 5、Input 4K–16K。</p>
+      <p class="v2-fn">TPS Normalized = Aggregate ÷ NP，即每個請求自己的輸出速度；TPS Decode = 1000 ÷ TPOT，每請求純產生速度（不含首字等待）；Aggregate = NP × Output tokens ÷ E2E（含首字等待）。只有 NP 與 Input 完全相同的長條才有可比性；B70 為 NP 2 / 4、Input 4K–64K，B60 為 NP 1 / 2 / 5、Input 4K–16K。</p>
     </section>
 
     <section class="report-section" id="secCfg">
@@ -82,7 +82,7 @@
     </section>
     <p class="v2-fine" id="stErr"></p>
 
-  </main><script src="bench-viz.js?v=25m"></script><script src="repeat-chart.js?v=2"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-compare.js?v=57"></script>
+  </main><script src="bench-viz.js?v=26"></script><script src="repeat-chart.js?v=3"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-compare.js?v=59"></script>
 <script src="debug-notes.js?v=3"></script>
 <script src="research-menu.js?v=2m" defer></script>
 <script src="update-check.js?v=2" defer></script>
