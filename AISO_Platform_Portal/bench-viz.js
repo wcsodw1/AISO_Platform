@@ -148,7 +148,7 @@ window.BV=(function(){
    const bs=bn.replace(/ \((baseline|基準)[^)]*\)/i,"");
    const sg=y=>y.big?`${y.x}×`:`${y.m>=0?"+":"−"}${y.v}%`;
    en=`Best: ${best.n} ${sg(best)} · Worst: ${worstIsBase?`${bs} (baseline)`:`${worst.n} ${sg(worst)}`} · vs ${bs}`;
-   zt=`最佳：${best.n} ${sg(best)}；最差：${worstIsBase?`${bs}（基準）`:`${worst.n} ${sg(worst)}`}；對 ${bs}`;
+   zt=`最佳：${best.n} ${sg(best)}；最差：${worstIsBase?`${bs}（基準）`:`${worst.n} ${sg(worst)}`}；相較 ${bs}`;
   }else{
    const same=ok.every(y=>word(y)===word(ok[0]));
    en=same?`${ok.map(y=>`${y.n} ${num(y)}`).join(" · ")} ${word(ok[0])} than ${bn}`:`${ok.map(y=>`${y.n} ${num(y)} ${word(y)}`).join(" · ")} than ${bn}`;
