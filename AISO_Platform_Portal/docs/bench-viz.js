@@ -11,11 +11,9 @@ window.BV=(function(){
  const sign=v=>v>0.05?"+":v<-0.05?"−":"",cls=v=>v>0.05?"gain":v<-0.05?"loss":"flat";
  const pct=v=>Number.isFinite(v)?`<span class="v2-d ${cls(v)}">${sign(v)}${Math.abs(v).toFixed(1)}%</span>`:'<span class="v2-na">—</span>';
  const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
- // delta vs baseline: +/-x% (same convention as the LMCache page); once the gap passes 100% show a multiple (慢 8.1× / 快 2.3×) instead
+ // delta vs baseline: always +/-x% (David 2026-11-20: percent everywhere, no multiples)
  function dtext(g,ratio,hi){
   if(!Number.isFinite(g))return {t:"—",c:"flat"};
-  if(hi&&g>=100)return {t:`快 ${ratio.toFixed(1)}×`,c:"gain"};
-  if(!hi&&g<=-100)return {t:`慢 ${ratio.toFixed(1)}×`,c:"loss"};
   return {t:`${sign(g)}${Math.abs(g).toFixed(1)}%`,c:cls(g)};
  }
  const dd=(v,b,hi)=>dtext(gain(v,b,hi),v/b,hi);
@@ -140,7 +138,7 @@ window.BV=(function(){
   series.filter(x=>x.key!==baseline).forEach(x=>{
    const ds=groups.map(g=>{const a=get(x.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);
    if(!ds.length){out.push({n:short(x.sum||x.label),none:true});return}
-   const m=mean(ds.map(y=>y[0])),ra=mean(ds.map(y=>y[1])),big=def.higher?m>=100:m<=-100;
+   const m=mean(ds.map(y=>y[0])),ra=mean(ds.map(y=>y[1])),big=false;
    out.push({n:short(x.sum||x.label),m,good:m>=0,big,v:Math.abs(m).toFixed(1),x:ra.toFixed(1)})});
   const bn=short(b.sum||b.label),ok=out.filter(y=>!y.none);if(!ok.length)return "";
   const word=y=>y.big?(def.higher?"faster":"slower"):(y.good?"better":"worse"),zh=y=>y.big?(def.higher?"快":"慢"):(y.good?"好":"差"),num=y=>y.big?`${y.x}×`:`${y.v}%`,znum=y=>y.big?`${y.x} 倍`:`${y.v}%`;
