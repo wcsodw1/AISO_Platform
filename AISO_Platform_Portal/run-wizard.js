@@ -98,7 +98,14 @@
     if (S()[st.step][0] !== "run") return "";      // the test kinds (Smoke / Standard / KV cache) appear only after the engine and the model are chosen - the same on every machine (David 2026-11-18)
     const m = mergedOf(EXEC.status || {}), ids = Object.keys(m), pass = ids.filter(k => m[k].state === "pass").length;
     const k = (kind, n, en, zh, note) => `<li><button type="button" class="rw-kind${EXEC.kind === kind ? " sel" : ""}" data-act="ekind" data-kind="${kind}"><span class="rw-kn">Step ${n}</span><b>${en}<small class="zhs">${zh}</small></b><em>${note}</em></button></li>`;
-    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>`;
+    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>${optKindsHtml()}`;
+  }
+  // GB10: MTP and QAT are a category of their own (not Step 4/5): "Optimization tests"
+  function optKindsHtml() {
+    if (baseOf(EXEC.machine) !== "gb10" || !window.GbOpt) return "";
+    const o = (kind, en, zh) => `<li><button type="button" class="rw-kind${EXEC.kind === kind ? " sel" : ""}" data-act="ekind" data-kind="${kind}"><b>${en}<small class="zhs">${zh}</small></b></button></li>`;
+    const n = window.GbOpt.note();
+    return `<p class="rw-optcat">Optimization tests<small class="zhs">優化測試</small>${n ? ` · ${n}` : ""}</p><ol class="rw-kinds rw-opt">${o("gb10mtp", "MTP test", "MTP 測試")}${o("gb10qat", "QAT test", "QAT 測試")}</ol>`;
   }
   // same wording as machine-picker.js on the hub (kept in step by hand: two machines)
   const HUBCARD = {
@@ -141,6 +148,7 @@
         body: opt("xm:all", `<b>${bi("All models", "全部模型")}</b>`, "", pick === "all") +
           EXEC.models.map(m => opt("xm:" + m.id, `<b>${esc(m.id)}</b>`, esc(specText(m.id)), pick === m.id)).join("") };
     }
+    if (EXEC.on && id === "run" && (EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbOpt) { window.GbOpt.init(render); return window.GbOpt.question(EXEC.kind); }
     if (EXEC.on && id === "run" && EXEC.kind === "gb10m" && window.GbPanel) { window.GbPanel.init(render); return window.GbPanel.question(); }
     if (EXEC.on && id === "run" && EXEC.kind === "kvcache" && window.KvPanel) { window.KvPanel.init(render); return window.KvPanel.question(); }
     if (EXEC.on && id === "run" && EXEC.kind === "standard") {
@@ -343,7 +351,7 @@
   }
   // the Terminal block under the card shows the run as it goes (only while a run is going / was started from this page)
   function streamToTerminal(s) {
-    if (!s || !s.ok || EXEC.kind === "kvcache" || EXEC.kind === "gb10m") return;      // the KV cache panel writes its own log into the Run log
+    if (!s || !s.ok || EXEC.kind === "kvcache" || EXEC.kind === "gb10m" || EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") return;      // the KV cache panel writes its own log into the Run log
     window.__rwBusy = !!s.busy;
     const ts = document.getElementById("termState"); if (ts) ts.textContent = s.busy ? "running" : (EXEC.watch ? "done" : "idle");
     if (s.busy && !EXEC.watch) EXEC.watch = true;
@@ -532,11 +540,12 @@
         else if (act === "ebase") { switchEngine(machineId()); }
         else if (act === "epdd") { EXEC.pdOpen = !EXEC.pdOpen; render(); }
         else if (act === "eparamreset") { resetParams(); render(); }
-        else if (act === "ekind") { const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { if (EXEC.kind === "gb10m" && was !== "gb10m") window.GbPanel.attachTerminal(); else if (EXEC.kind !== "gb10m") window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
+        else if (act === "ekind") { const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { const gbk = k => k === "gb10m" || k === "gb10mtp" || k === "gb10qat"; if (gbk(EXEC.kind) && !gbk(was)) window.GbPanel.attachTerminal(); else if (!gbk(EXEC.kind)) window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
+        else if (act === "gboptsel") { window.GbOpt.select(a.dataset.cat, a.dataset.v); }
         else if (act === "gbw") { window.GbPanel.setWeights(a.dataset.w); }
         else if (act === "gbstart") { window.GbPanel.start(); }
         else if (act === "gbstop") { window.GbPanel.stop(); }
-        else if (act === "erefresh") { if (EXEC.kind === "gb10m" && window.GbPanel) window.GbPanel.load(); loadExecStatus(); if (EXEC.kind === "kvcache" && window.KvPanel) window.KvPanel.load(); }
+        else if (act === "erefresh") { if ((EXEC.kind === "gb10m" || EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbPanel) window.GbPanel.load(); loadExecStatus(); if (EXEC.kind === "kvcache" && window.KvPanel) window.KvPanel.load(); }
         else if (act === "kvstage") { window.KvPanel.setStage(a.dataset.stage); }
         else if (act === "kvstart") { window.KvPanel.start(a.dataset.stage, a.dataset.step); }
         else if (act === "kvstop") { window.KvPanel.stop(); }

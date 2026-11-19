@@ -112,7 +112,7 @@
   }
   window.GbPanel = {
     init(render) { G.render = render; if (!G.status || Date.now() - G.at > 15000) load(); },
-    question, load, start, stop,
+    question, load, start, stop, status() { return G.status; },
     setWeights(w) { if (W[w]) { G.weights = w; if (G.render) G.render(); } },
     attachTerminal() { G.term = true; G.seenLog = null; G.vLast = null; const c = document.getElementById("termClear"); if (c) c.click(); feed(); },
     detachTerminal() { G.term = false; },
