@@ -5,7 +5,8 @@ const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false},
  decode_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token",unit:"tok/s",higher:true},
- aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};
+ aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};   // TPS (Decode only) chart is added by bench-viz withDecode(); dec_tps is used by the tables
+const isNew=r=>!!(r&&r.campaign);   // NP4: rebuilt environment, batch 1024 (not V4-equivalent)
 const FWCOL={sglang:"#4fd1b0",vllm:"#8f9bff",llamacpp:"#ff8a4c"};
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
@@ -21,16 +22,16 @@ const over=d=>d.b60_runs.filter(r=>r.ttft_over_180s).map(r=>`${r.model} NP${r.np
 const VERDICT={
  sglang:d=>`${d.b60_runs.length}/${d.b60_runs.length} PASS（V4）：Gemma 4 31B 與 Laguna XS 2.1 各 9/9<span class="zh-i">Gemma 4 26B 跳過（SKIP_SOURCE）；Nemotron 啟動失敗（STARTUP_FAIL）${over(d)?`；TTFT ≥ 180 秒以紅字標示（${over(d)}），仍為 Technical PASS`:""}</span>`,
  vllm:d=>`${d.b60_runs.length}/${d.b60_runs.length} PASS（V4）：Gemma 4 31B 與 Laguna XS 2.1 各 9/9<span class="zh-i">Gemma 4 26B 跳過（SKIP_SOURCE）；Nemotron 啟動失敗（STARTUP_FAIL）；TTFT ≥ 180 秒的情境以紅字標示（${over(d)}），仍為 Technical PASS</span>`,
- llamacpp:d=>`${d.b60_runs.length}/${d.b60_runs.length} PASS（V4）：四個模型各 9/9<span class="zh-i">GGUF 量化（Q4_0 / Q4_K_M / UD-Q4_K_M）${over(d)?`；TTFT ≥ 180 秒以紅字標示（${over(d)}），仍為 Technical PASS`:""}</span>`};
+ llamacpp:d=>{const v4=d.b60_runs.filter(r=>!isNew(r)).length,n4=d.b60_runs.filter(isNew).length;return `${d.b60_runs.length}/${d.b60_runs.length} PASS：V4 ${v4}/${v4}${n4?` + NP4 ${n4}/${n4}`:""}<span class="zh-i">GGUF 量化（Q4_0 / Q4_K_M / UD-Q4_K_M）${n4?"；NP4 為 2026-11-19 重建環境補測（batch 1024、Flash Attention off），非 V4 等價，表中標 §":""}${over(d)?`；TTFT ≥ 180 秒以紅字標示（${over(d)}），仍為 Technical PASS`:""}</span>`}};
 
 function renderSetup(){
  const p=D.profile,r=(k,v)=>`<div><dt>${k}</dt><dd>${v}</dd></div>`,fw=fwLabel(FW);
  const par=D.model_parity.length?D.model_parity.map(m=>`${esc(m.name)}<small>${m.repo!=="UNVERIFIED"?esc(m.repo)+" · "+esc(m.format):"來源／量化待核"}</small>`).join(""):"尚無已核實的模型來源";
- const knob=FW==="vllm"?r("Max Num Seqs / Prefill / Memory / Prefix Cache",`${p.max_num_seqs} / ${tok(p.prefill_tokens)} / ${p.memory_fraction} / ${p.prefix_cache}`):FW==="sglang"?r("Chunked Prefill / Max Running / Memory / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.memory_fraction} / ${p.radix_cache}`):FW==="llamacpp"?r("Slots / KV / Batch / uBatch",`${p.slots} slots × ${tok(p.per_slot_context)} / ${p.kv_cache_type} / ${tok(p.batch)} / ${p.ubatch}<small>總 KV：NP1 ${tok(p.total_kv_by_np["1"])} · NP2 ${tok(p.total_kv_by_np["2"])} · NP5 ${tok(p.total_kv_by_np["5"])} · Prefix Cache ${p.prefix_cache}</small>`):"";
+ const knob=FW==="vllm"?r("Max Num Seqs / Prefill / Memory / Prefix Cache",`${p.max_num_seqs} / ${tok(p.prefill_tokens)} / ${p.memory_fraction} / ${p.prefix_cache}`):FW==="sglang"?r("Chunked Prefill / Max Running / Memory / Radix Cache",`${tok(p.chunked_prefill)} / ${p.max_running} / ${p.memory_fraction} / ${p.radix_cache}`):FW==="llamacpp"?r("Slots / KV / Batch / uBatch",`${p.slots} slots × ${tok(p.per_slot_context)} / ${p.kv_cache_type} / ${tok(p.batch)} / ${p.ubatch}<small>總 KV：${Object.keys(p.total_kv_by_np).sort((a,b)=>a-b).map(n=>`NP${n} ${tok(p.total_kv_by_np[n])}`).join(" · ")} · Prefix Cache ${p.prefix_cache}</small>`)+(p.by_np?Object.entries(p.by_np).map(([n,o])=>r(`NP${n} § 重建環境`,`Batch ${tok(o.batch)} / uBatch ${o.ubatch} / Flash Attention ${o.flash_attention}<small>${esc(o.note||"")}</small>`)).join(""):""):"";
  const params=`<dl class="v2-params">${r("Machine 機器",`Intel B60 · ${p.vram_total_gb} GB<small>${p.vram_layout.replace(" x "," × ")}（2 張）· 4 GPU devices · ${p.tp?"TP "+p.tp:"layer split"}</small>`)}${r("Framework 框架",`${esc(p.framework)}<small>${p.runtime==="UNVERIFIED"?"Runtime 映像待核":esc(p.runtime)}</small>`)}${r("Model 模型",par)}${r("Context 上限",`${tok(p.context_length)} tokens`)}${r("Input 輸入",`${p.input_tokens.map(tok).join(" / ")} tokens<small class="v2-approx">約等於 4K / 8K / 16K</small>`)}${r("Output 輸出",`${tok(p.output_tokens)} tokens`)}${r("NP 並發",p.np.join(" / "))}${r("Repeat 重複",`${p.repeat} 次取平均`)}${knob}</dl>`;
  $s("stSetup").innerHTML=`<section class="v2-pane"><h2>Purpose<span>實驗目的</span></h2><p class="v2-goal">量測 <b>Intel B60</b> 在 <b>SGLang、vLLM、llama.cpp</b> 下四個模型的 <b>TTFT、TPOT、TPS</b>。各框架分開呈現，不與 B70、AISO1 混合。</p></section>
  <section class="v2-pane"><h2>Baseline &amp; Fixed Parameters<span>測試基準及固定參數</span></h2>
- <p class="v2-goal">每情境跑 <b>${p.repeat} 次取平均</b>，參數全部固定。<b>TPS (Normalized)</b> = Aggregate ÷ NP；<b>TPS (Aggregate)</b> = 總輸出 token ÷ 同批時間（含首字等待）。框架比對以 <b>SGLang</b> 為基準，綠 + ／紅 − 為相對差異。</p>
+ <p class="v2-goal">每情境跑 <b>${p.repeat} 次取平均</b>，參數全部固定。<b>TPS (Normalized)</b> = Aggregate ÷ NP；<b>TPS (Aggregate)</b> = 總輸出 token ÷ 同批時間（含首字等待）；<b>TPS (Decode)</b> = 1000 ÷ TPOT，每請求純產生速度。框架比對以 <b>SGLang</b> 為基準，綠 + ／紅 − 為相對差異。</p>
  ${params}<p class="v2-fn">下方參數為目前選取的框架（${fw}）；本頁只呈現 B60 自己的數據，與 B70、AISO1 同框架、同模型的並排比對請見「B60 vs B70 vs AISO1」。</p></section>`;
  const nr=(D.not_run||[]).map(x=>`${(REG.models.find(m=>m.key===x.model)||{name:x.model}).name}：${x.reason}`).join("；");
  $s("stNote").textContent=[`B60 ${fw} 實測截至 ${D.evidence_until}。`,nr?"未有成績："+nr+"。":"",...(D.protocol_notes||[])].filter(Boolean).join(" ");
@@ -58,12 +59,12 @@ function renderFull(){
  const body=REG.models.map(m=>{
   const rs=D.b60_runs.filter(r=>r.model===m.key);
   if(!rs.length){const nr=(D.not_run||[]).find(x=>x.model===m.key);
-   return `<tr><td class="st-model">${esc(m.name)}</td><td colspan="7" class="st-pending"><span class="st-wait">${esc(nr?nr.reason:"待測")}</span></td></tr>`}
+   return `<tr><td class="st-model">${esc(m.name)}</td><td colspan="8" class="st-pending"><span class="st-wait">${esc(nr?nr.reason:"待測")}</span></td></tr>`}
   return cases.map(([np,i],q)=>{const r=row(m.key,i,np);
-   return `<tr>${q===0?`<td rowspan="${cases.length}" class="st-model">${esc(m.name)}<small>${esc(rs[0].format||"")}</small></td>`:""}<td>NP${np}</td><td>${kn(i)}</td>${cell(r,"ttft_s",m.key,np,i)}${cell(r,"tpot_ms",m.key,np,i)}${cell(r,"decode_tps",m.key,np,i)}<td>${r?num(r.aggregate_tps,1)+(r.retry?" †":"")+(r.consistency_note?" ‡":""):"—"}</td><td>${r?(r.retry?"† 重跑":"V4"):"—"}</td></tr>`}).join("")}).join("");
+   return `<tr>${q===0?`<td rowspan="${cases.length}" class="st-model">${esc(m.name)}<small>${esc(rs[0].format||"")}</small></td>`:""}<td>NP${np}</td><td>${kn(i)}</td>${cell(r,"ttft_s",m.key,np,i)}${cell(r,"tpot_ms",m.key,np,i)}${cell(r,"decode_tps",m.key,np,i)}<td${r&&r.consistency_note?` title="${esc(r.consistency_note)}"`:""}>${r?num(r.aggregate_tps,1)+(r.retry?" †":"")+(r.consistency_note?" ‡":""):"—"}</td>${cell(r,"dec_tps",m.key,np,i)}<td${r&&r.variance_note?` title="${esc(r.variance_note)}"`:""}>${r?(r.retry?"† 重跑":isNew(r)?"§ NP4 重建"+(r.variance_note?" ⚠":""):"V4"):"—"}</td></tr>`}).join("")}).join("");
  const n=D.b60_runs.length,tot=REG.models.length*cases.length;
  $s("stFullSub").textContent=`${fwLabel(FW)} · 已完成 ${n} / ${tot} 個情境（${new Set(D.b60_runs.map(r=>r.model)).size} / ${REG.models.length} 個模型）· 每情境 ${p.repeat} 次平均`;
- $s("stFull").innerHTML=`<thead><tr><th>Model</th><th>NP</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS (Normalized)<small>tok/s / 請求</small></th><th class="l">TPS (Aggregate)<small>tok/s</small></th><th>來源</th></tr></thead><tbody>${body}</tbody>`;
+ $s("stFull").innerHTML=`<thead><tr><th>Model</th><th>NP</th><th>Input</th><th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS (Normalized)<small>tok/s / 請求</small></th><th class="l">TPS (Aggregate)<small>tok/s</small></th><th class="l">TPS (Decode)<small>tok/s / 請求</small></th><th>來源</th></tr></thead><tbody>${body}</tbody>`;
 }
 // ---- 同參數、不同框架比對（同機器、同模型、同 NP / Input）：比的是框架，不是模型 ----
 const fwHas=(fk,mk)=>DATA[fk]&&DATA[fk].b60_runs.some(r=>r.model===mk&&r.np===NP);
@@ -75,7 +76,7 @@ function renderFw(){
  if(!ms.length){el.innerHTML=`<p class="v2-fine">NP${NP} 尚無任何框架的成績。</p>`;return}
  el.innerHTML=ms.map(m=>{
   const fws=FWS().filter(f=>fwHas(f.key,m.key)),base=fws[0].key,miss=FWS().filter(f=>!fws.includes(f)).map(f=>f.label);
-  const lead=fws.length>1?`以 ${esc(fws[0].label)} 為基準`:`目前只有 ${esc(fws[0].label)} 有成績，其他框架登錄後自動並排`;
+  const lead=(fws.length>1?`以 ${esc(fws[0].label)} 為基準`:`目前只有 ${esc(fws[0].label)} 有成績，其他框架登錄後自動並排`)+(fws.some(f=>isNew(row(m.key,4096,NP,f.key)))?"；§ 重建環境 batch 1024，非 V4 等價":"");
   return `<div class="bv-model"><h3 class="bv-mh">${esc(m.name)}<span class="zh-i">NP${NP} · 同機器 B60 · 同 Input／Output／Repeat · ${lead}${miss.length?`；${esc(miss.join("、"))} 尚無成績`:""}</span></h3>`+
   BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:grp(),series:fws.map(f=>({key:f.key,label:f.label,color:FWCOL[f.key]})),get:(fk,g)=>row(m.key,g.i,NP,fk),baseline:fws.length>1?base:null,width:w,context:`${m.name} · NP${NP}`,
    message:fws.length>1?"":`${fws[0].label} 的數值；第二個框架有同條件成績後才會計算差異`,
@@ -89,10 +90,11 @@ function renderRetry(){
 }
 Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("registry");return r.json()})]).then(([reg])=>{
  REG=reg;
- return Promise.all(reg.datasets.filter(x=>x.machine==="b60").map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{DATA[x.framework]=d})));
+ return Promise.all(reg.datasets.filter(x=>x.machine==="b60").map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{d.b60_runs=d.b60_runs.map(r=>({...r,dec_tps:r.tpot_ms>0?1000/r.tpot_ms:null}));DATA[x.framework]=d})));
 }).then(()=>{
  renderRetry();
- BD.init({el:$s("secDash"),REG,DATA});
+ const V4={};Object.entries(DATA).forEach(([k,d])=>{V4[k]={...d,b60_runs:d.b60_runs.filter(r=>!isNew(r)),profile:{...d.profile,np:d.profile.np.filter(n=>!(d.profile.by_np||{})[n])}}});   // dashboard stays V4-only
+ BD.init({el:$s("secDash"),REG,DATA:V4});
  setFw("sglang");
  window.addEventListener("resize",()=>{clearTimeout(window.__rz);window.__rz=setTimeout(renderFw,150)});
 }).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
