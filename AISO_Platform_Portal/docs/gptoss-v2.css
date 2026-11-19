@@ -454,3 +454,6 @@ h1 .zhs,h2 .zhs,h3 .zhs{font-size:17px}
 .v2-chartwrap.bv-fit{overflow:visible}.bv-block .v2-chart,.bv-block .bv-foot{max-width:830px;margin-left:auto;margin-right:auto}
 
 .bv-mean{margin:2px 0 8px;font-size:16px;line-height:1.5;color:var(--muted,#98a0ad)}.bv-mean small{margin-left:8px;font-size:16px}
+
+/* "Full values" button: always at the RIGHT end of the chart (David 2026-11-19) - also when it wraps under a long summary line and on phones (auto margin works in the row and the column layout) */
+.bv-foot .bv-more{margin-left:auto}
