@@ -1,0 +1,92 @@
+{
+ "at": "20:02:40",
+ "lang": "en",
+ "input": {
+  "lang": "en",
+  "title": "Night market",
+  "url": "https://en.wikipedia.org/wiki/Night_market",
+  "license": "CC BY-SA 4.0",
+  "sizes": [
+   {
+    "key": "short",
+    "tokens": 70,
+    "chars": 200,
+    "preview": "Night markets or night bazaars (Chinese: 夜市) are s … han more businesslike day markets."
+   },
+   {
+    "key": "mid",
+    "tokens": 87,
+    "chars": 311,
+    "preview": "Night markets or night bazaars (Chinese: 夜市) are s … with overseas Chinese populations."
+   },
+   {
+    "key": "long",
+    "tokens": 995,
+    "chars": 4785,
+    "preview": "Night markets or night bazaars (Chinese: 夜市) are s … . It hosts as many as 100 vendors."
+   }
+  ]
+ },
+ "sizes": [
+  {
+   "key": "short",
+   "tok": 70,
+   "chars": 200,
+   "a": {
+    "ttft_s": 2.685,
+    "tpot_ms": 25,
+    "agg_tps": 73.8,
+    "norm_tps": 18.5,
+    "ok": true
+   },
+   "ab": {
+    "ttft_s": 0.318,
+    "tpot_ms": 16.3,
+    "agg_tps": 148.1,
+    "norm_tps": 37,
+    "ok": true
+   }
+  },
+  {
+   "key": "mid",
+   "tok": 87,
+   "chars": 311,
+   "a": {
+    "ttft_s": 2.602,
+    "tpot_ms": 24.8,
+    "agg_tps": 72.6,
+    "norm_tps": 18.1,
+    "ok": true
+   },
+   "ab": {
+    "ttft_s": 0.535,
+    "tpot_ms": 13.1,
+    "agg_tps": 134.6,
+    "norm_tps": 33.7,
+    "ok": true
+   }
+  },
+  {
+   "key": "long",
+   "tok": 995,
+   "chars": 4785,
+   "a": {
+    "ttft_s": 4.989,
+    "tpot_ms": 31.8,
+    "agg_tps": 47.9,
+    "norm_tps": 12,
+    "ok": true
+   },
+   "ab": {
+    "ttft_s": 1.571,
+    "tpot_ms": 18,
+    "agg_tps": 95.2,
+    "norm_tps": 23.8,
+    "ok": true
+   }
+  }
+ ],
+ "gain": 1.95,
+ "pass": true,
+ "note": "Published copy of the newest local smoke test (AISO1 + PRO6000 through LiteLLM). Shown when this browser has no run of its own."
+}
