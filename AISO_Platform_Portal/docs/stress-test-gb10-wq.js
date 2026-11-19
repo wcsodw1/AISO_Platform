@@ -8,7 +8,7 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const num = (v, d) => (Number.isFinite(v) ? v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
   const kn = i => `${Math.round(i / 1024)}K`;
-  const W = [["bf16", "bf16", "bf16（原模型，不量化）", "#f2f2f2"], ["fp8", "fp8 online", "fp8 線上量化", "#ff8a4c"], ["fp8pre", "fp8 pre-quantized", "fp8 預量化", "#4fd1b0"], ["nvfp4", "NVFP4", "NVFP4（NVIDIA 官方）", "#ffd21f"], ["int8", "int8 AWQ", "int8 AWQ", "#e07a8f"], ["int4", "int4 AWQ", "int4 AWQ", "#5cc8d6"]];
+  const W = [["bf16", "bf16", "bf16（原模型，不量化）", "#f2f2f2"], ["fp8", "fp8 online", "fp8 線上量化", "#ff8a4c"], ["fp8pre", "fp8 pre-quantized", "fp8 預量化", "#4fd1b0"], ["nvfp4", "NVFP4 · KV fp8", "NVFP4（KV fp8）", "#ffd21f"], ["nvfp4kv", "NVFP4 · NVFP4 KV", "NVFP4 + NVFP4 KV cache", "#b48cff"], ["int8", "int8 AWQ", "int8 AWQ", "#e07a8f"], ["int4", "int4 AWQ", "int4 AWQ", "#5cc8d6"]];
   const M = { ttft_s: { short: "TTFT", zh: "首字延遲", unit: "s", higher: false, d: 2 }, tpot_ms: { short: "TPOT", zh: "每個字的間隔", unit: "ms/token", higher: false, d: 1 },
     decode_only_tps: { short: "TPS (Decode only)", zh: "純產生速度（不含首字等待）= 1000 ÷ TPOT，每請求", unit: "tok/s", higher: true, d: 1 },
     normalized_tps: { short: "TPS (Normalized)", zh: "每請求每秒輸出 token", unit: "tok/s", higher: true, d: 2 }, aggregate_tps: { short: "TPS (Aggregate)", zh: "NP 個請求合計每秒輸出 token", unit: "tok/s", higher: true, d: 2 } };

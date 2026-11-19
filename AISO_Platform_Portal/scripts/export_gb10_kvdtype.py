@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/benchmark-gb10/AISO_GB10_vLLM_gemma26_kvdtype.json"
 WQ = ROOT / "data/benchmark-gb10/AISO_GB10_vLLM_gemma26_weightquant.json"
 SSH = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "GB10-key"]
-REMOTE = r'''cd ~/gb10_benchmark/results && for d in $(ls -d *kvauto_*/ *nvfp4kv_*/); do d=${d%/}; echo "=== $d"; cat $d/parameters.json 2>/dev/null | python3 -c "import json,sys;d=json.load(sys.stdin);print('PARAMS '+json.dumps({k:d.get(k) for k in ('kv_cache_dtype','weights','gpu_memory_utilization','max_model_len','max_num_seqs','max_num_batched_tokens','extra_vllm_args','image')}))"; echo "--- csv"; cat $d/summary.csv 2>/dev/null; done'''
+REMOTE = r'''cd ~/gb10_benchmark/results && for d in $(ls -d *kvauto_*/ *fp8_nvfp4kv_in8k_*/ *fp8_nvfp4kv_ryan_*/); do d=${d%/}; echo "=== $d"; cat $d/parameters.json 2>/dev/null | python3 -c "import json,sys;d=json.load(sys.stdin);print('PARAMS '+json.dumps({k:d.get(k) for k in ('kv_cache_dtype','weights','gpu_memory_utilization','max_model_len','max_num_seqs','max_num_batched_tokens','extra_vllm_args','image')}))"; echo "--- csv"; cat $d/summary.csv 2>/dev/null; done'''
 
 
 def num(v):
@@ -73,6 +73,20 @@ def main():
             "note": "Cases are always sent, never skipped from a KV estimate; a case above the KV capacity is marked kv_tight and shows what vLLM really did (queued). Each family compares one weights precision with KV fp8 against the other KV type.",
             "kv_types": families[0]["kv_types"] if families else [], "families": families}
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n")
+    # the weight-precision page lists NVFP4 weights with KV fp8 and with NVFP4 KV as two separate entries: add the second one from the same measured rows
+    nf = next((f for f in families if f["weights_key"] == "nvfp4"), None)
+    base = next((x for x in wq["weights"] if x["key"] == "nvfp4"), None)
+    if nf and base:
+        t = next(k for k in nf["kv_types"] if k["key"] == "nvfp4")
+        ent = {**base, "key": "nvfp4kv", "label": ["NVFP4 + NVFP4 KV", "NVFP4 權重 + NVFP4 KV cache"], "weights": base["weights"] + " + NVFP4 KV cache", "kv_cache_dtype": "nvfp4",
+               "extra_vllm_args": t.get("extra_vllm_args"), "gpu_memory_utilization": max((s.get("gpu_memory_utilization") or 0) for s in t["servers"].values()) or t.get("gpu_memory_utilization"),
+               "kv_cache_tokens": next((s["kv_cache_tokens"] for k, s in t["servers"].items() if k != "in8k" and s.get("kv_cache_tokens")), None), "rows": t["rows"], "cases_expected": 18,
+               "attempts": [{"set": k, "dir_time": (s.get("run") or "")[-15:], "pass": sum(1 for r in t["rows"] if r["status"] == "PASS" and (r["input"] == 8192) == (k == "in8k")), "error": None} for k, s in t["servers"].items()],
+               "status": "COMPLETE" if len(t["rows"]) == 18 and all(r["status"] == "PASS" for r in t["rows"]) else "PARTIAL", "start_failed": False, "start_error": None}
+        ws = [x for x in wq["weights"] if x["key"] != "nvfp4kv"]
+        ws.insert(next(i for i, x in enumerate(ws) if x["key"] == "nvfp4") + 1, ent)
+        wq["weights"] = ws
+        WQ.write_text(json.dumps(wq, ensure_ascii=False, indent=1) + "\n")
     print("wrote", OUT.name, {f["weights_key"] + ":" + k["key"]: (len(k["rows"]), sum(1 for r in k["rows"] if r["status"] == "PASS")) for f in families for k in f["kv_types"]})
 
 
