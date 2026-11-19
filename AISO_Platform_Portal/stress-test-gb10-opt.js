@@ -19,10 +19,12 @@
     decode_only_tps: { short: "TPS (Decode only)", zh: "純產生速度（不含首字等待）= 1000 ÷ TPOT，每請求", unit: "tok/s", higher: true, d: 1 },
     normalized_tps: { short: "TPS (Normalized)", zh: "每請求每秒輸出 token", unit: "tok/s", higher: true, d: 2 }, aggregate_tps: { short: "TPS (Aggregate)", zh: "NP 個請求合計每秒輸出 token", unit: "tok/s", higher: true, d: 2 } };
   // chart groups: x = NP, one line per variant, the first one is the baseline of the group
-  const GRP = [["bf16mtp", "bf16 · MTP", "bf16 · MTP", [["bf16", "bf16 (baseline, MTP off)", "#f2f2f2"], ["bf16_mtp", "bf16 + MTP", "#ff8a4c"]]],
+  const GRP = [["all", "All · differences vs bf16", "全部 · 相對 bf16 的差異", [["bf16", "bf16 (baseline)", "#f2f2f2"], ["bf16_mtp", "bf16 + MTP", "#ff8a4c"], ["qat", "QAT", "#4fd1b0"], ["qat_mtp", "QAT + MTP", "#c8e86a"], ["qat_nvfp4kv", "QAT + NVFP4 KV", "#5cc8d6"],
+      ["nvfp4", "NVFP4 · KV fp8", "#ffd21f"], ["nvfp4kv", "NVFP4 + NVFP4 KV", "#b48cff"], ["nvfp4kv_mtp_on", "NVFP4 + NVFP4 KV + MTP", "#ff5ea8"]]],
+    ["bf16mtp", "bf16 · MTP", "bf16 · MTP", [["bf16", "bf16 (baseline, MTP off)", "#f2f2f2"], ["bf16_mtp", "bf16 + MTP", "#ff8a4c"]]],
     ["nvmtp", "NVFP4 + NVFP4 KV · MTP", "NVFP4 + NVFP4 KV · MTP", [["nvfp4kv_mtp_off", "NVFP4 + NVFP4 KV (baseline, MTP off)", "#b48cff"], ["nvfp4kv_mtp_on", "NVFP4 + NVFP4 KV + MTP", "#ffd21f"]]],
     ["qat", "QAT", "QAT", [["bf16", "bf16 (baseline)", "#f2f2f2"], ["qat", "QAT · KV fp8", "#4fd1b0"], ["qat_nvfp4kv", "QAT + NVFP4 KV", "#5cc8d6"], ["qat_mtp", "QAT + MTP", "#ff8a4c"]]]];
-  let V = null, WQ = null, sel = { grp: "bf16mtp", output: 256 };
+  let V = null, WQ = null, sel = { grp: "all", output: 256 };
 
   function rowsOf(k) {
     const v = ((V && V.variants) || []).find(x => x.key === k); if (v) return v.rows || [];
@@ -64,11 +66,27 @@
       get: (key, gr) => { const r = rowOf(key, gr.np); return r && r.status === "PASS" && Number.isFinite(r[k]) ? r : null; }, baseline: ser[0] && ser[0][0], message: "" })));
     return `<p class="wq-leg">${ser.map(x => `<span><i style="background:${x[2]}"></i>${esc(x[1])}</span>`).join("")}</p><div>${html}</div>`;
   }
+  const PLAN = `<p class="v2-fine">Goal: same model size (Gemma 4 26B-A4B on vLLM, GB10) - what do MTP and QAT change? Every line is a different configuration of the SAME model, compared with bf16 (KV fp8) as the baseline.<small class="zhs">目的：同一個模型大小（Gemma 4 26B），比較有沒有用 MTP、QAT 的差異；每條線都是同一個模型的不同設定，基準是 bf16（KV fp8）。</small></p>
+    <div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Measured now<small>已測</small></th><th>What is different<small>差在哪</small></th></tr></thead><tbody>
+    <tr><td>bf16 (baseline)</td><td>Original weights, KV fp8, no speculative decoding</td></tr>
+    <tr><td>bf16 + MTP</td><td>Same weights; a small draft model (Gemma 4 assistant) proposes 3 tokens per step, the main model verifies</td></tr>
+    <tr><td>QAT</td><td>The quantization-aware-trained checkpoint (kept in bf16 here, so speed is expected to match bf16; its point is quality)</td></tr>
+    <tr><td>QAT + MTP</td><td>QAT checkpoint with the draft model for it</td></tr>
+    <tr><td>QAT + NVFP4 KV</td><td>QAT checkpoint with the KV cache stored in NVFP4 (about 4x smaller than fp16)</td></tr>
+    <tr><td>NVFP4 · KV fp8 / NVFP4 + NVFP4 KV / + MTP</td><td>NVIDIA's NVFP4 weights; then NVFP4 KV cache; then MTP on top (compared with its own MTP-off run on the same prompts)</td></tr></tbody></table></div>
+    <details class="gb-fold"><summary>Not measured yet - ideas for more tests<small class="zhs">還沒測，可以加的測試（建議，非已有結果）</small></summary><ul>
+    <li><b>QAT quality</b>: accuracy / perplexity of QAT against bf16 - this is what QAT is for, speed does not show it.<small class="zhs">QAT 的品質（準確度／困惑度）：QAT 的價值在這裡，速度看不出來。</small></li>
+    <li><b>MTP draft length</b>: 1 / 2 / 3 / 5 draft tokens - find the best setting.<small class="zhs">MTP 草稿長度：1／2／3／5 個，找最佳值。</small></li>
+    <li><b>MTP on long inputs</b>: 64K / 128K (only 8K is measured), and at higher concurrency (gain usually shrinks as more requests share the GPU).<small class="zhs">長輸入與更高並發下的 MTP（目前只測 8K）。</small></li>
+    <li><b>MTP by task type</b>: code, chat, summarization, translation - draft acceptance depends on how predictable the text is.<small class="zhs">不同任務的接受率（程式、對話、摘要、翻譯）。</small></li>
+    <li><b>Real QAT 4-bit deployment</b>: the q4_0 quantized QAT model (speed and memory), e.g. on llama.cpp; here the unquantized QAT checkpoint was used.<small class="zhs">真正的 QAT 4-bit 部署（速度與記憶體）；這裡用的是未量化的 QAT 檢查點。</small></li>
+    <li><b>Other combinations</b>: MTP on fp8 weights, NVFP4 weights with fp8 KV + MTP; memory and power per token.<small class="zhs">其他組合：fp8 權重 + MTP、每 token 的記憶體與耗電。</small></li></ul></details>`;
   function render() {
     ((V && V.variants) || []).concat(((WQ && WQ.weights) || [])).forEach(v => (v.rows || []).forEach(r => { if (r.decode_only_tps == null) r.decode_only_tps = Number.isFinite(r.tpot_ms) && r.tpot_ms > 0 ? 1000 / r.tpot_ms : null; }));
     const vs = ((V && V.variants) || []).filter(v => (v.rows || []).length);
     const reports = `<ul class="gb-reports">${REPORTS.map(([file, en, zh]) => `<li><a class="v2-dl" href="data/reports/${file}" target="_blank" rel="noopener">${esc(en)}<small class="zhs">${esc(zh)}</small></a> <a class="v2-dl" href="data/reports/${file}" download>↓ .md</a></li>`).join("")}</ul>`;
     $("gvOpt").innerHTML = S("Select", "選擇", pick(GRP.map(x => [x[0], x[1]]), "grp", 'Compare <small class="zhs">比較</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">Input 8K. NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">輸入 8K；NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
+      + S("What is compared", "比較什麼", PLAN)
       + S("TTFT · TPOT · TPS", "四項指標", charts())
       + S("MTP · QAT · NVFP4 KV · summary", "總表（各變體對各自基準）", vs.length ? summary(vs) : `<p class="v2-fine">No data yet. 尚無資料。</p>`)
       + S("Values by variant", "逐變體數值", vs.map(detail).join(""))
