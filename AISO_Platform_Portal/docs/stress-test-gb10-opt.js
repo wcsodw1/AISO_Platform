@@ -15,7 +15,14 @@
   const REPORTS = [["GB10_GB10_MTP_QAT_and_NVFP4_KV_variants_20261119.md", "MTP, QAT and NVFP4 KV variants", "MTP、QAT 與 NVFP4 KV 變體（整合報告）"],
     ["GB10_GB10_MTP_on_NVFP4_weights_with_NVFP4_KV_20261119.md", "MTP on NVFP4 weights with NVFP4 KV", "NVFP4 權重 + NVFP4 KV 開 MTP"],
     ["GB10_GB10_NVFP4_weights_with_NVFP4_KV_cache_20261119.md", "NVFP4 weights with NVFP4 KV cache", "NVFP4 權重 + NVFP4 KV cache"]];
-  let V = null, WQ = null;
+  const M = { ttft_s: { short: "TTFT", zh: "首字延遲", unit: "s", higher: false, d: 2 }, tpot_ms: { short: "TPOT", zh: "每個字的間隔", unit: "ms/token", higher: false, d: 1 },
+    decode_only_tps: { short: "TPS (Decode only)", zh: "純產生速度（不含首字等待）= 1000 ÷ TPOT，每請求", unit: "tok/s", higher: true, d: 1 },
+    normalized_tps: { short: "TPS (Normalized)", zh: "每請求每秒輸出 token", unit: "tok/s", higher: true, d: 2 }, aggregate_tps: { short: "TPS (Aggregate)", zh: "NP 個請求合計每秒輸出 token", unit: "tok/s", higher: true, d: 2 } };
+  // chart groups: x = NP, one line per variant, the first one is the baseline of the group
+  const GRP = [["bf16mtp", "bf16 · MTP", "bf16 · MTP", [["bf16", "bf16 (baseline, MTP off)", "#f2f2f2"], ["bf16_mtp", "bf16 + MTP", "#ff8a4c"]]],
+    ["nvmtp", "NVFP4 + NVFP4 KV · MTP", "NVFP4 + NVFP4 KV · MTP", [["nvfp4kv_mtp_off", "NVFP4 + NVFP4 KV (baseline, MTP off)", "#b48cff"], ["nvfp4kv_mtp_on", "NVFP4 + NVFP4 KV + MTP", "#ffd21f"]]],
+    ["qat", "QAT", "QAT", [["bf16", "bf16 (baseline)", "#f2f2f2"], ["qat", "QAT · KV fp8", "#4fd1b0"], ["qat_nvfp4kv", "QAT + NVFP4 KV", "#5cc8d6"], ["qat_mtp", "QAT + MTP", "#ff8a4c"]]]];
+  let V = null, WQ = null, sel = { grp: "bf16mtp", output: 256 };
 
   function rowsOf(k) {
     const v = ((V && V.variants) || []).find(x => x.key === k); if (v) return v.rows || [];
@@ -47,14 +54,28 @@
     };
     return `<details class="gb-fold"><summary>${esc(v.label)}</summary><p class="v2-fine">${esc(v.note || "")}</p><div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>NP</th><th>8K · 256</th><th>8K · 512</th></tr></thead><tbody>${[1, 3, 5].map(np => `<tr><td>NP${np}</td>${cell(np, 256)}${cell(np, 512)}</tr>`).join("")}</tbody></table></div></details>`;
   }
+  const pick = (list, k, label) => `<div class="cmp-pick"><span>${label}</span><div class="st-tabs cmp-tabs">${list.map(([v, t]) => `<button type="button" class="has${String(v) === String(sel[k]) ? " on" : ""}" data-optsel="${k}" data-v="${v}">${esc(t)}</button>`).join("")}</div></div>`;
+  function charts() {
+    const g = GRP.find(x => x[0] === sel.grp) || GRP[0], ser = g[3].filter(x => rowsOf(x[0]).length);
+    const rowOf = (k, np) => rowsOf(k).find(r => r.np === np && r.input === 8192 && r.output === sel.output);
+    const groups = [1, 3, 5].map(np => ({ label: "NP" + np, sub: "", np }));
+    const html = BV.blocks(Object.entries(M).map(([k, def]) => ({ k, def, groups, width: Math.max(320, ($("gvOpt").clientWidth || 860) - 100), context: `8K in · ${sel.output} out`, rowHead: "NP",
+      series: ser.map(x => ({ key: x[0], label: x[1], sum: x[1], color: x[2] })),
+      get: (key, gr) => { const r = rowOf(key, gr.np); return r && r.status === "PASS" && Number.isFinite(r[k]) ? r : null; }, baseline: ser[0] && ser[0][0], message: "" })));
+    return `<p class="wq-leg">${ser.map(x => `<span><i style="background:${x[2]}"></i>${esc(x[1])}</span>`).join("")}</p><div>${html}</div>`;
+  }
   function render() {
+    ((V && V.variants) || []).concat(((WQ && WQ.weights) || [])).forEach(v => (v.rows || []).forEach(r => { if (r.decode_only_tps == null) r.decode_only_tps = Number.isFinite(r.tpot_ms) && r.tpot_ms > 0 ? 1000 / r.tpot_ms : null; }));
     const vs = ((V && V.variants) || []).filter(v => (v.rows || []).length);
     const reports = `<ul class="gb-reports">${REPORTS.map(([file, en, zh]) => `<li><a class="v2-dl" href="data/reports/${file}" target="_blank" rel="noopener">${esc(en)}<small class="zhs">${esc(zh)}</small></a> <a class="v2-dl" href="data/reports/${file}" download>↓ .md</a></li>`).join("")}</ul>`;
-    $("gvOpt").innerHTML = S("MTP · QAT · NVFP4 KV", "MTP、QAT 與 NVFP4 KV", vs.length ? summary(vs) : `<p class="v2-fine">No data yet. 尚無資料。</p>`)
+    $("gvOpt").innerHTML = S("Select", "選擇", pick(GRP.map(x => [x[0], x[1]]), "grp", 'Compare <small class="zhs">比較</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">Input 8K. NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">輸入 8K；NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
+      + S("TTFT · TPOT · TPS", "四項指標", charts())
+      + S("MTP · QAT · NVFP4 KV · summary", "總表（各變體對各自基準）", vs.length ? summary(vs) : `<p class="v2-fine">No data yet. 尚無資料。</p>`)
       + S("Values by variant", "逐變體數值", vs.map(detail).join(""))
       + S("Benchmark Result reports", "測試報告（可下載）", reports + `<p class="v2-fine"><a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_variants.json" download>Download .JSON</a></p>`);
   }
   document.addEventListener("click", e => {
+    const q = e.target.closest("[data-optsel]"); if (q && V) { sel[q.dataset.optsel] = q.dataset.optsel === "output" ? Number(q.dataset.v) : q.dataset.v; render(); return; }
     const b = e.target.closest("#gbView button"); if (!b) return;
     const on = b.dataset.view === "opt", box = $("gvOpt"); if (!box) return;
     box.hidden = !on;
