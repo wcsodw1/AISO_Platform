@@ -60,9 +60,8 @@
     const failed = rest.filter(w => BYK[w[0]] && BYK[w[0]].start_failed), other = rest.filter(w => !failed.includes(w));
     const hov = failed.map(w => String(BYK[w[0]].start_error || "").replace(/~\//g, "")).filter((x, i, a) => a.indexOf(x) === i).join(" | ");
     const bits = [];
-    if (failed.length) bits.push(`<span class="wq-fail" title="${esc(hov)}">${esc(failed.map(w => w[1]).join(" · "))}：無法啟動 Failed to start（${why(BYK[failed[0][0]].start_error)}）</span>`);
     if (other.length) bits.push(`${esc(other.map(w => w[1]).join(" · "))}：未測 not run yet`);
-    return `<p class="kv-fine">${bits.join("　")}</p>`;
+    return bits.length ? `<p class="kv-fine">${bits.join("　")}</p>` : "";      // a precision that failed to start is NOT listed in the conclusion (David 2026-11-19); its state and error are in the Parameters zone
   }
   function conclusion(cases, rowOf) {
     const lines = W.filter(w => w[0] !== "bf16").map(w => {
@@ -75,12 +74,21 @@
   }
 
   /* ---------- Smoke ---------- */
+  /* the smoke conclusion names ONLY the model that passed preflight and the smoke test; nothing about precisions that were not smoke-tested (David 2026-11-18) */
+  function smokeConclusion(r) {
+    const w = W.find(x => x[0] === "bf16") || ["bf16", "bf16（不量化）", "", "#8f9bff"], ok = r.status === "PASS";
+    const pill = `<span class="kv-pill" style="border-color:${w[3]};color:${w[3]}">${esc(w[0])}</span>`;
+    const head = ok ? `<p class="kv-big">${esc(w[0])} (the original model) passed preflight and the smoke test<small>${esc(w[0])}（原模型）預檢與冒煙測試都通過</small></p>`
+      : `<p class="kv-big">${esc(w[0])} (the original model) did not pass the smoke test<small>${esc(w[0])}（原模型）冒煙測試未通過</small></p>`;
+    const line = ok ? `<ul class="kv-list"><li>${pill}<span class="kv-d">TTFT ${num(r.ttft_s, 1)} s · TPOT ${num(r.tpot_ms, 1)} ms · TPS ${num(r.aggregate_tps, 1)} tok/s<small class="zhs">NP${r.np} · ${kn(r.input)} 輸入 · 輸出 ${r.output} · 預檢 ✓ 冒煙 ✓</small></span></li></ul>` : "";
+    return S("Conclusion", "結論", `${head}${line}<p class="kv-fine">Only models that passed preflight and the smoke test are listed.<small class="zhs">只列出預檢與冒煙測試都通過的模型。</small></p>`);
+  }
   function smoke() {
     const r0 = (DS.gb10_runs || []).find(r => r.phase === "smoke"); if (!r0) { $("gvSmoke").innerHTML = '<p class="v2-fine">No smoke data.</p>'; return; }
     const cases = [r0], rowOf = k => (k === "bf16" ? r0 : null), lab = c => `NP${c.np} · ${kn(c.input)} · ${c.output}`;
-    $("gvSmoke").innerHTML = conclusion(cases, rowOf)
+    $("gvSmoke").innerHTML = smokeConclusion(r0)
       + S("Select conditions", "選擇條件", `<p class="kv-fine">One condition only: ${esc(lab(r0))}.<small class="zhs">冒煙測試只有這一組條件。</small></p>`)
-      + S("Key parameters", "測試參數", keyParams({ weights: "bf16 (not quantized)", input: `${r0.input.toLocaleString("en-US")} (${kn(r0.context)})`, output: `${r0.output} tokens`, np: String(r0.np), ctx: r0.context.toLocaleString("en-US"), wlist: W.map(w => w[1]).join(" / ") }))
+      + S("Key parameters", "測試參數", keyParams({ weights: "bf16 (not quantized)", input: `${r0.input.toLocaleString("en-US")} (${kn(r0.context)})`, output: `${r0.output} tokens`, np: String(r0.np), ctx: r0.context.toLocaleString("en-US"), wlist: "bf16" }))
       + S("TTFT · TPOT · TPS", "四項指標", legend(withData(cases, rowOf)) + cmpTable(cases, rowOf, lab));
   }
 
