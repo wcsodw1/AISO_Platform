@@ -17,7 +17,7 @@
     ["GB10_GB10_MTP_on_NVFP4_weights_with_NVFP4_KV_20261119.md", "MTP on NVFP4 weights with NVFP4 KV", "NVFP4 權重 + NVFP4 KV 開 MTP"],
     ["GB10_GB10_NVFP4_weights_with_NVFP4_KV_cache_20261119.md", "NVFP4 weights with NVFP4 KV cache", "NVFP4 權重 + NVFP4 KV cache"]];
   const M = { ttft_s: { short: "TTFT", zh: "首字延遲", unit: "s", higher: false, d: 2 }, tpot_ms: { short: "TPOT", zh: "每個字的間隔", unit: "ms/token", higher: false, d: 1 },
-    decode_only_tps: { short: "TPS (Decode only)", zh: "純產生速度（不含首字等待）= 1000 ÷ TPOT，每請求", unit: "tok/s", higher: true, d: 1 },
+    decode_only_tps: { short: "TPS (Decode only)", zh: "平均每秒產生幾個字（每個請求，不含首字等待）", unit: "tok/s", higher: true, d: 1 },
     normalized_tps: { short: "TPS (Normalized)", zh: "每請求每秒輸出 token", unit: "tok/s", higher: true, d: 2 }, aggregate_tps: { short: "TPS (Aggregate)", zh: "NP 個請求合計每秒輸出 token", unit: "tok/s", higher: true, d: 2 } };
   // chart groups: x = NP, one line per variant, the first one is the baseline of the group
   const GRP = [["all", "All · differences vs bf16", "全部 · 相對 bf16 的差異", [["bf16", "bf16 (baseline)", "#f2f2f2"], ["bf16_mtp", "bf16 + MTP", "#ff8a4c"], ["qat", "QAT", "#4fd1b0"], ["qat_mtp", "QAT + MTP", "#c8e86a"], ["qat_nvfp4kv", "QAT + NVFP4 KV", "#5cc8d6"],

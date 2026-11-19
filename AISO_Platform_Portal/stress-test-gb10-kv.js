@@ -10,7 +10,7 @@
   const kn = i => `${Math.round(i / 1024)}K`;
   const T = [["fp8", "KV fp8", "KV fp8（8 位元）", "#4fd1b0"], ["auto", "KV full precision", "KV 全精度（auto）", "#8f9bff"]];
   const M = { ttft_s: { short: "TTFT", zh: "首字延遲", unit: "s", higher: false, d: 2 }, tpot_ms: { short: "TPOT", zh: "每個字的間隔", unit: "ms/token", higher: false, d: 1 },
-    decode_only_tps: { short: "TPS (Decode only)", zh: "純產生速度（不含首字等待）= 1000 ÷ TPOT，每請求", unit: "tok/s", higher: true, d: 1 },
+    decode_only_tps: { short: "TPS (Decode only)", zh: "平均每秒產生幾個字（每個請求，不含首字等待）", unit: "tok/s", higher: true, d: 1 },
     normalized_tps: { short: "TPS (Normalized)", zh: "每請求每秒輸出 token", unit: "tok/s", higher: true, d: 2 }, aggregate_tps: { short: "TPS (Aggregate)", zh: "NP 個請求合計每秒輸出 token", unit: "tok/s", higher: true, d: 2 } };
   const gain = (v, b, hi) => (Number.isFinite(v) && Number.isFinite(b) && b ? 100 * (hi ? v / b - 1 : 1 - v / b) : null);
   const mean = a => { a = a.filter(Number.isFinite); return a.length ? a.reduce((s, x) => s + x, 0) / a.length : null; };

@@ -19,7 +19,7 @@
   const METRICS = {
     ttft: { en: "TTFT", zh: "首字等待", unit: "s", low: true, get: r => r.ttft_s, dec: 1, hint: "Time to first token: how long until the answer starts. Lower is better." },
     tpot: { en: "TPOT", zh: "每字間隔", unit: "ms", low: true, get: r => r.tpot_ms, dec: 0, hint: "Time per output token after the first. Lower is better." },
-    decode: { en: "TPS (Decode only)", zh: "純產生速度（不含首字等待）", unit: "tok/s", low: false, get: r => (r.tpot_ms > 0 ? 1000 / r.tpot_ms : null), dec: 1, hint: "1000 ÷ TPOT, per request, without the first-token wait. Higher is better." },
+    decode: { en: "TPS (Decode only)", zh: "平均每秒產生幾個字（每個請求，不含首字等待）", unit: "tok/s", low: false, get: r => (r.tpot_ms > 0 ? 1000 / r.tpot_ms : null), dec: 1, hint: "1000 ÷ TPOT, per request, without the first-token wait. Higher is better." },
     agg: { en: "TPS Aggregate", zh: "總吞吐", unit: "tok/s", low: false, get: r => r.aggregate_tps, dec: 1, hint: "All requests together. Higher is better." },
     norm: { en: "TPS Normalized", zh: "每請求速度", unit: "tok/s", low: false, get: r => r.aggregate_tps / r.np, dec: 1, thr: THR, hint: "Aggregate ÷ NP: what each user gets. Needs " + THR + "+ tok/s." }
   };
