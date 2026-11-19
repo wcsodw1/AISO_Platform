@@ -211,7 +211,7 @@ window.BV=(function(){
   list=withDecode(list);
   const isTps=o=>/^(norm|normalized|aggregate|decode_only)_tps$/.test(o.k),isLat=o=>o.k==="ttft_s"||o.k==="tpot_ms";
   const tps=list.filter(isTps),iN=list.findIndex(o=>/^(norm|normalized)_tps$/.test(o.k)),iA=list.findIndex(o=>o.k==="aggregate_tps");
-  const sh=iN>=0&&iA>=0&&list[iN].baseline&&list[iA].baseline&&summary(list[iN])&&summary(list[iN])===summary(list[iA])?summary(list[iN]):null;
+  const sh=null;      // every metric shows its OWN best / worst sentence under its chart (a shared group sentence hid Decode TPS's own one)
   const grp=(title,zh,body,sum)=>`<div class="bv-group"><div class="bv-tps"><h3 class="bv-h">${title}<span class="zh-i">${zh}</span></h3>${sum?`<p class="bv-sum">${sum}</p>`:""}</div>${body}</div>`;
   const lat=list.filter(isLat);
   let out="",doneLat=false,doneTps=false;
