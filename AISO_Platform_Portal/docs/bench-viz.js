@@ -193,9 +193,12 @@ window.BV=(function(){
    else out+=block(o)});
   return out;
  }
- // one delegated handler for every chart block on the page: the button (bottom-right of the chart) shows / hides the data table
- document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;
-  const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
-  const open=det.hidden;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.innerHTML=open?'Hide values<small class="zhs">收合數值</small> ▴':'Full values<small class="zhs">完整數值</small> ▾'});
+ // Full values: pointing at the button shows the data table, moving away hides it again; a click pins it open (click again to close). One delegated handler for every chart block.
+ const bvSet=(box,open)=>{const det=box.querySelector(".bv-detail"),btn=box.querySelector(".bv-more");if(!det||!btn)return;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.innerHTML=open?'Hide values<small class="zhs">收合數值</small> ▴':'Full values<small class="zhs">完整數值</small> ▾'};
+ const bvBox=t=>{const n=t&&t.closest&&t.closest(".bv-more,.bv-detail");return n?n.closest(".bv-block"):null};
+ document.addEventListener("mouseover",e=>{const box=bvBox(e.target);if(!box)return;clearTimeout(box.__bvT);const det=box.querySelector(".bv-detail");if(e.target.closest(".bv-more")&&det&&det.hidden)bvSet(box,true)});
+ document.addEventListener("mouseout",e=>{const box=bvBox(e.target);if(!box||bvBox(e.relatedTarget)===box)return;clearTimeout(box.__bvT);box.__bvT=setTimeout(()=>{if(!box.__bvPin)bvSet(box,false)},400)});
+ document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
+  if(det.hidden){box.__bvPin=true;bvSet(box,true)}else if(!box.__bvPin){box.__bvPin=true}else{box.__bvPin=false;bvSet(box,false)}});
  return {block,blocks,esc,fmt,gain,pct,lineSvg,charts};
 })();
