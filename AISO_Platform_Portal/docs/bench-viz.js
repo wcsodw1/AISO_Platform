@@ -59,7 +59,7 @@ window.BV=(function(){
   const top=Math.max(...vals),st=step(top),y=v=>T+ih-v/top*ih,x=q=>L+gw*(q+.5);
   let s="";
   for(let v=0;v<=top+1e-9;v+=st){const yy=y(v);s+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" class="${v===0?"gl0":"gl"}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${num(v,st<1?1:0)}</text>`}
-  s+=`<text transform="translate(14 ${T+ih/2}) rotate(-90)" text-anchor="middle">${esc(def.unit)}</text>`;
+  s+=`<text transform="translate(16 ${T+ih/2}) rotate(-90)" text-anchor="middle" class="bv-ax">${esc(def.short)} · ${esc(def.unit)}</text>`;
   series.forEach((se,j)=>{
    let d="",pen=false;
    groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${(x(q)+off(j)).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
@@ -78,7 +78,7 @@ window.BV=(function(){
     const at=`data-s="${p.j}" class="bv-pt"`;
     s+=`<circle cx="${cx}" cy="${p.py}" r="13" fill="transparent" data-s="${p.j}" class="bv-hit"/>`;
     s+=o.dodge?mark(SHAPES[p.j%SHAPES.length],cx,p.py,6,p.se.color,tip,at):`<circle ${at} cx="${cx}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
-    s+=`<text class="bl ${red?"dn":"up2"}" data-s="${p.j}" style="--dy:${(p.py-12-p.ly).toFixed(1)}px" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
+    s+=`<text class="bl ${red?"dn":"up2"}" data-s="${p.j}" style="--dy:${(p.py-12-p.ly).toFixed(1)}px" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}<tspan class="bv-ut" dx="3">${esc(def.unit)}</tspan></text>`});
    if(o.skip)series.forEach((se,j)=>{if(!get(se.key,g)&&o.skip(se.key,g))s+=`<text class="bl dn" x="${x(q)+off(j)}" y="${y(0)-8}" text-anchor="middle" style="font-size:20px">✕<title>${esc(se.label)} · ${esc(g.label)}: SKIP</title></text>`});
   });
   groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
@@ -86,14 +86,17 @@ window.BV=(function(){
  }
  /* hover or click a line / point: that series is picked out, enlarged, its values drawn right at its points and the others dimmed; click again (or the empty chart) to release (David 2026-11-19) */
  (function(){if(window.__bvPick)return;window.__bvPick=1;const pin=new WeakMap();
-  const st=document.createElement("style");st.textContent=".v2-chart.bv-zoom{position:relative;z-index:30}.v2-chart>.v2-legend2.bv-lgside{position:absolute;right:16px;top:18px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0;font-size:14px;max-width:190px}.v2-chart>.v2-legend2.bv-lgside [data-lg]{display:flex;align-items:center;gap:8px;white-space:nowrap}.v2-legend2 [data-lg]{cursor:pointer;transition:opacity .15s;user-select:none}.v2-legend2 [data-lg].off{opacity:.4;text-decoration:line-through}.v2-legend2 [data-lg].off i{background:transparent!important;box-shadow:inset 0 0 0 2px currentColor}.bv-svg [data-s].bv-off,.bv-svg.bv-on [data-s].bv-off{display:none}.v2-legend2.bv-lgon [data-lg]{opacity:.38}.v2-legend2.bv-lgon [data-lg].sel{opacity:1;font-weight:700}.bv-detail .v2-sc th,.bv-detail .v2-sc td{white-space:normal;vertical-align:top}.bv-detail .v2-sc th.l{min-width:84px}.bv-detail .v2-sc tbody td:first-child,.bv-detail .v2-sc th:first-child{width:1%;white-space:nowrap}.bv-detail .v2-sc tfoot td:first-child{width:1%;min-width:96px}.bv-dv{display:block;font-size:.82em;margin-top:2px;white-space:nowrap}.bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
+  const st=document.createElement("style");st.textContent=".v2-chart.bv-zoom{position:relative;z-index:30}.v2-chart>.v2-legend2.bv-lgside{position:absolute;right:16px;top:18px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0;font-size:14px;max-width:none}.v2-chart>.v2-legend2.bv-lgside [data-lg]{display:flex;align-items:center;gap:8px;white-space:nowrap}.v2-legend2 [data-lg]{cursor:pointer;transition:opacity .15s;user-select:none}.v2-legend2 [data-lg].off{opacity:.4;text-decoration:line-through}.v2-legend2 [data-lg].off i{background:transparent!important;box-shadow:inset 0 0 0 2px currentColor}.bv-svg [data-s].bv-off,.bv-svg.bv-on [data-s].bv-off{display:none}.v2-legend2.bv-lgon [data-lg]{opacity:.38}.v2-legend2.bv-lgon [data-lg].sel{opacity:1;font-weight:700}.bv-detail .v2-sc th,.bv-detail .v2-sc td{white-space:normal;vertical-align:top}.bv-detail .v2-sc th.l{min-width:84px}.bv-detail .v2-sc tbody td:first-child,.bv-detail .v2-sc th:first-child{width:1%;white-space:nowrap}.bv-detail .v2-sc tfoot td:first-child{width:1%;min-width:96px}.bv-mean .zhs,.bv-mean small{display:block!important;margin:2px 0 0!important}.bv-lgnote{width:0;min-width:100%;margin:12px 0 0;font-size:12px;line-height:1.5;white-space:nowrap}.bv-lgnote span{display:block}.bv-en,.bv-lgnote .bv-en{color:var(--ivory,#f3efe5)}.bv-zh,.bv-lgnote .bv-zh{color:#8fd0c4}.bv-sum .bv-bi{display:grid;grid-template-columns:1fr;gap:2px}.bv-sum .bv-bi>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bv-ut{font-size:10px;font-weight:500;opacity:.8}.bv-ax{font-size:12px}.bv-ut2{font-size:.78em;opacity:.7;white-space:nowrap}.bv-dv{display:block;font-size:.82em;margin-top:2px;white-space:nowrap}.bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
   document.head.appendChild(st);
   let apply=(svg,v)=>{svg.classList.toggle("bv-on",v!=null);svg.querySelectorAll("[data-s]").forEach(e=>e.classList.toggle("sel",v!=null&&e.getAttribute("data-s")===String(v)))};
   const hit=e=>{const t=e.target.closest&&e.target.closest(".bv-svg [data-s]");return t?[t.closest("svg"),t.getAttribute("data-s")]:null};
   /* many lines (5 or more): pointing at the chart enlarges it (its own frame, nothing added) to about 3/4 of the screen width (a transform, so the page does not reflow under the pointer); leaving puts it back */
-  const zoomIn=c=>{if(c.classList.contains("bv-zoom"))return;const lg=(c.closest(".bv-block")||document).querySelector(".v2-legend2"),extra=lg?210:0,w0=c.getBoundingClientRect().width;
-   if(extra){c.style.maxWidth="none";c.style.width=(w0+extra)+"px";c.style.marginRight=(-extra)+"px";c.style.paddingRight=(parseFloat(getComputedStyle(c).paddingRight)+extra)+"px";const side=lg.cloneNode(true);side.classList.add("bv-lgside");side.style.cssText="";c.appendChild(side)}      // while enlarged the legend is also INSIDE the chart frame, one column down the right edge
-   const r=c.getBoundingClientRect(),k=Math.min(3,Math.max(1,innerWidth*.75/r.width)),dx=innerWidth/2-(r.left+r.width/2);let bg=getComputedStyle(document.body).backgroundColor;if(!bg||/rgba\(.*,\s*0\)$|transparent/.test(bg))bg="#0c0e12";c.style.background=bg;c.style.transformOrigin="center top";c.style.transform=`translateX(${dx.toFixed(0)}px) scale(${k.toFixed(3)})`;c.classList.add("bv-zoom")};
+  const zoomIn=c=>{if(c.classList.contains("bv-zoom"))return;const vw=document.documentElement.clientWidth,lg=(c.closest(".bv-block")||document).querySelector(".v2-legend2"),w0=c.getBoundingClientRect().width;let extra=0;
+   if(lg){const side=lg.cloneNode(true);side.classList.add("bv-lgside");side.style.cssText="max-width:none";side.insertAdjacentHTML("beforeend",'<p class="bv-lgnote"><span class="bv-en">Hover: solo · click dot: hide</span><span class="bv-zh">滑過：單獨顯示 · 點色點：隱藏</span></p>');c.appendChild(side);extra=Math.ceil(side.offsetWidth)+44;side.style.cssText="";      // while enlarged the legend is also INSIDE the chart frame, one column down the right edge, as wide as its longest name needs
+    c.style.maxWidth="none";c.style.width=(w0+extra)+"px";c.style.marginRight=(-extra)+"px";c.style.paddingRight=(parseFloat(getComputedStyle(c).paddingRight)+extra)+"px"}
+   const r=c.getBoundingClientRect(),k=Math.min(3,Math.max(1,vw*.75/r.width));let bg=getComputedStyle(document.body).backgroundColor;if(!bg||/rgba\(.*,\s*0\)$|transparent/.test(bg))bg="#0c0e12";
+   c.style.background=bg;c.style.transformOrigin="center top";let dx=vw/2-(r.left+r.width/2);c.style.transform=`translateX(${dx.toFixed(1)}px) scale(${k.toFixed(3)})`;c.classList.add("bv-zoom");
+   const r2=c.getBoundingClientRect(),corr=vw/2-(r2.left+r2.width/2);if(Math.abs(corr)>1){dx+=corr;c.style.transform=`translateX(${dx.toFixed(1)}px) scale(${k.toFixed(3)})`}};      // centred on the visible width, checked once after it is applied
   const zoomOut=c=>{c.classList.remove("bv-zoom");c.style.transform="";c.style.background="";c.style.transformOrigin="";c.style.width="";c.style.maxWidth="";c.style.marginRight="";c.style.paddingRight="";const x=c.querySelector(":scope > .bv-lgside");if(x)x.remove()};
   const cardOf=t=>{const c=t&&t.closest&&t.closest(".v2-chart");return c&&c.querySelector(".bv-fit.bv-many")?c:null};
   document.addEventListener("mouseover",e=>{const c=cardOf(e.target);if(c&&innerWidth>700)zoomIn(c)});
@@ -131,25 +134,34 @@ window.BV=(function(){
    out.push(`以 ${b.label} 為基準，${s.label} 平均${m>=0?"優於":"劣於"}（${av.t}）；${ds.map(x=>`${x[0]} ${dtext(x[1],x[2],def.higher).t}`).join("、")}`)});
   return out.join("；");
  }
- function summary(o){   // ONE short sentence under the chart (HTML): each machine's all-input average versus the baseline
+ function summary(o){   // ONE sentence under each chart: best against the baseline, and the worst of all
   const {k,def,groups,series,get,baseline}=o;if(!baseline)return "";
   const b=series.find(x=>x.key===baseline),short=l=>esc(String(l).replace(/^Intel /,"").replace(/ AMD$/,"")),out=[];
   series.filter(x=>x.key!==baseline).forEach(x=>{
    const ds=groups.map(g=>{const a=get(x.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);
    if(!ds.length){out.push({n:short(x.sum||x.label),none:true});return}
    const m=mean(ds.map(y=>y[0])),ra=mean(ds.map(y=>y[1])),big=def.higher?m>=100:m<=-100;
-   out.push({n:short(x.sum||x.label),good:m>=0,big,v:Math.abs(m).toFixed(1),x:ra.toFixed(1)})});
+   out.push({n:short(x.sum||x.label),m,good:m>=0,big,v:Math.abs(m).toFixed(1),x:ra.toFixed(1)})});
   const bn=short(b.sum||b.label),ok=out.filter(y=>!y.none);if(!ok.length)return "";
   const word=y=>y.big?(def.higher?"faster":"slower"):(y.good?"better":"worse"),zh=y=>y.big?(def.higher?"快":"慢"):(y.good?"好":"差"),num=y=>y.big?`${y.x}×`:`${y.v}%`,znum=y=>y.big?`${y.x} 倍`:`${y.v}%`;
-  const same=ok.every(y=>word(y)===word(ok[0]));
-  const en=same?`${ok.map(y=>`${y.n} ${num(y)}`).join(" · ")} ${word(ok[0])} than ${bn}`:`${ok.map(y=>`${y.n} ${num(y)} ${word(y)}`).join(" · ")} than ${bn}`;
-  const zt=same?`比 ${bn} ${zh(ok[0])} ${ok.map(znum).join("／")}`:`${ok.map(y=>`${y.n} ${zh(y)} ${znum(y)}`).join("；")}（比 ${bn}）`;
-  return `${en}<small class="zhs">${zt}</small>`+(o.summaryNote?` <span class="bv-note">⚠ ${esc(o.summaryNote[0])}<small class="zhs">${esc(o.summaryNote[1])}</small></span>`:"");
+  let en,zt;
+  if(ok.length>=3){
+   const best=ok.reduce((p,y)=>y.m>p.m?y:p),worst=ok.reduce((p,y)=>y.m<p.m?y:p),worstIsBase=worst.m>0;      // every line beats the baseline: then the baseline itself is the worst of all
+   const bs=bn.replace(/ \((baseline|基準)[^)]*\)/i,"");
+   const sg=y=>y.big?`${y.x}×`:`${y.m>=0?"+":"−"}${y.v}%`;
+   en=`Best: ${best.n} ${sg(best)} · Worst: ${worstIsBase?`${bs} (baseline)`:`${worst.n} ${sg(worst)}`} · vs ${bs}`;
+   zt=`最佳：${best.n} ${sg(best)}；最差：${worstIsBase?`${bs}（基準）`:`${worst.n} ${sg(worst)}`}；對 ${bs}`;
+  }else{
+   const same=ok.every(y=>word(y)===word(ok[0]));
+   en=same?`${ok.map(y=>`${y.n} ${num(y)}`).join(" · ")} ${word(ok[0])} than ${bn}`:`${ok.map(y=>`${y.n} ${num(y)} ${word(y)}`).join(" · ")} than ${bn}`;
+   zt=same?`比 ${bn} ${zh(ok[0])} ${ok.map(znum).join("／")}`:`${ok.map(y=>`${y.n} ${zh(y)} ${znum(y)}`).join("；")}（比 ${bn}）`;
+  }
+  return `<span class="bv-bi"><span class="bv-en">${en}</span><span class="bv-zh">${zt}</span></span>`+(o.summaryNote?` <span class="bv-note">⚠ ${esc(o.summaryNote[0])}<small class="zhs">${esc(o.summaryNote[1])}</small></span>`:"");
  }
  function table(o){
   const {k,def,groups,series,get,baseline}=o,others=baseline?series.filter(s=>s.key!==baseline):[];
   const b=series.find(s=>s.key===baseline);
-  const cell=(r,s,g)=>{const c=baseline&&s.key!==baseline?get(baseline,g):null;return `<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k]):"—"}${r&&c?`<span class="bv-dv">${dspan(dd(r[k],c[k],def.higher))}</span>`:""}</td>`};
+  const cell=(r,s,g)=>{const c=baseline&&s.key!==baseline?get(baseline,g):null;return `<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k])+`<span class="bv-ut2"> ${esc(def.unit)}</span>`:"—"}${r&&c?`<span class="bv-dv">${dspan(dd(r[k],c[k],def.higher))}</span>`:""}</td>`};
   const rows=groups.map(g=>`<tr><td>${esc(g.label)}<small class="bv-sub">${esc(g.sub||"")}</small></td>${series.map(s=>cell(get(s.key,g),s,g)).join("")}</tr>`).join("");
   const avg=series.map(s=>{if(s.key===baseline)return "<td></td>";const v=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);return `<td>${v.length?dspan(dtext(mean(v.map(x=>x[0])),mean(v.map(x=>x[1])),def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("");
   const foot=others.length?`<tfoot><tr><td>Average vs baseline<small>全情境平均差異</small></td>${avg}</tr></tfoot>`:"";

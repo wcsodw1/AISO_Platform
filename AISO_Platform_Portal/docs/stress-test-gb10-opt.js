@@ -83,6 +83,16 @@
     <tr><td>QAT + NVFP4 KV</td><td>QAT checkpoint with the KV cache stored in NVFP4 (about 4x smaller than fp16)</td></tr>
     <tr><td>NVFP4 · KV fp8 / NVFP4 + NVFP4 KV / + MTP</td><td>NVIDIA's NVFP4 weights; then NVFP4 KV cache; then MTP on top (compared with its own MTP-off run on the same prompts)</td></tr></tbody></table></div>
 `;
+  function runsTable() {      // from the recorded attempts: how many server starts each configuration needed, and how many ended without any result
+    const rows = [];
+    ((WQ && WQ.weights) || []).filter(w => ["bf16", "nvfp4", "nvfp4kv", "fp8", "fp8pre", "int8", "int4"].includes(w.key)).forEach(w => {
+      const at = w.attempts || [], none = at.filter(a => !a.pass).length, n = (w.rows || []).length;
+      rows.push([w.label[0], n ? "1" : "—", String(at.length || 1), none ? `${none} without results` : "all gave results", w.start_failed ? "failed to start (no memory left for the KV cache)" : (n ? "ok" : "")]);
+    });
+    ((V && V.variants) || []).forEach(v => rows.push([v.label, "1", String(v.attempts || 1), "all gave results", "ok"]));
+    return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Configuration<small>設定</small></th><th>Runs per case<small>每情境次數</small></th><th>Server starts<small>開機次數</small></th><th>Starts<small>開機結果</small></th><th>Result<small>結果</small></th></tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <p class="v2-fine">A case is run once and never retried or averaged; a failed case stays in the table as failed. Some configurations were started twice on purpose (the 8K set and the 64K / 128K set run in separate server starts).<small class="zhs">每個情境只跑 1 次，不重試、不平均；失敗的情境照實列出。有些設定分兩次開機（8K 一組、64K／128K 一組）。</small></p>`;
+  }
   function render() {
     ((V && V.variants) || []).concat(((WQ && WQ.weights) || [])).forEach(v => (v.rows || []).forEach(r => { if (r.decode_only_tps == null) r.decode_only_tps = Number.isFinite(r.tpot_ms) && r.tpot_ms > 0 ? 1000 / r.tpot_ms : null; }));
     const vs = ((V && V.variants) || []).filter(v => (v.rows || []).length);
@@ -92,6 +102,7 @@
       + F("What is compared", "比較什麼", 'Same model (Gemma 4 26B), different settings, each against bf16: what do MTP and QAT change?<small class="zhs">同一個模型（Gemma 4 26B）、不同設定，全部對 bf16 比較：MTP、QAT 帶來什麼差異？</small>', PLAN)
       + F("Summary", "總表", 'Each variant against its baseline: TPS, TTFT, TPOT and the MTP draft acceptance.<small class="zhs">各變體對基準的差異與 MTP 草稿接受率。</small>', vs.length ? summary(vs) : `<p class="v2-fine">No data yet. 尚無資料。</p>`)
       + F("Values by variant", "逐變體數值", 'Every case of every variant: tok/s, TTFT and TPOT.<small class="zhs">每個變體每個情境的數值。</small>', vs.map(detail).join(""))
+      + F("Runs and retries", "測試次數與重試", 'Every case ran once (no averaging, no retry); the table lists how many server starts each setting needed.<small class="zhs">每個情境跑 1 次、不平均不重試；表中是各設定開機幾次。</small>', runsTable())
       + F("Not measured yet", "還沒測的想法", 'Ideas for more tests (QAT quality, MTP draft length, long inputs, task types, real 4-bit QAT) - suggestions, no results yet.<small class="zhs">可以加的測試：建議，還沒有結果。</small>', IDEAS)
       + F("Benchmark Result reports", "測試報告", 'Three reports (.md) and the data file to read or download.<small class="zhs">三份報告與資料檔，可閱讀或下載。</small>', reports + `<p class="v2-fine"><a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_variants.json" download>Download .JSON</a></p>`);
     if (window.HoverFold) HoverFold.init(document);
