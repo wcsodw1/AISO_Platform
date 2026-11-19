@@ -105,3 +105,6 @@
  .site-nav .nav-menu.open .nav-dropdown{opacity:1;visibility:visible;transform:none}
 }
 /* new-version bar (auto-refresh when safe) */
+
+/* English and Chinese in different colours (David 2026-11-20): the Chinese half of every bilingual label */
+body .zhs,body .zh,body .zh-i{color:#8fd0c4!important}      /* !important: the headings, tabs and hero lines each set their own grey / gold for the Chinese half */
