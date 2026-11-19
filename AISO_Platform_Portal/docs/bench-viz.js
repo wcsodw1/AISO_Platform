@@ -86,7 +86,7 @@ window.BV=(function(){
  }
  /* hover or click a line / point: that series is picked out, enlarged, its values drawn right at its points and the others dimmed; click again (or the empty chart) to release (David 2026-11-19) */
  (function(){if(window.__bvPick)return;window.__bvPick=1;const pin=new WeakMap();
-  const st=document.createElement("style");st.textContent=".bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
+  const st=document.createElement("style");st.textContent=".bv-dv{display:block;font-size:.82em;margin-top:2px;white-space:nowrap}.bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
   document.head.appendChild(st);
   const apply=(svg,v)=>{svg.classList.toggle("bv-on",v!=null);svg.querySelectorAll("[data-s]").forEach(e=>e.classList.toggle("sel",v!=null&&e.getAttribute("data-s")===String(v)))};
   const hit=e=>{const t=e.target.closest&&e.target.closest(".bv-svg [data-s]");return t?[t.closest("svg"),t.getAttribute("data-s")]:null};
@@ -133,11 +133,11 @@ window.BV=(function(){
  function table(o){
   const {k,def,groups,series,get,baseline}=o,others=baseline?series.filter(s=>s.key!==baseline):[];
   const b=series.find(s=>s.key===baseline);
-  const cell=(r,s)=>`<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k]):"—"}</td>`;
-  const rows=groups.map(g=>`<tr><td>${esc(g.label)}<small class="bv-sub">${esc(g.sub||"")}</small></td>${series.map(s=>cell(get(s.key,g),s)).join("")}${others.map(s=>{const a=get(s.key,g),c=get(baseline,g);return `<td>${a&&c?dspan(dd(a[k],c[k],def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("")}</tr>`).join("");
-  const avg=others.map(s=>{const v=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);return `<td>${v.length?dspan(dtext(mean(v.map(x=>x[0])),mean(v.map(x=>x[1])),def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("");
-  const foot=others.length?`<tfoot><tr><td>All Scenario average differential<small>全情境平均差異</small></td>${series.map(()=>"<td></td>").join("")}${avg}</tr></tfoot>`:"";
-  return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>${esc(o.rowHead||"Input")}</th>${series.map(s=>`<th class="l"><i class="v2-sw" style="background:${s.color}"></i>${esc(s.label)}<small>${esc(def.unit)}</small></th>`).join("")}${others.map(s=>`<th class="la">${esc(s.label)} vs ${esc(b.label)}<small>差異</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>${foot}</table></div>`;
+  const cell=(r,s,g)=>{const c=baseline&&s.key!==baseline?get(baseline,g):null;return `<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k]):"—"}${r&&c?`<span class="bv-dv">${dspan(dd(r[k],c[k],def.higher))}</span>`:""}</td>`};
+  const rows=groups.map(g=>`<tr><td>${esc(g.label)}<small class="bv-sub">${esc(g.sub||"")}</small></td>${series.map(s=>cell(get(s.key,g),s,g)).join("")}</tr>`).join("");
+  const avg=series.map(s=>{if(s.key===baseline)return "<td></td>";const v=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);return `<td>${v.length?dspan(dtext(mean(v.map(x=>x[0])),mean(v.map(x=>x[1])),def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("");
+  const foot=others.length?`<tfoot><tr><td>All Scenario average differential vs ${esc(b.label)}<small>全情境平均差異（相對 ${esc(b.label)}）</small></td>${avg}</tr></tfoot>`:"";
+  return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>${esc(o.rowHead||"Input")}</th>${series.map(s=>`<th class="l"><i class="v2-sw" style="background:${s.color}"></i>${esc(s.label)}<small>${esc(def.unit)}</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>${foot}</table></div>`;
  }
  // trend check: with a longer input, latency (TTFT / TPOT) should not fall and throughput should not rise (> 25 %). Only for charts whose x axis is the input length (4K, 8K ...).
  function anomalies(o){
