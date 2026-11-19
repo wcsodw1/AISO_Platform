@@ -181,7 +181,7 @@
   /* hovering a benefit lights it up; the first one grows downward with the line charts of the measured results (this page's own run, else the previous run) */
   function funcData(i) {
     if (i !== 0) return "";
-    var run = D.live ? { sizes: D.sizes } : loadHist()[0];
+    var run = D.live ? { sizes: D.sizes } : (loadHist()[0] || PUB);
     if (!run || !run.sizes || !run.sizes.length) return '<div class="lr-fd"><div><p class="lr-fdn">Run the test to see the numbers.<small class="zhs">執行測試後顯示數據。</small></p></div></div>';
     var by = {}; run.sizes.forEach(function (z) { by[z.key] = z; });
     var cards = METRICS.map(function (m) { return lineChart(m, by, run.sizes.length === 3, run.sizes); }).join("");
@@ -196,6 +196,9 @@
     paintFuncs();
   }
   renderFuncs();
+  /* the newest local run, published with the site, so the online page (no backend, empty browser history) still shows the measured numbers */
+  var PUB = null;
+  try { fetch("data/litellm-published-run.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.sizes && j.sizes.length) { PUB = j; if (!D.live && !loadHist()[0]) renderFuncs(); } }).catch(function () {}); } catch (e) {}
 
   /* ---------- smoke test: runs on the LOCAL platform only (needs the backend described in the design) ---------- */
   var logNext = 0, API = "/api/litellm", runEl = $("lrRun"), job = null, poll = null;

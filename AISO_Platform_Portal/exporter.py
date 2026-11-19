@@ -196,6 +196,7 @@ def export_catalog(base: Path, data_root: Path):
     shutil.copytree(base / "data" / "terminal", temporary / "data" / "terminal")
     shutil.copy2(base / "data" / "benchmark-registry.json", temporary / "data" / "benchmark-registry.json")
     shutil.copy2(base / "data" / "rd-list.json", temporary / "data" / "rd-list.json")
+    shutil.copy2(base / "data" / "litellm-published-run.json", temporary / "data" / "litellm-published-run.json")
     shutil.copy2(base / "data" / "sizing-model-sizes.json", temporary / "data" / "sizing-model-sizes.json")
     shutil.copy2(base / "data" / "sizing-capacity.json", temporary / "data" / "sizing-capacity.json")
     shutil.copytree(base / "data" / "benchmark-troubleshooting", temporary / "data" / "benchmark-troubleshooting", ignore=shutil.ignore_patterns("*.md"))
