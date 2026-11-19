@@ -11,7 +11,8 @@
     norm_tps: { short: "TPS (Normalized)", unit: "tok/s", dec: 1 },
     aggregate_tps: { short: "TPS (Aggregate)", unit: "tok/s", dec: 1 },
     ttft_s: { short: "TTFT", unit: "s", dec: 2 },
-    tpot_ms: { short: "TPOT", unit: "ms/token", dec: 1 }
+    tpot_ms: { short: "TPOT", unit: "ms/token", dec: 1 },
+    dec_tps: { short: "TPS (Decode)", unit: "tok/s", dec: 1 }
   };
   const REPEAT_COLORS = ["#5b9cf5", "#6fcf97", "#f2994a", "#c792ea", "#e5c07b"];
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -22,7 +23,8 @@
   function repeatsOf(run, metric) {
     const r = run && run.repeats;
     if (!r) return null;
-    const a = metric === "norm_tps" ? (r.aggregate_tps || []).map(v => v / run.np) : r[metric];
+    const a = metric === "norm_tps" ? (r.aggregate_tps || []).map(v => v / run.np)
+      : metric === "dec_tps" ? (r.tpot_ms || []).map(v => v > 0 ? 1000 / v : NaN) : r[metric];   // Decode = 1000 ÷ per-repeat TPOT
     return a && a.length && a.every(Number.isFinite) ? a : null;
   }
 

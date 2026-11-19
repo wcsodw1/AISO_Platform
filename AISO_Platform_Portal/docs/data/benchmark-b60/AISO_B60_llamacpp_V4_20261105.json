@@ -1,14 +1,15 @@
 {
  "dataset": "AISO_B60_llamacpp_V4_20261105",
- "evidence_until": "2026-11-05",
+ "evidence_until": "2026-11-19",
  "generated_on": "2026-11-05",
- "note": "Intel B60 llama.cpp, V4 protocol (v4-pdf-e2e), campaign B60_matrix_v4_20261104_201559_715039. All four models 9/9 PASS (36/36). Run was interrupted once (terminal showed ^\\Quit, likely a manual Ctrl+\\; not confirmed) during Gemma31 NP1/8192 and resumed from saved results.",
+ "note": "Intel B60 llama.cpp, V4 protocol (v4-pdf-e2e), campaign B60_matrix_v4_20261104_201559_715039. All four models 9/9 PASS (36/36). Run was interrupted once (terminal showed ^\\Quit, likely a manual Ctrl+\\; not confirmed) during Gemma31 NP1/8192 and resumed from saved results. 2026-11-19 補 NP4（B60_llamacpp_B1024_NP4_REBUILD_20261118_R3）：4 模型 × 4K/8K/16K × 3 次 = 12/12 PASS，batch 1024、Flash Attention off、重建環境（NEW_ENVIRONMENT_NOT_V4_PARITY）。",
  "profile": {
   "machine": "4× Intel B60",
   "framework": "llama.cpp",
   "np": [
    1,
    2,
+   4,
    5
   ],
   "input_tokens": [
@@ -29,7 +30,8 @@
   "total_kv_by_np": {
    "1": 18432,
    "2": 36864,
-   "5": 92160
+   "5": 92160,
+   "4": 73728
   },
   "batch": 4096,
   "ubatch": 512,
@@ -44,7 +46,21 @@
   "context_shift": "OFF",
   "gpu_layers": 999,
   "cache_ram": "0",
-  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）"
+  "gpu_evidence": "機器回報 Arc Pro B60（11/04–05）",
+  "by_np": {
+   "4": {
+    "batch": 1024,
+    "ubatch": 512,
+    "flash_attention": "off",
+    "split": "layer (tensor-split 1,1)",
+    "threads": 20,
+    "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+    "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+    "date": "2026-11-18 ~ 19",
+    "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+    "note": "B60 原 V4 環境已不在機器上，NP4 於重建環境以 V4 量測程式 + batch 1024 重跑；同 Docker 映像 sha256:f457e95a4735…、同 GGUF SHA256，但不是 V4 等價證據。"
+   }
+  }
  },
  "b60_runs": [
   {
@@ -1109,6 +1125,412 @@
      27.849
     ]
    }
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 83.65,
+   "tpot_ms": 74.678,
+   "aggregate_tps": 33.82,
+   "decode_tps": 8.455,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     23.004,
+     45.734,
+     182.213
+    ],
+    "tpot_ms": [
+     55.39,
+     66.69,
+     101.952
+    ],
+    "aggregate_tps": [
+     51.289,
+     35.886,
+     14.286
+    ]
+   },
+   "variance_note": "3 次重複差異大（Aggregate CV 45%）",
+   "consistency_note": "Aggregate 33.82 vs TTFT/TPOT 推算 25.59：逐次值各自一致（±1%），差距來自 3 次重複差異大，平均後比值不等於比值平均"
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 103.566,
+   "tpot_ms": 93.277,
+   "aggregate_tps": 24.995,
+   "decode_tps": 6.249,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     178.719,
+     38.906,
+     93.073
+    ],
+    "tpot_ms": [
+     140.275,
+     67.41,
+     72.146
+    ],
+    "aggregate_tps": [
+     12.694,
+     37.808,
+     24.482
+    ]
+   },
+   "variance_note": "3 次重複差異大（Aggregate CV 41%）",
+   "consistency_note": "Aggregate 24.99 vs TTFT/TPOT 推算 20.58：逐次值各自一致（±1%），差距來自 3 次重複差異大，平均後比值不等於比值平均"
+  },
+  {
+   "model": "Gemma26",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 126.805,
+   "tpot_ms": 122.821,
+   "aggregate_tps": 16.422,
+   "decode_tps": 4.106,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     147.402,
+     106.144,
+     126.869
+    ],
+    "tpot_ms": [
+     149.66,
+     120.576,
+     98.228
+    ],
+    "aggregate_tps": [
+     13.578,
+     17.76,
+     17.928
+    ]
+   }
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 248.718,
+   "tpot_ms": 184.77,
+   "aggregate_tps": 11.208,
+   "decode_tps": 2.802,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     89.424,
+     299.461,
+     357.27
+    ],
+    "tpot_ms": [
+     128.433,
+     191.647,
+     234.231
+    ],
+    "aggregate_tps": [
+     18.509,
+     8.257,
+     6.857
+    ]
+   },
+   "variance_note": "3 次重複差異大（Aggregate CV 46%）",
+   "consistency_note": "Aggregate 11.21 vs TTFT/TPOT 推算 9.36：逐次值各自一致（±1%），差距來自 3 次重複差異大，平均後比值不等於比值平均"
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 348.525,
+   "tpot_ms": 238.838,
+   "aggregate_tps": 7.994,
+   "decode_tps": 1.999,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     597.42,
+     292.562,
+     155.591
+    ],
+    "tpot_ms": [
+     272.432,
+     265.854,
+     178.227
+    ],
+    "aggregate_tps": [
+     4.669,
+     7.239,
+     12.075
+    ]
+   },
+   "variance_note": "3 次重複差異大（Aggregate CV 38%）",
+   "consistency_note": "Aggregate 7.99 vs TTFT/TPOT 推算 6.91：逐次值各自一致（±1%），差距來自 3 次重複差異大，平均後比值不等於比值平均"
+  },
+  {
+   "model": "Gemma31",
+   "format": "GGUF Q4_0",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 472.925,
+   "tpot_ms": 372.705,
+   "aggregate_tps": 6.065,
+   "decode_tps": 1.516,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": true,
+   "repeats": {
+    "ttft_s": [
+     244.886,
+     896.176,
+     277.713
+    ],
+    "tpot_ms": [
+     248.999,
+     599.226,
+     269.891
+    ],
+    "aggregate_tps": [
+     8.14,
+     2.708,
+     7.348
+    ]
+   },
+   "variance_note": "3 次重複差異大（Aggregate CV 40%）",
+   "consistency_note": "Aggregate 6.07 vs TTFT/TPOT 推算 4.80：逐次值各自一致（±1%），差距來自 3 次重複差異大，平均後比值不等於比值平均"
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 32.682,
+   "tpot_ms": 45.951,
+   "aggregate_tps": 51.499,
+   "decode_tps": 12.875,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     23.266,
+     38.904,
+     35.876
+    ],
+    "tpot_ms": [
+     48.156,
+     41.976,
+     47.721
+    ],
+    "aggregate_tps": [
+     56.324,
+     49.918,
+     48.255
+    ]
+   }
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 78.211,
+   "tpot_ms": 75.562,
+   "aggregate_tps": 26.84,
+   "decode_tps": 6.71,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     93.833,
+     75.168,
+     65.631
+    ],
+    "tpot_ms": [
+     92.221,
+     69.431,
+     65.034
+    ],
+    "aggregate_tps": [
+     21.709,
+     27.925,
+     30.885
+    ]
+   }
+  },
+  {
+   "model": "Laguna",
+   "format": "GGUF Q4_K_M",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 158.407,
+   "tpot_ms": 129.428,
+   "aggregate_tps": 14.184,
+   "decode_tps": 3.546,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     128.28,
+     184.233,
+     162.708
+    ],
+    "tpot_ms": [
+     122.254,
+     143.068,
+     122.963
+    ],
+    "aggregate_tps": [
+     16.08,
+     12.339,
+     14.131
+    ]
+   }
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 4,
+   "input": 4096,
+   "ttft_s": 9.895,
+   "tpot_ms": 46.723,
+   "aggregate_tps": 70.838,
+   "decode_tps": 17.709,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     9.006,
+     10.375,
+     10.304
+    ],
+    "tpot_ms": [
+     46.621,
+     46.782,
+     46.765
+    ],
+    "aggregate_tps": [
+     72.065,
+     70.17,
+     70.278
+    ]
+   }
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 4,
+   "input": 8192,
+   "ttft_s": 21.253,
+   "tpot_ms": 47.56,
+   "aggregate_tps": 58.466,
+   "decode_tps": 14.617,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     19.152,
+     22.411,
+     22.196
+    ],
+    "tpot_ms": [
+     52.644,
+     48.042,
+     41.994
+    ],
+    "aggregate_tps": [
+     55.859,
+     56.989,
+     62.552
+    ]
+   }
+  },
+  {
+   "model": "Nemotron",
+   "format": "GGUF UD-Q4_K_M",
+   "np": 4,
+   "input": 16384,
+   "ttft_s": 55.12,
+   "tpot_ms": 59.362,
+   "aggregate_tps": 35.376,
+   "decode_tps": 8.844,
+   "status": "PASS",
+   "run_id": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "campaign": "B60_llamacpp_B1024_NP4_REBUILD_20261118_R3",
+   "comparability": "NEW_ENVIRONMENT_NOT_V4_PARITY",
+   "batch": 1024,
+   "ttft_over_180s": false,
+   "repeats": {
+    "ttft_s": [
+     46.714,
+     59.562,
+     59.084
+    ],
+    "tpot_ms": [
+     55.592,
+     64.433,
+     58.061
+    ],
+    "aggregate_tps": [
+     39.284,
+     32.47,
+     34.374
+    ]
+   }
   }
  ],
  "model_parity": [
@@ -1156,7 +1578,9 @@
   "llama.cpp 啟動參數（V4 腳本）：10 slots、每 slot 18432、總 KV 依 NP（1→18432／2→36864／5→92160）、batch 4096、ubatch 512、KV f16、layer split；llama.cpp 版本／build 未取得（UNVERIFIED）。",
   "本批 llama.cpp 為 GGUF 量化（Q4_0／Q4_K_M／UD-Q4_K_M），與 vLLM／SGLang 的 W4A16／FP8 不同，框架間的差異不能全歸因於框架。",
   "Gemma31 NP1/8192 執行中程序被中斷（終端顯示 ^\\Quit (core dumped)，疑為手動 Ctrl+\\ 送出 SIGQUIT，未由日誌確認），以 resume 腳本從已存結果續跑（備份 zip 已建立，該 case 重測）；表中為續跑後的最終值。",
-  "啟動參數已由 RunnerManifest 內各模型／NP 的 command.json 核對（見 scripts/ingest_b60_commands.py）；主機路徑與環境變數不公開。"
+  "啟動參數已由 RunnerManifest 內各模型／NP 的 command.json 核對（見 scripts/ingest_b60_commands.py）；主機路徑與環境變數不公開。",
+  "NP4（2026-11-18～19 補測）：B60 原 V4 環境已移除，於重建環境用 V4 量測程式重跑，參數 batch 1024 / ubatch 512 / KV f16 / Flash Attention off / layer split / 每 slot 18432 / 10 slots；Docker 映像（sha256:f457e95a4735…）與四個 GGUF 的 SHA256 皆與 V4、B70、AISO1 相同。標記 NEW_ENVIRONMENT_NOT_V4_PARITY：與 NP1／2／5（batch 4096）不是同一批環境，不可當作 V4 等價。",
+  "NP4 重複間差異大（Aggregate 變異係數 > 20%）：Gemma26 4K、Gemma26 8K、Gemma31 4K、Gemma31 8K、Gemma31 16K；表中為 3 次算術平均，逐次值見 repeats。"
  ],
  "source_file": "B60 terminal report.md (B60_matrix_v4_20261104_201559_715039)",
  "metrics_version": "v4-pdf-e2e",

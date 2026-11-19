@@ -5,7 +5,7 @@ const METRICS={
  ttft_s:{short:"TTFT",zh:"首字延遲",unit:"s",higher:false},
  tpot_ms:{short:"TPOT",zh:"每個字的間隔",unit:"ms/token",higher:false},
  norm_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token（含首字等待）",unit:"tok/s",higher:true},
- aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};
+ aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token（含首字等待）",unit:"tok/s",higher:true}};   // TPS (Decode only) chart is added by bench-viz withDecode(); dec_tps is used by the tables
 const kn=n=>`${n/1024}K`,tok=n=>n.toLocaleString("en-US");
 const num=(v,d=0)=>Number.isFinite(v)?v.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
 const val=(k,v)=>k==="ttft_s"&&v<10?num(v,2):num(v,1);
@@ -68,9 +68,9 @@ function renderMetrics(){
 }
 function renderTable(){
  const ins=inputsNow(),c=(r,k)=>`<td>${r?(k==="aggregate_tps"?num(r[k],1):val(k,r[k])):"—"}</td>`;
- const sub=`<th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS Norm<small>tok/s/請求</small></th><th class="l">Aggregate<small>tok/s</small></th>`;
- const rows=ins.map(i=>`<tr><td>${kn(i)}</td>${REG.machines.map(m=>{const r=get(m.key,FW,MODEL,NP,i);return ["ttft_s","tpot_ms","norm_tps","aggregate_tps"].map(k=>c(r,k)).join("")}).join("")}</tr>`).join("");
- $s("stTable").innerHTML=`<thead><tr><th rowspan="2">Input</th>${REG.machines.map(m=>`<th colspan="4" class="l">${esc(m.label)}</th>`).join("")}</tr><tr>${REG.machines.map(()=>sub).join("")}</tr></thead><tbody>${rows}</tbody>`;
+ const sub=`<th class="l">TTFT<small>s</small></th><th class="l">TPOT<small>ms</small></th><th class="l">TPS Norm<small>tok/s/請求</small></th><th class="l">Aggregate<small>tok/s</small></th><th class="l">TPS Decode<small>tok/s/請求</small></th>`;
+ const rows=ins.map(i=>`<tr><td>${kn(i)}</td>${REG.machines.map(m=>{const r=get(m.key,FW,MODEL,NP,i);return ["ttft_s","tpot_ms","norm_tps","aggregate_tps","dec_tps"].map(k=>c(r,k)).join("")}).join("")}</tr>`).join("");
+ $s("stTable").innerHTML=`<thead><tr><th rowspan="2">Input</th>${REG.machines.map(m=>`<th colspan="5" class="l">${esc(m.label)}</th>`).join("")}</tr><tr>${REG.machines.map(()=>sub).join("")}</tr></thead><tbody>${rows}</tbody>`;
  $s("stTableSub").textContent=`${fwLabel(FW)} · ${mlabel(FW,MODEL)} · NP${NP} · 3 次重複平均；「—」= 該機器此組合沒有資料。`;
 }
 function renderCover(){
@@ -87,9 +87,12 @@ function paramTable(){
   vllm:{batch:"Max batched tokens (≠ llama.cpp batch)|最大批次 token",per_slot_context:"Max model len|模型長度",slots:"Max sequences|序列數",split:"Tensor parallel|張量並行"},
   sglang:{batch:"Chunked prefill (≠ llama.cpp batch)|分塊預填",per_slot_context:"Context / model len|上下文長度",slots:"Max running requests|最大並行請求",split:"Tensor parallel|張量並行"}}[FW]||{};
  const lc=FW==="llamacpp";
- const rows=[[L.batch||"Batch|批次","batch"],lc&&[L.ubatch,"ubatch"],[L.per_slot_context||"Context|上下文","per_slot_context"],[L.slots||"Slots|槽數","slots"],lc&&["Total context (NP"+NP+")|總 Context","total_kv"],["KV cache type|KV cache 型別","kv_cache_type"],["Prefix cache|前綴快取","prefix_cache"],lc&&["Flash Attention|","flash_attention"],[L.split||"Split|切分","split"],lc&&["Unified KV|","unified_kv"],lc&&["Continuous batching|連續批次","cont_batching"],lc&&["Context shift|","context_shift"],lc&&["GPU layers (-ngl)|","gpu_layers"],["GPU memory utilization|GPU 記憶體使用率","memory_fraction"],FW==="vllm"&&["Chunked prefill|","chunked_prefill"],["Attention backend|","attention_backend"],["Page size|","page_size"],["GPUs used|使用 GPU 數","gpus_used"],["GPU evidence|型號佐證","gpu_evidence"],["Runtime|版本","runtime"]].filter(Boolean);
+ const rows=[[L.batch||"Batch|批次","batch"],lc&&[L.ubatch,"ubatch"],[L.per_slot_context||"Context|上下文","per_slot_context"],[L.slots||"Slots|槽數","slots"],lc&&["Total context (NP"+NP+")|總 Context","total_kv"],["KV cache type|KV cache 型別","kv_cache_type"],["Prefix cache|前綴快取","prefix_cache"],lc&&["Flash Attention|","flash_attention"],[L.split||"Split|切分","split"],lc&&["Unified KV|","unified_kv"],lc&&["Continuous batching|連續批次","cont_batching"],lc&&["Context shift|","context_shift"],lc&&["GPU layers (-ngl)|","gpu_layers"],["GPU memory utilization|GPU 記憶體使用率","memory_fraction"],FW==="vllm"&&["Chunked prefill|","chunked_prefill"],["Attention backend|","attention_backend"],["Page size|","page_size"],["GPUs used|使用 GPU 數","gpus_used"],["GPU evidence|型號佐證","gpu_evidence"],["Runtime|版本","runtime"],["TPOT source|TPOT 量測來源","tpot_source"],["Environment|測試環境","environment"]].filter(Boolean);
  const ALT={batch:"batch",per_slot_context:"max_context",slots:"max_seqs",split:"tp"};
- const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},p={...d.profile};if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;if(p.gpus_used==null){const g=typeof p.tp==='number'?p.tp:p.gpu_count;if(g!=null)p.gpus_used=g}Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});
+ const prof=m=>{const d=DATA[m.key]&&DATA[m.key][FW];if(!d)return null;const c=(d.config&&d.config[MODEL])||{},bn=(d.profile.by_np||{})[NP]||{},p={...d.profile,...bn};
+  {const md=(p.metric_definitions||{}).tpot;p.tpot_source=md?(/server/i.test(md)?"server timings":"client stream"):(p.metrics_version==="v4-pdf-e2e"?"client stream":undefined)}
+  if(REG.machines.some(x=>{const q=DATA[x.key]&&DATA[x.key][FW];return q&&q.profile&&((q.profile.by_np||{})[NP]||{}).comparability}))p.environment=bn.comparability?"rebuilt (not V4)":"original";
+  if(p.per_slot_context&&p.total_kv===undefined)p.total_kv=(p.total_kv_by_np&&p.total_kv_by_np[NP])||p.per_slot_context*NP;if(p.gpus_used==null){const g=typeof p.tp==='number'?p.tp:p.gpu_count;if(g!=null)p.gpus_used=g}Object.entries(ALT).forEach(([k,a])=>{if((p[k]===undefined||p[k]===null)&&c[a]!==undefined&&c[a]!==null&&c[a]!=="")p[k]=c[a]});
   if(typeof p.batch==='string'){const n=p.batch.match(/\d+/);if(n)p.batch=n[0]}return p};
  const val=(p,k)=>{if(!p)return "—";const v=p[k];return v===undefined||v===null||v===""?"未記錄":String(v)};
  const bad=v=>v==="未記錄"||v==="—"||v==="UNVERIFIED";
@@ -120,7 +123,7 @@ function renderSetup(){
 }
 function renderConfig(){
  const rows=[["來源 Repo","repo"],["格式／量化","format"],["後端","backend"],["TP／切分","tp"],["Max Context","max_context"],["Batch／Chunk","batch"],["Max Seqs／Slots","max_seqs"],["Memory Fraction","mem_fraction"],["Cache","cache"],["Run","run_id"],["測試日期","date"]];
- const col=m=>{const ds=DATA[m.key]&&DATA[m.key][FW],has=runsOf(m.key,FW).some(r=>r.model===MODEL),c=ds&&ds.config[MODEL];return{has,c}};
+ const col=m=>{const ds=DATA[m.key]&&DATA[m.key][FW],has=runsOf(m.key,FW).some(r=>r.model===MODEL);let c=ds&&ds.config[MODEL];const bn=ds&&ds.profile&&(ds.profile.by_np||{})[NP];if(c&&bn)c={...c,batch:`batch ${bn.batch} / ubatch ${bn.ubatch}`,run_id:bn.run_id,date:bn.date};return{has,c}};
  const cols=REG.machines.map(m=>({m,...col(m)}));
  const cell=(x,k)=>{if(!x.has)return '<td class="st-wait">此組合無資料</td>';const v=x.c?x.c[k]:null;return v===null||v===undefined||v===""?'<td class="cmp-unv">未核實</td>':`<td>${esc(v)}</td>`};
  $s("stCfg").innerHTML=`<thead><tr><th>項目</th>${cols.map(x=>`<th class="l">${esc(x.m.label)}</th>`).join("")}</tr></thead><tbody>${rows.map(([l,k])=>`<tr><td class="st-model">${l}</td>${cols.map(x=>cell(x,k)).join("")}</tr>`).join("")}</tbody>`;
@@ -174,8 +177,8 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  REG=reg;
  if(PAIR)REG.machines=reg.machines.filter(m=>PAIRS[PAIR].includes(m.key));
  return Promise.all(reg.datasets.filter(x=>!PAIR||PAIRS[PAIR].includes(x.machine)).map(x=>fetch(x.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(x.file+" "+r.status);return r.json()}).then(d=>{
-  const runs=(d[x.runs_key]||[]).map(r=>({...r,norm_tps:r.aggregate_tps/r.np,repeats:r.repeats||(Array.isArray(r.repeats_aggregate_tps)?{aggregate_tps:r.repeats_aggregate_tps}:undefined)}));
-  (DATA[x.machine]=DATA[x.machine]||{})[x.framework]={profile:d.profile,runs,evidence_until:d.evidence_until,caveat:d.comparability||null,config:d.config_by_model||{},partial:d.partial_runs||[]};
+  const runs=(d[x.runs_key]||[]).map(r=>({...r,norm_tps:r.aggregate_tps/r.np,dec_tps:r.tpot_ms>0?1000/r.tpot_ms:null,repeats:r.repeats||(Array.isArray(r.repeats_aggregate_tps)?{aggregate_tps:r.repeats_aggregate_tps}:undefined)}));
+  (DATA[x.machine]=DATA[x.machine]||{})[x.framework]={profile:{...d.profile,metrics_version:(d.profile||{}).metrics_version||d.metrics_version},runs,evidence_until:d.evidence_until,caveat:d.comparability||null,config:d.config_by_model||{},partial:d.partial_runs||[]};
  })));
 }).then(()=>{
  // default: a combination all three machines share, else two, else the first one with any data, else the first one with any data
@@ -186,7 +189,7 @@ Promise.all([fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>{i
  [FW,MODEL,NP]=best;OTHER=FW!=="llamacpp";
  if(PAIR){const t=PAIR_TITLE[PAIR],lb=REG.machines.map(m=>m.label).join(" · ");
   document.title=`AISO — Stress Test · ${t}`;$s("pgTitle").innerHTML=`${esc(t)} <small class="zhs">Stress Test</small>`;
-  $s("zhMetrics").textContent=`四項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
+  $s("zhMetrics").textContent=`五項指標 · ${lb} 長條圖`;$s("zhCfg").textContent="同框架 · 同模型 · 兩機實際啟動條件"}
  renderPairs();renderGap();renderCover();renderAll();
  (function(){   // Data menu: opens on hover / focus (CSS) and on click or tap
   const m=$s("dataMenu");if(!m)return;const b=m.querySelector(".dm-btn");
