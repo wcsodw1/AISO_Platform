@@ -11,7 +11,7 @@ const MET={
  tpot_ms:{t:"TPOT 字間隔",u:"ms/token",tip:"1000×(stream_done − first_content)/(輸出 token − 1)；越低越好。"},
  decode_tps:{t:"TPS (Normalized) 每請求輸出速度",u:"tok/s",tip:"Aggregate ÷ NP，每個請求自己的速度；越高越好。"},
  aggregate_tps:{t:"TPS (Aggregate) 合計輸出速度",u:"tok/s",tip:"總輸出 token ÷（最後 stream_done − 第一個 request_start），含首字等待；越高越好。"},
- decode_only:{t:"TPS (Decode only) 純產生速度",u:"tok/s",tip:"1000 ÷ TPOT（不含首字等待）；越高越好。TPOT 為用戶端量到的估計值。"}};
+ decode_only:{t:"TPS (Decode only) 平均每秒產生幾個字",u:"tok/s",tip:"1000 ÷ TPOT（不含首字等待）；越高越好。TPOT 為用戶端量到的估計值。"}};
 let S=null,model=null,hooks=[];
 
 function nice(max){
