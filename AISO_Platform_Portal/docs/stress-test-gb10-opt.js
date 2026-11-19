@@ -66,7 +66,7 @@
       get: (key, gr) => { const r = rowOf(key, gr.np); return r && r.status === "PASS" && Number.isFinite(r[k]) ? r : null; }, baseline: ser[0] && ser[0][0], message: "" })));
     return `<p class="wq-leg">${ser.map(x => `<span><i style="background:${x[2]}"></i>${esc(x[1])}</span>`).join("")}</p><div>${html}</div>`;
   }
-  const PLAN = `<p class="v2-fine">Goal: same model size (Gemma 4 26B-A4B on vLLM, GB10) - what do MTP and QAT change? Every line is a different configuration of the SAME model, compared with bf16 (KV fp8) as the baseline.<small class="zhs">目的：同一個模型大小（Gemma 4 26B），比較有沒有用 MTP、QAT 的差異；每條線都是同一個模型的不同設定，基準是 bf16（KV fp8）。</small></p>
+  const PLAN = `<p class="v2-fine">Same model (Gemma 4 26B), different settings, each against bf16: what do MTP and QAT change?<small class="zhs">同一個模型（Gemma 4 26B）、不同設定，全部對 bf16 比較：MTP、QAT 帶來什麼差異？</small></p>
     <div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Measured now<small>已測</small></th><th>What is different<small>差在哪</small></th></tr></thead><tbody>
     <tr><td>bf16 (baseline)</td><td>Original weights, KV fp8, no speculative decoding</td></tr>
     <tr><td>bf16 + MTP</td><td>Same weights; a small draft model (Gemma 4 assistant) proposes 3 tokens per step, the main model verifies</td></tr>

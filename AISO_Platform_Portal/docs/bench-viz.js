@@ -86,17 +86,26 @@ window.BV=(function(){
  }
  /* hover or click a line / point: that series is picked out, enlarged, its values drawn right at its points and the others dimmed; click again (or the empty chart) to release (David 2026-11-19) */
  (function(){if(window.__bvPick)return;window.__bvPick=1;const pin=new WeakMap();
-  const st=document.createElement("style");st.textContent=".bv-fit.bv-many{position:relative}.bv-fit.bv-zoom{z-index:30;background:#101318;border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.65)}.bv-dv{display:block;font-size:.82em;margin-top:2px;white-space:nowrap}.bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
+  const st=document.createElement("style");st.textContent=".v2-chart.bv-zoom{position:relative;z-index:30}.v2-legend2 [data-lg]{cursor:pointer;transition:opacity .15s;user-select:none}.v2-legend2 [data-lg].off{opacity:.4;text-decoration:line-through}.v2-legend2 [data-lg].off i{background:transparent!important;box-shadow:inset 0 0 0 2px currentColor}.bv-svg [data-s].bv-off,.bv-svg.bv-on [data-s].bv-off{display:none}.v2-legend2.bv-lgon [data-lg]{opacity:.38}.v2-legend2.bv-lgon [data-lg].sel{opacity:1;font-weight:700}.bv-dv{display:block;font-size:.82em;margin-top:2px;white-space:nowrap}.bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
   document.head.appendChild(st);
-  const apply=(svg,v)=>{svg.classList.toggle("bv-on",v!=null);svg.querySelectorAll("[data-s]").forEach(e=>e.classList.toggle("sel",v!=null&&e.getAttribute("data-s")===String(v)))};
+  let apply=(svg,v)=>{svg.classList.toggle("bv-on",v!=null);svg.querySelectorAll("[data-s]").forEach(e=>e.classList.toggle("sel",v!=null&&e.getAttribute("data-s")===String(v)))};
   const hit=e=>{const t=e.target.closest&&e.target.closest(".bv-svg [data-s]");return t?[t.closest("svg"),t.getAttribute("data-s")]:null};
-  /* many lines (5 or more): pointing at the chart enlarges it to about 4/5 of the screen width (a transform, so the page does not reflow under the pointer); leaving puts it back */
-  const zoomIn=w=>{if(w.classList.contains("bv-zoom"))return;const sv=w.querySelector("svg"),r=w.getBoundingClientRect(),sw=sv.getBoundingClientRect().width||r.width,k=Math.min(3,Math.max(1,innerWidth*.8/sw)),dx=innerWidth/2-(r.left+r.width/2);w.style.transformOrigin="center top";w.style.transform=`translateX(${dx.toFixed(0)}px) scale(${k.toFixed(3)})`;w.classList.add("bv-zoom")};
-  const zoomOut=w=>{w.classList.remove("bv-zoom");w.style.transform=""};
-  document.addEventListener("mouseover",e=>{const w=e.target.closest&&e.target.closest(".bv-fit.bv-many");if(w&&innerWidth>700)zoomIn(w)});
-  document.addEventListener("mouseout",e=>{const w=e.target.closest&&e.target.closest(".bv-fit.bv-many.bv-zoom");if(w&&!(e.relatedTarget&&w.contains(e.relatedTarget)))zoomOut(w)});
+  /* many lines (5 or more): pointing at the chart enlarges it (its own frame, nothing added) to about 3/4 of the screen width (a transform, so the page does not reflow under the pointer); leaving puts it back */
+  const zoomIn=c=>{if(c.classList.contains("bv-zoom"))return;const r=c.getBoundingClientRect(),k=Math.min(3,Math.max(1,innerWidth*.75/r.width)),dx=innerWidth/2-(r.left+r.width/2);let bg=getComputedStyle(document.body).backgroundColor;if(!bg||/rgba\(.*,\s*0\)$|transparent/.test(bg))bg="#0c0e12";c.style.background=bg;c.style.transformOrigin="center top";c.style.transform=`translateX(${dx.toFixed(0)}px) scale(${k.toFixed(3)})`;c.classList.add("bv-zoom")};
+  const zoomOut=c=>{c.classList.remove("bv-zoom");c.style.transform="";c.style.background=""};
+  const cardOf=t=>{const c=t&&t.closest&&t.closest(".v2-chart");return c&&c.querySelector(".bv-fit.bv-many")?c:null};
+  document.addEventListener("mouseover",e=>{const c=cardOf(e.target);if(c&&innerWidth>700)zoomIn(c)});
+  document.addEventListener("mouseout",e=>{const c=cardOf(e.target);if(c&&c.classList.contains("bv-zoom")&&!(e.relatedTarget&&c.contains(e.relatedTarget)))zoomOut(c)});
   document.addEventListener("mouseover",e=>{const h=hit(e);if(h)apply(h[0],h[1])});
   document.addEventListener("mouseout",e=>{const sv=e.target.closest&&e.target.closest(".bv-svg");if(!sv)return;const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest(".bv-svg [data-s]");if(!to||to.closest("svg")!==sv)apply(sv,pin.has(sv)?pin.get(sv):null)});
+  const lgSvg=t=>{const b=t.closest(".bv-block");return b?b.querySelector(".bv-svg"):null};
+  const lgMark=(svg,v)=>{const b=svg.closest(".bv-block"),lg=b&&b.querySelector(".v2-legend2");if(!lg)return;lg.classList.toggle("bv-lgon",v!=null);lg.querySelectorAll("[data-lg]").forEach(x=>x.classList.toggle("sel",v!=null&&x.getAttribute("data-lg")===String(v)))};
+  const apply0=apply;apply=(svg,v)=>{apply0(svg,v);lgMark(svg,v)};
+  document.addEventListener("mouseover",e=>{const l=e.target.closest&&e.target.closest("[data-lg]");if(!l)return;const sv=lgSvg(l);if(sv)apply(sv,l.getAttribute("data-lg"))});
+  document.addEventListener("mouseout",e=>{const l=e.target.closest&&e.target.closest("[data-lg]");if(!l)return;const sv=lgSvg(l);if(!sv)return;const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest("[data-lg]");if(to&&lgSvg(to)===sv)return;apply(sv,pin.has(sv)?pin.get(sv):null)});
+  /* click a legend dot: show / hide that line in every chart of the same section (pick any set of lines to compare); hovering a legend entry still lights the line up */
+  document.addEventListener("click",e=>{const l=e.target.closest&&e.target.closest("[data-lg]");if(!l)return;const v=l.getAttribute("data-lg"),sc=l.closest(".report-section")||document,off=!l.classList.contains("off");
+   sc.querySelectorAll(`[data-lg="${v}"]`).forEach(x=>x.classList.toggle("off",off));sc.querySelectorAll(`.bv-svg [data-s="${v}"]`).forEach(x=>x.classList.toggle("bv-off",off))});
   document.addEventListener("click",e=>{const sv=e.target.closest&&e.target.closest(".bv-svg");if(!sv)return;const h=hit(e);if(h&&pin.get(sv)!==h[1]){pin.set(sv,h[1]);apply(sv,h[1])}else{pin.delete(sv);apply(sv,null)}})})();
  /* Bar | Line | Both switch, remembered per browser; one handler flips every chart block on the page */
  const MODES=[["bar","Bar","長條"],["line","Line","折線"],["both","Both","兩者"]];
@@ -157,7 +166,7 @@ window.BV=(function(){
  /* one metric block: title + (badge · conclusion · legend) + chart + table */
  function block(o){
   const d=o.def,chart=charts(o);
-  const legend=o.series.map((s,j)=>o.dodge?`<span><b style="color:${s.color};font-size:18px;line-height:1">${["●","■","▲","◆"][j%4]}</b>${esc(s.label)}</span>`:`<span><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
+  const legend=o.series.map((s,j)=>o.dodge?`<span data-lg="${j}"><b style="color:${s.color};font-size:18px;line-height:1">${["●","■","▲","◆"][j%4]}</b>${esc(s.label)}</span>`:`<span data-lg="${j}"><i style="background:${s.color}"></i>${esc(s.label)}</span>`).join("");
   const head=`<h3 class="bv-h">${esc(d.short).replace("Decode",'<em class="bv-dec">Decode</em>')}<span class="zh-i">${esc(d.zh)}${o.context?"｜"+esc(o.context):""}</span></h3>${MEAN[o.k]?`<p class="bv-mean" title="${esc(MEAN[o.k][2])}">${esc(MEAN[o.k][0])}<small class="zhs">${esc(MEAN[o.k][1])}</small></p>`:""}
    <p class="v2-line"><span class="v2-dir ${d.higher?"hi":"lo"}">${d.higher?"↑ 越高越好":"↓ 越低越好"}</span><span>${o.baseline?"":esc(message(o))}</span><span class="v2-legend2">${legend}</span></p>`;
   if(!chart)return `<div class="bv-block">${head}<p class="v2-fine st-empty">這個組合目前沒有任何資料。</p></div>`;
