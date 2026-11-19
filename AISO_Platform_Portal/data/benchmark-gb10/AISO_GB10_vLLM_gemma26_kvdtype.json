@@ -19,7 +19,7 @@
   ],
   "repeats": 1
  },
- "generated_at": "2026-11-19T15:06:22",
+ "generated_at": "2026-11-19T20:33:31",
  "note": "Cases are always sent, never skipped from a KV estimate; a case above the KV capacity is marked kv_tight and shows what vLLM really did (queued). Each family compares one weights precision with KV fp8 against the other KV type.",
  "kv_types": [
   {

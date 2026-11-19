@@ -50,7 +50,7 @@ window.BV=(function(){
  /* line chart: same data and axis as the bars; one line per series across the input lengths */
  const gwOf=o=>{const n=o.groups.length,L=68,R=30,W=Math.min(780,Math.max(o.width||0,n*150+L+R));return (W-L-R)/n};
  const SHAPES=["circle","square","triangle","diamond"];
- const mark=(shape,cx,cy,r,fill,tip="")=>shape==="square"?`<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="1.5" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</rect>`:shape==="triangle"?`<polygon points="${cx},${cy-r-1.5} ${cx+r+1.5},${cy+r} ${cx-r-1.5},${cy+r}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:shape==="diamond"?`<polygon points="${cx},${cy-r-2} ${cx+r+2},${cy} ${cx},${cy+r+2} ${cx-r-2},${cy}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
+ const mark=(shape,cx,cy,r,fill,tip="",a="")=>shape==="square"?`<rect ${a} x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="1.5" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</rect>`:shape==="triangle"?`<polygon ${a} points="${cx},${cy-r-1.5} ${cx+r+1.5},${cy+r} ${cx-r-1.5},${cy+r}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:shape==="diamond"?`<polygon ${a} points="${cx},${cy-r-2} ${cx+r+2},${cy} ${cx},${cy+r+2} ${cx-r-2},${cy}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:`<circle ${a} cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
  function lineSvg(o){
   const {k,def,groups,series,get,width}=o,n=groups.length,dodge=o.dodge?Math.min(40,Math.max(0,(gwOf(o)-60)/Math.max(1,series.length-1))):0,off=j=>dodge?(j-(series.length-1)/2)*dodge:0;
   const L=68,R=30,T=50,B=80,H=364,ih=H-T-B,W=Math.min(780,Math.max(width||0,n*150+L+R)),gw=(W-L-R)/n;   // never wider than 780 px: a narrow chart makes the slope of the lines easy to see (David 2026-11-18); it scales down, never scrolls
@@ -63,7 +63,7 @@ window.BV=(function(){
   series.forEach((se,j)=>{
    let d="",pen=false;
    groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${(x(q)+off(j)).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
-   if(d)s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="3"${o.dodge&&j%2?' stroke-dasharray="9 6"':""} stroke-linejoin="round" stroke-linecap="round"/>`;
+   if(d)s+=`<path d="${d}" fill="none" stroke="transparent" stroke-width="18" data-s="${j}" class="bv-hit"/><path d="${d}" fill="none" data-s="${j}" class="bv-ln" stroke="${se.color}" stroke-width="3"${o.dodge&&j%2?' stroke-dasharray="9 6"':""} stroke-linejoin="round" stroke-linecap="round"/>`;
   });
   /* points + number labels, one input at a time: a point right under another labels below it, and then the labels of ALL series at this input
      are pushed apart (>= 20 px) so two or three close values never print on top of each other (the "2:69" bug David saw) */
@@ -75,13 +75,24 @@ window.BV=(function(){
    let last=-1e9;pts.slice().sort((a,b)=>a.ly-b.ly||a.py-b.py).forEach(p=>{p.ly=Math.max(p.ly,last+20);last=p.ly});}
    pts.forEach(p=>{const red=k==="ttft_s"&&p.r.ttft_over_180s;
     const cx=x(q)+off(p.j),tip=`<title>${esc(p.se.label)} · ${esc(g.label)}: ${fmt(k,p.v)} ${esc(def.unit)}</title>`;
-    s+=o.dodge?mark(SHAPES[p.j%SHAPES.length],cx,p.py,6,p.se.color,tip):`<circle cx="${cx}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
-    s+=`<text class="bl ${red?"dn":"up2"}" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
+    const at=`data-s="${p.j}" class="bv-pt"`;
+    s+=`<circle cx="${cx}" cy="${p.py}" r="13" fill="transparent" data-s="${p.j}" class="bv-hit"/>`;
+    s+=o.dodge?mark(SHAPES[p.j%SHAPES.length],cx,p.py,6,p.se.color,tip,at):`<circle ${at} cx="${cx}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
+    s+=`<text class="bl ${red?"dn":"up2"}" data-s="${p.j}" style="--dy:${(p.py-12-p.ly).toFixed(1)}px" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
    if(o.skip)series.forEach((se,j)=>{if(!get(se.key,g)&&o.skip(se.key,g))s+=`<text class="bl dn" x="${x(q)+off(j)}" y="${y(0)-8}" text-anchor="middle" style="font-size:20px">✕<title>${esc(se.label)} · ${esc(g.label)}: SKIP</title></text>`});
   });
   groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
-  return `<div class="v2-chartwrap bv-fit"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
+  return `<div class="v2-chartwrap bv-fit"><svg class="bv-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
  }
+ /* hover or click a line / point: that series is picked out, enlarged, its values drawn right at its points and the others dimmed; click again (or the empty chart) to release (David 2026-11-19) */
+ (function(){if(window.__bvPick)return;window.__bvPick=1;const pin=new WeakMap();
+  const st=document.createElement("style");st.textContent=".bv-dv{display:block;font-size:.82em;margin-top:2px;white-space:nowrap}.bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
+  document.head.appendChild(st);
+  const apply=(svg,v)=>{svg.classList.toggle("bv-on",v!=null);svg.querySelectorAll("[data-s]").forEach(e=>e.classList.toggle("sel",v!=null&&e.getAttribute("data-s")===String(v)))};
+  const hit=e=>{const t=e.target.closest&&e.target.closest(".bv-svg [data-s]");return t?[t.closest("svg"),t.getAttribute("data-s")]:null};
+  document.addEventListener("mouseover",e=>{const h=hit(e);if(h)apply(h[0],h[1])});
+  document.addEventListener("mouseout",e=>{const sv=e.target.closest&&e.target.closest(".bv-svg");if(!sv)return;const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest(".bv-svg [data-s]");if(!to||to.closest("svg")!==sv)apply(sv,pin.has(sv)?pin.get(sv):null)});
+  document.addEventListener("click",e=>{const sv=e.target.closest&&e.target.closest(".bv-svg");if(!sv)return;const h=hit(e);if(h&&pin.get(sv)!==h[1]){pin.set(sv,h[1]);apply(sv,h[1])}else{pin.delete(sv);apply(sv,null)}})})();
  /* Bar | Line | Both switch, remembered per browser; one handler flips every chart block on the page */
  const MODES=[["bar","Bar","長條"],["line","Line","折線"],["both","Both","兩者"]];
  const getMode=()=>{try{const m=localStorage.getItem("bvMode");return MODES.some(x=>x[0]===m)?m:"both"}catch(e){return "both"}};
@@ -122,11 +133,11 @@ window.BV=(function(){
  function table(o){
   const {k,def,groups,series,get,baseline}=o,others=baseline?series.filter(s=>s.key!==baseline):[];
   const b=series.find(s=>s.key===baseline);
-  const cell=(r,s)=>`<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k]):"—"}</td>`;
-  const rows=groups.map(g=>`<tr><td>${esc(g.label)}<small class="bv-sub">${esc(g.sub||"")}</small></td>${series.map(s=>cell(get(s.key,g),s)).join("")}${others.map(s=>{const a=get(s.key,g),c=get(baseline,g);return `<td>${a&&c?dspan(dd(a[k],c[k],def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("")}</tr>`).join("");
-  const avg=others.map(s=>{const v=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);return `<td>${v.length?dspan(dtext(mean(v.map(x=>x[0])),mean(v.map(x=>x[1])),def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("");
-  const foot=others.length?`<tfoot><tr><td>All Scenario average differential<small>全情境平均差異</small></td>${series.map(()=>"<td></td>").join("")}${avg}</tr></tfoot>`:"";
-  return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>${esc(o.rowHead||"Input")}</th>${series.map(s=>`<th class="l"><i class="v2-sw" style="background:${s.color}"></i>${esc(s.label)}<small>${esc(def.unit)}</small></th>`).join("")}${others.map(s=>`<th class="la">${esc(s.label)} vs ${esc(b.label)}<small>差異</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>${foot}</table></div>`;
+  const cell=(r,s,g)=>{const c=baseline&&s.key!==baseline?get(baseline,g):null;return `<td${k==="ttft_s"&&r&&r.ttft_over_180s?' class="st-over"':""}>${r?fmt(k,r[k]):"—"}${r&&c?`<span class="bv-dv">${dspan(dd(r[k],c[k],def.higher))}</span>`:""}</td>`};
+  const rows=groups.map(g=>`<tr><td>${esc(g.label)}<small class="bv-sub">${esc(g.sub||"")}</small></td>${series.map(s=>cell(get(s.key,g),s,g)).join("")}</tr>`).join("");
+  const avg=series.map(s=>{if(s.key===baseline)return "<td></td>";const v=groups.map(g=>{const a=get(s.key,g),c=get(baseline,g);return a&&c?[gain(a[k],c[k],def.higher),a[k]/c[k]]:null}).filter(Boolean);return `<td>${v.length?dspan(dtext(mean(v.map(x=>x[0])),mean(v.map(x=>x[1])),def.higher)):'<span class="v2-na">—</span>'}</td>`}).join("");
+  const foot=others.length?`<tfoot><tr><td>All Scenario average differential vs ${esc(b.label)}<small>全情境平均差異（相對 ${esc(b.label)}）</small></td>${avg}</tr></tfoot>`:"";
+  return `<div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>${esc(o.rowHead||"Input")}</th>${series.map(s=>`<th class="l"><i class="v2-sw" style="background:${s.color}"></i>${esc(s.label)}<small>${esc(def.unit)}</small></th>`).join("")}</tr></thead><tbody>${rows}</tbody>${foot}</table></div>`;
  }
  // trend check: with a longer input, latency (TTFT / TPOT) should not fall and throughput should not rise (> 25 %). Only for charts whose x axis is the input length (4K, 8K ...).
  function anomalies(o){
@@ -182,9 +193,12 @@ window.BV=(function(){
    else out+=block(o)});
   return out;
  }
- // one delegated handler for every chart block on the page: the button (bottom-right of the chart) shows / hides the data table
- document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;
-  const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
-  const open=det.hidden;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.innerHTML=open?'Hide values<small class="zhs">收合數值</small> ▴':'Full values<small class="zhs">完整數值</small> ▾'});
+ // Full values: pointing at the button shows the data table, moving away hides it again; a click pins it open (click again to close). One delegated handler for every chart block.
+ const bvSet=(box,open)=>{const det=box.querySelector(".bv-detail"),btn=box.querySelector(".bv-more");if(!det||!btn)return;det.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.innerHTML=open?'Hide values<small class="zhs">收合數值</small> ▴':'Full values<small class="zhs">完整數值</small> ▾'};
+ const bvBox=t=>{const n=t&&t.closest&&t.closest(".bv-more,.bv-detail");return n?n.closest(".bv-block"):null};
+ document.addEventListener("mouseover",e=>{const box=bvBox(e.target);if(!box)return;clearTimeout(box.__bvT);const det=box.querySelector(".bv-detail");if(e.target.closest(".bv-more")&&det&&det.hidden)bvSet(box,true)});
+ document.addEventListener("mouseout",e=>{const box=bvBox(e.target);if(!box||bvBox(e.relatedTarget)===box)return;clearTimeout(box.__bvT);box.__bvT=setTimeout(()=>{if(!box.__bvPin)bvSet(box,false)},400)});
+ document.addEventListener("click",e=>{const btn=e.target.closest&&e.target.closest(".bv-more");if(!btn)return;const box=btn.closest(".bv-block"),det=box&&box.querySelector(".bv-detail");if(!det)return;
+  if(det.hidden){box.__bvPin=true;bvSet(box,true)}else if(!box.__bvPin){box.__bvPin=true}else{box.__bvPin=false;bvSet(box,false)}});
  return {block,blocks,esc,fmt,gain,pct,lineSvg,charts};
 })();
