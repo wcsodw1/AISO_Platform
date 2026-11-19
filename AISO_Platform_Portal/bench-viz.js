@@ -50,7 +50,7 @@ window.BV=(function(){
  /* line chart: same data and axis as the bars; one line per series across the input lengths */
  const gwOf=o=>{const n=o.groups.length,L=68,R=30,W=Math.min(780,Math.max(o.width||0,n*150+L+R));return (W-L-R)/n};
  const SHAPES=["circle","square","triangle","diamond"];
- const mark=(shape,cx,cy,r,fill,tip="")=>shape==="square"?`<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="1.5" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</rect>`:shape==="triangle"?`<polygon points="${cx},${cy-r-1.5} ${cx+r+1.5},${cy+r} ${cx-r-1.5},${cy+r}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:shape==="diamond"?`<polygon points="${cx},${cy-r-2} ${cx+r+2},${cy} ${cx},${cy+r+2} ${cx-r-2},${cy}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
+ const mark=(shape,cx,cy,r,fill,tip="",a="")=>shape==="square"?`<rect ${a} x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="1.5" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</rect>`:shape==="triangle"?`<polygon ${a} points="${cx},${cy-r-1.5} ${cx+r+1.5},${cy+r} ${cx-r-1.5},${cy+r}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:shape==="diamond"?`<polygon ${a} points="${cx},${cy-r-2} ${cx+r+2},${cy} ${cx},${cy+r+2} ${cx-r-2},${cy}" fill="${fill}" stroke="#0b0f17" stroke-width="2" stroke-linejoin="round">${tip}</polygon>`:`<circle ${a} cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
  function lineSvg(o){
   const {k,def,groups,series,get,width}=o,n=groups.length,dodge=o.dodge?Math.min(40,Math.max(0,(gwOf(o)-60)/Math.max(1,series.length-1))):0,off=j=>dodge?(j-(series.length-1)/2)*dodge:0;
   const L=68,R=30,T=50,B=80,H=364,ih=H-T-B,W=Math.min(780,Math.max(width||0,n*150+L+R)),gw=(W-L-R)/n;   // never wider than 780 px: a narrow chart makes the slope of the lines easy to see (David 2026-11-18); it scales down, never scrolls
@@ -63,7 +63,7 @@ window.BV=(function(){
   series.forEach((se,j)=>{
    let d="",pen=false;
    groups.forEach((g,q)=>{const r=get(se.key,g);if(!r){pen=false;return}d+=`${pen?"L":"M"}${(x(q)+off(j)).toFixed(1)} ${y(r[k]).toFixed(1)} `;pen=true});
-   if(d)s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="3"${o.dodge&&j%2?' stroke-dasharray="9 6"':""} stroke-linejoin="round" stroke-linecap="round"/>`;
+   if(d)s+=`<path d="${d}" fill="none" stroke="transparent" stroke-width="18" data-s="${j}" class="bv-hit"/><path d="${d}" fill="none" data-s="${j}" class="bv-ln" stroke="${se.color}" stroke-width="3"${o.dodge&&j%2?' stroke-dasharray="9 6"':""} stroke-linejoin="round" stroke-linecap="round"/>`;
   });
   /* points + number labels, one input at a time: a point right under another labels below it, and then the labels of ALL series at this input
      are pushed apart (>= 20 px) so two or three close values never print on top of each other (the "2:69" bug David saw) */
@@ -75,13 +75,24 @@ window.BV=(function(){
    let last=-1e9;pts.slice().sort((a,b)=>a.ly-b.ly||a.py-b.py).forEach(p=>{p.ly=Math.max(p.ly,last+20);last=p.ly});}
    pts.forEach(p=>{const red=k==="ttft_s"&&p.r.ttft_over_180s;
     const cx=x(q)+off(p.j),tip=`<title>${esc(p.se.label)} · ${esc(g.label)}: ${fmt(k,p.v)} ${esc(def.unit)}</title>`;
-    s+=o.dodge?mark(SHAPES[p.j%SHAPES.length],cx,p.py,6,p.se.color,tip):`<circle cx="${cx}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
-    s+=`<text class="bl ${red?"dn":"up2"}" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
+    const at=`data-s="${p.j}" class="bv-pt"`;
+    s+=`<circle cx="${cx}" cy="${p.py}" r="13" fill="transparent" data-s="${p.j}" class="bv-hit"/>`;
+    s+=o.dodge?mark(SHAPES[p.j%SHAPES.length],cx,p.py,6,p.se.color,tip,at):`<circle ${at} cx="${cx}" cy="${p.py}" r="5.5" fill="${p.se.color}" stroke="#0b0f17" stroke-width="2">${tip}</circle>`;
+    s+=`<text class="bl ${red?"dn":"up2"}" data-s="${p.j}" style="--dy:${(p.py-12-p.ly).toFixed(1)}px" x="${cx}" y="${p.ly}" text-anchor="middle">${fmt(k,p.v)}</text>`});
    if(o.skip)series.forEach((se,j)=>{if(!get(se.key,g)&&o.skip(se.key,g))s+=`<text class="bl dn" x="${x(q)+off(j)}" y="${y(0)-8}" text-anchor="middle" style="font-size:20px">✕<title>${esc(se.label)} · ${esc(g.label)}: SKIP</title></text>`});
   });
   groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
-  return `<div class="v2-chartwrap bv-fit"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
+  return `<div class="v2-chartwrap bv-fit"><svg class="bv-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
  }
+ /* hover or click a line / point: that series is picked out, enlarged, its values drawn right at its points and the others dimmed; click again (or the empty chart) to release (David 2026-11-19) */
+ (function(){if(window.__bvPick)return;window.__bvPick=1;const pin=new WeakMap();
+  const st=document.createElement("style");st.textContent=".bv-svg [data-s]{transition:opacity .15s}.bv-svg .bv-hit{cursor:pointer}.bv-svg.bv-on [data-s]{opacity:.12}.bv-svg.bv-on .bl{opacity:0}.bv-svg.bv-on [data-s].sel{opacity:1}.bv-svg.bv-on .bl.sel{opacity:1;font-size:17px;font-weight:800;transform:translateY(var(--dy,0px))}.bv-svg.bv-on .bv-ln.sel{stroke-width:5.5}.bv-svg.bv-on .bv-pt.sel{transform:scale(1.8);transform-box:fill-box;transform-origin:center}";
+  document.head.appendChild(st);
+  const apply=(svg,v)=>{svg.classList.toggle("bv-on",v!=null);svg.querySelectorAll("[data-s]").forEach(e=>e.classList.toggle("sel",v!=null&&e.getAttribute("data-s")===String(v)))};
+  const hit=e=>{const t=e.target.closest&&e.target.closest(".bv-svg [data-s]");return t?[t.closest("svg"),t.getAttribute("data-s")]:null};
+  document.addEventListener("mouseover",e=>{const h=hit(e);if(h)apply(h[0],h[1])});
+  document.addEventListener("mouseout",e=>{const sv=e.target.closest&&e.target.closest(".bv-svg");if(!sv)return;const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest(".bv-svg [data-s]");if(!to||to.closest("svg")!==sv)apply(sv,pin.has(sv)?pin.get(sv):null)});
+  document.addEventListener("click",e=>{const sv=e.target.closest&&e.target.closest(".bv-svg");if(!sv)return;const h=hit(e);if(h&&pin.get(sv)!==h[1]){pin.set(sv,h[1]);apply(sv,h[1])}else{pin.delete(sv);apply(sv,null)}})})();
  /* Bar | Line | Both switch, remembered per browser; one handler flips every chart block on the page */
  const MODES=[["bar","Bar","長條"],["line","Line","折線"],["both","Both","兩者"]];
  const getMode=()=>{try{const m=localStorage.getItem("bvMode");return MODES.some(x=>x[0]===m)?m:"both"}catch(e){return "both"}};
