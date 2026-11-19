@@ -11,6 +11,7 @@
   const gain = (v, b, hi) => (Number.isFinite(v) && Number.isFinite(b) && b ? 100 * (hi ? v / b - 1 : 1 - v / b) : null);
   const dl = v => (Number.isFinite(v) ? `<span class="wq-d ${v > 0.05 ? "up" : v < -0.05 ? "dn" : ""}">${v > 0.05 ? "+" : v < -0.05 ? "−" : ""}${Math.abs(v).toFixed(1)}%</span>` : "—");
   const S = (h, zh, body) => `<section class="report-section kvx"><header><h2>${h}<span class="zh">${zh}</span></h2></header>${body}</section>`;
+  const F = (h, zh, one, body) => `<section class="report-section kvx hv-fold hv-closed"><header><h2>${h}<span class="zh">${zh}</span></h2><p class="v2-fine hv-one">${one}</p></header>${body}</section>`;
   const key = r => `${r.np}|${r.input}|${r.output}`;
   const REPORTS = [["GB10_GB10_MTP_QAT_and_NVFP4_KV_variants_20261119.md", "MTP, QAT and NVFP4 KV variants", "MTP、QAT 與 NVFP4 KV 變體（整合報告）"],
     ["GB10_GB10_MTP_on_NVFP4_weights_with_NVFP4_KV_20261119.md", "MTP on NVFP4 weights with NVFP4 KV", "NVFP4 權重 + NVFP4 KV 開 MTP"],
@@ -66,7 +67,14 @@
       get: (key, gr) => { const r = rowOf(key, gr.np); return r && r.status === "PASS" && Number.isFinite(r[k]) ? r : null; }, baseline: ser[0] && ser[0][0], message: "" })));
     return `<p class="wq-leg">${ser.map(x => `<span><i style="background:${x[2]}"></i>${esc(x[1])}</span>`).join("")}</p><div>${html}</div>`;
   }
-  const PLAN = `<p class="v2-fine">Same model (Gemma 4 26B), different settings, each against bf16: what do MTP and QAT change?<small class="zhs">同一個模型（Gemma 4 26B）、不同設定，全部對 bf16 比較：MTP、QAT 帶來什麼差異？</small></p>
+  const IDEAS = `<ul>
+    <li><b>QAT quality</b>: accuracy / perplexity of QAT against bf16 - this is what QAT is for, speed does not show it.<small class="zhs">QAT 的品質（準確度／困惑度）：QAT 的價值在這裡，速度看不出來。</small></li>
+    <li><b>MTP draft length</b>: 1 / 2 / 3 / 5 draft tokens - find the best setting.<small class="zhs">MTP 草稿長度：1／2／3／5 個，找最佳值。</small></li>
+    <li><b>MTP on long inputs</b>: 64K / 128K (only 8K is measured), and at higher concurrency (gain usually shrinks as more requests share the GPU).<small class="zhs">長輸入與更高並發下的 MTP（目前只測 8K）。</small></li>
+    <li><b>MTP by task type</b>: code, chat, summarization, translation - draft acceptance depends on how predictable the text is.<small class="zhs">不同任務的接受率（程式、對話、摘要、翻譯）。</small></li>
+    <li><b>Real QAT 4-bit deployment</b>: the q4_0 quantized QAT model (speed and memory), e.g. on llama.cpp; here the unquantized QAT checkpoint was used.<small class="zhs">真正的 QAT 4-bit 部署（速度與記憶體）；這裡用的是未量化的 QAT 檢查點。</small></li>
+    <li><b>Other combinations</b>: MTP on fp8 weights, NVFP4 weights with fp8 KV + MTP; memory and power per token.<small class="zhs">其他組合：fp8 權重 + MTP、每 token 的記憶體與耗電。</small></li></ul>`;
+  const PLAN = `
     <div class="table-wrap"><table class="v2-table v2-sc"><thead><tr><th>Measured now<small>已測</small></th><th>What is different<small>差在哪</small></th></tr></thead><tbody>
     <tr><td>bf16 (baseline)</td><td>Original weights, KV fp8, no speculative decoding</td></tr>
     <tr><td>bf16 + MTP</td><td>Same weights; a small draft model (Gemma 4 assistant) proposes 3 tokens per step, the main model verifies</td></tr>
@@ -74,23 +82,19 @@
     <tr><td>QAT + MTP</td><td>QAT checkpoint with the draft model for it</td></tr>
     <tr><td>QAT + NVFP4 KV</td><td>QAT checkpoint with the KV cache stored in NVFP4 (about 4x smaller than fp16)</td></tr>
     <tr><td>NVFP4 · KV fp8 / NVFP4 + NVFP4 KV / + MTP</td><td>NVIDIA's NVFP4 weights; then NVFP4 KV cache; then MTP on top (compared with its own MTP-off run on the same prompts)</td></tr></tbody></table></div>
-    <details class="gb-fold"><summary>Not measured yet - ideas for more tests<small class="zhs">還沒測，可以加的測試（建議，非已有結果）</small></summary><ul>
-    <li><b>QAT quality</b>: accuracy / perplexity of QAT against bf16 - this is what QAT is for, speed does not show it.<small class="zhs">QAT 的品質（準確度／困惑度）：QAT 的價值在這裡，速度看不出來。</small></li>
-    <li><b>MTP draft length</b>: 1 / 2 / 3 / 5 draft tokens - find the best setting.<small class="zhs">MTP 草稿長度：1／2／3／5 個，找最佳值。</small></li>
-    <li><b>MTP on long inputs</b>: 64K / 128K (only 8K is measured), and at higher concurrency (gain usually shrinks as more requests share the GPU).<small class="zhs">長輸入與更高並發下的 MTP（目前只測 8K）。</small></li>
-    <li><b>MTP by task type</b>: code, chat, summarization, translation - draft acceptance depends on how predictable the text is.<small class="zhs">不同任務的接受率（程式、對話、摘要、翻譯）。</small></li>
-    <li><b>Real QAT 4-bit deployment</b>: the q4_0 quantized QAT model (speed and memory), e.g. on llama.cpp; here the unquantized QAT checkpoint was used.<small class="zhs">真正的 QAT 4-bit 部署（速度與記憶體）；這裡用的是未量化的 QAT 檢查點。</small></li>
-    <li><b>Other combinations</b>: MTP on fp8 weights, NVFP4 weights with fp8 KV + MTP; memory and power per token.<small class="zhs">其他組合：fp8 權重 + MTP、每 token 的記憶體與耗電。</small></li></ul></details>`;
+`;
   function render() {
     ((V && V.variants) || []).concat(((WQ && WQ.weights) || [])).forEach(v => (v.rows || []).forEach(r => { if (r.decode_only_tps == null) r.decode_only_tps = Number.isFinite(r.tpot_ms) && r.tpot_ms > 0 ? 1000 / r.tpot_ms : null; }));
     const vs = ((V && V.variants) || []).filter(v => (v.rows || []).length);
     const reports = `<ul class="gb-reports">${REPORTS.map(([file, en, zh]) => `<li><a class="v2-dl" href="data/reports/${file}" target="_blank" rel="noopener">${esc(en)}<small class="zhs">${esc(zh)}</small></a> <a class="v2-dl" href="data/reports/${file}" download>↓ .md</a></li>`).join("")}</ul>`;
     $("gvOpt").innerHTML = S("Select", "選擇", pick(GRP.map(x => [x[0], x[1]]), "grp", 'Compare <small class="zhs">比較</small>') + pick([[256, "Output 256"], [512, "Output 512"]], "output", 'Output <small class="zhs">輸出</small>') + `<p class="kv-fine">Input 8K. NP 1 / 3 / 5 are on the x axis of the charts and in the table.<small class="zhs">輸入 8K；NP 1 / 3 / 5 在圖的橫軸與下方表格。</small></p>`)
-      + S("What is compared", "比較什麼", PLAN)
       + S("TTFT · TPOT · TPS", "四項指標", charts())
-      + S("MTP · QAT · NVFP4 KV · summary", "總表（各變體對各自基準）", vs.length ? summary(vs) : `<p class="v2-fine">No data yet. 尚無資料。</p>`)
-      + S("Values by variant", "逐變體數值", vs.map(detail).join(""))
-      + S("Benchmark Result reports", "測試報告（可下載）", reports + `<p class="v2-fine"><a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_variants.json" download>Download .JSON</a></p>`);
+      + F("What is compared", "比較什麼", 'Same model (Gemma 4 26B), different settings, each against bf16: what do MTP and QAT change?<small class="zhs">同一個模型（Gemma 4 26B）、不同設定，全部對 bf16 比較：MTP、QAT 帶來什麼差異？</small>', PLAN)
+      + F("Summary", "總表", 'Each variant against its baseline: TPS, TTFT, TPOT and the MTP draft acceptance.<small class="zhs">各變體對基準的差異與 MTP 草稿接受率。</small>', vs.length ? summary(vs) : `<p class="v2-fine">No data yet. 尚無資料。</p>`)
+      + F("Values by variant", "逐變體數值", 'Every case of every variant: tok/s, TTFT and TPOT.<small class="zhs">每個變體每個情境的數值。</small>', vs.map(detail).join(""))
+      + F("Not measured yet", "還沒測的想法", 'Ideas for more tests (QAT quality, MTP draft length, long inputs, task types, real 4-bit QAT) - suggestions, no results yet.<small class="zhs">可以加的測試：建議，還沒有結果。</small>', IDEAS)
+      + F("Benchmark Result reports", "測試報告", 'Three reports (.md) and the data file to read or download.<small class="zhs">三份報告與資料檔，可閱讀或下載。</small>', reports + `<p class="v2-fine"><a class="v2-dl" href="data/benchmark-gb10/AISO_GB10_vLLM_gemma26_variants.json" download>Download .JSON</a></p>`);
+    if (window.HoverFold) HoverFold.init(document);
   }
   document.addEventListener("click", e => {
     const q = e.target.closest("[data-optsel]"); if (q && V) { sel[q.dataset.optsel] = q.dataset.optsel === "output" ? Number(q.dataset.v) : q.dataset.v; render(); return; }
