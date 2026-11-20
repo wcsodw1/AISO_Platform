@@ -2,7 +2,7 @@
  "dataset": "AISO_PRO6000_vLLM_VIS_20260825",
  "evidence_until": "2026-08-25",
  "generated_on": "2026-11-11",
- "note": "PRO6000（TPI 8 GPU 系統）vLLM VIS Benchmark：GPT-OSS-120B（NP 1–32）與 Llama-3.3-70B（NP 16 / 32），Input 1K–16K，Output 1K / 2K；每個條件含 Without aiDAPTIV、Cold（Run1）、Warm（Run2/Run3 平均）。數值取自 2026-08-25 PDF 報告表格。 Without aiDAPTIV 的 3 次逐次 TTFT 取自 PRO6000 原始 vis 結果檔，平均與 PDF 一致（差 0.6% 內）；吞吐、TPOT 與 Cold／Warm 無可核對的逐次數值。",
+ "note": "PRO6000（TPI 8 GPU 系統）vLLM VIS Benchmark：GPT-OSS-120B（NP 1–32）與 Llama-3.3-70B（NP 16 / 32 / 50 / 100），Input 1K–16K，Output 1K / 2K；每個條件含 Without aiDAPTIV、Cold（Run1）、Warm（Run2/Run3 平均）。數值取自 2026-08-25 PDF 報告表格。 Without aiDAPTIV 的 3 次逐次 TTFT 取自 PRO6000 原始 vis 結果檔，平均與 PDF 一致（差 0.6% 內）；吞吐、TPOT 與 Cold／Warm 無可核對的逐次數值。",
  "comparability": {
   "level": "not_comparable",
   "text": "此資料為 aiDAPTIV Cold／Warm 的 VIS 測法（vLLM、GPT-OSS-120B 與 Llama-3.3-70B），與 B60 / B70 / AISO1 的 llama.cpp 壓力測試（Gemma / Laguna / Nemotron、NP 1–5）模型與條件不同，不可直接比較。Without aiDAPTIV 為無快取基準。TPOT 為 median（120B）／報告定義 (E2E−TTFT)/(output−1)（Llama）；Llama 數值由 PDF 圖片表格人工讀取。"
@@ -19,7 +19,9 @@
    4,
    8,
    16,
-   32
+   32,
+   50,
+   100
   ],
   "input_tokens": [
    1024,
@@ -3000,12 +3002,572 @@
      ]
     }
    }
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 50,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 6790.0,
+    "cold": 7610.0,
+    "warm": 510.0
+   },
+   "tpot_ms": {
+    "without": 58.54,
+    "cold": 59.21,
+    "warm": 53.97
+   },
+   "aggregate_tps": {
+    "without": 757.4,
+    "cold": 740.6,
+    "warm": 909.1
+   },
+   "normalized_tps": {
+    "without": 15.15,
+    "cold": 14.81,
+    "warm": 18.18
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01860, B01861, B01862)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 50,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 13470.0,
+    "cold": 8350.0,
+    "warm": 1180.0
+   },
+   "tpot_ms": {
+    "without": 67.88,
+    "cold": 63.63,
+    "warm": 57.61
+   },
+   "aggregate_tps": {
+    "without": 610.2,
+    "cold": 690.7,
+    "warm": 845.9
+   },
+   "normalized_tps": {
+    "without": 12.2,
+    "cold": 13.81,
+    "warm": 16.92
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01863, B01864, B01865)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 50,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 26570.0,
+    "cold": 29280.0,
+    "warm": 2830.0
+   },
+   "tpot_ms": {
+    "without": 86.49,
+    "cold": 89.96,
+    "warm": 64.59
+   },
+   "aggregate_tps": {
+    "without": 437.2,
+    "cold": 414.4,
+    "warm": 737.5
+   },
+   "normalized_tps": {
+    "without": 8.74,
+    "cold": 8.29,
+    "warm": 14.75
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01866, B01867, B01868)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 50,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 53310.0,
+    "cold": 58840.0,
+    "warm": 5490.0
+   },
+   "tpot_ms": {
+    "without": 124.81,
+    "cold": 132.01,
+    "warm": 79.27
+   },
+   "aggregate_tps": {
+    "without": 276.7,
+    "cold": 257.9,
+    "warm": 589.4
+   },
+   "normalized_tps": {
+    "without": 5.53,
+    "cold": 5.16,
+    "warm": 11.79
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01869, B01870, B01871)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 50,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 303420.0,
+    "cold": 151540.0,
+    "warm": 39860.0
+   },
+   "tpot_ms": {
+    "without": 494.31,
+    "cold": 179.89,
+    "warm": 79.27
+   },
+   "aggregate_tps": {
+    "without": 58.3,
+    "cold": 128.0,
+    "warm": 310.7
+   },
+   "normalized_tps": {
+    "without": 1.17,
+    "cold": 2.56,
+    "warm": 6.21
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01872, B01873, B01874)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 100,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 13110.0,
+    "cold": 14440.0,
+    "warm": 1380.0
+   },
+   "tpot_ms": {
+    "without": 80.03,
+    "cold": 82.18,
+    "warm": 70.89
+   },
+   "aggregate_tps": {
+    "without": 1063.6,
+    "cold": 1025.6,
+    "warm": 1379.3
+   },
+   "normalized_tps": {
+    "without": 10.64,
+    "cold": 10.26,
+    "warm": 13.79
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01890, B01891, B01892)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 100,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 26020.0,
+    "cold": 15780.0,
+    "warm": 2430.0
+   },
+   "tpot_ms": {
+    "without": 99.24,
+    "cold": 90.34,
+    "warm": 78.08
+   },
+   "aggregate_tps": {
+    "without": 792.8,
+    "cold": 937.7,
+    "warm": 1238.5
+   },
+   "normalized_tps": {
+    "without": 7.93,
+    "cold": 9.38,
+    "warm": 12.38
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01893, B01894, B01895)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 100,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 52290.0,
+    "cold": 57990.0,
+    "warm": 5740.0
+   },
+   "tpot_ms": {
+    "without": 135.61,
+    "cold": 143.28,
+    "warm": 91.0
+   },
+   "aggregate_tps": {
+    "without": 526.1,
+    "cold": 491.3,
+    "warm": 1029.5
+   },
+   "normalized_tps": {
+    "without": 5.26,
+    "cold": 4.91,
+    "warm": 10.29
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01896, B01897, B01898)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 100,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 161560.0,
+    "cold": 147690.0,
+    "warm": 38920.0
+   },
+   "tpot_ms": {
+    "without": 226.03,
+    "cold": 185.68,
+    "warm": 91.01
+   },
+   "aggregate_tps": {
+    "without": 220.7,
+    "cold": 250.1,
+    "warm": 565.4
+   },
+   "normalized_tps": {
+    "without": 2.21,
+    "cold": 2.5,
+    "warm": 5.65
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01899, B01900, B01901)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 1024,
+   "np": 100,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 771680.0,
+    "cold": 327860.0,
+    "warm": 328750.0
+   },
+   "tpot_ms": {
+    "without": 640.82,
+    "cold": 209.44,
+    "warm": 210.98
+   },
+   "aggregate_tps": {
+    "without": 48.1,
+    "cold": 128.6,
+    "warm": 127.9
+   },
+   "normalized_tps": {
+    "without": 0.48,
+    "cold": 1.29,
+    "warm": 1.28
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01902, B01903, B01904)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 50,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 6930.0,
+    "cold": 7660.0,
+    "warm": 580.0
+   },
+   "tpot_ms": {
+    "without": 57.02,
+    "cold": 57.86,
+    "warm": 55.22
+   },
+   "aggregate_tps": {
+    "without": 822.8,
+    "cold": 806.9,
+    "warm": 897.5
+   },
+   "normalized_tps": {
+    "without": 16.46,
+    "cold": 16.14,
+    "warm": 17.95
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01875, B01876, B01877)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 50,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 13380.0,
+    "cold": 14720.0,
+    "warm": 1200.0
+   },
+   "tpot_ms": {
+    "without": 63.48,
+    "cold": 64.84,
+    "warm": 58.97
+   },
+   "aggregate_tps": {
+    "without": 709.1,
+    "cold": 689.2,
+    "warm": 837.4
+   },
+   "normalized_tps": {
+    "without": 14.18,
+    "cold": 13.78,
+    "warm": 16.75
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01878, B01879, B01880)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 50,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 26510.0,
+    "cold": 29240.0,
+    "warm": 2450.0
+   },
+   "tpot_ms": {
+    "without": 77.07,
+    "cold": 79.54,
+    "warm": 66.68
+   },
+   "aggregate_tps": {
+    "without": 553.6,
+    "cold": 530.9,
+    "warm": 740.3
+   },
+   "normalized_tps": {
+    "without": 11.07,
+    "cold": 10.62,
+    "warm": 14.81
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01881, B01882, B01883)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 50,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 53390.0,
+    "cold": 59580.0,
+    "warm": 5510.0
+   },
+   "tpot_ms": {
+    "without": 105.24,
+    "cold": 110.54,
+    "warm": 82.53
+   },
+   "aggregate_tps": {
+    "without": 381.3,
+    "cold": 358.5,
+    "warm": 593.1
+   },
+   "normalized_tps": {
+    "without": 7.63,
+    "cold": 7.17,
+    "warm": 11.86
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01884, B01885, B01886)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 50,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 498350.0,
+    "cold": 177560.0,
+    "warm": 66680.0
+   },
+   "tpot_ms": {
+    "without": 449.99,
+    "cold": 126.37,
+    "warm": 80.66
+   },
+   "aggregate_tps": {
+    "without": 66.2,
+    "cold": 189.5,
+    "warm": 324.6
+   },
+   "normalized_tps": {
+    "without": 1.32,
+    "cold": 3.79,
+    "warm": 6.49
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01887, B01888, B01889)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 100,
+   "input": 1024,
+   "ttft_ms": {
+    "without": 13070.0,
+    "cold": 14380.0,
+    "warm": 1150.0
+   },
+   "tpot_ms": {
+    "without": 77.81,
+    "cold": 79.54,
+    "warm": 73.65
+   },
+   "aggregate_tps": {
+    "without": 1181.6,
+    "cold": 1149.1,
+    "warm": 1346.4
+   },
+   "normalized_tps": {
+    "without": 11.82,
+    "cold": 11.49,
+    "warm": 13.46
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01905, B01906, B01907)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 100,
+   "input": 2048,
+   "ttft_ms": {
+    "without": 26230.0,
+    "cold": 28740.0,
+    "warm": 3230.0
+   },
+   "tpot_ms": {
+    "without": 90.83,
+    "cold": 93.78,
+    "warm": 80.94
+   },
+   "aggregate_tps": {
+    "without": 962.7,
+    "cold": 925.3,
+    "warm": 1219.8
+   },
+   "normalized_tps": {
+    "without": 9.63,
+    "cold": 9.25,
+    "warm": 12.2
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01908, B01909, B01910)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 100,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 52460.0,
+    "cold": 57940.0,
+    "warm": 6240.0
+   },
+   "tpot_ms": {
+    "without": 120.03,
+    "cold": 122.8,
+    "warm": 94.43
+   },
+   "aggregate_tps": {
+    "without": 636.9,
+    "cold": 615.9,
+    "warm": 923.2
+   },
+   "normalized_tps": {
+    "without": 6.37,
+    "cold": 6.16,
+    "warm": 9.23
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01911, B01912, B01913)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 100,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 250510.0,
+    "cold": 178060.0,
+    "warm": 68520.0
+   },
+   "tpot_ms": {
+    "without": 211.36,
+    "cold": 135.86,
+    "warm": 92.06
+   },
+   "aggregate_tps": {
+    "without": 253.3,
+    "cold": 354.2,
+    "warm": 578.4
+   },
+   "normalized_tps": {
+    "without": 2.53,
+    "cold": 3.54,
+    "warm": 5.78
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01914, B01915, B01916)"
+  },
+  {
+   "model": "Llama-3.3-70B",
+   "output": 2048,
+   "np": 100,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 1477470.0,
+    "cold": 421920.0,
+    "warm": 422920.0
+   },
+   "tpot_ms": {
+    "without": 643.01,
+    "cold": 144.63,
+    "warm": 145.56
+   },
+   "aggregate_tps": {
+    "without": 48.7,
+    "cold": 186.2,
+    "warm": 184.8
+   },
+   "normalized_tps": {
+    "without": 0.49,
+    "cold": 1.86,
+    "warm": 1.85
+   },
+   "status": "PASS",
+   "source": "benchmark_archive (report p.2; ids B01917, B01918, B01919)"
   }
  ],
  "not_run": [
   {
    "model": "Llama-3.3-70B",
-   "reason": "報告只涵蓋 NP16 / NP32（NP1–8 無資料）"
+   "reason": "報告涵蓋 NP16 / 32 / 50 / 100（NP1–8 無資料）"
   }
  ],
  "config_by_model": {
@@ -3041,6 +3603,13 @@
   "vis_without_runs_sha256": {
    "gpt-oss-120b_without_vis_20260819_143138.txt": "baac21379389d45fd5c1dedcbcac81ed12310e779c0f748221ab3f4c97a3d2e5",
    "llama-3.3-70b_without_vis_20260820_114117.txt": "b6792a11c4cfce5bf644020b4a284a38b0b221b8ab28639cfeb3b7389004a8e3"
+  },
+  "archive_added": {
+   "file": "data/benchmark-archive/pro6000-vis.json",
+   "rows": 20,
+   "what": "Llama-3.3-70B NP50 / NP100 (Without, Cold = Single-aiDAPTIV Run1, Warm = mean(Run2,Run3))",
+   "unit_note": "the archive's ttft_mean_ms for NP50 / NP100 holds seconds (6.79 for NP50 / 1K; it doubles with the input and continues NP16 2.254 s, NP32 4.668 s); converted x1000 to ms here",
+   "check": "the other 239 archive records equal rows already in this dataset; one differs: Llama-3.3-70B NP32 / 1K / Output 2K Warm aggregate TPS 680.24 here vs 690.24 in the archive (not changed)"
   }
  }
 }

@@ -1,0 +1,240 @@
+{
+ "generated_from": "Desktop/TPISoftware/NEW-Benchmark",
+ "machines": {
+  "gb10": {
+   "vendor": "NVIDIA",
+   "folder": "GB10",
+   "name": "GB10",
+   "files": [
+    {
+     "kind": "summary",
+     "en": "Summary",
+     "zh": "摘要",
+     "path": "data/benchmark-result/gb10/GB10_benchmark_summary_20261120.md",
+     "bytes": 17207
+    },
+    {
+     "kind": "sheet",
+     "en": "Sheet (.xlsx)",
+     "zh": "試算表",
+     "path": "data/benchmark-result/gb10/GB10_benchmark_all_cases_20261120.xlsx",
+     "bytes": 50884
+    },
+    {
+     "kind": "cases",
+     "en": "All cases (.csv)",
+     "zh": "全部案例",
+     "path": "data/benchmark-result/gb10/GB10_benchmark_all_cases_20261120.csv",
+     "bytes": 52641
+    },
+    {
+     "kind": "preflight",
+     "en": "Preflight notes",
+     "zh": "Preflight 說明",
+     "path": "data/benchmark-result/gb10/README_Preflight.md",
+     "bytes": 4947
+    },
+    {
+     "kind": "hashes",
+     "en": "Hash check (.csv)",
+     "zh": "雜湊比對",
+     "path": "data/benchmark-result/gb10/sha256_check.csv",
+     "bytes": 1157
+    }
+   ],
+   "cases": 161,
+   "pass": 159,
+   "sources": 26,
+   "sources_kind": "result folders with results",
+   "as_of": "2026-11-20"
+  },
+  "pro6000": {
+   "vendor": "NVIDIA",
+   "folder": "PRO6000",
+   "name": "RTX PRO 6000",
+   "files": [
+    {
+     "kind": "summary",
+     "en": "Summary",
+     "zh": "摘要",
+     "path": "data/benchmark-result/pro6000/PRO6000_benchmark_summary_20261120.md",
+     "bytes": 17688
+    },
+    {
+     "kind": "sheet",
+     "en": "Sheet (.xlsx)",
+     "zh": "試算表",
+     "path": "data/benchmark-result/pro6000/PRO6000_benchmark_all_cases_20261120.xlsx",
+     "bytes": 76306
+    },
+    {
+     "kind": "cases",
+     "en": "All cases (.csv)",
+     "zh": "全部案例",
+     "path": "data/benchmark-result/pro6000/PRO6000_benchmark_all_cases_20261120.csv",
+     "bytes": 96010
+    },
+    {
+     "kind": "preflight",
+     "en": "Preflight notes",
+     "zh": "Preflight 說明",
+     "path": "data/benchmark-result/pro6000/README_Preflight.md",
+     "bytes": 1457
+    },
+    {
+     "kind": "hashes",
+     "en": "Hash check (.csv)",
+     "zh": "雜湊比對",
+     "path": "data/benchmark-result/pro6000/sha256_check.csv",
+     "bytes": 543
+    }
+   ],
+   "cases": 600,
+   "pass": 600,
+   "sources": 2,
+   "sources_kind": "datasets",
+   "as_of": "2026-11-20"
+  },
+  "aiso1": {
+   "vendor": "AMD",
+   "folder": "AISO1",
+   "name": "AISO1 · AI MAX+ 395",
+   "files": [
+    {
+     "kind": "summary",
+     "en": "Summary",
+     "zh": "摘要",
+     "path": "data/benchmark-result/aiso1/AISO1_benchmark_summary_20261120.md",
+     "bytes": 14027
+    },
+    {
+     "kind": "sheet",
+     "en": "Sheet (.xlsx)",
+     "zh": "試算表",
+     "path": "data/benchmark-result/aiso1/AISO1_benchmark_all_cases_20261120.xlsx",
+     "bytes": 38154
+    },
+    {
+     "kind": "cases",
+     "en": "All cases (.csv)",
+     "zh": "全部案例",
+     "path": "data/benchmark-result/aiso1/AISO1_benchmark_all_cases_20261120.csv",
+     "bytes": 24530
+    },
+    {
+     "kind": "preflight",
+     "en": "Preflight notes",
+     "zh": "Preflight 說明",
+     "path": "data/benchmark-result/aiso1/README_Preflight.md",
+     "bytes": 1516
+    },
+    {
+     "kind": "hashes",
+     "en": "Hash check (.csv)",
+     "zh": "雜湊比對",
+     "path": "data/benchmark-result/aiso1/sha256_check.csv",
+     "bytes": 5167
+    }
+   ],
+   "cases": 131,
+   "pass": 124,
+   "sources": 4,
+   "sources_kind": "datasets",
+   "as_of": "2026-11-20"
+  },
+  "b70": {
+   "vendor": "INTEL",
+   "folder": "B70",
+   "name": "Arc Pro B70",
+   "files": [
+    {
+     "kind": "summary",
+     "en": "Summary",
+     "zh": "摘要",
+     "path": "data/benchmark-result/b70/B70_benchmark_summary_20261120.md",
+     "bytes": 11518
+    },
+    {
+     "kind": "sheet",
+     "en": "Sheet (.xlsx)",
+     "zh": "試算表",
+     "path": "data/benchmark-result/b70/B70_benchmark_all_cases_20261120.xlsx",
+     "bytes": 30395
+    },
+    {
+     "kind": "cases",
+     "en": "All cases (.csv)",
+     "zh": "全部案例",
+     "path": "data/benchmark-result/b70/B70_benchmark_all_cases_20261120.csv",
+     "bytes": 19163
+    },
+    {
+     "kind": "preflight",
+     "en": "Preflight notes",
+     "zh": "Preflight 說明",
+     "path": "data/benchmark-result/b70/README_Preflight.md",
+     "bytes": 1447
+    },
+    {
+     "kind": "hashes",
+     "en": "Hash check (.csv)",
+     "zh": "雜湊比對",
+     "path": "data/benchmark-result/b70/sha256_check.csv",
+     "bytes": 2778
+    }
+   ],
+   "cases": 101,
+   "pass": 66,
+   "sources": 4,
+   "sources_kind": "datasets",
+   "as_of": "2026-11-20"
+  },
+  "b60": {
+   "vendor": "INTEL",
+   "folder": "B60",
+   "name": "Arc Pro B60",
+   "files": [
+    {
+     "kind": "summary",
+     "en": "Summary",
+     "zh": "摘要",
+     "path": "data/benchmark-result/b60/B60_benchmark_summary_20261120.md",
+     "bytes": 10901
+    },
+    {
+     "kind": "sheet",
+     "en": "Sheet (.xlsx)",
+     "zh": "試算表",
+     "path": "data/benchmark-result/b60/B60_benchmark_all_cases_20261120.xlsx",
+     "bytes": 27601
+    },
+    {
+     "kind": "cases",
+     "en": "All cases (.csv)",
+     "zh": "全部案例",
+     "path": "data/benchmark-result/b60/B60_benchmark_all_cases_20261120.csv",
+     "bytes": 20266
+    },
+    {
+     "kind": "preflight",
+     "en": "Preflight notes",
+     "zh": "Preflight 說明",
+     "path": "data/benchmark-result/b60/README_Preflight.md",
+     "bytes": 1546
+    },
+    {
+     "kind": "hashes",
+     "en": "Hash check (.csv)",
+     "zh": "雜湊比對",
+     "path": "data/benchmark-result/b60/sha256_check.csv",
+     "bytes": 4589
+    }
+   ],
+   "cases": 84,
+   "pass": 84,
+   "sources": 3,
+   "sources_kind": "datasets",
+   "as_of": "2026-11-20"
+  }
+ }
+}
