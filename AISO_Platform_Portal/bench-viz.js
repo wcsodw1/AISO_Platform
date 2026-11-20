@@ -150,9 +150,9 @@ window.BV=(function(){
    en=`Best: ${best.n} ${sg(best)} · Worst: ${worstIsBase?`${bs} (baseline)`:`${worst.n} ${sg(worst)}`} · vs ${bs}`;
    zt=`最佳：${best.n} ${sg(best)}；最差：${worstIsBase?`${bs}（基準）`:`${worst.n} ${sg(worst)}`}；相較 ${bs}`;
   }else{
-   const same=ok.every(y=>word(y)===word(ok[0]));
-   en=same?`${ok.map(y=>`${y.n} ${num(y)}`).join(" · ")} ${word(ok[0])} than ${bn}`:`${ok.map(y=>`${y.n} ${num(y)} ${word(y)}`).join(" · ")} than ${bn}`;
-   zt=same?`比 ${bn} ${zh(ok[0])} ${ok.map(znum).join("／")}`:`${ok.map(y=>`${y.n} ${zh(y)} ${znum(y)}`).join("；")}（比 ${bn}）`;
+   const sg2=y=>`${y.m>=0?"+":"−"}${y.v}%`,bs2=bn.replace(/ \((baseline|基準)[^)]*\)/i,"");      // two lines: the same signed-percent style, with the baseline named
+   en=`${ok.map(y=>`${y.n} ${sg2(y)}`).join(" · ")} · vs ${bs2} (baseline)`;
+   zt=`${ok.map(y=>`${y.n} ${sg2(y)}`).join("；")}；相較 ${bs2}（基準）`;
   }
   return `<span class="bv-bi"><span class="bv-en">${en}</span><span class="bv-zh">${zt}</span></span>`+(o.summaryNote?` <span class="bv-note">⚠ ${esc(o.summaryNote[0])}<small class="zhs">${esc(o.summaryNote[1])}</small></span>`:"");
  }
