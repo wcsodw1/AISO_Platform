@@ -32,7 +32,7 @@
      "en": "Preflight notes",
      "zh": "Preflight 說明",
      "path": "data/benchmark-result/gb10/README_Preflight.md",
-     "bytes": 4874
+     "bytes": 4947
     },
     {
      "kind": "hashes",
@@ -58,28 +58,28 @@
      "en": "Summary",
      "zh": "摘要",
      "path": "data/benchmark-result/pro6000/PRO6000_benchmark_summary_20261120.md",
-     "bytes": 16111
+     "bytes": 17688
     },
     {
      "kind": "sheet",
      "en": "Sheet (.xlsx)",
      "zh": "試算表",
      "path": "data/benchmark-result/pro6000/PRO6000_benchmark_all_cases_20261120.xlsx",
-     "bytes": 69881
+     "bytes": 76306
     },
     {
      "kind": "cases",
      "en": "All cases (.csv)",
      "zh": "全部案例",
      "path": "data/benchmark-result/pro6000/PRO6000_benchmark_all_cases_20261120.csv",
-     "bytes": 85304
+     "bytes": 96010
     },
     {
      "kind": "preflight",
      "en": "Preflight notes",
      "zh": "Preflight 說明",
      "path": "data/benchmark-result/pro6000/README_Preflight.md",
-     "bytes": 1414
+     "bytes": 1457
     },
     {
      "kind": "hashes",
@@ -89,8 +89,8 @@
      "bytes": 543
     }
    ],
-   "cases": 540,
-   "pass": 540,
+   "cases": 600,
+   "pass": 600,
    "sources": 2,
    "sources_kind": "datasets",
    "as_of": "2026-11-20"
@@ -126,7 +126,7 @@
      "en": "Preflight notes",
      "zh": "Preflight 說明",
      "path": "data/benchmark-result/aiso1/README_Preflight.md",
-     "bytes": 1473
+     "bytes": 1516
     },
     {
      "kind": "hashes",
@@ -173,7 +173,7 @@
      "en": "Preflight notes",
      "zh": "Preflight 說明",
      "path": "data/benchmark-result/b70/README_Preflight.md",
-     "bytes": 1404
+     "bytes": 1447
     },
     {
      "kind": "hashes",
@@ -220,7 +220,7 @@
      "en": "Preflight notes",
      "zh": "Preflight 說明",
      "path": "data/benchmark-result/b60/README_Preflight.md",
-     "bytes": 1503
+     "bytes": 1546
     },
     {
      "kind": "hashes",

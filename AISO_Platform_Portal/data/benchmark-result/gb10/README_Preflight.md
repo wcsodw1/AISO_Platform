@@ -11,7 +11,7 @@
 | `sha256_check.csv` | manifest sha256 vs repository file vs machine file |
 | `longctx_machine_vs_repo.diff` | the one script that differs between the repository and the machine |
 | `preflight_in_run_logs.csv` | the preflight output recorded in each of the 47 logs |
-| `platform_preflight/` | the platform's own preflight code (`preflight.py`) and the list of its 17 checks |
+| `../../Preflight/` | the platform's own preflight code and the list of its 17 checks (shared by every machine, in `NEW-Benchmark/Preflight/`) |
 
 ## 2. Manifest and runner check
 | Item | Manifest = repository | Repository = machine | Result |
@@ -32,7 +32,7 @@
 - Runs that stopped before any case ran (failed starts) still passed this preflight; they failed later when vLLM started (see section 9 of the summary in `../benchmark_Result/`).
 
 ## 4. The platform's preflight (Step 1 of the Run flow)
-`platform_preflight/preflight.py` runs 17 checks before any benchmark starts (ssh login, GPU model, no other GPU workload, model files and sha256, runner registered and unchanged (sha256), runtime image pinned, enough free GPU memory, disk and RAM, no unfinished campaign overwritten, launch flags match the protocol, hardware snapshot). A FAIL blocks the run. The full list with the real bug behind each check is in `platform_preflight/preflight_checks.md`. Several checks were written for the Intel and AMD machines (llama.cpp, SYCL); on GB10 the relevant ones are the ssh login, the GPU and workload checks, the runner sha256 and the image pin.
+`NEW-Benchmark/Preflight/preflight.py` (shared by every machine) runs 17 checks before any benchmark starts (ssh login, GPU model, no other GPU workload, model files and sha256, runner registered and unchanged (sha256), runtime image pinned, enough free GPU memory, disk and RAM, no unfinished campaign overwritten, launch flags match the protocol, hardware snapshot). A FAIL blocks the run. The full list with the real bug behind each check is in `NEW-Benchmark/Preflight/preflight_checks.md`. Several checks were written for the Intel and AMD machines (llama.cpp, SYCL); on GB10 the relevant ones are the ssh login, the GPU and workload checks, the runner sha256 and the image pin.
 
 ## 5. Hand-over notes
 - The model weights and the Docker image are not copied (they can be downloaded again); `runners_machine/env.sh` holds only paths and settings, no secrets (checked).

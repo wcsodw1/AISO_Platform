@@ -8,12 +8,12 @@ A hand-over document for **NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8-G
 ## 2. Datasets
 | Dataset file | Framework | Evidence until | Comparability | Cases PASS / rows | Models |
 |---|---|---|---|---|---|
-| AISO_PRO6000_vLLM_VIS_20260825.json | vLLM | 2026-08-25 | not_comparable | 240 / 240 | GPT-OSS-120B, Llama-3.3-70B |
+| AISO_PRO6000_vLLM_VIS_20260825.json | vLLM | 2026-08-25 | not_comparable | 300 / 300 | GPT-OSS-120B, Llama-3.3-70B |
 | pro6000-vis.json | — | — | archive_not_comparable | 300 / 300 | GPT-OSS-120B, Llama-3.3-70B-Instruct |
 
 ### Machine, runtime and protocol (from each dataset's profile)
-- **AISO_PRO6000_vLLM_VIS_20260825.json**: machine = PRO6000 · NVIDIA RTX PRO 6000 Blackwell Server Edition（TPI 8 GPU 系統）; framework = vLLM; runtime = UNVERIFIED; np = [1, 2, 4, 8, 16, 32]; input_tokens = [1024, 2048, 4096, 8192, 16384]; output_tokens = [1024, 2048]; repeat = Cold = Run1；Warm = Run2/Run3 平均
-  - note: PRO6000（TPI 8 GPU 系統）vLLM VIS Benchmark：GPT-OSS-120B（NP 1–32）與 Llama-3.3-70B（NP 16 / 32），Input 1K–16K，Output 1K / 2K；每個條件含 Without aiDAPTIV、Cold（Run1）、Warm（Run2/Run3 平均）。數值取自 2026-08-25 PDF 報告表格。 Without aiDAPTIV 的 3 次逐次 TTFT 取自 PRO6000 原始 vis 結果檔，平均與 PDF 一致（差 0.6% 內）；吞吐、TPOT 與 Cold／Warm 無可核對的逐次數值。
+- **AISO_PRO6000_vLLM_VIS_20260825.json**: machine = PRO6000 · NVIDIA RTX PRO 6000 Blackwell Server Edition（TPI 8 GPU 系統）; framework = vLLM; runtime = UNVERIFIED; np = [1, 2, 4, 8, 16, 32, 50, 100]; input_tokens = [1024, 2048, 4096, 8192, 16384]; output_tokens = [1024, 2048]; repeat = Cold = Run1；Warm = Run2/Run3 平均
+  - note: PRO6000（TPI 8 GPU 系統）vLLM VIS Benchmark：GPT-OSS-120B（NP 1–32）與 Llama-3.3-70B（NP 16 / 32 / 50 / 100），Input 1K–16K，Output 1K / 2K；每個條件含 Without aiDAPTIV、Cold（Run1）、Warm（Run2/Run3 平均）。數值取自 2026-08-25 PDF 報告表格。 Without aiDAPTIV 的 3 次逐次 TTFT 取自 PRO6000 原始 vis 結果檔，平均與 PDF 一致（差 0.6% 內）；吞吐、TPOT 與 Cold／Warm 無可核對的逐次數值。
   - comparability: 此資料為 aiDAPTIV Cold／Warm 的 VIS 測法（vLLM、GPT-OSS-120B 與 Llama-3.3-70B），與 B60 / B70 / AISO1 的 llama.cpp 壓力測試（Gemma / Laguna / Nemotron、NP 1–5）模型與條件不同，不可直接比較。Without aiDAPTIV 為無快取基準。TPOT 為 median（120B）／報告定義 (E2E−TTFT)/(output−1)（Llama）；Llama 數值由 PDF 圖片表格人工讀取。
 - **pro6000-vis.json**: (no profile in the source)
   - comparability: 歷史彙整，測試條件各筆不同（見每筆的模型、量化、後端、NP、Input、Output、冷熱、Run）；機器歸屬與精度未註明者標「待核對」，不與壓力測試頁直接比較。
@@ -47,10 +47,16 @@ A hand-over document for **NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8-G
 | GPT-OSS-120B / without | 32 | 2308.0 | 2082.8 | 1753.7 | 1389.5 | 920.0 |
 | Llama-3.3-70B / cold | 16 | 410.3 | 387.7 | 342.2 | 281.0 | 200.1 |
 | Llama-3.3-70B / cold | 32 | 664.2 | 625.6 | 503.0 | 375.5 | 240.5 |
+| Llama-3.3-70B / cold | 50 | 773.8 | 690.0 | 472.6 | 308.2 | 158.8 |
+| Llama-3.3-70B / cold | 100 | 1087.3 | 931.5 | 553.6 | 302.1 | 157.4 |
 | Llama-3.3-70B / warm | 16 | 419.4 | 398.0 | 381.7 | 350.8 | 283.9 |
 | Llama-3.3-70B / warm | 32 | 691.3 | 670.6 | 613.0 | 529.4 | 393.7 |
+| Llama-3.3-70B / warm | 50 | 903.3 | 841.6 | 738.9 | 591.2 | 317.6 |
+| Llama-3.3-70B / warm | 100 | 1362.8 | 1229.2 | 976.4 | 571.9 | 156.4 |
 | Llama-3.3-70B / without | 16 | 414.6 | 383.8 | 349.6 | 290.0 | 209.0 |
 | Llama-3.3-70B / without | 32 | 672.0 | 614.7 | 518.5 | 392.2 | 80.7 |
+| Llama-3.3-70B / without | 50 | 790.1 | 659.7 | 495.4 | 329.0 | 62.2 |
+| Llama-3.3-70B / without | 100 | 1122.6 | 877.8 | 581.5 | 237.0 | 48.4 |
 
 **TTFT (s)**
 
@@ -76,10 +82,16 @@ A hand-over document for **NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8-G
 | GPT-OSS-120B / without | 32 | 0.35 | 1.03 | 2.23 | 5.30 | 11.73 |
 | Llama-3.3-70B / cold | 16 | 2.83 | 4.34 | 10.22 | 20.76 | 41.20 |
 | Llama-3.3-70B / cold | 32 | 5.18 | 7.74 | 19.18 | 38.99 | 79.68 |
+| Llama-3.3-70B / cold | 50 | 7.63 | 11.54 | 29.26 | 59.21 | 164.55 |
+| Llama-3.3-70B / cold | 100 | 14.41 | 22.26 | 57.97 | 162.88 | 374.89 |
 | Llama-3.3-70B / warm | 16 | 0.15 | 0.31 | 0.59 | 1.68 | 3.29 |
 | Llama-3.3-70B / warm | 32 | 0.28 | 0.67 | 1.32 | 3.57 | 7.28 |
+| Llama-3.3-70B / warm | 50 | 0.54 | 1.19 | 2.64 | 5.50 | 53.27 |
+| Llama-3.3-70B / warm | 100 | 1.26 | 2.83 | 5.99 | 53.72 | 375.84 |
 | Llama-3.3-70B / without | 16 | 2.40 | 4.89 | 9.18 | 18.72 | 37.42 |
 | Llama-3.3-70B / without | 32 | 4.64 | 8.86 | 17.28 | 35.18 | 72.85 |
+| Llama-3.3-70B / without | 50 | 6.86 | 13.43 | 26.54 | 53.35 | 400.88 |
+| Llama-3.3-70B / without | 100 | 13.09 | 26.12 | 52.38 | 206.03 | 1124.58 |
 
 **TPOT (ms/token)**
 
@@ -105,10 +117,16 @@ A hand-over document for **NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8-G
 | GPT-OSS-120B / without | 32 | 12.9 | 13.7 | 15.7 | 18.5 | 26.4 |
 | Llama-3.3-70B / cold | 16 | 39.0 | 41.3 | 46.8 | 57.1 | 81.4 |
 | Llama-3.3-70B / cold | 32 | 48.2 | 51.2 | 63.8 | 86.0 | 134.9 |
+| Llama-3.3-70B / cold | 50 | 58.5 | 64.2 | 84.8 | 121.3 | 153.1 |
+| Llama-3.3-70B / cold | 100 | 80.9 | 92.1 | 133.0 | 160.8 | 177.0 |
 | Llama-3.3-70B / warm | 16 | 38.2 | 40.2 | 41.9 | 45.6 | 56.4 |
 | Llama-3.3-70B / warm | 32 | 46.0 | 47.7 | 52.2 | 60.5 | 81.3 |
+| Llama-3.3-70B / warm | 50 | 54.6 | 58.3 | 65.6 | 80.9 | 80.0 |
+| Llama-3.3-70B / warm | 100 | 72.3 | 79.5 | 92.7 | 91.5 | 178.3 |
 | Llama-3.3-70B / without | 16 | 38.6 | 41.7 | 45.8 | 55.3 | 77.8 |
 | Llama-3.3-70B / without | 32 | 47.6 | 52.1 | 61.9 | 82.2 | 412.0 |
+| Llama-3.3-70B / without | 50 | 57.8 | 65.7 | 81.8 | 115.0 | 472.1 |
+| Llama-3.3-70B / without | 100 | 78.9 | 95.0 | 127.8 | 218.7 | 641.9 |
 
 ### 3.2 pro6000-vis.json
 
@@ -194,18 +212,18 @@ A hand-over document for **NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8-G
 | Llama-3.3-70B-Instruct / without aiDAPTIV | 100 | 78.9 | 95.0 | 127.8 | 218.7 | 641.9 |
 
 ## 4. Observations (computed from the numbers above)
-- **AISO_PRO6000_vLLM_VIS_20260825.json**: highest aggregate TPS 2410.1 tok/s (GPT-OSS-120B / without, NP32, input 1024); lowest 65.1 tok/s (Llama-3.3-70B / without, NP32, input 16384); mean aggregate TPS by model: GPT-OSS-120B / warm 826.4; GPT-OSS-120B / without 753.3; GPT-OSS-120B / cold 708.8; Llama-3.3-70B / warm 473.2; Llama-3.3-70B / cold 403.0; Llama-3.3-70B / without 392.5.
+- **AISO_PRO6000_vLLM_VIS_20260825.json**: highest aggregate TPS 2410.1 tok/s (GPT-OSS-120B / without, NP32, input 1024); lowest 48.1 tok/s (Llama-3.3-70B / without, NP100, input 16384); mean aggregate TPS by model: GPT-OSS-120B / warm 826.4; GPT-OSS-120B / without 753.3; GPT-OSS-120B / cold 708.8; Llama-3.3-70B / warm 621.1; Llama-3.3-70B / cold 473.3; Llama-3.3-70B / without 456.4.
 - **pro6000-vis.json**: highest aggregate TPS 2410.1 tok/s (GPT-OSS-120B / without aiDAPTIV, NP32, input 1024); lowest 48.1 tok/s (Llama-3.3-70B-Instruct / without aiDAPTIV, NP100, input 16384); mean aggregate TPS by model: GPT-OSS-120B / Single-aiDAPTIV 767.6; GPT-OSS-120B / without aiDAPTIV 753.3; Llama-3.3-70B-Instruct / Single-aiDAPTIV 656.2; Llama-3.3-70B-Instruct / with aiDAPTIV warm 473.7; Llama-3.3-70B-Instruct / without aiDAPTIV 456.4; Llama-3.3-70B-Instruct / with aiDAPTIV cold 403.0.
 
 ## 5. Runs that did not finish, partial and not run
 | Dataset | Kind | Detail |
 |---|---|---|
-| AISO_PRO6000_vLLM_VIS_20260825.json | not_run | model=Llama-3.3-70B; reason=報告只涵蓋 NP16 / NP32（NP1–8 無資料） |
+| AISO_PRO6000_vLLM_VIS_20260825.json | not_run | model=Llama-3.3-70B; reason=報告涵蓋 NP16 / 32 / 50 / 100（NP1–8 無資料） |
 
 ## 6. Gaps and cautions
 - The data comes from the 2026-08-25 PDF report tables and three raw result text files; throughput, TPOT, Cold and Warm values have no per-repeat source except the three 'without aiDAPTIV' TTFT repeats.
 - The measurements use vLLM with aiDAPTIV (Without / Cold / Warm) on 4 of 8 GPUs: **not comparable** with the llama.cpp stress tests of the other machines.
-- Llama-3.3-70B has data only for NP16 and NP32.
+- Llama-3.3-70B: the original dataset covers NP16 and NP32; NP50 and NP100 (20 conditions) were added from the archive on 2026-11-20. In the archive the NP50 / NP100 TTFT field is labelled ms but holds seconds (it was converted x1000, see `provenance.archive_added` in the dataset); one archive value differs from the dataset (Llama NP32 / 1K / Output 2K, Warm aggregate TPS 680.24 vs 690.24), the dataset value was kept.
 - Every case is a single recorded value or the source's own mean; see each dataset's profile for the number of repeats.
 
 ## 7. Where the data is (this folder = `NVIDIA/PRO6000/benchmark_Result/`)
@@ -215,7 +233,7 @@ A hand-over document for **NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8-G
 | `PRO6000_benchmark_all_cases_20261120.xlsx` | sheets: README, Datasets, Cases, Summary, Model_parity, Config_by_model, Not_run_partial, Evidence_files |
 | `PRO6000_benchmark_all_cases_20261120.csv` | the Cases sheet as CSV |
 | `raw_backup/dataset_json/` | the platform datasets this was built from |
-| `raw_backup/evidence/` | the three raw result text files (`PRO6000_evidence/`); the former separate folder `NVIDIA/PRO6000_evidence/` held only these same files and was removed on 2026-11-20 (Trash) |
+| `raw_backup/evidence/` | the evidence files found under TPISoftware (copies; the originals were not moved) |
 | `reports/` | published reports, where one exists |
 | `../Preflight/` | manifests, runners and the sha256 comparison |
 

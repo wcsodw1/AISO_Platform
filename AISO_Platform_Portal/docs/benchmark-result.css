@@ -32,9 +32,3 @@
 .br-mode b{font-size:22px}.br-mode small{font-size:16px;color:var(--muted,#98a0ad)}
 .br-mode:hover{border-color:rgba(200,184,117,.8)}.br-mode.on{border-color:var(--gold,#c8b875);background:rgba(200,184,117,.12)}
 .br-lvgo{white-space:nowrap}
-
-/* organised result files of the picked machine (summary, sheet, cases, preflight notes, hash check) */
-.br-files{margin-top:22px;padding-top:18px;border-top:1px solid rgba(244,239,228,.16)}.br-files h3{margin:0 0 6px;font-size:20px;color:var(--gold,#c8b875)}.br-files h3 small{margin-left:10px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
-.br-fs{margin:0 0 12px;font-size:18px;color:var(--muted,#98a0ad)}.br-fs b{color:var(--ivory,#f3efe5)}
-.br-fl{display:grid;gap:8px}.br-f{display:flex;align-items:center;flex-wrap:wrap;gap:10px;min-height:48px;padding:8px 14px;border:1px solid rgba(244,239,228,.22);border-radius:10px;color:var(--ivory,#f3efe5);font-size:18px;text-decoration:none}
-.br-f:hover{border-color:rgba(200,184,117,.8);background:rgba(200,184,117,.08)}.br-f small{font-size:16px}.br-f em{margin-left:auto;font-style:normal;font-size:16px;color:var(--muted,#98a0ad)}
