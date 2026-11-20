@@ -7,7 +7,7 @@
 |---|---|
 | `manifests/` | the two platform manifests for GB10: `gb10_matrix` (the long-context matrix) and `gb10_platform_smoke` (smoke and standard test), with the pinned sha256 of each runner |
 | `runners_repo/` | the runner files as they are in the platform repository (`benchmark/runners/`) plus `GB10_README.md` |
-| `runners_machine/` | the scripts as they were on the machine when the data was backed up: the matrix script, the long-context server module, `env.sh` and every `run_*.sh` queue script, plus `stopped_containers.txt` |
+| *(machine scripts)* | the scripts as they were on the machine (matrix script, long-context server module, `env.sh`, every `run_*.sh` queue script, `stopped_containers.txt`) are kept once in `../benchmark_Result/raw_backup/scripts/`; they are not duplicated here |
 | `sha256_check.csv` | manifest sha256 vs repository file vs machine file |
 | `longctx_machine_vs_repo.diff` | the one script that differs between the repository and the machine |
 | `preflight_in_run_logs.csv` | the preflight output recorded in each of the 47 logs |
@@ -35,7 +35,7 @@
 `NEW-Benchmark/Preflight/preflight.py` (shared by every machine) runs 17 checks before any benchmark starts (ssh login, GPU model, no other GPU workload, model files and sha256, runner registered and unchanged (sha256), runtime image pinned, enough free GPU memory, disk and RAM, no unfinished campaign overwritten, launch flags match the protocol, hardware snapshot). A FAIL blocks the run. The full list with the real bug behind each check is in `NEW-Benchmark/Preflight/preflight_checks.md`. Several checks were written for the Intel and AMD machines (llama.cpp, SYCL); on GB10 the relevant ones are the ssh login, the GPU and workload checks, the runner sha256 and the image pin.
 
 ## 5. Hand-over notes
-- The model weights and the Docker image are not copied (they can be downloaded again); `runners_machine/env.sh` holds only paths and settings, no secrets (checked).
-- Other services that were stopped on the machine to free memory for the tests are listed in `runners_machine/stopped_containers.txt`; they are still stopped and must be started by their owner.
+- The model weights and the Docker image are not copied (they can be downloaded again); `../benchmark_Result/raw_backup/scripts/env.sh` holds only paths and settings, no secrets (checked).
+- Other services that were stopped on the machine to free memory for the tests are listed in `../benchmark_Result/raw_backup/scripts/stopped_containers.txt`; they are still stopped and must be started by their owner.
 - The benchmark data of the same machine is in `../benchmark_Result/`.
 

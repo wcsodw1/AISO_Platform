@@ -239,6 +239,6 @@ A hand-over document for **AISO1 - AMD Ryzen AI Max+ 395, Radeon 8060S iGPU, 128
 | `AISO1_benchmark_all_cases_20261120.csv` | the Cases sheet as CSV |
 | `raw_backup/dataset_json/` | the platform datasets this was built from |
 | `raw_backup/evidence/` | the evidence files found under TPISoftware (copies; the originals were not moved) |
-| `reports/` | published reports, where one exists |
+| `../../../Shared/Reports/` | the combined B60 / B70 / AISO1 stress-test report (HTML and PDF, 2026-11-09), kept once for the three machines |
 | `../Preflight/` | manifests, runners and the sha256 comparison |
 
