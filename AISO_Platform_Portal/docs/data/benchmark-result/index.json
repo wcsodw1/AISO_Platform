@@ -32,7 +32,7 @@
      "en": "Preflight notes",
      "zh": "Preflight 說明",
      "path": "data/benchmark-result/gb10/README_Preflight.md",
-     "bytes": 4947
+     "bytes": 5040
     },
     {
      "kind": "hashes",
@@ -65,7 +65,7 @@
      "en": "Sheet (.xlsx)",
      "zh": "試算表",
      "path": "data/benchmark-result/pro6000/PRO6000_benchmark_all_cases_20261120.xlsx",
-     "bytes": 76306
+     "bytes": 56786
     },
     {
      "kind": "cases",
@@ -105,14 +105,14 @@
      "en": "Summary",
      "zh": "摘要",
      "path": "data/benchmark-result/aiso1/AISO1_benchmark_summary_20261120.md",
-     "bytes": 14027
+     "bytes": 14118
     },
     {
      "kind": "sheet",
      "en": "Sheet (.xlsx)",
      "zh": "試算表",
      "path": "data/benchmark-result/aiso1/AISO1_benchmark_all_cases_20261120.xlsx",
-     "bytes": 38154
+     "bytes": 31500
     },
     {
      "kind": "cases",
@@ -152,14 +152,14 @@
      "en": "Summary",
      "zh": "摘要",
      "path": "data/benchmark-result/b70/B70_benchmark_summary_20261120.md",
-     "bytes": 11518
+     "bytes": 11609
     },
     {
      "kind": "sheet",
      "en": "Sheet (.xlsx)",
      "zh": "試算表",
      "path": "data/benchmark-result/b70/B70_benchmark_all_cases_20261120.xlsx",
-     "bytes": 30395
+     "bytes": 30328
     },
     {
      "kind": "cases",
@@ -199,14 +199,14 @@
      "en": "Summary",
      "zh": "摘要",
      "path": "data/benchmark-result/b60/B60_benchmark_summary_20261120.md",
-     "bytes": 10901
+     "bytes": 10992
     },
     {
      "kind": "sheet",
      "en": "Sheet (.xlsx)",
      "zh": "試算表",
      "path": "data/benchmark-result/b60/B60_benchmark_all_cases_20261120.xlsx",
-     "bytes": 27601
+     "bytes": 27430
     },
     {
      "kind": "cases",
