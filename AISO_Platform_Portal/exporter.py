@@ -194,6 +194,8 @@ def export_catalog(base: Path, data_root: Path):
     shutil.copytree(base / "data" / "benchmark-gb10", temporary / "data" / "benchmark-gb10")
     if (base / "data" / "reports").is_dir():      # Benchmark Result reports (Markdown), downloadable from the GB10 results page
         shutil.copytree(base / "data" / "reports", temporary / "data" / "reports")
+    if (base / "data" / "benchmark-result").is_dir():      # organised per-machine result files (summary, sheet, cases, preflight notes) for the Benchmark Result page
+        shutil.copytree(base / "data" / "benchmark-result", temporary / "data" / "benchmark-result")
     shutil.copytree(base / "data" / "benchmark-archive", temporary / "data" / "benchmark-archive")
     shutil.copytree(base / "data" / "terminal", temporary / "data" / "terminal")
     shutil.copy2(base / "data" / "benchmark-registry.json", temporary / "data" / "benchmark-registry.json")

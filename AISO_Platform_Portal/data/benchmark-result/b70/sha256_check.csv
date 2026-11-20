@@ -1,0 +1,14 @@
+﻿item,file,expected_sha256,actual_sha256,compared_with,result
+runner B70_Benchmark_matrix_v4_llamacpp.py,Benchmark/B70_Benchmark_matrix_v4_llamacpp.py,,70010128f9f99c9ad180ff3c449eb8f834a33bdf9395b113e2672a024da88753,runner on the Mac (NEW-Benchmark),no hash recorded for this file in the evidence archive
+scripts_snapshot/primary/B70_V4_B1024_llamacpp.py,,,f825d68038651ef442dd9d49de01d784771084b864ed01b4d5063099119a8f29,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/build_B70_V4.py,,,ada61fa187e8c380b472fdb0b7e0d269aac383ac1a5ea3b4fd0c5e3d61ff94c0,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/download_q4_models.sh,,,c80ff2f36233bb2c9694390293561dc43d49f85b7aaa6f9b95be1439beba3653,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/launch_amd.sh,,,c7bf71c361b88c04e57bb4a978e26f184c67442e41b3c7547bb88a928228c5d9,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/launch_intel.sh,,,2434a401eb2fe67b3375b943c6fd43e8e540845022d79e228b79f858eaf87c8b,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/np1_in4k-64k_out1k_r3_formal.sh,,,cb4a8e8ceed53fa9288943bedaa6a16abd97d091783c8d9bd7c90aa5f99b2f5b,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/np1_in4k-64k_out512_r3_formal.sh,,,f88b0df9b4fb8f10377ba47b9b943e9eb5f1209dddaf54391778f607865207e9,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/np1_in4k_out128_r1_nemotron-layer-smoke.sh,,,5cdf1fb39e299490f2adc839d90ffb4c5cd499d8c886d122008ccbddf3ab8152,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/np1_in4k_out128_r1_smoke.sh,,,3361df67ec7c27a1ad3a0b808a980cba840f0db3036adb96af7b775472abdaab,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/np1_smoke_client.py,,,e3b06fde53af31db0b2284b0f054495ea045ee759184f4c45f9abd7a3b9b264f,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/sb_full.py,,,c2f1a1db012f32dd1ec30ab482a454aa4c460538249ef40621594c7c39ec5843,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded
+scripts_snapshot/primary/sb_smoke.py,,,c994238aadf21f6f530c6baa53f82d4c44a1e766b14b5b5f6e4764291b1c0bda,RunnerManifest_20261111_105057_B70.tar.gz (script snapshot taken on the machine),recorded

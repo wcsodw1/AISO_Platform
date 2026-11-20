@@ -10,6 +10,15 @@
   const V = window.MachinePicker.vendors;
   const all = V.flatMap(v => v.models.map(m => ({ ...m, vendor: v.name })));
   const first = (all.find(m => m.id === (location.hash || "").slice(1) && m.result) || all.find(m => m.result) || all[0]).id;
+  let IDX = null;      // data/benchmark-result/index.json: the organised result files per machine (scripts/export_benchmark_result.py)
+  fetch("data/benchmark-result/index.json", { cache: "no-store" }).then(r => (r.ok ? r.json() : null)).then(d => { IDX = d; if (d) render(); }).catch(() => {});
+  const kb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB");
+  const KIND = { summary: "📄", sheet: "📊", cases: "🗒", preflight: "🧾", hashes: "🔐" };
+  function files(m) {
+    const e = IDX && IDX.machines && IDX.machines[m.id]; if (!e || !e.files || !e.files.length) return "";
+    const stat = e.cases != null ? `<p class="br-fs"><b>${e.cases}</b> ${bi("cases", "個案例")} · <b>${e.pass}</b> PASS · <b>${e.sources}</b> ${esc(e.sources_kind)}${e.as_of ? " · " + esc(e.as_of) : ""}</p>` : "";
+    return `<div class="br-files"><h3>${bi("Result files", "結果檔案")}</h3>${stat}<div class="br-fl">${e.files.map(f => `<a class="br-f" href="${esc(f.path)}" ${/\.(xlsx|csv)$/.test(f.path) ? "download" : 'target="_blank" rel="noopener"'}><span aria-hidden="true">${KIND[f.kind] || "📁"}</span><b>${esc(f.en)}</b><small class="zhs">${esc(f.zh)}</small><em>${kb(f.bytes)}</em></a>`).join("")}</div></div>`;
+  }
   let cur = first, mode = (location.hash === "#tier") ? "t" : "m";
   const img = (m, cls) => PHOTO[m.id] ? `<img class="${cls}" src="${A}${PHOTO[m.id]}" alt="${esc(m.n)}" loading="lazy">` : `<span class="${cls} br-noimg" aria-hidden="true"></span>`;
   function side() {
@@ -24,7 +33,7 @@
     return `${img(m, "br-big")}<div class="br-info"><p class="br-k">${esc(m.vendor)} · ${bi(t[0], t[1])}</p><h2>${esc(m.n)}</h2>
       ${m.spec ? `<p class="br-spec">${esc(m.spec)}</p>` : ""}${m.fw ? `<p class="br-fw">${bi("Frameworks", "框架")} · ${esc(m.fw)}</p>` : ""}
       <p class="br-st ${m.online ? "on" : ""}">${m.online ? bi("● Online", "可連線") : bi("○ Offline", "離線")}${m.note ? " · " + esc(m.note) : ""}</p>
-      <div class="br-act">${open}</div></div>`;
+      <div class="br-act">${open}</div>${files(m)}</div>`;
   }
   const LV = [["m", "Workstation · Mini", "工作站 · 入門"], ["a", "Workstation · Advanced", "工作站 · 進階"], ["s", "Server", "伺服器"], ["d", "Data center", "資料中心"]];
   function levels() {

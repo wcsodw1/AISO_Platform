@@ -1,0 +1,132 @@
+﻿dataset_file,framework,model,format,quant,kv,mode,np,input_tokens,output_tokens,status,ttft_s,tpot_ms,decode_tps,aggregate_tps,normalized_tps,successful,valid_repeats,ttft_over_180s,run_id,record_date,run_label,evidence,repeats_ttft_s,repeats_tpot_ms,repeats_aggregate_tps
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,1,4096,1024,PASS,6.789,32.323,,25.694,,,3,False,original,,,,"[6.718, 6.634, 7.016]","[32.314, 32.273, 32.381]","[25.745, 25.827, 25.51]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,1,8192,1024,PASS,11.855,54.211,,15.213,,,3,False,original,,,,"[11.99, 11.754, 11.82]","[54.187, 54.158, 54.289]","[15.188, 15.248, 15.202]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,1,16384,1024,PASS,24.737,69.88,,10.642,,,3,False,original,,,,"[24.797, 24.607, 24.807]","[70.249, 70.067, 69.322]","[10.594, 10.635, 10.697]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,2,4096,1024,PASS,17.991,122.034,,14.328,,,3,False,original,,,,"[16.485, 18.849, 18.639]","[121.669, 122.121, 122.313]","[14.518, 14.233, 14.232]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,2,8192,1024,PASS,31.208,137.855,,11.872,,,3,False,original,,,,"[30.764, 31.372, 31.487]","[135.686, 139.26, 138.62]","[12.057, 11.76, 11.799]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,2,16384,1024,PASS,55.849,164.506,,9.125,,,3,False,original,,,,"[49.769, 64.316, 53.461]","[162.675, 166.811, 164.033]","[9.449, 8.692, 9.233]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,4,4096,1024,PASS,598.385,382.906,,9.396,,,3,True,original,,,,"[29.524, 1054.816, 710.814]","[151.258, 544.905, 452.555]","[22.159, 2.54, 3.488]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,4,8192,1024,PASS,986.755,551.052,,5.86,,,3,True,original,,,,"[1896.115, 90.869, 973.28]","[679.102, 202.539, 771.515]","[1.58, 13.677, 2.322]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,4,16384,1024,PASS,217.123,357.507,,7.499,,,3,True,original,,,,"[135.684, 178.688, 336.997]","[302.399, 298.69, 471.432]","[9.126, 8.393, 4.977]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,GGUF Q4_0,,,,5,4096,1024,PASS,1144.296,787.754,,8.679,,,3,True,original,,,,"[40.485, 1662.123, 1730.28]","[183.021, 1134.063, 1046.178]","[22.395, 1.814, 1.828]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,1,4096,1024,PASS,29.67,157.065,,5.38,,,3,False,original,,,,"[29.587, 29.686, 29.736]","[157.136, 157.028, 157.029]","[5.38, 5.38, 5.379]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,1,8192,1024,PASS,53.717,277.025,,3.038,,,3,False,original,,,,"[53.77, 53.662, 53.718]","[278.555, 275.697, 276.825]","[3.023, 3.05, 3.039]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,1,16384,1024,PASS,111.404,306.986,,2.407,,,3,False,original,,,,"[111.334, 111.265, 111.615]","[306.419, 306.019, 308.52]","[2.411, 2.413, 2.397]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,2,4096,1024,PASS,78.408,459.444,,3.753,,,3,False,original,,,,"[70.234, 74.295, 90.696]","[494.262, 493.53, 390.541]","[3.553, 3.533, 4.174]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,2,8192,1024,PASS,129.565,538.908,,3.009,,,3,False,original,,,,"[113.708, 142.169, 132.819]","[511.901, 553.892, 550.932]","[3.208, 2.884, 2.936]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,2,16384,1024,PASS,260.378,643.455,,2.224,,,3,True,original,,,,"[246.375, 268.148, 266.611]","[640.288, 643.992, 646.085]","[2.266, 2.203, 2.202]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,4,4096,1024,PASS,2608.488,1473.734,,2.346,,,3,True,original,,,,"[129.355, 4204.95, 3491.16]","[584.268, 2159.577, 1677.355]","[5.615, 0.638, 0.786]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,4,8192,1024,PASS,3225.455,1696.464,,1.743,,,3,True,original,,,,"[7390.515, 312.097, 1973.754]","[2717.874, 773.955, 1597.565]","[0.402, 3.692, 1.133]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,GGUF Q4_0,,,,4,16384,1024,PASS,3099.33,2459.928,,1.074,,,3,True,original,,,,"[6439.568, 1488.031, 1370.392]","[4578.747, 1496.378, 1304.66]","[0.368, 1.349, 1.505]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,1,4096,1024,PASS,7.293,26.865,,29.446,,,3,False,fastlane,,,,"[7.281, 7.307, 7.29]","[26.818, 26.902, 26.875]","[29.496, 29.402, 29.44]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,1,8192,1024,PASS,15.366,32.777,,20.942,,,3,False,fastlane,,,,"[15.313, 15.369, 15.415]","[32.826, 32.717, 32.788]","[20.943, 20.967, 20.916]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,1,16384,1024,PASS,34.244,42.371,,13.198,,,3,False,fastlane,,,,"[34.116, 34.19, 34.426]","[42.29, 43.059, 41.763]","[13.234, 13.088, 13.273]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,2,4096,1024,PASS,16.523,79.87,,20.836,,,3,False,fastlane,,,,"[14.561, 17.358, 17.651]","[81.142, 79.465, 79.002]","[20.975, 20.749, 20.783]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,2,8192,1024,PASS,37.195,104.122,,14.247,,,3,False,fastlane,,,,"[31.446, 39.177, 40.963]","[103.864, 103.823, 104.679]","[14.857, 14.07, 13.816]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,2,16384,1024,PASS,83.709,159.103,,8.302,,,3,False,fastlane,,,,"[93.967, 78.72, 78.44]","[161.372, 157.911, 158.025]","[7.891, 8.506, 8.51]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,4,4096,1024,PASS,129.008,105.929,,18.916,,,3,False,NP4_20261111_144405,,,,"[29.963, 223.04, 134.02]","[120.136, 99.59, 98.061]","[26.71, 12.588, 17.451]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,4,8192,1024,PASS,509.911,135.614,,6.464,,,3,True,NP4_20261111_144405,,,,"[469.108, 655.926, 404.699]","[136.417, 135.024, 135.401]","[6.716, 5.151, 7.525]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,4,16384,1024,PASS,993.058,572.748,,3.261,,,3,True,NP4_20261111_144405,,,,"[1178.393, 244.638, 1556.142]","[217.852, 516.071, 984.322]","[2.915, 5.274, 1.596]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,1,4096,1024,PASS,2.691,17.804,,49.0,,,3,False,fastlane,,,,"[2.685, 2.688, 2.701]","[17.532, 17.588, 18.29]","[49.66, 49.515, 47.824]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,1,8192,1024,PASS,5.734,18.952,,40.766,,,3,False,fastlane,,,,"[5.788, 5.767, 5.647]","[19.097, 18.571, 19.187]","[40.434, 41.349, 40.515]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,1,16384,1024,PASS,12.737,20.97,,29.951,,,3,False,fastlane,,,,"[12.754, 12.727, 12.731]","[20.992, 21.008, 20.91]","[29.916, 29.926, 30.01]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,2,4096,1024,PASS,5.753,29.753,,56.538,,,3,False,fastlane,,,,"[5.51, 5.875, 5.873]","[29.604, 29.625, 30.029]","[57.161, 56.552, 55.9]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,2,8192,1024,PASS,12.626,36.885,,40.628,,,3,False,fastlane,,,,"[11.883, 11.702, 14.294]","[37.069, 36.525, 37.06]","[41.047, 41.672, 39.163]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,2,16384,1024,PASS,39.758,56.54,,20.966,,,3,False,fastlane,,,,"[34.664, 42.477, 42.132]","[56.806, 56.425, 56.391]","[22.026, 20.398, 20.475]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,4,4096,1024,PASS,13.912,52.83,,60.241,,,3,False,NP4_20261111_144405,,,,"[10.288, 15.732, 15.717]","[52.016, 53.242, 53.233]","[64.315, 58.193, 58.214]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,4,8192,1024,PASS,37.648,78.428,,34.655,,,3,False,NP4_20261111_144405,,,,"[32.285, 41.266, 39.394]","[78.421, 80.015, 76.846]","[36.25, 33.139, 34.576]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,4,16384,1024,PASS,255.036,188.461,,10.498,,,3,True,NP4_20261111_144405,,,,"[94.693, 336.203, 334.212]","[147.176, 208.551, 209.656]","[16.612, 7.436, 7.447]"
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,,,,,5,8192,1024,DEFERRED,,,,,,,1,,,,,,,,
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma26,,,,,5,16384,1024,DEFERRED,,,,,,,0,,,,,,,,
+AISO_AISO1_llamacpp_B1024_20261111.json,llama.cpp,Gemma31,,,,,5,4096,1024,PARTIAL_PASS,,,,,,,2,,,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f16,,1,4096,1024,PASS,6.763,32.372,,25.677,25.677,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f16,,1,8192,1024,PASS,11.996,54.889,,15.028,15.028,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f16,,1,16384,1024,PASS,24.558,69.732,,10.683,10.683,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,f16,,1,4096,1024,PASS,30.218,156.955,,5.367,5.367,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,f16,,1,8192,1024,PASS,54.041,274.833,,3.055,3.055,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,f16,,1,16384,1024,PASS,108.281,291.771,,2.518,2.518,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,f16,,1,4096,1024,PASS,7.324,26.823,,29.456,29.456,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,f16,,1,8192,1024,PASS,15.396,32.699,,20.964,20.964,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,f16,,1,16384,1024,PASS,34.352,42.077,,13.231,13.231,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,f16,,1,4096,1024,PASS,2.684,17.408,,49.97,49.97,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,f16,,1,8192,1024,PASS,5.707,19.014,,40.704,40.704,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,f16,,1,16384,1024,PASS,12.71,20.827,,30.104,30.104,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,bf16,,1,4096,1024,PASS,7.31,42.048,,20.348,20.348,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,bf16,,1,8192,1024,PASS,13.296,73.142,,11.621,11.621,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,bf16,,1,16384,1024,PASS,29.948,76.464,,9.467,9.467,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,bf16,,1,4096,1024,PASS,31.205,207.13,,4.212,4.212,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,bf16,,1,8192,1024,PASS,57.864,313.936,,2.702,2.702,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,bf16,,1,16384,1024,PASS,129.577,335.528,,2.166,2.166,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,bf16,,1,4096,1024,PASS,8.333,37.096,,22.125,22.125,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,bf16,,1,8192,1024,PASS,18.839,42.668,,16.387,16.387,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,bf16,,1,16384,1024,PASS,44.19,54.87,,10.207,10.207,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,bf16,,1,4096,1024,PASS,2.814,17.427,,49.619,49.619,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,bf16,,1,8192,1024,PASS,6.02,18.4,,41.223,41.223,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,bf16,,1,16384,1024,PASS,14.024,20.441,,29.312,29.312,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f32,,1,4096,1024,PASS,7.021,57.704,,15.503,15.503,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f32,,1,8192,1024,PASS,12.105,95.168,,9.355,9.355,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f32,,1,16384,1024,PASS,25.232,104.244,,7.765,7.765,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,f32,,1,4096,1024,PASS,33.645,334.708,,2.723,2.723,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,f32,,1,8192,1024,PASS,58.643,445.238,,1.992,1.992,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma31,,,f32,,1,16384,1024,PASS,117.314,445.174,,1.789,1.789,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,f32,,1,4096,1024,PASS,7.443,57.34,,15.491,15.491,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,f32,,1,8192,1024,PASS,15.603,70.694,,11.647,11.647,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),laguna,,,f32,,1,16384,1024,PASS,34.861,92.354,,7.917,7.917,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,f32,,1,4096,1024,PASS,2.772,18.456,,47.3,47.3,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,f32,,1,8192,1024,PASS,5.726,19.892,,39.276,39.276,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),nemotron,,,f32,,1,16384,1024,PASS,12.701,23.156,,28.14,28.14,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f16,,8,4096,1024,PASS,20.031,91.765,,71.818,8.977,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f16,,8,8192,1024,PASS,42.885,119.506,,49.183,6.148,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_KVcache_B1024.json,llama.cpp (Vulkan),gemma26,,,f16,,8,16384,1024,PASS,98.413,175.076,,29.173,3.647,,,,KV cache campaign,,,,,,
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,1,4096,1024,PASS,2.777,16.921,,50.978,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[51.144, 51.027, 50.762]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,1,8192,1024,PASS,5.816,18.39,,41.578,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[41.501, 41.481, 41.751]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,1,16384,1024,PASS,13.172,19.785,,30.648,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[30.792, 30.54, 30.61]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,2,4096,1024,PASS,5.787,26.007,,63.202,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[63.304, 62.993, 63.307]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,2,8192,1024,PASS,12.123,26.633,,52.006,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[51.611, 52.103, 52.305]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,2,16384,1024,PASS,24.59,30.753,,36.514,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[36.657, 36.308, 36.577]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,4,4096,1024,PASS,,,,75.888,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[77.99, 74.522, 75.153]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,4,8192,1024,PASS,,,,57.027,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[56.725, 57.22, 57.137]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,4,16384,1024,PASS,,,,37.891,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[38.045, 37.855, 37.772]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,5,4096,1024,PASS,15.298,53.727,,72.883,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[75.997, 72.902, 69.749]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,5,8192,1024,PASS,27.737,63.2,,55.338,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[55.313, 55.309, 55.393]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma26,GGUF Q4_0,,,,5,16384,1024,PASS,50.872,87.372,,36.447,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[36.963, 37.116, 35.263]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,1,4096,1024,PASS,13.7,93.841,,9.335,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[9.343, 9.334, 9.327]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,1,8192,1024,PASS,29.124,98.831,,7.863,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[7.861, 7.871, 7.857]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,1,16384,1024,PASS,66.79,103.233,,5.94,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[5.949, 5.954, 5.917]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,2,4096,1024,PASS,27.751,110.773,,14.512,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[14.553, 14.481, 14.501]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,2,8192,1024,PASS,57.894,118.417,,11.432,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[11.444, 11.396, 11.456]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,2,16384,1024,PASS,123.759,147.281,,7.457,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[7.419, 7.451, 7.502]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,4,4096,1024,PASS,,,,19.177,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[19.272, 19.12, 19.139]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,4,8192,1024,PASS,,,,13.346,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[13.108, 13.286, 13.644]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,4,16384,1024,PASS,,,,7.428,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[7.318, 7.423, 7.544]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,5,4096,1024,PASS,65.469,191.05,,19.613,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[20.051, 19.018, 19.77]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,5,8192,1024,PASS,125.314,255.301,,13.241,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[12.817, 13.08, 13.828]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Gemma31,GGUF Q4_0,,,,5,16384,1024,PASS,272.539,401.518,,7.48,,,,True,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[7.579, 7.325, 7.537]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,1,4096,1024,PASS,3.313,12.43,,63.888,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[63.656, 63.82, 64.188]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,1,8192,1024,PASS,7.97,13.386,,47.268,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[47.36, 47.149, 47.295]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,1,16384,1024,PASS,26.78,14.653,,24.517,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[24.288, 24.787, 24.476]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,2,4096,1024,PASS,6.826,18.076,,80.867,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[81.318, 80.365, 80.919]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,2,8192,1024,PASS,16.458,20.456,,54.763,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[55.02, 54.508, 54.761]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,2,16384,1024,PASS,49.737,31.269,,25.051,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[25.064, 25.176, 24.913]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,4,4096,1024,PASS,,,,89.445,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[92.182, 87.784, 88.37]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,4,8192,1024,PASS,,,,55.887,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[54.714, 56.287, 56.659]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,4,16384,1024,PASS,,,,23.503,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[22.734, 23.931, 23.843]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,5,4096,1024,PASS,17.142,37.009,,93.033,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[95.39, 92.073, 91.635]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,5,8192,1024,PASS,42.513,51.698,,53.631,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[52.309, 53.819, 54.763]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Laguna,GGUF Q4_K_M,,,,5,16384,1024,PASS,122.581,116.604,,21.152,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[20.791, 21.059, 21.607]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,1,4096,1024,PASS,2.586,16.951,,51.392,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[51.447, 51.91, 50.818]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,1,8192,1024,PASS,5.298,17.213,,44.711,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[43.992, 44.728, 45.413]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,1,16384,1024,PASS,11.104,17.404,,35.423,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[35.424, 35.302, 35.543]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,2,4096,1024,PASS,5.365,23.772,,68.969,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[69.599, 68.709, 68.6]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,2,8192,1024,PASS,10.837,24.136,,57.619,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[57.391, 57.687, 57.78]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,2,16384,1024,PASS,20.148,27.666,,42.236,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[42.13, 42.193, 42.387]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,4,4096,1024,PASS,,,,84.763,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[85.256, 84.529, 84.504]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,4,8192,1024,PASS,,,,66.831,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[66.866, 66.643, 66.984]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,4,16384,1024,PASS,,,,45.934,,,,False,AISO1_llamacpp_V4_NP4_20261109_205433_635931,,,,,,"[46.123, 45.71, 45.968]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,5,4096,1024,PASS,12.375,44.469,,88.397,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[89.467, 87.801, 87.924]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,5,8192,1024,PASS,22.422,51.158,,68.39,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[68.248, 68.372, 68.552]"
+AISO_AISO1_llamacpp_V4retest_20261109.json,llama.cpp,Nemotron,GGUF UD-Q4_K_M,,,,5,16384,1024,PASS,43.265,65.301,,46.428,,,,False,AISO1_llamacpp_V4_retest_20261109_164706_136489,,,,,,"[46.51, 46.187, 46.588]"
+AISO_AISO1_vLLM_20261015.json,vLLM ROCm,Gemma31,,,,,2,4096,1024,HISTORICAL_PASS,44.263,163.524,6.145,9.681,,6/6,,False,20261015_160128,,,,,,
+AISO_AISO1_vLLM_20261015.json,vLLM ROCm,Gemma31,,,,,2,8192,1024,HISTORICAL_PASS,102.046,196.184,5.248,6.762,,6/6,,False,20261015_160128,,,,,,
+AISO_AISO1_vLLM_20261015.json,vLLM ROCm,Gemma31,,,,,2,16384,1024,HISTORICAL_PASS,268.359,271.316,4.113,3.75,,6/6,,True,20261015_160128,,,,,,
+AISO_AISO1_vLLM_20261015.json,vLLM ROCm,Gemma31,,,,,2,32768,1024,PARTIAL_ONLY_1_REPEAT,791.167,478.965,,1.598,,,,,,,,,,,
