@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-gated>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="AISO Benchmark by Machine — evidence-first inference performance validation.">
+  <title>AISO — Stress Test · PRO6000 Q4_K_M</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-header.css?v=1.28.12">
+  <script src="access-gate.js?v=1.29.0"></script>
+  <script src="site-glow.js?v=1.28.0" defer></script>
+  <script src="back-nav.js?v=1" defer></script>
+  <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="gptoss-v2.css?v=60">
+  <link rel="stylesheet" href="debug-notes.css?v=2">
+  <link rel="stylesheet" href="stress-test-aiso1-kv.css?v=97">
+  <link rel="stylesheet" href="stress-test-gb10-wq.css?v=7">
+  <link rel="stylesheet" href="tesla.css?v=47">
+  <link rel="stylesheet" href="terminal.css?v=9">
+  <link rel="stylesheet" href="stress-test-gb10.css?v=3">
+<style>.st .pro-sw{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 8px}.st .pro-sw a{display:flex;flex-direction:column;gap:2px;min-width:260px;padding:14px 24px;border:1px solid rgba(244,239,228,.28);border-radius:14px;color:var(--ivory,#f4efe4);font-size:22px;font-weight:700;text-decoration:none}.st .pro-sw a small{font-size:16px;font-weight:500;color:var(--muted,#98a0ad)}.st .pro-sw a em{font-style:normal;color:var(--gold,#d8c779);margin-right:8px}.st .pro-sw a:hover{border-color:rgba(200,184,117,.8)}.st .pro-sw a.on{border-color:var(--gold,#d8c779);background:rgba(200,184,117,.14)}@media(max-width:700px){.st .pro-sw a{min-width:0;width:100%}}</style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AISO home"><span class="brand-mark">AISO</span><span><strong>Local AI Systems</strong><small>VERIFIED / DEPLOYABLE</small></span></a>
+    <nav class="site-nav" aria-label="Main"><div class="nav-menu"><a href="./">Home<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Home sections"><a role="menuitem" href="./#overview">Overview<small>Platform summary</small></a><a role="menuitem" href="./#applications">Applications<small>AI agents on verified hardware</small></a><a role="menuitem" href="./#products">Products<small>Systems by tier</small></a></div></div><div class="nav-menu"><a href="benchmark-hub.html#benchmarking" aria-current="page">Benchmark<span class="caret" aria-hidden="true"></span></a><div class="nav-dropdown" role="menu" aria-label="Benchmark menu"><a role="menuitem" href="benchmark-hub.html#benchmarking">Benchmarking<small>實測：選機型 → Run → Result</small></a><a role="menuitem" href="benchmark-result.html">Benchmark Result<small>依機台：NVIDIA · AMD · INTEL</small></a><a role="menuitem" href="framework-compare.html">Framework Comparison<small>框架比較：vLLM · SGLang · llama.cpp</small></a></div></div><a href="research.html">Research</a><a href="./#consulting">Consulting</a><a href="./#contact" hidden style="display:none">Contact</a></nav>
+    <div class="bm-auth"><span>IMPORTED RESULTS / READ-ONLY</span></div>
+  </header>
+
+  <main class="v2 st">
+    <section class="v2-hero">
+      <a class="pg-back" href="stress-test-pro6000.html"><span aria-hidden="true">←</span> 返回 PRO6000</a>
+      <h1>PRO6000 <small class="zhs">Q4_K_M · llama.cpp</small></h1>
+      <p class="v2-sub">Own baseline (Q4_K_M, KV f16). Not comparable with the earlier vLLM test<span class="zh-i">自有基準（Q4_K_M、KV f16），與先前 vLLM 測試不可直接比較</span></p>
+    </section>
+
+    <nav class="pro-sw" aria-label="Benchmark set"><a href="stress-test-pro6000.html"><span><em>A</em>70B · 120B</span><small>Llama-3.3-70B · GPT-OSS-120B · vLLM · aiDAPTIV 前後對照</small></a><a href="stress-test-pro6000-q4km.html" class="on" aria-current="page"><span><em>B</em>New Benchmark</span><small>Q4_K_M · llama.cpp · Standard 與 KV cache 優化測試</small></a></nav>
+    <nav class="st-view" id="qView" role="tablist" aria-label="Test">
+      <button type="button" role="tab" data-view="std" class="on" aria-selected="true">Standard<small>標準測試（基準）</small></button>
+      <button type="button" role="tab" data-view="kv" aria-selected="false">Optimize · KV cache<small>優化測試 · KV 型別</small></button>
+    </nav>
+    <div id="qBody"></div>
+    <p class="v2-fine" id="stErr"></p>
+  </main><script src="result-files.js?v=1" defer></script><script src="bench-viz.js?v=56"></script><script src="hover-fold.js?v=2"></script><script src="stress-test-pro6000-q4km.js?v=1"></script>
+<script src="debug-notes.js?v=3"></script>
+<script src="research-menu.js?v=7" defer></script>
+<script src="ui-min-type.js?v=2" defer></script>
+<script src="slide-pdf.js?v=3" defer></script>
+<script src="update-check.js?v=2" defer></script>
+</body>
+</html>

@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="debug-notes.css?v=2">
   <link rel="stylesheet" href="terminal.css?v=9">
   <link rel="stylesheet" href="tesla.css?v=50">
+<style>.st .pro-sw{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 8px}.st .pro-sw a{display:flex;flex-direction:column;gap:2px;min-width:260px;padding:14px 24px;border:1px solid rgba(244,239,228,.28);border-radius:14px;color:var(--ivory,#f4efe4);font-size:22px;font-weight:700;text-decoration:none}.st .pro-sw a small{font-size:16px;font-weight:500;color:var(--muted,#98a0ad)}.st .pro-sw a em{font-style:normal;color:var(--gold,#d8c779);margin-right:8px}.st .pro-sw a:hover{border-color:rgba(200,184,117,.8)}.st .pro-sw a.on{border-color:var(--gold,#d8c779);background:rgba(200,184,117,.14)}@media(max-width:700px){.st .pro-sw a{min-width:0;width:100%}}</style>
 </head>
 <body>
   <header class="site-header">
@@ -30,6 +31,7 @@
     <section class="v2-hero">
       <a class="pg-back" href="benchmark-hub.html"><span aria-hidden="true">←</span> 返回 Benchmark</a>
       <h1 id="pgTitle">PRO6000 <small class="zhs">with / without aiDAPTIV</small></h1>
+      <nav class="pro-sw" aria-label="Benchmark set"><a href="stress-test-pro6000.html" class="on" aria-current="page"><span><em>A</em>70B · 120B</span><small>Llama-3.3-70B · GPT-OSS-120B · vLLM · aiDAPTIV 前後對照</small></a><a href="stress-test-pro6000-q4km.html"><span><em>B</em>New Benchmark</span><small>Q4_K_M · llama.cpp · Standard 與 KV cache 優化測試</small></a></nav>
       <p class="v2-fine pro-warn">⚠ Not comparable with B60 / B70 / AISO1<small class="zhs">與其他機器模型、測法不同，不可直接比較</small></p>
     </section>
 
