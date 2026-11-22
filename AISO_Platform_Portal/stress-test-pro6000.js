@@ -71,3 +71,18 @@ fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(
  const e=(reg.single_machines||[]).find(x=>x.machine==="pro6000");if(!e)throw new Error("registry: pro6000 missing");
  window.__pfile=e.file;return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})
 }).then(d=>{DS=d;$s("pDl").href=window.__pfile||"#";render();$s("pFoot").textContent=`資料更新至 ${DS.evidence_until}；由 data/benchmark-registry.json 登錄的 PRO6000 資料集自動帶入。`}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
+/* Preflight record (runner, manifest, image, model files): data/pro6000-preflight.json, written after each preflight */
+fetch("data/pro6000-preflight.json",{cache:"no-store"}).then(r=>r.json()).then(p=>{
+ const mono=v=>`<code>${esc(v)}</code>`,row=(k,v)=>`<tr><th>${k}</th><td>${v}</td></tr>`;
+ $s("pPre").innerHTML=`<div class="table-wrap"><table class="v2-table"><tbody>`
+  +row("Updated<small>更新</small>",esc(p.updated))
+  +row("Baseline<small>基準</small>",esc(p.baseline))
+  +row("Image<small>映像</small>",esc(p.image.tag)+" · build "+esc(p.image.build)+"<br>"+mono(p.image.id))
+  +row("Runner<small>執行程式</small>",esc(p.runner.file)+"<br>"+mono(p.runner.sha256))
+  +row("Manifest<small>清單</small>",esc(p.manifest.file)+"<br>"+mono(p.manifest.sha256))
+  +p.models.map(m=>row(esc(m.id),esc(m.file)+" · "+(m.size_bytes/1e9).toFixed(1)+" GB<br>"+mono(m.sha256))).join("")
+  +p.checks.map(c=>row(esc(c.item),esc(c.result))).join("")
+  +(p.fixes||[]).map((f,i)=>row("Fix "+(i+1)+"<small>解法</small>","<b>"+esc(f.problem)+"</b><br>Cause 原因: "+esc(f.cause)+"<br>Fix 解法: "+esc(f.fix))).join("")
+  +row("Next<small>下一步</small>",esc(p.next))
+  +`</tbody></table></div>`;
+}).catch(()=>{});

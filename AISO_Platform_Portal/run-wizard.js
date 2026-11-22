@@ -30,10 +30,10 @@
     const c = $("liveConnect");
     if (c && connectHome && c.parentNode !== connectHome.parent) connectHome.parent.insertBefore(c, connectHome.next);
   }
-  const termIds = ["termPanel", "aisoTermRun"], termHome = {};
+  const termIds = ["termPanel", "aisoTermRun"], termHome = {}, TERMEL = {};      // TERMEL keeps the nodes themselves: a panel left inside a redrawn (detached) card can no longer be found by id and the Run log stayed empty
   let SHELL = null;
   function parkTerm() {              // the run log (#termPanel) and the real shell (#aisoTermRun) are moved into the Run step, and parked back before every re-render
-    termIds.forEach(id => { const n = $(id), h = termHome[id]; if (n && h && n.parentNode !== h.parent) h.parent.insertBefore(n, h.next); });
+    termIds.forEach(id => { const n = $(id) || TERMEL[id], h = termHome[id]; if (n && h && n.parentNode !== h.parent) h.parent.insertBefore(n, h.next); });
   }
   function opt(id, left, right, sel, off) {
     return `<button type="button" class="mw-opt${sel ? " sel" : ""}${off ? " off" : ""}" data-id="${esc(id)}"${off ? ' aria-disabled="true"' : ""}><span class="mw-l">${left}</span><span class="mw-r">${right || ""}</span></button>`;
@@ -90,16 +90,25 @@
   // left side, EXEC machines: the two kinds of test as Step 1 / Step 2 (click to choose what the right panel shows)
   function stdNote() {
     const s = EXEC.status || {}, sl = s.standard_last || {};
-    if (s.busy && s.kind === "standard") return bi("Running", "測試中");
+    if (s.busy && s.kind === "standard" && (s.variant || "baseline") === "baseline") return bi("Running", "測試中");
     const n = (sl.cases || []).length;
     return n ? `${n} cases` : "";
+  }
+  // Optimize (David 2026-11-22): the Standard protocol with ONE change from the baseline. Runnable now: quantized KV cache; the others are shown dimmed with what they still need
+  const OPTS = [["kv_q8", "KV cache q8_0", "KV cache 量化 q8_0", ""], ["kv_q4", "KV cache q4_0", "KV cache 量化 q4_0", ""],
+    ["qat", "QAT (Gemma Q4_0)", "QAT", "needs the official QAT GGUF 需先下載官方 QAT 模型檔"], ["mtp", "MTP", "MTP 推測解碼", "needs MTP weights 需 MTP 權重"], ["nvfp4", "NVFP4", "NVFP4", "needs vLLM / TensorRT-LLM 需換引擎"]];
+  const hasOpt = () => EXEC.machine === "pro6000_llamacpp" && !!EXEC.stdspec;
+  function optNote() {
+    const s = EXEC.status || {}, q = (s.queued || []).length;
+    if (s.busy && s.kind === "standard" && (s.variant || "baseline") !== "baseline") return bi("Running", "測試中");
+    return q ? bi("Queued", "已排隊") : "";
   }
   function kindsHtml() {
     if (!EXEC.on) return "";
     if (S()[st.step][0] !== "run") return "";      // the test kinds (Smoke / Standard / KV cache) appear only after the engine and the model are chosen - the same on every machine (David 2026-11-18)
     const m = mergedOf(EXEC.status || {}), ids = Object.keys(m), pass = ids.filter(k => m[k].state === "pass").length;
     const k = (kind, n, en, zh, note) => `<li><button type="button" class="rw-kind${EXEC.kind === kind ? " sel" : ""}" data-act="ekind" data-kind="${kind}"><span class="rw-kn">Step ${n}</span><b>${en}<small class="zhs">${zh}</small></b><em>${note}</em></button></li>`;
-    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>${optKindsHtml()}`;
+    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${hasOpt() ? k("optimize", 3, "Optimize Test", "優化測試", optNote()) : ""}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>${optKindsHtml()}`;
   }
   // GB10: MTP and QAT are a category of their own (not Step 4/5): "Optimization tests"
   function optKindsHtml() {
@@ -135,7 +144,7 @@
   function question() {
     const id = S()[st.step][0];
     if (WEB && !EXEC.on && HUBCARD[machineId()]) return { title: bi("Contact us to get a License", "請與客服人員聯繫取得 License"), ok: false, auto: true, next: "",
-      body: `<p class="rw-msg">${bi("A License is needed to run a live test. Our team will set it up for you.", "實機測試需要 License，請與客服人員聯繫取得。")}</p>` };
+      body: `<p class="rw-msg">${bi("A License is needed to run a live test. Our team will set it up for you.", "實機測試需要 License，請與客服人員聯繫取得。")}</p>${snapHtml()}` };
     if (!EXEC.on && !EXEC.loading && HUBCARD[machineId()]) {     // the executor did not answer: say so, instead of showing the old "Detect models" flow that cannot work here
       const base = machineId(), other = EXEC.execId && EXEC.execId !== base;
       const why = EXEC.needLocal ? `${bi("Tests can only be started from the local page. Open", "測試只能從本機頁面啟動，請改開")} <a href="${esc("http://localhost:8765/benchmark.html" + location.hash)}">localhost:8765</a>` : esc(EXEC.msg || "") || bi("The platform did not get an answer from this machine's test service. If the platform was just updated, restart the server.", "平台沒有收到這台機器測試服務的回應；若剛更新過平台，請重啟伺服器。");
@@ -149,18 +158,20 @@
         body: opt("xm:all", `<b>${bi("All models", "全部模型")}</b>`, "", pick === "all") +
           EXEC.models.map(m => opt("xm:" + m.id, `<b>${esc(m.id)}</b>`, esc(specText(m.id)), pick === m.id)).join("") };
     }
-    if (EXEC.on && id === "run" && (EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbOpt) { window.GbOpt.init(render); return window.GbOpt.question(EXEC.kind); }
     if (EXEC.on && id === "run" && EXEC.kind === "gb10m" && window.GbPanel) { window.GbPanel.init(render); return window.GbPanel.question(); }
+    if (EXEC.on && id === "run" && (EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbOpt) { window.GbOpt.init(render); return window.GbOpt.question(EXEC.kind); }
     if (EXEC.on && id === "run" && EXEC.kind === "kvcache" && window.KvPanel) { window.KvPanel.init(render); return window.KvPanel.question(); }
-    if (EXEC.on && id === "run" && EXEC.kind === "standard") {
+    if (EXEC.on && id === "run" && (EXEC.kind === "standard" || EXEC.kind === "optimize")) {
+      const opt = EXEC.kind === "optimize"; EXEC.variant = EXEC.variant || "kv_q8";
+      const optHtml = opt ? `<div class="rw-opts"><p class="rw-msg">${bi("Optimize = the Standard protocol with ONE change from the baseline. Results are labelled Optimization and never mixed into the baseline.", "優化 = 與標準測試相同規格，只改一個項目；結果標示為優化，不混進基準。")}</p>${OPTS.map(o => `<button type="button" class="rw-chip${EXEC.variant === o[0] ? " sel" : ""}" data-act="evariant" data-v="${o[0]}"${o[3] ? " disabled" : ""} title="${esc(o[3])}">${o[1]}<small class="zhs">${o[2]}</small>${o[3] ? `<small class="zhs"> · soon 即將</small>` : ""}</button>`).join("")}</div>` : "";
       const s = EXEC.status || {}, busyNow = !!s.busy, f = EXEC.formal || [], total = f.reduce((a, r) => a + r.n, 0), pr = stdParams(), n = stdCases();
       const row = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
       const page = ({ aiso1: "stress-test-aiso1.html", pro6000: "stress-test-pro6000.html", gb10: "stress-test-gb10.html" })[baseOf(EXEC.machine)] || "stress-test-compare.html";
       const bad = s.external ? "The GPU is in use by other work on this shared machine - start is off until it is free." : !EXEC.stdspec ? "This engine has no standard test yet - only the smoke test (the comparison models are not on this machine)." : !(n > 0) ? "Check the Input / NP lists." : "";
-      return { title: bi("Standard test", "標準測試"), ok: false, next: "", last: true,
-        body: `<dl class="rw-sum">${row("Machine", ($("selectedUnitTitle") || {}).textContent || EXEC.machine)}${row("Models", (EXEC.pick || "all") === "all" ? EXEC.models.map(m => m.id).join(", ") : EXEC.pick)}${EXEC.stdspec ? row("Test", `Standard · Input ${pr.inputs.join("/")} × NP ${pr.nps.join("/")} × ${pr.repeats}`) + row("Cases", isFinite(n) ? String(n) : "—") : row("Test", "Smoke only on this engine")}${row("On the platform", total + " conditions" + (f.length ? " (" + f.map(r => r.framework + " " + r.n).join(", ") + ")" : ""))}</dl>
-          ${busyNow ? benchHtml() + `<div class="rw-row"><button type="button" class="rw-btn" data-act="estop">${bi("Stop", "停止")}</button></div>` : (EXEC.stdspec ? stdParamsHtml() + `<div class="rw-row"><button type="button" class="mw-next" data-act="estandard"${bad ? " disabled" : ""}>${bi("Start standard test", "開始標準測試")}</button></div>` : "") + `${bad ? (s.external ? "" : `<p class="rw-msg warn">${esc(bad)}</p>`) : `<p class="rw-msg">${bi("Runs in the background on the machine and can take hours. Results stay on the machine until they are added to the platform data.", "在機器上背景執行，可能要數小時；結果先留在機器上，之後才匯入平台資料。")}</p>`}`}
-          ${s.kind === "standard" ? progressHtml(s) : ""}
+      return { title: opt ? bi("Optimize test", "優化測試") : bi("Standard test", "標準測試"), ok: false, next: "", last: true,
+        body: `${fold("sum", bi("Summary", "摘要") + `<small class="zhs">${bi("machine · models · test", "機器 · 模型 · 測試")}</small>`, `<dl class="rw-sum">${row("Machine", ($("selectedUnitTitle") || {}).textContent || EXEC.machine)}${row("Models", (EXEC.pick || "all") === "all" ? EXEC.models.map(m => m.id).join(", ") : EXEC.pick)}${EXEC.stdspec ? row("Test", `Standard · Input ${pr.inputs.join("/")} × NP ${pr.nps.join("/")} × ${pr.repeats}`) + row("Cases", isFinite(n) ? String(n) : "—") : row("Test", "Smoke only on this engine")}${row("On the platform", total + " conditions" + (f.length ? " (" + f.map(r => r.framework + " " + r.n).join(", ") + ")" : ""))}</dl>`, false)}
+          ${busyNow ? benchHtml() + `<div class="rw-row"><button type="button" class="rw-btn" data-act="estop">${bi("Stop", "停止")}</button></div>` + (opt ? optHtml + `<div class="rw-row"><button type="button" class="mw-next" data-act="eoptimize">${bi("Queue it - starts by itself when the machine is free", "排隊：機器空了就自動開始")}</button></div>${(s.queued || []).length ? `<p class="rw-msg">${bi("Queued", "已排隊")}: ${(s.queued || []).map(q => esc(q.variant)).join(", ")}</p>` : ""}` : "") : (EXEC.stdspec ? optHtml + stdParamsHtml() + `<div class="rw-row"><button type="button" class="mw-next" data-act="${opt ? "eoptimize" : "estandard"}"${bad ? " disabled" : ""}>${opt ? bi("Start optimize test", "開始優化測試") : bi("Start standard test", "開始標準測試")}</button></div>` : "") + `${bad ? (s.external ? "" : `<p class="rw-msg warn">${esc(bad)}</p>`) : `<p class="rw-msg">${bi("Runs in the background on the machine and can take hours. Results stay on the machine until they are added to the platform data.", "在機器上背景執行，可能要數小時；結果先留在機器上，之後才匯入平台資料。")}</p>`}`}
+          ${s.kind === "standard" ? fold("models", bi("Models", "模型") + `<small class="zhs">${bi("progress per model", "各模型進度")}</small>`, progressHtml(s), false) + stdResultsHtml(true) : stdResultsHtml(true)}
           <div class="rw-row"><a class="rw-btn" href="${page}">${bi("Open the result page", "開啟結果頁")} →</a></div>` };
     }
     if (EXEC.on && id === "run") {
@@ -240,7 +251,7 @@
         if (!SHELL) { SHELL = document.createElement("section"); SHELL.className = "rw-term rw-shell2"; SHELL.innerHTML = `<h3 class="rw-term-h">${bi("Terminal", "終端機")}<small class="zhs">${bi("type commands · asks the terminal password", "可輸入指令 · 需終端密碼")}</small></h3><div id="rwShell"></div>`; AisoTerm.mount(SHELL.querySelector("#rwShell"), { machine: machineId() || "gb10", flyout: false }); }
         root.appendChild(SHELL);
       }
-      const log = $("termPanel");
+      const log = $("termPanel") || TERMEL.termPanel;
       if (log) { $("rwTermSlot").appendChild(log); log.hidden = false; const hb = log.querySelector("header b"); if (hb) hb.textContent = "RUN LOG"; }
       if (tb) tb.scrollTop = !keep || keep.bottom ? tb.scrollHeight : keep.top;
       // notices belong in the Terminal, not on the card
@@ -348,14 +359,33 @@
     // a pulsing "!" at the right of the tested item: pointing at it shows the other models and the question (popover, no long block)
     const hasMore = s.kind !== "standard" && !s.busy && rest.length > 0;
     const pop = hasMore ? `<span class="rw-pop"><span class="rw-pop-n">${rest.map(esc).join(" · ")}</span><button type="button" class="mw-next" data-act="esmokerest">${bi("Test the other " + rest.length, "測試其餘 " + rest.length + " 個")}</button></span>` : "";
-    const rows = ids.map((id, n) => { const p = prog[id] || { state: "waiting" }; const t = PROG[p.state] || PROG.waiting; const last = hasMore && n === ids.length - 1;
+    const showIds = ids;      // all models are listed: the box is closed unless the mouse is over it, so the page stays short (David 2026-11-22)
+    const rows = showIds.map((id, n) => { const p = prog[id] || { state: "waiting" }; const t = PROG[p.state] || PROG.waiting; const last = hasMore && n === showIds.length - 1;
       const fin = p.state === "pass" || p.state === "fail";
       return `<li class="${t[3]}${last ? " has-more" : ""}${fin ? " go" : ""}"${fin ? ' data-act="eresult" title="Result 結果"' : ""}${last ? ' tabindex="0"' : ""}><i>${t[0]}</i><b>${esc(id)}${specHtml(id)}</b><span>${t[1]}<small class="zhs">${t[2]}</small>${p.total ? " · " + p.done + "/" + p.total + (p.bad ? " · " + p.bad + " FAIL" : "") : p.agg ? " · " + esc(p.agg) + " tok/s" : ""}${fin ? ` <em class="rw-go">Result<small class="zhs">結果</small> ›</em>` : ""}</span>${last ? `<em class="rw-hint">${bi(rest.length + " more", "還有 " + rest.length + " 個")}</em>${pop}` : ""}</li>`; }).join("");
     const more = "";
     return `<ul class="rw-prog">${rows}</ul>`;   // the summary line and the log are shown in the Terminal below
   }
   // the Terminal block under the card shows the run as it goes (only while a run is going / was started from this page)
+  // model download (read-only status from the executor): one Run log line per file whenever its % moves by 1 or more, plus start / done notes
+  function streamPrep(s) {
+    const p = s && s.prep; if (!p || !p.ok || typeof tlog !== "function") return;
+    EXEC.prepSeen = EXEC.prepSeen || {};
+    const fmt = n => (n / 1e9).toFixed(1) + " GB";
+    p.files.forEach(f => {
+      const prev = EXEC.prepSeen[f.name], now = Math.floor(f.pct);
+      if (prev === undefined && !p.downloading && f.pct >= 100) { EXEC.prepSeen[f.name] = 100; return; }      // already complete when the page opened: stay quiet
+      if (prev === undefined || now - prev >= 1) {
+        EXEC.prepSeen[f.name] = now;
+        tlog("download 下載 · " + f.name + " · " + f.pct.toFixed(1) + "% (" + fmt(f.have) + " / " + fmt(f.size) + ")" + (f.pct >= 100 ? " ✓" : ""));
+      }
+    });
+    if (p.done && !EXEC.prepDone && EXEC.prepStarted) { EXEC.prepDone = true; tlog("download 下載 · all models on the machine 全部模型已到位 ✓ (" + p.dir + ")"); }
+    if (p.downloading) EXEC.prepStarted = true;
+    const ts = document.getElementById("termState"); if (ts && p.downloading && !(s.busy)) ts.textContent = "downloading";
+  }
   function streamToTerminal(s) {
+    streamPrep(s);
     if (!s || !s.ok || EXEC.kind === "kvcache" || EXEC.kind === "gb10m" || EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") return;      // the KV cache panel writes its own log into the Run log
     window.__rwBusy = !!s.busy;
     const ts = document.getElementById("termState"); if (ts) ts.textContent = s.busy ? "running" : (EXEC.watch ? "done" : "idle");
@@ -369,9 +399,11 @@
       }
       return;
     }
+    const slot = $("rwTermSlot"), lg = $("termPanel") || TERMEL.termPanel; if (slot && lg && lg.parentNode !== slot) { slot.appendChild(lg); lg.hidden = false; }      // self-heal: the Run log must sit in its slot while the run goes
     if (typeof tlog !== "function") return;
     EXEC.seen = EXEC.seen || new Set();
-    if (!EXEC.seen.size) { const clr = document.getElementById("termClear"); if (clr) clr.click(); tlog("$ " + (EXEC.runKind === "standard" ? "standard test" : "smoke test") + " · " + EXEC.machine + " · " + EXEC.models.map(m => m.id).join(", ")); if (typeof termOpen === "function") termOpen(true); }
+    { const tb2 = $("termBody"); if (tb2 && !tb2.textContent.trim() && EXEC.seen.size) { EXEC.seen = new Set(); EXEC.doneNote = false; } }      // the log box is empty but lines were counted as shown: show them again
+    if (!EXEC.seen.size) { const clr = document.getElementById("termClear"); if (clr) clr.click(); tlog("$ " + (EXEC.runKind === "standard" ? (EXEC.variant && EXEC.kind === "optimize" ? "optimize test (" + EXEC.variant + ")" : "standard test") : "smoke test") + " · " + EXEC.machine + " · " + EXEC.models.map(m => m.id).join(", ")); if (typeof termOpen === "function") termOpen(true); }
     tidyAll(s.tail).forEach(k => { if (!EXEC.seen.has(k)) { EXEC.seen.add(k); tlog(k, /FAIL|Traceback|Error/.test(k) ? "err" : undefined); } });
     if (!s.busy && EXEC.seen.size && !EXEC.doneNote) { EXEC.doneNote = true; tlog(s.result ? "done · " + s.result : "done"); }
   }
@@ -390,7 +422,25 @@
     renderResults();
   }
   // result of the standard run (the one going now, else the newest on the machine): one row per model x NP x Input, mean over the repeats that passed
-  function stdResultsHtml() {
+  // collapsible box (native details): the open / closed state is kept in EXEC.fold, because the panel is redrawn on every refresh (David 2026-11-22: the right side opens and closes)
+  const fold = (key, titleHtml, bodyHtml, openDefault) => `<details class="rw-fold" data-fold="${key}"${EXEC.pin && EXEC.pin[key] ? " data-pin=1" : ""}${(EXEC.fold && key in EXEC.fold ? EXEC.fold[key] : openDefault) ? " open" : ""}><summary>${titleHtml}</summary><div class="rw-fold-b">${bodyHtml}</div></details>`;
+  // website version: a view-only picture of the test that is going (data/run-snapshot.json: names, counts and averages only; nothing can be started from the website)
+  let WEBSNAP = null;
+  function snapHtml() {
+    const runs = ((WEBSNAP && WEBSNAP.runs) || []).filter(r => r.page === machineId());
+    const r = runs.find(x => x.busy) || runs[0]; if (!r) return "";
+    const kind = r.variant && r.variant !== "baseline" ? bi("Optimize test", "優化測試") + " · " + esc(r.variant) : bi("Standard test", "標準測試");
+    const st = r.busy ? bi("Running", "測試中") : bi("Last run", "上一次測試");
+    const models = (r.models || []).map(m => { const t = PROG[m.state] || PROG.waiting; return `<li class="${t[3]}"><i>${t[0]}</i><b>${esc(m.id)}</b><span>${t[1]}<small class="zhs">${t[2]}</small> · ${m.done}/${m.total}</span></li>`; }).join("");
+    const fx = (v, d) => v == null ? "—" : Number(v).toFixed(d);
+    const rows = (r.rows || []).map(x => `<tr class="${x.pass === x.n ? "ok" : "bad"}"><td>${esc(x.model)}</td><td>${x.np}</td><td>${x.input}</td><td>${fx(x.ttft_ms, 0)}</td><td>${fx(x.tpot_ms, 1)}</td><td>${fx(x.tps, 1)}</td><td>${x.pass}/${x.n}</td></tr>`).join("");
+    return `<div class="rw-snap"><h3 class="rw-sub">${bi("Current status", "當下狀態")}<small class="zhs">${bi("view only", "僅供檢視")} · ${esc((WEBSNAP.updated || "").replace("T", " "))}</small></h3>
+      <p class="rw-msg">${kind} · ${r.engine ? esc(r.engine) + " · " : ""}${st} · ${r.percent}% (${r.done}/${r.total})</p>
+      <div class="rw-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i style="width:${r.percent}%"></i></div>
+      ${fold("snapm", bi("Models", "模型"), `<ul class="rw-prog">${models}</ul>`, false)}
+      ${rows ? fold("snapt", bi("Results so far", "目前結果"), `<div class="rw-tblw"><table class="rw-tbl"><thead><tr><th>Model</th><th>NP</th><th>Input</th><th>TTFT ms</th><th>TPOT ms</th><th>tok/s</th><th>PASS</th></tr></thead><tbody>${rows}</tbody></table></div><p class="rw-msg">${bi("Mean of the repeats that passed. Not yet part of the platform data.", "取通過的重複次數平均；尚未納入平台資料。")}</p>`, false) : ""}</div>`;
+  }
+  function stdResultsHtml(boxed) {
     const st = EXEC.status || {}, sl = st.standard_last || {};
     const live = st.kind === "standard" && (st.busy || !(sl.cases || []).length);
     const cases = (live ? st.cases : sl.cases) || [];
@@ -401,9 +451,10 @@
     const fx = (v, d) => v == null ? "—" : v.toFixed(d);
     const rows = Object.values(g).map(x => `<tr class="${x.ok.length === x.n ? "ok" : "bad"}"><td>${esc(x.model)}</td><td>${x.np}</td><td>${x.input}</td><td>${fx(mean(x.ok, c => c.ttft_ms), 0)}</td><td>${fx(mean(x.ok, c => c.tpot_ms), 1)}</td><td>${fx(mean(x.ok, c => c.agg != null ? c.agg : c.aggregate_tps), 1)}</td><td>${x.ok.length}/${x.n}</td></tr>`).join("");
     const when = live ? "" : (sl.finished_at || sl.started_at || "");
-    return `<h3 class="rw-sub">${bi("Standard test run", "本次標準測試")}<small class="zhs">${live ? bi("running", "進行中") : esc(when) + (sl.stopped ? " · stopped 已停止" : "")}</small></h3>
-      <div class="rw-tblw"><table class="rw-tbl"><thead><tr><th>Model</th><th>NP</th><th>Input</th><th>TTFT ms</th><th>TPOT ms</th><th>tok/s</th><th>PASS</th></tr></thead><tbody>${rows}</tbody></table></div>
+    const head = `${bi("Standard test run", "本次標準測試")}<small class="zhs">${live ? bi("running", "進行中") : esc(when) + (sl.stopped ? " · stopped 已停止" : "")}</small>`;
+    const inner = `<div class="rw-tblw"><table class="rw-tbl"><thead><tr><th>Model</th><th>NP</th><th>Input</th><th>TTFT ms</th><th>TPOT ms</th><th>tok/s</th><th>PASS</th></tr></thead><tbody>${rows}</tbody></table></div>
       <p class="rw-msg">${bi("Mean of the repeats that passed. Not added to the platform data yet.", "取通過的重複次數平均；尚未匯入平台資料。")}</p>`;
+    return boxed ? fold("tbl", head, inner, false) : `<h3 class="rw-sub">${head}</h3>` + inner;
   }
   function renderResults() {
     const host = $("parameterPage"); if (!host || !EXEC.on) return;
@@ -431,7 +482,7 @@
   }
   async function loadExecStatus() {
     try { const r = await fetch("/api/benchmark/executor/status?machine=" + EXEC.machine, { cache: "no-store" }); EXEC.status = await r.json(); } catch (e) { EXEC.msg = "status: " + e.message; }
-    if (EXEC.status && EXEC.status.busy && !EXEC.kindSet) { EXEC.kind = EXEC.status.kind === "standard" ? "standard" : "smoke"; EXEC.kindSet = true; }      // opened in the middle of a run: show that run
+    if (EXEC.status && EXEC.status.busy && !EXEC.kindSet) { EXEC.kind = EXEC.status.kind === "standard" ? ((EXEC.status.variant || "baseline") === "baseline" ? "standard" : "optimize") : "smoke"; EXEC.kindSet = true; }      // opened in the middle of a run: show that run
     streamToTerminal(EXEC.status);
     const nowBusy = !!(EXEC.status && EXEC.status.busy);
     if (EXEC.wasBusy && !nowBusy && EXEC.watch && typeof setView === "function") setTimeout(() => { setView("result"); const r = $("rwResults"); if (r) r.scrollIntoView({ behavior: "smooth", block: "start" }); }, 2500);   // the run finished: the next screen is the Results
@@ -440,7 +491,8 @@
     render();
     tickBench();
     // poll while a run is going (also when the page was opened in the middle of one); stop when it is finished
-    if (EXEC.status && EXEC.status.busy) { if (!EXEC.poll) EXEC.poll = setInterval(loadExecStatus, 5000); }
+    const dl = !!(EXEC.status && EXEC.status.prep && EXEC.status.prep.downloading);      // a model download is going: keep refreshing too (real time)
+    if (EXEC.status && (EXEC.status.busy || dl)) { if (!EXEC.poll) EXEC.poll = setInterval(() => { if (!EXEC.loading) { EXEC.loading = true; loadExecStatus().finally(() => { EXEC.loading = false; }); } }, 5000); }
     else if (EXEC.poll) { clearInterval(EXEC.poll); EXEC.poll = null; }
   }
   async function stopRun() {
@@ -455,11 +507,12 @@
   }
   async function startSmoke(list, kind) {
     kind = kind || "smoke";
+    const optimize = kind === "optimize"; if (optimize) kind = "standard";      // Optimize runs on the standard protocol with one variant
     if (EXEC.starting) return;   // a second click while the password dialog / request is open does nothing
     EXEC.starting = true; EXEC.msg = ""; EXEC.watch = true; EXEC.runKind = kind; EXEC.startedAt = Date.now(); EXEC.runModels = (list || [EXEC.pick || "all"])[0] === "all" ? EXEC.models.map(m => m.id) : (list || [EXEC.pick]); EXEC.seen = new Set(); EXEC.doneNote = false;
     try {
       const ticket = await window.RunGate.ticket();
-      const r = await fetch("/api/benchmark/executor/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": ticket }, body: JSON.stringify({ machine: EXEC.machine, kind, models: list || [EXEC.pick || "all"], params: kind === "standard" ? stdParams() : Object.fromEntries(Object.keys(EXEC.spec || {}).filter(k => !EXEC.spec[k].fixed).map(k => [k, pval(k)])) }) });
+      const r = await fetch("/api/benchmark/executor/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": ticket }, body: JSON.stringify({ machine: EXEC.machine, kind, queue: optimize && !!(EXEC.status && EXEC.status.busy), models: list || [EXEC.pick || "all"], params: kind === "standard" ? (optimize ? { ...stdParams(), variant: EXEC.variant || "kv_q8" } : stdParams()) : Object.fromEntries(Object.keys(EXEC.spec || {}).filter(k => !EXEC.spec[k].fixed).map(k => [k, pval(k)])) }) });
       const d = await r.json();
       EXEC.msg = d.ok ? d.message : (d.error || "could not start");
     } catch (e) { EXEC.msg = String(e.message || e); }
@@ -511,13 +564,29 @@
       if (!d.ok) EXEC.msg = d.error || "";
     } catch (e) { EXEC.unavailable = true; }     // an old server answers 404 / HTML: say so on the screen instead of silently showing the old flow
   }
+  // arrived from the Benchmark menu while a test is running: open the engine that is running, on its Run step (where the Run log is)
+  function applyJump() {
+    let j = null; try { j = JSON.parse(sessionStorage.getItem("aiso-jump") || "null"); sessionStorage.removeItem("aiso-jump"); } catch (e) { return false; }
+    if (!j || !j.machine || Date.now() - j.t > 20000 || baseOf(j.machine) !== machineId()) return false;
+    EXEC.kindSet = false; if (j.machine !== (EXEC.execId || machineId())) switchEngine(j.machine);
+    st.step = 2; return true;
+  }
+  // any way into this machine's Run page while OUR test is running on it (hub card, link, menu): open the engine that is running, on its Run step - where the progress and the Run log are
+  function goActive() {
+    if (WEB) return;
+    fetch("/api/benchmark/executor/active", { cache: "no-store" }).then(r => r.json()).then(d => {
+      if (!d || !d.machine || baseOf(d.machine) !== machineId()) return;
+      EXEC.kindSet = false; if (d.machine !== (EXEC.execId || machineId())) switchEngine(d.machine);
+      st.step = 2; render();
+    }).catch(() => {});
+  }
   function mount() {
     const host = $("legacyConfig");
     if (!host || $("runWizard")) return;
     root = document.createElement("section");
     root.id = "runWizard"; root.className = "rw-mount"; root.setAttribute("data-v", "run");
     host.parentNode.insertBefore(root, host);
-    termIds.forEach(id => { const n = $(id); if (n) termHome[id] = { parent: n.parentNode, next: n.nextSibling }; });
+    termIds.forEach(id => { const n = $(id); if (n) { termHome[id] = { parent: n.parentNode, next: n.nextSibling }; TERMEL[id] = n; } });
     const c = $("liveConnect"); if (c) connectHome = { parent: c.parentNode, next: c.nextSibling };
     document.body.classList.add("rw-on");
     // Run log: Expand / Collapse (all lines, downward) and Copy (the whole log as text) - David 2026-11-18
@@ -533,6 +602,17 @@
       copy.innerHTML = ok ? 'Copied<small>已複製</small> ✓' : 'Copy failed<small>複製失敗</small>';
       setTimeout(() => { copy.innerHTML = 'Copy<small>複製</small>'; }, 1800);
     };
+    // the boxes on the right open when the mouse is over them and close when it leaves (touch: a tap opens and keeps it open, a tap anywhere else closes); a click pins one open (David 2026-11-22)
+    const setFold = (d, on) => { if (d.open !== on) d.open = on; EXEC.fold = EXEC.fold || {}; EXEC.fold[d.dataset.fold] = on; };
+    const foldOf = t => (t && t.closest) ? t.closest(".rw-fold") : null;
+    root.addEventListener("mouseover", e => { const d = foldOf(e.target); if (d && !d.open && window.matchMedia("(hover: hover)").matches) setFold(d, true); });
+    root.addEventListener("mouseout", e => { const d = foldOf(e.target); if (d && d.open && window.matchMedia("(hover: hover)").matches && !d.dataset.pin && !(e.relatedTarget && d.contains(e.relatedTarget))) setFold(d, false); });
+    root.addEventListener("click", e => {
+      const sm = e.target.closest && e.target.closest(".rw-fold > summary"); if (!sm) return;
+      e.preventDefault(); const d = sm.parentElement, pinned = !!(EXEC.pin && EXEC.pin[d.dataset.fold]);
+      EXEC.pin = EXEC.pin || {}; EXEC.pin[d.dataset.fold] = !pinned; if (pinned) { delete d.dataset.pin; setFold(d, false); } else { d.dataset.pin = "1"; setFold(d, true); }
+    }, true);
+    document.addEventListener("click", e => { if (!window.matchMedia("(hover: none)").matches || foldOf(e.target)) return; root.querySelectorAll(".rw-fold[open]").forEach(d => { if (EXEC.pin) EXEC.pin[d.dataset.fold] = false; delete d.dataset.pin; setFold(d, false); }); });
     root.addEventListener("click", e => {
       const o = e.target.closest(".mw-opt"), b = e.target.closest(".mw-back"), a = e.target.closest("[data-act]");
       if (o && o.getAttribute("aria-disabled") !== "true") { pick(o.dataset.id); if (/^(fw|mdl|mode|xm|xt):/.test(o.dataset.id)) st.step = Math.min(S().length - 1, st.step + 1); render(); }
@@ -546,10 +626,10 @@
         else if (act === "epdd") { EXEC.pdOpen = !EXEC.pdOpen; render(); }
         else if (act === "eparamreset") { resetParams(); render(); }
         else if (act === "ekind") { const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { const gbk = k => k === "gb10m" || k === "gb10mtp" || k === "gb10qat"; if (gbk(EXEC.kind) && !gbk(was)) window.GbPanel.attachTerminal(); else if (!gbk(EXEC.kind)) window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
-        else if (act === "gboptsel") { window.GbOpt.select(a.dataset.cat, a.dataset.v); }
         else if (act === "gbw") { window.GbPanel.setWeights(a.dataset.w); }
         else if (act === "gbstart") { window.GbPanel.start(); }
         else if (act === "gbstop") { window.GbPanel.stop(); }
+        else if (act === "gboptsel") { window.GbOpt.select(a.dataset.cat, a.dataset.v); }
         else if (act === "erefresh") { if ((EXEC.kind === "gb10m" || EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbPanel) window.GbPanel.load(); loadExecStatus(); if (EXEC.kind === "kvcache" && window.KvPanel) window.KvPanel.load(); }
         else if (act === "kvstage") { window.KvPanel.setStage(a.dataset.stage); }
         else if (act === "kvstart") { window.KvPanel.start(a.dataset.stage, a.dataset.step); }
@@ -557,6 +637,8 @@
         else if (act === "eresult") { if (typeof setView === "function") setView("result"); const r = $("rwResults"); if (r) r.scrollIntoView({ behavior: "smooth", block: "start" }); }
         else if (act === "esmoke") { startSmoke(); }
         else if (act === "estandard") { startSmoke(undefined, "standard"); }
+        else if (act === "eoptimize") { startSmoke(undefined, "optimize"); }
+        else if (act === "evariant") { EXEC.variant = a.dataset.v; render(); }
         else if (act === "estop") { stopRun(); }
         else if (act === "esmokerest") { const done = Object.keys(smokeProg(EXEC.status || {})); startSmoke(EXEC.models.map(m => m.id).filter(id => !done.includes(id))); }
         else if (act === "start") { $("liveStart").click(); }
@@ -581,9 +663,11 @@
     EXEC.loading = !primeFromCache() && !!machineId() && !WEB;      // nothing remembered: a short "checking the machine" panel instead of a blank page
     const reveal = () => document.documentElement.classList.remove("rw-boot");       // the page stays invisible until the real flow is drawn: no flash of the old screen
     const tryDetect = (n) => detectExec().then(() => { EXEC.loading = false; render(); if (EXEC.unavailable && n < 4) setTimeout(() => tryDetect(n + 1), 3000); });   // the server may still be (re)starting: ask again before showing a notice for good
+    applyJump(); goActive();
+    if (WEB) fetch("data/run-snapshot.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(d => { WEBSNAP = d; if (d) render(); }).catch(() => {});
     render(); requestAnimationFrame(reveal);      // drawn at once (from the remembered answer, or the loading panel); the live answer updates it
     tryDetect(0);
   }
   window.addEventListener("DOMContentLoaded", () => setTimeout(mount, 0));
-  window.addEventListener("hashchange", () => { st.step = 0; setTimeout(render, 300); });
+  window.addEventListener("hashchange", () => { st.step = 0; setTimeout(() => { applyJump(); render(); goActive(); }, 300); });
 })();

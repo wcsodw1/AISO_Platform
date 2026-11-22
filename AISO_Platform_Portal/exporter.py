@@ -200,6 +200,9 @@ def export_catalog(base: Path, data_root: Path):
     shutil.copytree(base / "data" / "terminal", temporary / "data" / "terminal")
     shutil.copy2(base / "data" / "benchmark-registry.json", temporary / "data" / "benchmark-registry.json")
     shutil.copy2(base / "data" / "rd-list.json", temporary / "data" / "rd-list.json")
+    for extra in ("run-snapshot.json", "pro6000-preflight.json"):      # view-only status of the running test; the preflight record shown under the PRO6000 result
+        if (base / "data" / extra).exists():
+            shutil.copy2(base / "data" / extra, temporary / "data" / extra)
     shutil.copy2(base / "data" / "litellm-published-run.json", temporary / "data" / "litellm-published-run.json")
     shutil.copy2(base / "data" / "sizing-model-sizes.json", temporary / "data" / "sizing-model-sizes.json")
     shutil.copy2(base / "data" / "sizing-capacity.json", temporary / "data" / "sizing-capacity.json")
