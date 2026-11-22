@@ -31,6 +31,7 @@
     if (c && connectHome && c.parentNode !== connectHome.parent) connectHome.parent.insertBefore(c, connectHome.next);
   }
   const termIds = ["termPanel", "aisoTermRun"], termHome = {};
+  let SHELL = null;
   function parkTerm() {              // the run log (#termPanel) and the real shell (#aisoTermRun) are moved into the Run step, and parked back before every re-render
     termIds.forEach(id => { const n = $(id), h = termHome[id]; if (n && h && n.parentNode !== h.parent) h.parent.insertBefore(n, h.next); });
   }
@@ -234,7 +235,11 @@
       box.innerHTML = `<h3 class="rw-term-h">${bi("Run log", "執行紀錄")}<small class="zhs">${bi("read-only · live progress of the run", "唯讀 · 即時顯示進行狀態")}</small></h3><div id="rwTermSlot"></div>`;
       const prog = $("runProgress"); if (prog) root.appendChild(prog);      // progress first (where the test is), the Run log under it
       root.appendChild(box);
-      // the Terminal here is only the live progress of the run; the password-protected real shell is not part of the Run page (starting a run is already approved by the backend after the test password)
+      // the Terminal here is only the live progress of the run; the real shell (type commands) follows right under it, local page only, behind the terminal password (David 2026-11-22)
+      if (!WEB && window.AisoTerm) {      // ONE shell element for the whole page: re-appended on every render, so a typed command / a running session is not lost
+        if (!SHELL) { SHELL = document.createElement("section"); SHELL.className = "rw-term rw-shell2"; SHELL.innerHTML = `<h3 class="rw-term-h">${bi("Terminal", "終端機")}<small class="zhs">${bi("type commands · asks the terminal password", "可輸入指令 · 需終端密碼")}</small></h3><div id="rwShell"></div>`; AisoTerm.mount(SHELL.querySelector("#rwShell"), { machine: machineId() || "gb10", flyout: false }); }
+        root.appendChild(SHELL);
+      }
       const log = $("termPanel");
       if (log) { $("rwTermSlot").appendChild(log); log.hidden = false; const hb = log.querySelector("header b"); if (hb) hb.textContent = "RUN LOG"; }
       if (tb) tb.scrollTop = !keep || keep.bottom ? tb.scrollHeight : keep.top;
