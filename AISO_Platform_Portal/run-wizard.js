@@ -95,8 +95,14 @@
     return n ? `${n} cases` : "";
   }
   // Optimize (David 2026-11-22): the Standard protocol with ONE change from the baseline. Runnable now: quantized KV cache; the others are shown dimmed with what they still need
-  const OPTS = [["kv_q8", "KV cache q8_0", "KV cache 量化 q8_0", ""], ["kv_q4", "KV cache q4_0", "KV cache 量化 q4_0", ""],
-    ["qat", "QAT (Gemma Q4_0)", "QAT", "needs the official QAT GGUF 需先下載官方 QAT 模型檔"], ["mtp", "MTP", "MTP 推測解碼", "needs MTP weights 需 MTP 權重"], ["nvfp4", "NVFP4", "NVFP4", "needs vLLM / TensorRT-LLM 需換引擎"]];
+  // Optimize options come in groups; any combination of the options you tick is a run, one after the other (David 2026-11-22: "different combinations like GB10")
+  const OPT_GROUPS = [
+    { en: "KV cache", zh: "KV cache 量化", opts: [["kv_q8", "q8_0", "q8_0", "", "KV cache stored in 8-bit instead of 16-bit: less memory", "KV cache 由 16 位元改存 8 位元：較省記憶體"],
+                                             ["kv_q4", "q4_0", "q4_0", "", "KV cache stored in 4-bit: least memory, may cost quality", "KV cache 改存 4 位元：最省記憶體，品質可能下降"]] },
+    { en: "Weights", zh: "權重", opts: [["qat", "QAT (Gemma Q4_0)", "QAT", "needs the official QAT GGUF 需先下載官方 QAT 模型檔", "Quantization-aware trained Gemma weights", "量化感知訓練的 Gemma 權重"],
+                                      ["nvfp4", "NVFP4", "NVFP4", "needs vLLM / TensorRT-LLM 需換引擎", "NVIDIA 4-bit float weights", "NVIDIA 4 位元浮點權重"]] },
+    { en: "Decoding", zh: "解碼", opts: [["mtp", "MTP", "MTP 推測解碼", "needs MTP weights 需 MTP 權重", "Speculative decoding with a draft head", "用草稿頭做推測解碼"]] }];
+  const OPT_LABEL = k => { for (const g of OPT_GROUPS) for (const o of g.opts) if (o[0] === k) return g.en + " " + o[1]; return k; };
   const hasOpt = () => EXEC.machine === "pro6000_llamacpp" && !!EXEC.stdspec;
   function optNote() {
     const s = EXEC.status || {}, q = (s.queued || []).length;
@@ -163,14 +169,18 @@
     if (EXEC.on && id === "run" && EXEC.kind === "kvcache" && window.KvPanel) { window.KvPanel.init(render); return window.KvPanel.question(); }
     if (EXEC.on && id === "run" && (EXEC.kind === "standard" || EXEC.kind === "optimize")) {
       const opt = EXEC.kind === "optimize"; EXEC.variant = EXEC.variant || "kv_q8";
-      const optHtml = opt ? `<div class="rw-opts"><p class="rw-msg">${bi("Optimize = the Standard protocol with ONE change from the baseline. Results are labelled Optimization and never mixed into the baseline.", "優化 = 與標準測試相同規格，只改一個項目；結果標示為優化，不混進基準。")}</p>${OPTS.map(o => `<button type="button" class="rw-chip${EXEC.variant === o[0] ? " sel" : ""}" data-act="evariant" data-v="${o[0]}"${o[3] ? " disabled" : ""} title="${esc(o[3])}">${o[1]}<small class="zhs">${o[2]}</small>${o[3] ? `<small class="zhs"> · soon 即將</small>` : ""}</button>`).join("")}</div>` : "";
+      EXEC.variants = OPT_GROUPS.flatMap(g => g.opts.filter(o => !o[3]).map(o => o[0]));      // no ticking: one press runs every option that can run now (David 2026-11-22)
+      const chosen = EXEC.variants.filter(k => OPT_GROUPS.some(g => g.opts.some(o => o[0] === k && !o[3])));
+      const optHtml = opt ? `<div class="rw-opts"><p class="rw-msg">${bi("Same test as Standard, with one setting changed per run. Press Run all: each line below runs once, in this order.", "與標準測試相同，每次只改一個設定。按「全部執行」，下列每一項各跑一次，依序進行。")}</p>${OPT_GROUPS.map(g => `<div class="rw-optg"><b>${g.en}<small class="zhs">${g.zh}</small></b>${g.opts.map(o => `<div class="rw-optr${o[3] ? " soon" : ""}"><span><em>${o[1]}</em>${o[1] !== o[2] ? `<small class="zhs">${o[2]}</small>` : ""}</span><small>${o[3] ? bi("Not yet: ", "尚未：") + esc(o[3]) : bi(o[4], o[5])}</small></div>`).join("")}</div>`).join("")}</div>` : "";
+      const optBox = opt ? fold("opts", bi("What runs", "將跑項目") + `<small class="zhs">${chosen.map(k => OPT_LABEL(k).replace("KV cache ", "KV ")).map(esc).join(" → ")}</small>`, optHtml, false) : "";
+      const parBox = () => fold("params", bi("Parameters", "測試參數") + `<small class="zhs">${esc(String(stdParams().inputs.join("/")))} × NP ${esc(String(stdParams().nps.join("/")))}</small>`, stdParamsHtml(), false);
       const s = EXEC.status || {}, busyNow = !!s.busy, f = EXEC.formal || [], total = f.reduce((a, r) => a + r.n, 0), pr = stdParams(), n = stdCases();
       const row = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
       const page = ({ aiso1: "stress-test-aiso1.html", pro6000: "stress-test-pro6000.html", gb10: "stress-test-gb10.html" })[baseOf(EXEC.machine)] || "stress-test-compare.html";
       const bad = s.external ? "The GPU is in use by other work on this shared machine - start is off until it is free." : !EXEC.stdspec ? "This engine has no standard test yet - only the smoke test (the comparison models are not on this machine)." : !(n > 0) ? "Check the Input / NP lists." : "";
       return { title: opt ? bi("Optimize test", "優化測試") : bi("Standard test", "標準測試"), ok: false, next: "", last: true,
         body: `${fold("sum", bi("Summary", "摘要") + `<small class="zhs">${bi("machine · models · test", "機器 · 模型 · 測試")}</small>`, `<dl class="rw-sum">${row("Machine", ($("selectedUnitTitle") || {}).textContent || EXEC.machine)}${row("Models", (EXEC.pick || "all") === "all" ? EXEC.models.map(m => m.id).join(", ") : EXEC.pick)}${EXEC.stdspec ? row("Test", `Standard · Input ${pr.inputs.join("/")} × NP ${pr.nps.join("/")} × ${pr.repeats}`) + row("Cases", isFinite(n) ? String(n) : "—") : row("Test", "Smoke only on this engine")}${row("On the platform", total + " conditions" + (f.length ? " (" + f.map(r => r.framework + " " + r.n).join(", ") + ")" : ""))}</dl>`, false)}
-          ${busyNow ? benchHtml() + `<div class="rw-row"><button type="button" class="rw-btn" data-act="estop">${bi("Stop", "停止")}</button></div>` + (opt ? optHtml + `<div class="rw-row"><button type="button" class="mw-next" data-act="eoptimize">${bi("Queue it - starts by itself when the machine is free", "排隊：機器空了就自動開始")}</button></div>${(s.queued || []).length ? `<p class="rw-msg">${bi("Queued", "已排隊")}: ${(s.queued || []).map(q => esc(q.variant)).join(", ")}</p>` : ""}` : "") : (EXEC.stdspec ? optHtml + stdParamsHtml() + `<div class="rw-row"><button type="button" class="mw-next" data-act="${opt ? "eoptimize" : "estandard"}"${bad ? " disabled" : ""}>${opt ? bi("Start optimize test", "開始優化測試") : bi("Start standard test", "開始標準測試")}</button></div>` : "") + `${bad ? (s.external ? "" : `<p class="rw-msg warn">${esc(bad)}</p>`) : `<p class="rw-msg">${bi("Runs in the background on the machine and can take hours. Results stay on the machine until they are added to the platform data.", "在機器上背景執行，可能要數小時；結果先留在機器上，之後才匯入平台資料。")}</p>`}`}
+          ${busyNow ? benchHtml() + `<div class="rw-row"><button type="button" class="rw-btn" data-act="estop">${bi("Stop", "停止")}</button></div>` + (opt ? `<p class="rw-next">${bi("Now", "進行中")}: ${esc(OPT_LABEL(s.variant || "").replace("KV cache ", "KV "))}${(s.queued || []).length ? ` · ${bi("Next", "接著")}: ${(s.queued || []).map(q => esc(OPT_LABEL(q.variant).replace("KV cache ", "KV "))).join(" → ")}` : ""}</p>` : "") : (EXEC.stdspec ? optBox + parBox() + `<div class="rw-row"><button type="button" class="mw-next" data-act="${opt ? "eoptimize" : "estandard"}"${bad || (opt && !chosen.length) ? " disabled" : ""}>${opt ? bi("Run all", "全部執行") : bi("Start standard test", "開始標準測試")}</button></div>` : "") + `${bad ? (s.external ? "" : `<p class="rw-msg warn">${esc(bad)}</p>`) : ``}`}
           ${s.kind === "standard" ? fold("models", bi("Models", "模型") + `<small class="zhs">${bi("progress per model", "各模型進度")}</small>`, progressHtml(s), false) + stdResultsHtml(true) : stdResultsHtml(true)}
           <div class="rw-row"><a class="rw-btn" href="${page}">${bi("Open the result page", "開啟結果頁")} →</a></div>` };
     }
@@ -403,7 +413,7 @@
     if (typeof tlog !== "function") return;
     EXEC.seen = EXEC.seen || new Set();
     { const tb2 = $("termBody"); if (tb2 && !tb2.textContent.trim() && EXEC.seen.size) { EXEC.seen = new Set(); EXEC.doneNote = false; } }      // the log box is empty but lines were counted as shown: show them again
-    if (!EXEC.seen.size) { const clr = document.getElementById("termClear"); if (clr) clr.click(); tlog("$ " + (EXEC.runKind === "standard" ? (EXEC.variant && EXEC.kind === "optimize" ? "optimize test (" + EXEC.variant + ")" : "standard test") : "smoke test") + " · " + EXEC.machine + " · " + EXEC.models.map(m => m.id).join(", ")); if (typeof termOpen === "function") termOpen(true); }
+    if (!EXEC.seen.size) { const clr = document.getElementById("termClear"); if (clr) clr.click(); tlog("$ " + (EXEC.runKind === "standard" ? (EXEC.kind === "optimize" ? "optimize test (" + (EXEC.variants || []).join(" → ") + ")" : "standard test") : "smoke test") + " · " + EXEC.machine + " · " + EXEC.models.map(m => m.id).join(", ")); if (typeof termOpen === "function") termOpen(true); }
     tidyAll(s.tail).forEach(k => { if (!EXEC.seen.has(k)) { EXEC.seen.add(k); tlog(k, /FAIL|Traceback|Error/.test(k) ? "err" : undefined); } });
     if (!s.busy && EXEC.seen.size && !EXEC.doneNote) { EXEC.doneNote = true; tlog(s.result ? "done · " + s.result : "done"); }
   }
@@ -482,7 +492,7 @@
   }
   async function loadExecStatus() {
     try { const r = await fetch("/api/benchmark/executor/status?machine=" + EXEC.machine, { cache: "no-store" }); EXEC.status = await r.json(); } catch (e) { EXEC.msg = "status: " + e.message; }
-    if (EXEC.status && EXEC.status.busy && !EXEC.kindSet) { EXEC.kind = EXEC.status.kind === "standard" ? ((EXEC.status.variant || "baseline") === "baseline" ? "standard" : "optimize") : "smoke"; EXEC.kindSet = true; }      // opened in the middle of a run: show that run
+    if (EXEC.status && EXEC.status.busy && EXEC.kindFollow !== EXEC.status.log) { EXEC.kindFollow = EXEC.status.log; EXEC.kindUser = false; EXEC.kindSet = true; EXEC.kind = EXEC.status.kind === "standard" ? ((EXEC.status.variant || "baseline") === "baseline" ? "standard" : "optimize") : "smoke"; }      // every new run (new log) opens its own view: baseline Standard or Optimize
     streamToTerminal(EXEC.status);
     const nowBusy = !!(EXEC.status && EXEC.status.busy);
     if (EXEC.wasBusy && !nowBusy && EXEC.watch && typeof setView === "function") setTimeout(() => { setView("result"); const r = $("rwResults"); if (r) r.scrollIntoView({ behavior: "smooth", block: "start" }); }, 2500);   // the run finished: the next screen is the Results
@@ -512,7 +522,7 @@
     EXEC.starting = true; EXEC.msg = ""; EXEC.watch = true; EXEC.runKind = kind; EXEC.startedAt = Date.now(); EXEC.runModels = (list || [EXEC.pick || "all"])[0] === "all" ? EXEC.models.map(m => m.id) : (list || [EXEC.pick]); EXEC.seen = new Set(); EXEC.doneNote = false;
     try {
       const ticket = await window.RunGate.ticket();
-      const r = await fetch("/api/benchmark/executor/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": ticket }, body: JSON.stringify({ machine: EXEC.machine, kind, queue: optimize && !!(EXEC.status && EXEC.status.busy), models: list || [EXEC.pick || "all"], params: kind === "standard" ? (optimize ? { ...stdParams(), variant: EXEC.variant || "kv_q8" } : stdParams()) : Object.fromEntries(Object.keys(EXEC.spec || {}).filter(k => !EXEC.spec[k].fixed).map(k => [k, pval(k)])) }) });
+      const r = await fetch("/api/benchmark/executor/smoke", { method: "POST", headers: { "Content-Type": "application/json", "X-Run-Ticket": ticket }, body: JSON.stringify({ machine: EXEC.machine, kind, queue: optimize && !!(EXEC.status && EXEC.status.busy), models: list || [EXEC.pick || "all"], params: kind === "standard" ? (optimize ? { ...stdParams(), variants: (EXEC.variants || []).filter(k => OPT_GROUPS.some(g => g.opts.some(o => o[0] === k && !o[3]))) } : stdParams()) : Object.fromEntries(Object.keys(EXEC.spec || {}).filter(k => !EXEC.spec[k].fixed).map(k => [k, pval(k)])) }) });
       const d = await r.json();
       EXEC.msg = d.ok ? d.message : (d.error || "could not start");
     } catch (e) { EXEC.msg = String(e.message || e); }
@@ -625,7 +635,7 @@
         else if (act === "ebase") { switchEngine(machineId()); }
         else if (act === "epdd") { EXEC.pdOpen = !EXEC.pdOpen; render(); }
         else if (act === "eparamreset") { resetParams(); render(); }
-        else if (act === "ekind") { const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { const gbk = k => k === "gb10m" || k === "gb10mtp" || k === "gb10qat"; if (gbk(EXEC.kind) && !gbk(was)) window.GbPanel.attachTerminal(); else if (!gbk(EXEC.kind)) window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
+        else if (act === "ekind") { EXEC.kindUser = true; const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { const gbk = k => k === "gb10m" || k === "gb10mtp" || k === "gb10qat"; if (gbk(EXEC.kind) && !gbk(was)) window.GbPanel.attachTerminal(); else if (!gbk(EXEC.kind)) window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
         else if (act === "gbw") { window.GbPanel.setWeights(a.dataset.w); }
         else if (act === "gbstart") { window.GbPanel.start(); }
         else if (act === "gbstop") { window.GbPanel.stop(); }
@@ -638,7 +648,7 @@
         else if (act === "esmoke") { startSmoke(); }
         else if (act === "estandard") { startSmoke(undefined, "standard"); }
         else if (act === "eoptimize") { startSmoke(undefined, "optimize"); }
-        else if (act === "evariant") { EXEC.variant = a.dataset.v; render(); }
+        else if (act === "evariant") { const v = a.dataset.v, cur = EXEC.variants || []; EXEC.variants = cur.includes(v) ? cur.filter(x => x !== v) : cur.concat(v); render(); }
         else if (act === "estop") { stopRun(); }
         else if (act === "esmokerest") { const done = Object.keys(smokeProg(EXEC.status || {})); startSmoke(EXEC.models.map(m => m.id).filter(id => !done.includes(id))); }
         else if (act === "start") { $("liveStart").click(); }
@@ -662,8 +672,9 @@
     });
     EXEC.loading = !primeFromCache() && !!machineId() && !WEB;      // nothing remembered: a short "checking the machine" panel instead of a blank page
     const reveal = () => document.documentElement.classList.remove("rw-boot");       // the page stays invisible until the real flow is drawn: no flash of the old screen
-    const tryDetect = (n) => detectExec().then(() => { EXEC.loading = false; render(); if (EXEC.unavailable && n < 4) setTimeout(() => tryDetect(n + 1), 3000); });   // the server may still be (re)starting: ask again before showing a notice for good
-    applyJump(); goActive();
+    const tryDetect = (n) => detectExec().then(() => { EXEC.loading = false; render(); if (n === 0) goActive();      // after the machine answered: its own answer must not overwrite the engine that is running
+    if (EXEC.unavailable && n < 4) setTimeout(() => tryDetect(n + 1), 3000); });   // the server may still be (re)starting: ask again before showing a notice for good
+    applyJump();
     if (WEB) fetch("data/run-snapshot.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(d => { WEBSNAP = d; if (d) render(); }).catch(() => {});
     render(); requestAnimationFrame(reveal);      // drawn at once (from the remembered answer, or the loading panel); the live answer updates it
     tryDetect(0);

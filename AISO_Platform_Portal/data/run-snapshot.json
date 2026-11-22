@@ -5,49 +5,49 @@
    "page": "pro6000",
    "engine": "llama.cpp",
    "kind": "standard",
-   "variant": "baseline",
+   "variant": "kv_q8",
    "busy": true,
    "models": [
     {
      "id": "gemma26",
-     "state": "pass",
-     "done": 36,
+     "state": "loading",
+     "done": 27,
      "total": 36,
      "agg": null
     },
     {
      "id": "gemma31",
-     "state": "pass",
-     "done": 36,
+     "state": "waiting",
+     "done": 0,
      "total": 36,
      "agg": null
     },
     {
      "id": "laguna",
-     "state": "pass",
-     "done": 36,
+     "state": "waiting",
+     "done": 0,
      "total": 36,
      "agg": null
     },
     {
      "id": "nemotron",
-     "state": "loading",
-     "done": 15,
+     "state": "waiting",
+     "done": 0,
      "total": 36,
      "agg": null
     }
    ],
-   "done": 123,
+   "done": 27,
    "total": 144,
-   "percent": 85,
+   "percent": 19,
    "rows": [
     {
      "model": "gemma26",
      "np": 1,
      "input": 4096,
-     "ttft_ms": 603.1,
-     "tpot_ms": 6.5,
-     "tps": 141.1,
+     "ttft_ms": 510.6,
+     "tpot_ms": 7.0,
+     "tps": 134.2,
      "pass": 3,
      "n": 3
     },
@@ -55,9 +55,9 @@
      "model": "gemma26",
      "np": 1,
      "input": 8192,
-     "ttft_ms": 874.6,
-     "tpot_ms": 7.1,
-     "tps": 125.7,
+     "ttft_ms": 803.0,
+     "tpot_ms": 7.3,
+     "tps": 123.0,
      "pass": 3,
      "n": 3
     },
@@ -65,9 +65,9 @@
      "model": "gemma26",
      "np": 1,
      "input": 16384,
-     "ttft_ms": 1616.2,
-     "tpot_ms": 7.5,
-     "tps": 110.2,
+     "ttft_ms": 1606.4,
+     "tpot_ms": 7.7,
+     "tps": 108.1,
      "pass": 3,
      "n": 3
     },
@@ -75,9 +75,9 @@
      "model": "gemma26",
      "np": 2,
      "input": 4096,
-     "ttft_ms": 1022.9,
-     "tpot_ms": 7.8,
-     "tps": 226.4,
+     "ttft_ms": 894.6,
+     "tpot_ms": 8.7,
+     "tps": 209.2,
      "pass": 3,
      "n": 3
     },
@@ -85,19 +85,19 @@
      "model": "gemma26",
      "np": 2,
      "input": 8192,
-     "ttft_ms": 1578.2,
-     "tpot_ms": 8.4,
-     "tps": 199.9,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma26",
-     "np": 2,
-     "input": 16384,
-     "ttft_ms": 3091.3,
+     "ttft_ms": 1500.6,
      "tpot_ms": 9.1,
-     "tps": 164.6,
+     "tps": 188.1,
+     "pass": 3,
+     "n": 3
+    },
+    {
+     "model": "gemma26",
+     "np": 2,
+     "input": 16384,
+     "ttft_ms": 3080.7,
+     "tpot_ms": 10.0,
+     "tps": 153.0,
      "pass": 3,
      "n": 3
     },
@@ -105,9 +105,9 @@
      "model": "gemma26",
      "np": 4,
      "input": 4096,
-     "ttft_ms": 2052.3,
-     "tpot_ms": 11.0,
-     "tps": 306.3,
+     "ttft_ms": 1872.8,
+     "tpot_ms": 12.6,
+     "tps": 276.2,
      "pass": 3,
      "n": 3
     },
@@ -115,9 +115,9 @@
      "model": "gemma26",
      "np": 4,
      "input": 8192,
-     "ttft_ms": 3413.6,
-     "tpot_ms": 12.2,
-     "tps": 255.5,
+     "ttft_ms": 3315.2,
+     "tpot_ms": 14.3,
+     "tps": 227.3,
      "pass": 3,
      "n": 3
     },
@@ -125,329 +125,9 @@
      "model": "gemma26",
      "np": 4,
      "input": 16384,
-     "ttft_ms": 6913.6,
-     "tpot_ms": 15.0,
-     "tps": 182.1,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma26",
-     "np": 5,
-     "input": 4096,
-     "ttft_ms": 2687.9,
-     "tpot_ms": 14.5,
-     "tps": 290.6,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma26",
-     "np": 5,
-     "input": 8192,
-     "ttft_ms": 4905.7,
-     "tpot_ms": 16.6,
-     "tps": 232.5,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma26",
-     "np": 5,
-     "input": 16384,
-     "ttft_ms": 10487.9,
-     "tpot_ms": 21.3,
-     "tps": 157.0,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 1,
-     "input": 4096,
-     "ttft_ms": 1930.1,
-     "tpot_ms": 20.5,
-     "tps": 44.8,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 1,
-     "input": 8192,
-     "ttft_ms": 3223.2,
-     "tpot_ms": 23.0,
-     "tps": 38.3,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 1,
-     "input": 16384,
-     "ttft_ms": 6362.0,
-     "tpot_ms": 24.5,
-     "tps": 32.5,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 2,
-     "input": 4096,
-     "ttft_ms": 3585.8,
-     "tpot_ms": 27.0,
-     "tps": 65.5,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 2,
-     "input": 8192,
-     "ttft_ms": 6235.9,
-     "tpot_ms": 29.5,
-     "tps": 56.0,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 2,
-     "input": 16384,
-     "ttft_ms": 14011.6,
-     "tpot_ms": 32.9,
-     "tps": 42.8,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 4,
-     "input": 4096,
-     "ttft_ms": 7475.2,
-     "tpot_ms": 36.6,
-     "tps": 90.9,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 4,
-     "input": 8192,
-     "ttft_ms": 14607.6,
-     "tpot_ms": 41.8,
-     "tps": 71.0,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 4,
-     "input": 16384,
-     "ttft_ms": 34589.4,
-     "tpot_ms": 55.1,
-     "tps": 44.7,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 5,
-     "input": 4096,
-     "ttft_ms": 9651.9,
-     "tpot_ms": 46.5,
-     "tps": 89.2,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 5,
-     "input": 8192,
-     "ttft_ms": 20557.0,
-     "tpot_ms": 54.9,
-     "tps": 66.4,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "gemma31",
-     "np": 5,
-     "input": 16384,
-     "ttft_ms": 49588.6,
-     "tpot_ms": 75.3,
-     "tps": 40.2,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 1,
-     "input": 4096,
-     "ttft_ms": 481.1,
-     "tpot_ms": 4.7,
-     "tps": 192.2,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 1,
-     "input": 8192,
-     "ttft_ms": 874.3,
-     "tpot_ms": 5.0,
-     "tps": 172.0,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 1,
-     "input": 16384,
-     "ttft_ms": 1776.6,
-     "tpot_ms": 5.2,
-     "tps": 144.1,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 2,
-     "input": 4096,
-     "ttft_ms": 906.0,
-     "tpot_ms": 5.9,
-     "tps": 296.3,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 2,
-     "input": 8192,
-     "ttft_ms": 1798.8,
-     "tpot_ms": 6.4,
-     "tps": 244.8,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 2,
-     "input": 16384,
-     "ttft_ms": 3447.3,
-     "tpot_ms": 7.5,
-     "tps": 182.7,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 4,
-     "input": 4096,
-     "ttft_ms": 1722.0,
-     "tpot_ms": 8.5,
-     "tps": 393.3,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 4,
-     "input": 8192,
-     "ttft_ms": 3334.9,
-     "tpot_ms": 9.9,
-     "tps": 302.3,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 4,
-     "input": 16384,
-     "ttft_ms": 11697.2,
-     "tpot_ms": 15.4,
-     "tps": 150.8,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 5,
-     "input": 4096,
-     "ttft_ms": 2535.1,
-     "tpot_ms": 11.0,
-     "tps": 371.5,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 5,
-     "input": 8192,
-     "ttft_ms": 4891.2,
-     "tpot_ms": 13.1,
-     "tps": 278.0,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "laguna",
-     "np": 5,
-     "input": 16384,
-     "ttft_ms": 18179.1,
-     "tpot_ms": 23.6,
-     "tps": 122.0,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "nemotron",
-     "np": 1,
-     "input": 4096,
-     "ttft_ms": 385.2,
-     "tpot_ms": 4.0,
-     "tps": 228.2,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "nemotron",
-     "np": 1,
-     "input": 8192,
-     "ttft_ms": 575.9,
-     "tpot_ms": 4.0,
-     "tps": 218.7,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "nemotron",
-     "np": 1,
-     "input": 16384,
-     "ttft_ms": 1122.9,
-     "tpot_ms": 4.0,
-     "tps": 194.3,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "nemotron",
-     "np": 2,
-     "input": 4096,
-     "ttft_ms": 714.8,
-     "tpot_ms": 5.8,
-     "tps": 306.9,
-     "pass": 3,
-     "n": 3
-    },
-    {
-     "model": "nemotron",
-     "np": 2,
-     "input": 8192,
-     "ttft_ms": 1092.1,
-     "tpot_ms": 6.0,
-     "tps": 283.1,
+     "ttft_ms": 7084.3,
+     "tpot_ms": 18.0,
+     "tps": 159.1,
      "pass": 3,
      "n": 3
     }
@@ -475,5 +155,5 @@
    "rows": []
   }
  ],
- "updated": "2026-11-22T12:50"
+ "updated": "2026-11-22T13:15"
 }
