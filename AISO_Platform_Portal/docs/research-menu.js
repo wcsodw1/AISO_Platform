@@ -1,3 +1,30 @@
+/* Benchmark shortcut (David 2026-11-22): pressing "Benchmark" / "Benchmarking" while one of our machines is running a test goes straight to that machine's Run page.
+   Local page only (the website never contacts a machine). The status is asked in the background (read-only, at most once a minute) so the click itself is instant. */
+(function () {
+  if (!/^(localhost|127\.0\.0\.1|\[::1\]|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname) || /[?&]web=1\b/.test(location.search)) return;
+  const KEY = "aiso-bench-busy";
+  const read = () => { try { return JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (e) { return null; } };
+  const write = v => { try { sessionStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* private mode: no shortcut */ } };
+  const ask = () => fetch("/api/benchmark/executor/active", { cache: "no-store" }).then(r => r.json()).then(d => { const v = { t: Date.now(), to: (d && d.to) || "", machine: (d && d.machine) || "" }; write(v); return v; });
+  const poll = () => ask().catch(() => {});      // answered from the server's cache: instant
+  poll(); setInterval(poll, 15000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) poll(); });      // a background tab does not run its timer: ask again when it comes back
+  let passing = false;
+  const sameRunPage = c => location.pathname.endsWith("/" + c.to.split("#")[0]) && location.hash === "#" + c.to.split("#")[1];      // already on that Run page: the link works as before
+  const jump = c => {
+    try { sessionStorage.setItem("aiso-jump", JSON.stringify({ machine: c.machine, t: Date.now() })); } catch (x) { /* no storage: lands on the machine page */ }      // the Run page opens the engine that is running, on its Run step (the Run log)
+    location.href = c.to; if (location.pathname.endsWith("/benchmark.html")) location.reload();
+  };
+  document.addEventListener("click", e => {
+    if (passing) return;
+    const a = e.target.closest('.site-nav a[href^="benchmark-hub"], .site-nav .nav-menu > a[href*="benchmark"]'); if (!a) return;
+    const c = read();
+    if (c && Date.now() - c.t < 30000) { if (c.to && !sameRunPage(c)) { e.preventDefault(); e.stopImmediatePropagation(); jump(c); } return; }
+    // the answer is old (background tab) or missing: ask once now (instant, from the server's cache), then jump or let the click do what it always did
+    e.preventDefault(); e.stopImmediatePropagation();
+    ask().catch(() => ({ to: "" })).then(v => { if (v.to && !sameRunPage(v)) jump(v); else { passing = true; a.click(); passing = false; } });
+  }, true);
+})();
 /* Research nav dropdown: In progress 進行中 / Done 已完成, read from data/rd-list.json (same source as research.html). */
 (function(){
  var nav=document.querySelector(".site-nav");if(!nav)return;

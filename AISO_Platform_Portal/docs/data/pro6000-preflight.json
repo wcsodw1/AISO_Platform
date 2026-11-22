@@ -1,0 +1,94 @@
+{
+ "updated": "2026-11-22",
+ "machine": "PRO6000 (GPU 1 only)",
+ "baseline": "Q4_K_M weights, KV f16, no NVFP4 / MTP / QAT",
+ "image": {
+  "tag": "ghcr.io/ggml-org/llama.cpp:server-cuda-b11561",
+  "build": "11561 (e937b17a2)",
+  "id": "sha256:20c6e722e2fcc5ca9c15401d3fd8e35408aaf8f9c54a12f32920f637c57959bb",
+  "note": "same build as AISO1 / B70; the older build 9843 could not load Laguna or Nemotron"
+ },
+ "runner": {
+  "file": "benchmark/runners/pro6000_llamacpp_smoke.py",
+  "sha256": "c0702a088567688ff835461fa033cd16286d7dd098e7a3f11b34517e36c3bdd0"
+ },
+ "manifest": {
+  "file": "benchmark/manifests/pro6000_llamacpp_smoke.manifest.json",
+  "sha256": "65323587a2945bef65c9ca82bb6369c05cc6fbd1529f7ccb8af423903d1ebf51"
+ },
+ "models": [
+  {
+   "id": "gemma26",
+   "file": "google_gemma-4-26B-A4B-it-Q4_K_M.gguf",
+   "size_bytes": 17035039872,
+   "sha256": "a07f72221e8e3f77455ab0d7f7652d01a9f63c262b954aa6932a53275a0e895a",
+   "status": "sha256 = Hugging Face LFS hash"
+  },
+  {
+   "id": "gemma31",
+   "file": "google_gemma-4-31B-it-Q4_K_M.gguf",
+   "size_bytes": 19598489952,
+   "sha256": "2959c1b0a4f792493bb0092846ea06aec54547e47be979c282634d938d501b75",
+   "status": "sha256 = Hugging Face LFS hash"
+  },
+  {
+   "id": "laguna",
+   "file": "Laguna-XS-2.1-Q4_K_M.gguf",
+   "size_bytes": 20274300032,
+   "sha256": "1ac7079101fca5a6df8c5a7523a3c30ea7d1c0e4b1258090e7d6d4039287f6cb",
+   "status": "sha256 = Hugging Face LFS hash"
+  },
+  {
+   "id": "nemotron",
+   "file": "NVIDIA-Nemotron-3.5-Lightning-30B-A3B-UD-Q4_K_M.gguf",
+   "size_bytes": 25266255936,
+   "sha256": "edcb5d4650796ed2fb412498de6f83b585862312c747ddb74f0ea04b22206181",
+   "status": "sha256 = Hugging Face LFS hash"
+  }
+ ],
+ "checks": [
+  {
+   "item": "GPU 1 free",
+   "result": "19 MiB / 97887 MiB, 0 %"
+  },
+  {
+   "item": "Model files",
+   "result": "4 of 4 complete, GGUF header OK"
+  },
+  {
+   "item": "New image loads Laguna and Nemotron (CPU test)",
+   "result": "OK"
+  },
+  {
+   "item": "Old image 9843 (earlier smoke)",
+   "result": "gemma26 PASS, gemma31 PASS, laguna FAIL (unknown architecture), nemotron FAIL (tensor count)"
+  },
+  {
+   "item": "Smoke on build 11561 (NP1, input 4000, output 128, x1)",
+   "result": "4 of 4 PASS: gemma26 82.1, gemma31 27.18, laguna 104.94, nemotron 116.8 tok/s (a load check, not a result)"
+  }
+ ],
+ "next": "Standard (Baseline) for all 4 models, then Optimize",
+ "fixes": [
+  {
+   "problem": "Laguna: unknown model architecture 'laguna'; Nemotron: wrong number of tensors (expected 417, got 408)",
+   "cause": "llama.cpp image build 9843 (4 months old) is too old; changing the quantization (Q4_0) would not help",
+   "fix": "Pulled the pinned image server-cuda-b11561 (build 11561, same as AISO1 / B70) and switched the runner to it; both models load in a CPU test"
+  },
+  {
+   "problem": "Smoke waited 900 s with no container and no error",
+   "cause": "the runner used docker --rm, so a crashed container took its log with it, and it never noticed the container had died",
+   "fix": "Runner keeps the container until close() and stops at once when it exits, putting the last log lines in the Run log"
+  },
+  {
+   "problem": "Run log stayed empty while the progress card updated",
+   "cause": "the log panel was lost when the card was redrawn",
+   "fix": "run-wizard.js keeps a reference to the panel, puts it back in its slot and replays lines already counted"
+  },
+  {
+   "problem": "Run page had no Optimize step",
+   "cause": "only Smoke and Standard existed",
+   "fix": "Step 3 Optimize Test: the Standard protocol with one change from the baseline. Runnable now: KV cache q8_0 and q4_0 (runner --variant). QAT, MTP, NVFP4 are dimmed 'soon'. Starting while the machine is busy queues the run behind it, authorised once with the test password"
+  }
+ ]
+}
