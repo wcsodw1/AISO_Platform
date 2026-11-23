@@ -64,11 +64,13 @@
   }
   // Document: Low / Mid / High by FILE SIZE (what you can see in a file manager). Each level shows the tokens actually measured for the example files.
   // Caveat shown on the card: images inflate file size, so pages (~330 tokens per page) predict tokens better.
+  // headline = a rounded, easy number (nearest 1k below 10k, 5k below 100k, 50k above); the exact reference range shows on hover
+  const nice = n => { const st = n < 1e4 ? 1e3 : n < 1e5 ? 5e3 : 5e4; return Math.max(st, Math.round(n / st) * st); }, kk = n => n % 1000 === 0 ? n / 1000 + "k" : k(n);
   function docStage(c) {
     const d = D.document, tpp = d.tokens_per_page, lv = d.levels.map(l => {
-      const ex = d.samples.filter(x => x.level === l.id), tks = ex.map(x => x.tokens), tk = !ex.length ? "—" : tks.length > 1 ? `${k(Math.min(...tks))} – ${k(Math.max(...tks))}` : k(tks[0]);
-      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi(l.name[0], l.name[1])} <span class="itc-pg">${bi(l.label[0], l.label[1])}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span><p class="itc-ex"><span class="itc-exl">${bi("Reference document", "參考文件")}:</span> ${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
-        <div class="itc-d"><span>${bi("Test input " + l.bench, "測試輸入 " + l.bench)}</span><span>${ex.map(x => `${x.file_mb} MB · ${x.pages ? x.pages : "≈" + x.pages_est} ${"pages"} · ${k(x.tokens)}`).join("  |  ")}${ex.length ? " <i>tokens</i>" : ""}</span></div></section>`; }).join("");
+      const ex = d.samples.filter(x => x.level === l.id), tks = ex.map(x => x.tokens), ref = !ex.length ? "" : tks.length > 1 ? `${k(Math.min(...tks))}–${k(Math.max(...tks))}` : k(tks[0]), rep = ex.length ? "Input " + kk(nice(avg(tks))) : "—";
+      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi(l.name[0], l.name[1])} <span class="itc-pg">${bi(l.label[0], l.label[1])}</span></h4><span class="itc-hv"><b>${rep}${ex.length ? " <i>tokens</i>" : ""}</b></span><p class="itc-ex"><span class="itc-exl">${bi("Reference document", "參考文件")}:</span> ${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
+        <div class="itc-d"><span>${ex.length ? bi(`Reference ${tks.length > 1 ? "between " : ""}${ref} tokens`, `參考範圍 ${ref} tokens`) : ""}</span><span>${bi("Test input " + l.bench, "測試輸入 " + l.bench)}</span><span>${ex.map(x => `${x.file_mb} MB · ${x.pages ? x.pages : "≈" + x.pages_est} ${"pages"} · ${k(x.tokens)}`).join("  |  ")}${ex.length ? " <i>tokens</i>" : ""}</span></div></section>`; }).join("");
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi("scenarios by file size", "情境：依檔案大小")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)} · ${esc(c.hint[1])}</p>
       <div class="itc-rows">${lv}</div>
