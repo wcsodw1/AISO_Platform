@@ -14,10 +14,14 @@
   const BENCH = ["4K", "8K", "16K", "64K", "128K"];
   let D = null, sel = "coding", open = false;
 
+  // what the harness is made of (estimated from the session log, scaled to the measured harness total)
+  const PARTS = [["sys", "System prompt & tools", "系統提示、工具定義"], ["mem", "Memory & skills", "記憶、技能、提醒"], ["conv", "Conversation history", "對話歷史"],
+    ["web", "Web crawl / browser", "網頁瀏覽、爬取"], ["api", "API / MCP tools", "API、MCP 工具"], ["code", "Shell & files", "指令與檔案"]];
   const rowsOf = id => D.rows.filter(r => r.cat === id);
   function stats(rows) {
-    const msg = rows.map(r => r.user_text + r.user_img);
-    return { n: rows.length, msg: span(msg), txt: avg(rows.map(r => r.user_text)), img: avg(rows.map(r => r.user_img)), har: span(rows.map(r => r.harness)),
+    const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), part = key => avg(hp.map(r => r.hp[key]));
+    return { n: rows.length, msg: span(msg), txt: avg(rows.map(r => r.user_text)), img: avg(rows.map(r => r.user_img)), har: { ...span(rows.map(r => r.harness)), avg: avg(hp.length ? hp.map(r => r.harness) : rows.map(r => r.harness)) },
+      parts: Object.fromEntries(PARTS.map(p => [p[0], part(p[0])])), hpn: hp.length,
       cum: span(rows.map(r => r.cum_input)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
   // three levels by average whole-turn input, split into equal thirds (the groups follow the data, so a new category lands in the right level by itself)
@@ -36,11 +40,12 @@
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-rows">
-        ${row("Your message", "你的訊息", s.msg.avg, `${bi("Text", "文字")} ${k(s.txt)} + ${bi("Image", "圖片")} ${k(s.img)} <i>tokens</i>`, s.msg)}
-        ${row("Harness", "開場上下文", s.har.avg, bi("System prompt, tools, history", "系統提示、工具、歷史"), s.har)}
-        ${row("API calls", "整輪（所有呼叫）", s.cum.avg, `${s.calls.toFixed(s.calls < 10 ? 1 : 0)} ${bi("calls", "次")} · ${bi("Harness re-sent each call", "Harness 每次呼叫重送")}<br>${bi("First call", "首次")} ${k(first)} + ${bi("re-sent", "重送")} ${k(Math.max(0, s.cum.avg - first))} <i>tokens</i>`, s.cum)}
+        ${row("1 · Your input", "你的輸入", s.msg.avg, `${bi("Text", "文字")} ${k(s.txt)} + ${bi("Image", "圖片")} ${k(s.img)} <i>tokens</i>`, s.msg)}
+        ${row("2 · Harness", "開場上下文", s.har.avg, bi("Everything sent before your message", "你的訊息之前送出的全部內容"), s.har)}
+        <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
+          return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
       </div>
-      <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
+      <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${bi("Whole turn", "整輪")} ${k(s.cum.avg)} <i>tokens</i> · ${s.calls.toFixed(s.calls < 10 ? 1 : 0)} ${bi("calls", "次")}</span><span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
   }
   function table() {
     const rows = D.rows.map((r, i) => ({ ...r, i: i + 1 })).filter(r => r.cat === sel);

@@ -2,8 +2,8 @@
  "version": 1,
  "updated": "2026-11-23",
  "note": [
-  "Token counts of real Claude Code turns. Harness, cumulative input and output come from API usage; your text and images are estimates. No message text is stored.",
-  "真實 Claude Code 互動的 token 統計。Harness、累計輸入、輸出來自 API 用量；使用者文字與圖片為估算。不存任何訊息內容。"
+  "Token counts of real Claude Code turns. Harness, whole-turn input and output come from API usage; your text/images and the harness split are estimates (the split is scaled so the parts add up to the measured harness). No message text is stored.",
+  "真實 Claude Code 互動的 token 統計。Harness、整輪輸入、輸出來自 API 用量；你的文字／圖片與 Harness 的分類為估算（分類已按實測 Harness 總量調整，各項加總相等）。不存任何訊息內容。"
  ],
  "sessions": {
   "A": [
@@ -92,7 +92,15 @@
    "sub": [
     "3D scene",
     "3D 場景"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23398,
+    "conv": 71817,
+    "web": 7970,
+    "api": 797,
+    "code": 68334
+   }
   },
   {
    "session": "A",
@@ -108,7 +116,15 @@
    "sub": [
     "Character + lighting",
     "角色外型＋燈光"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23437,
+    "conv": 75188,
+    "web": 7920,
+    "api": 792,
+    "code": 68979
+   }
   },
   {
    "session": "A",
@@ -124,7 +140,15 @@
    "sub": [
     "3D scene",
     "3D 場景"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23715,
+    "conv": 87564,
+    "web": 34258,
+    "api": 737,
+    "code": 75042
+   }
   },
   {
    "session": "A",
@@ -140,7 +164,15 @@
    "sub": [
     "Character look",
     "角色外型"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23753,
+    "conv": 88496,
+    "web": 34260,
+    "api": 737,
+    "code": 75070
+   }
   },
   {
    "session": "A",
@@ -156,7 +188,15 @@
    "sub": [
     "3D scene",
     "3D 場景"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24221,
+    "conv": 91288,
+    "web": 34235,
+    "api": 737,
+    "code": 75835
+   }
   },
   {
    "session": "A",
@@ -172,7 +212,15 @@
    "sub": [
     "Login",
     "登入帳號"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24365,
+    "conv": 93184,
+    "web": 34467,
+    "api": 742,
+    "code": 76558
+   }
   },
   {
    "session": "A",
@@ -188,7 +236,15 @@
    "sub": [
     "UI colour",
     "UI 顏色"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24469,
+    "conv": 94636,
+    "web": 34569,
+    "api": 744,
+    "code": 76898
+   }
   },
   {
    "session": "A",
@@ -204,7 +260,15 @@
    "sub": [
     "UI colour",
     "UI 顏色"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24469,
+    "conv": 98113,
+    "web": 34413,
+    "api": 740,
+    "code": 76581
+   }
   },
   {
    "session": "A",
@@ -220,7 +284,15 @@
    "sub": [
     "3D scene",
     "3D 場景"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24469,
+    "conv": 98524,
+    "web": 34275,
+    "api": 737,
+    "code": 76311
+   }
   },
   {
    "session": "A",
@@ -236,7 +308,15 @@
    "sub": [
     "Unclear question, no change",
     "看不懂，沒改"
-   ]
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24507,
+    "conv": 100889,
+    "web": 34699,
+    "api": 857,
+    "code": 77364
+   }
   },
   {
    "session": "A",
@@ -252,7 +332,15 @@
    "sub": [
     "How-to",
     "操作說明"
-   ]
+   ],
+   "hp": {
+    "sys": 47283,
+    "mem": 28411,
+    "conv": 104215,
+    "web": 34751,
+    "api": 858,
+    "code": 77482
+   }
   },
   {
    "session": "A",
@@ -268,7 +356,15 @@
    "sub": [
     "Tool integration",
     "工具整合"
-   ]
+   ],
+   "hp": {
+    "sys": 47426,
+    "mem": 29887,
+    "conv": 106083,
+    "web": 34711,
+    "api": 873,
+    "code": 79020
+   }
   },
   {
    "session": "A",
@@ -284,7 +380,15 @@
    "sub": [
     "Tool integration",
     "工具整合"
-   ]
+   ],
+   "hp": {
+    "sys": 47426,
+    "mem": 30107,
+    "conv": 113486,
+    "web": 34506,
+    "api": 868,
+    "code": 86607
+   }
   },
   {
    "session": "A",
@@ -300,7 +404,15 @@
    "sub": [
     "Stop a program",
     "關程式"
-   ]
+   ],
+   "hp": {
+    "sys": 47426,
+    "mem": 30292,
+    "conv": 116476,
+    "web": 34410,
+    "api": 866,
+    "code": 90530
+   }
   },
   {
    "session": "A",
@@ -316,7 +428,15 @@
    "sub": [
     "Debug start-up error",
     "修啟動錯誤"
-   ]
+   ],
+   "hp": {
+    "sys": 47934,
+    "mem": 30474,
+    "conv": 121203,
+    "web": 34211,
+    "api": 1034,
+    "code": 91144
+   }
   },
   {
    "session": "A",
@@ -332,7 +452,15 @@
    "sub": [
     "Technical assessment",
     "技術評估"
-   ]
+   ],
+   "hp": {
+    "sys": 47934,
+    "mem": 30512,
+    "conv": 125099,
+    "web": 33891,
+    "api": 1024,
+    "code": 91540
+   }
   },
   {
    "session": "A",
@@ -348,7 +476,15 @@
    "sub": [
     "Read code, no change",
     "讀程式，沒改"
-   ]
+   ],
+   "hp": {
+    "sys": 48661,
+    "mem": 18753,
+    "conv": 15586,
+    "web": 0,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "A",
@@ -364,7 +500,15 @@
    "sub": [
     "Troubleshooting Q&A",
     "排查問答"
-   ]
+   ],
+   "hp": {
+    "sys": 48661,
+    "mem": 18900,
+    "conv": 16436,
+    "web": 0,
+    "api": 203,
+    "code": 12800
+   }
   },
   {
    "session": "A",
@@ -380,7 +524,15 @@
    "sub": [
     "Planning discussion",
     "規劃討論"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 18976,
+    "conv": 18181,
+    "web": 0,
+    "api": 4174,
+    "code": 15592
+   }
   },
   {
    "session": "A",
@@ -396,7 +548,15 @@
    "sub": [
     "Framework (AI architecture)",
     "framework（AI 架構）"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 18976,
+    "conv": 24184,
+    "web": 0,
+    "api": 3679,
+    "code": 17084
+   }
   },
   {
    "session": "A",
@@ -412,7 +572,15 @@
    "sub": [
     "Login flow (face)",
     "登入流程（人臉）"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19152,
+    "conv": 30278,
+    "web": 13194,
+    "api": 2790,
+    "code": 50509
+   }
   },
   {
    "session": "A",
@@ -428,7 +596,15 @@
    "sub": [
     "Login flow (face)",
     "登入流程（人臉）"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19328,
+    "conv": 37109,
+    "web": 20285,
+    "api": 2803,
+    "code": 58398
+   }
   },
   {
    "session": "A",
@@ -444,7 +620,15 @@
    "sub": [
     "Login flow (face)",
     "登入流程（人臉）"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19464,
+    "conv": 40119,
+    "web": 27109,
+    "api": 2789,
+    "code": 57442
+   }
   },
   {
    "session": "A",
@@ -460,7 +644,15 @@
    "sub": [
     "Framework (AI UI)",
     "framework（AI 整合 UI）"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19639,
+    "conv": 44549,
+    "web": 31559,
+    "api": 2896,
+    "code": 59280
+   }
   },
   {
    "session": "A",
@@ -476,7 +668,15 @@
    "sub": [
     "Account + character",
     "帳號＋角色外型"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19815,
+    "conv": 53246,
+    "web": 35589,
+    "api": 2947,
+    "code": 61326
+   }
   },
   {
    "session": "A",
@@ -492,7 +692,15 @@
    "sub": [
     "Character + permissions",
     "角色外型＋權限表"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20137,
+    "conv": 64307,
+    "web": 53186,
+    "api": 3016,
+    "code": 75277
+   }
   },
   {
    "session": "A",
@@ -508,7 +716,15 @@
    "sub": [
     "Deploy",
     "部署"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20275,
+    "conv": 73656,
+    "web": 62342,
+    "api": 3080,
+    "code": 78570
+   }
   },
   {
    "session": "A",
@@ -524,7 +740,15 @@
    "sub": [
     "Settings, needs online lookup",
     "設定（需上網查找）"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20457,
+    "conv": 75758,
+    "web": 62408,
+    "api": 3175,
+    "code": 79125
+   }
   },
   {
    "session": "A",
@@ -540,7 +764,15 @@
    "sub": [
     "Deploy",
     "部署"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20779,
+    "conv": 78210,
+    "web": 70817,
+    "api": 3269,
+    "code": 79848
+   }
   },
   {
    "session": "A",
@@ -556,7 +788,15 @@
    "sub": [
     "Deploy fix + notes",
     "部署修正＋說明"
-   ]
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20923,
+    "conv": 79032,
+    "web": 70737,
+    "api": 3356,
+    "code": 79875
+   }
   },
   {
    "session": "B",
@@ -572,7 +812,15 @@
    "sub": [
     "Read a screenshot",
     "看截圖判讀"
-   ]
+   ],
+   "hp": {
+    "sys": 50617,
+    "mem": 18904,
+    "conv": 0,
+    "web": 0,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -588,7 +836,15 @@
    "sub": [
     "Open a page in the browser (blocked by login)",
     "開瀏覽器看頁面（被密碼擋住）"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16290,
+    "conv": 13549,
+    "web": 0,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -604,7 +860,15 @@
    "sub": [
     "Missing attachment",
     "沒收到附件"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16328,
+    "conv": 10934,
+    "web": 5186,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -620,7 +884,15 @@
    "sub": [
     "Clarify",
     "釐清"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16366,
+    "conv": 11212,
+    "web": 5135,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -636,7 +908,15 @@
    "sub": [
     "Interpret results from a screenshot",
     "由截圖解讀結果"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16404,
+    "conv": 13022,
+    "web": 4819,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -652,7 +932,15 @@
    "sub": [
     "Correct the direction",
     "修正方向"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16442,
+    "conv": 17279,
+    "web": 4283,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -668,7 +956,15 @@
    "sub": [
     "Read source code",
     "讀原始碼"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16442,
+    "conv": 20541,
+    "web": 3793,
+    "api": 0,
+    "code": 0
+   }
   },
   {
    "session": "B",
@@ -684,7 +980,15 @@
    "sub": [
     "Check a page in the browser (blocked by login)",
     "瀏覽器看頁面（被密碼擋住）"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16442,
+    "conv": 22048,
+    "web": 3752,
+    "api": 0,
+    "code": 240
+   }
   },
   {
    "session": "B",
@@ -700,7 +1004,15 @@
    "sub": [
     "Read a screenshot",
     "看截圖判讀"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16480,
+    "conv": 21048,
+    "web": 6616,
+    "api": 0,
+    "code": 223
+   }
   },
   {
    "session": "B",
@@ -716,7 +1028,15 @@
    "sub": [
     "Advice",
     "建議"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16480,
+    "conv": 24210,
+    "web": 6285,
+    "api": 0,
+    "code": 212
+   }
   },
   {
    "session": "B",
@@ -732,7 +1052,15 @@
    "sub": [
     "Read source code",
     "讀原始碼"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16518,
+    "conv": 25566,
+    "web": 6415,
+    "api": 0,
+    "code": 216
+   }
   },
   {
    "session": "B",
@@ -748,7 +1076,15 @@
    "sub": [
     "Check deploy state + links",
     "確認上線狀態＋連結"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 17554,
+    "conv": 32948,
+    "web": 7139,
+    "api": 0,
+    "code": 13142
+   }
   },
   {
    "session": "B",
@@ -780,7 +1116,15 @@
    "sub": [
     "Check imported data",
     "確認資料是否已匯入"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 21207,
+    "conv": 56243,
+    "web": 8854,
+    "api": 111,
+    "code": 15845
+   }
   },
   {
    "session": "B",
@@ -796,7 +1140,15 @@
    "sub": [
     "Summary from other sessions",
     "彙整其他 session"
-   ]
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 21207,
+    "conv": 58639,
+    "web": 8878,
+    "api": 111,
+    "code": 17157
+   }
   },
   {
    "session": "B",
@@ -812,7 +1164,15 @@
    "sub": [
     "Clarify",
     "釐清"
-   ]
+   ],
+   "hp": {
+    "sys": 44613,
+    "mem": 21247,
+    "conv": 61402,
+    "web": 8796,
+    "api": 13258,
+    "code": 21156
+   }
   },
   {
    "session": "B",
@@ -828,7 +1188,15 @@
    "sub": [
     "One-line summary",
     "一句話摘要"
-   ]
+   ],
+   "hp": {
+    "sys": 44613,
+    "mem": 21247,
+    "conv": 61873,
+    "web": 8812,
+    "api": 13282,
+    "code": 21195
+   }
   }
  ]
 }
