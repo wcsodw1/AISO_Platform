@@ -31,11 +31,11 @@
       cum: { ...span(rows.map(r => r.cum_input)), avg: avg((sp.length ? sp : rows).map(r => r.cum_input)) }, spn: sp.length,
       reuse: span(sp.map(r => r.cum_read)), comp: span(sp.map(r => r.cum_new)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
-  // Levels = the category's AVERAGE TOTAL INPUT PER TURN (row 3: the input of every API call in the turn added up), fixed bands:
-  // Low < 500k tokens · Mid 500k–1.5M tokens · High >= 1.5M tokens
-  const LV = [["Low", "低"], ["Mid", "中"], ["High", "高"]], BANDS = [5e5, 1.5e6], BAND_TXT = ["< 500k", "500k – 1.5M", "≥ 1.5M"];
+  // Levels = the category's AVERAGE COMPUTED INPUT PER TURN (row 3: input tokens actually processed = not read from the cache), fixed bands:
+  // Low < 20k tokens · Mid 20k–30k tokens · High >= 30k tokens
+  const LV = [["Low", "低"], ["Mid", "中"], ["High", "高"]], BANDS = [2e4, 3e4], BAND_TXT = ["< 20k", "20k – 30k", "≥ 30k"];
   function levels() {
-    const m = {}, a = D.categories.map(c => ({ id: c.id, f: stats(rowsOf(c.id)).cum.avg })).sort((x, y) => x.f - y.f);
+    const m = {}, a = D.categories.map(c => ({ id: c.id, f: stats(rowsOf(c.id)).comp.avg })).sort((x, y) => x.f - y.f);
     a.forEach(x => { x.lv = x.f < BANDS[0] ? 0 : x.f < BANDS[1] ? 1 : 2; m[x.id] = x.lv; });
     return { of: m, ord: a };
   }
@@ -72,7 +72,7 @@
           return `<p class="itc-lv"><em>${bi(LV[l][0], LV[l][1])}</em><span>${BAND_TXT[l]} <i>tokens</i></span></p>` + g.map(x => { const c = D.categories.find(y => y.id === x.id);
             return `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${rowsOf(c.id).length} ${bi("samples", "筆")}</span></button>`; }).join("");
         }).join("")}</div>
-        <p class="itc-ref">${bi("Level = category avg of Total input (reused + computed)", "分級 = 整輪總輸入（重用 + 計算）的類別平均")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
+        <p class="itc-ref">${bi("Level = category avg of 3 · Computed input", "分級 = 3 · 實際計算輸入的類別平均")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
       <div class="itc-tokref"><b>${bi("Rule of thumb", "換算參考")}</b>
         <span>${bi("Chinese", "中文")} ≈ 1–2 <i>tokens</i> / ${bi("char", "字")}</span>
         <span>${bi("English", "英文")} ≈ 0.25–0.33 <i>tokens</i> / ${bi("char", "字元")} (≈ 1.3 / ${bi("word", "單字")})</span>
