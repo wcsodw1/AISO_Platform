@@ -74,8 +74,8 @@
   function docStage(c) {
     const d = D.document, lv = d.levels.map((l, i) => {
       const pages = l.pages[1] ? `${l.pages[0]}–${l.pages[1]}` : `${l.pages[0]}+`, tk = l.tokens[1] ? `${k(l.tokens[0])} – ${k(l.tokens[1])}` : `≥ ${k(l.tokens[0])}`, ex = d.samples.filter(x => x.level === l.id);
-      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi("Level " + (i + 1), "等級 " + (i + 1))} <span class="itc-pg">${pages} ${bi("pages", "頁")}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span></header>
-        <div class="itc-d"><span>${bi("Test input " + l.bench.join(" · "), "測試輸入 " + l.bench.join(" · "))}</span><span>${ex.length ? ex.map(x => `${esc(x.name)} ${k(x.tokens)}`).join(" · ") : bi("no sample yet", "尚無實測樣本")}</span></div></section>`; }).join("");
+      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi("Level " + (i + 1), "等級 " + (i + 1))} <span class="itc-pg">${pages} ${bi("pages", "頁")}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span><p class="itc-ex">${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
+        <div class="itc-d"><span>${bi("Test input " + l.bench.join(" · "), "測試輸入 " + l.bench.join(" · "))}</span><span>${ex.length ? `${ex.map(x => k(x.tokens)).join(" · ")} <i>tokens</i>` : ""}</span></div></section>`; }).join("");
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi("by document pages", "依文件頁數")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)} · ${esc(c.hint[1])}</p>
       <div class="itc-rows">${lv}</div>

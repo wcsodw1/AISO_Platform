@@ -1450,7 +1450,7 @@
   ],
   "samples": [
    {
-    "name": "Server guide",
+    "name": "HPE AI Service Startup Operation Guide",
     "pages": 5,
     "chars": 4133,
     "tokens": 1614,
@@ -1458,7 +1458,7 @@
     "file_mb": 0.161
    },
    {
-    "name": "Hardware spec (docx)",
+    "name": "Intel Arc B390 Document",
     "pages": null,
     "pages_est": 6,
     "chars": 3499,
@@ -1467,7 +1467,7 @@
     "file_mb": 0.04
    },
    {
-    "name": "POC report",
+    "name": "AISO Pro6000 aiDAPTIV POC v36",
     "pages": 12,
     "chars": 6508,
     "tokens": 4132,
@@ -1475,7 +1475,7 @@
     "file_mb": 14.0
    },
    {
-    "name": "Install manual A",
+    "name": "Phison aiDAPTIV Middleware 3.0 – Install SOP & User Manual (v0.1)",
     "pages": 50,
     "chars": 54665,
     "tokens": 16391,
@@ -1483,7 +1483,7 @@
     "file_mb": 2.36
    },
    {
-    "name": "Install manual B",
+    "name": "Phison aiDAPTIVLink 3.0 – Install SOP & User Manual (v1.1)",
     "pages": 77,
     "chars": 79341,
     "tokens": 25435,
