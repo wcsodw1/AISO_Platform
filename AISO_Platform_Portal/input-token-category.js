@@ -23,12 +23,21 @@
     <div class="itc-d"><span>${left}</span><span>${s ? `${bi("Min", "最低")} ${k(s.min)} – ${bi("Max", "最高")} ${k(s.max)} <i>tokens</i>` : ""}</span></div></section>`;
   const sub = (en, zh, g, nEn, nZh) => fold("itc-sub", en, zh, g.avg, bi(`${g.n} turns${nEn ? " · " + nEn : ""}`, `${g.n} 輪${nZh ? " · " + nZh : ""}`), g.n ? g : null);
   const rowsOf = id => D.rows.filter(r => r.cat === id);
+  // The first call of a turn = harness + your message. Its not-cached part (first_new) = your message + the uncached tail of the harness.
+  // The uncached tail is the NEWEST content, so it is taken from the history parts first, then memory, then system+tools.
+  function notCached(r) {
+    let rem = Math.max(0, r.first_new - r.user_text - r.user_img); const o = { sys: 0, mem: 0, conv: 0, web: 0, api: 0, code: 0 }, h = ["conv", "web", "api", "code"], H = h.reduce((a, x) => a + r.hp[x], 0);
+    const t = Math.min(rem, H); h.forEach(x => { o[x] = H ? r.hp[x] * t / H : 0; }); rem -= t;
+    o.mem = Math.min(rem, r.hp.mem); rem -= o.mem; o.sys = Math.min(rem, r.hp.sys); return o;
+  }
   function stats(rows) {
-    const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), sp = rows.filter(r => r.cum_new != null), part = key => avg(hp.map(r => r.hp[key]));
+    const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), sp = rows.filter(r => r.cum_new != null), fr = rows.filter(r => r.first_new != null), frh = fr.filter(r => r.hp), part = key => avg(hp.map(r => r.hp[key]));
     return { n: rows.length, msg: span(msg), txt: avg(rows.map(r => r.user_text)), img: avg(rows.map(r => r.user_img)), har: { ...span(rows.map(r => r.harness)), avg: avg(hp.length ? hp.map(r => r.harness) : rows.map(r => r.harness)) },
       parts: Object.fromEntries(PARTS.map(p => [p[0], part(p[0])])), hpn: hp.length,
       onlyTxt: grp(rows.filter(r => !(r.user_img > 0))), withImg: grp(rows.filter(r => r.user_img > 0)),
       cum: { ...span(rows.map(r => r.cum_input)), avg: avg((sp.length ? sp : rows).map(r => r.cum_input)) }, spn: sp.length,
+      mi: span(fr.map(r => Math.min(r.user_text + r.user_img, r.first_new))), hc: span(fr.map(r => Math.max(0, r.first_new - r.user_text - r.user_img))), du: span(fr.map(r => r.cum_new - r.first_new)), hr: avg(fr.map(r => r.first_read)),
+      pnew: Object.fromEntries(PARTS.map(p => [p[0], avg(frh.map(r => notCached(r)[p[0]]))])),
       reuse: span(sp.map(r => r.cum_read)), comp: span(sp.map(r => r.cum_new)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
   // Levels = the category's AVERAGE COMPUTED INPUT PER TURN (row 3: input tokens actually processed = not read from the cache), fixed bands:
@@ -49,10 +58,12 @@
       <div class="itc-rows">
         ${fold("itc-par", "1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
         <div class="itc-subs">${sub("Text only", "純文字", s.onlyTxt, "", "")}${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `text ${k(s.withImg.t)} + image ${k(s.withImg.i)} tokens` : "", s.withImg.n ? `文字 ${k(s.withImg.t)} + 圖片 ${k(s.withImg.i)} tokens` : "")}</div>
-        ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg,bi("Before your message", "訊息之前"), s.har)}
-        <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
-          return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
+        ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg, bi("Before your message", "訊息之前"), s.har)}
+        ${s.spn ? `<p class="itc-leg"><span><i class="re"></i>${bi("Reused", "快取重用")} ${k(s.hr)}</span><span><i class="nw"></i>${bi("Not cached", "未快取")} ${k(s.hc.avg)}</span><span class="u">tokens</span></p>` : ""}
+        <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0, nw = Math.min(v, s.pnew[p[0]] || 0), nwp = v ? nw / v * 100 : 0;
+          return `<li title="${s.spn ? `${k(v - nw)} reused / 快取重用 · ${k(nw)} not cached / 未快取 (tokens)` : ""}"><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%">${s.spn && nwp > 0.5 ? `<s style="width:${nwp.toFixed(1)}%"></s>` : ""}</u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
         ${s.spn ? `${fold("itc-tot", "3 · Computed input", "實際計算輸入", s.comp.avg, bi(`${pc(s.comp.avg)}% of total · new input actually processed`, `佔總輸入 ${pc(s.comp.avg)}% · 真正處理的新輸入`), s.comp)}
+        <div class="itc-subs itc-subs-tot">${fold("itc-sub", "Your input", "你的輸入", s.mi.avg, bi("this turn's message (row 1)", "本輪的訊息（第 1 項）"), s.mi)}${fold("itc-sub", "+ Harness not cached", "＋ Harness 未快取", s.hc.avg, bi("uncached tail at the first call (row 2)", "第一次呼叫未快取的尾段（第 2 項）"), s.hc)}${fold("itc-sub", "+ Built during the turn", "＋ 本輪中途新增", s.du.avg, bi("tool results & replies in later calls", "後續呼叫中的工具輸出與回覆"), s.du)}</div>
         <div class="itc-subs itc-subs-tot itc-aux">${fold("itc-sub", "Reused (cache hit)", "快取重用", s.reuse.avg, bi(`${pc(s.reuse.avg)}% of total · read from the cache`, `佔總輸入 ${pc(s.reuse.avg)}% · 讀取快取`), s.reuse)}${fold("itc-sub", "Total input", "整輪總輸入", s.cum.avg, bi(`Reused + computed · sum of ${calls} API calls`, `重用 + 計算 · ${calls} 次 API 呼叫加總`), s.cum)}</div>`
           : fold("itc-tot", "3 · Total input", "整輪總輸入", s.cum.avg, bi(`Sum of ${calls} API calls`, `${calls} 次 API 呼叫加總`), s.cum)}
       </div>

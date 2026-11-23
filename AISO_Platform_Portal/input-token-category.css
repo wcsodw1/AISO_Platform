@@ -62,3 +62,11 @@
 .itc-aux .itc-sub h4,.itc-aux .itc-sub .itc-hv b{color:#a9a69c;font-weight:500}   /* auxiliary rows: quieter than the primary computed row */
 .itc-aux .itc-sub .itc-hv b{font-size:17px}
 .itc-tot .itc-hv b{font-size:34px}
+
+.itc-leg{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin:8px 0 0 14px;padding-left:18px;font-size:16px;color:#cfcabf}
+.itc-leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.itc-leg i.re{background:#8f9bff}.itc-leg i.nw{background:#e0a040}.itc-leg i.u{width:auto;height:auto;background:none;margin:0;font-size:16px;color:var(--muted,#98a0ad)}
+.itc-parts .pb u{position:relative}
+.itc-parts .pb u s{position:absolute;right:0;top:0;bottom:0;background:#e0a040;text-decoration:none}
+.itc-subs-tot.itc-aux{margin-top:4px}
+.itc-leg span{white-space:nowrap}.itc-leg .u{color:var(--muted,#98a0ad)}
