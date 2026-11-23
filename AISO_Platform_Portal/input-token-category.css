@@ -29,10 +29,10 @@
 .itc-sub>header::after{font-size:16px}
 .itc-parts{list-style:none;margin:0 0 0 12px;padding:6px 0 4px 18px;border-left:2px solid rgba(143,155,255,.6);display:grid;gap:2px;border-bottom:1px solid rgba(244,239,228,.14)}
 .itc-parts li{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(40px,.6fr) minmax(120px,auto);align-items:center;gap:14px;min-height:32px;font-size:16px}
-.itc-parts .pl{color:var(--ivory,#f3efe5)}
+.itc-parts .pl{color:#cfcabf;font-weight:500}
 .itc-parts .pb{height:6px;border-radius:3px;background:rgba(244,239,228,.12);overflow:hidden}
 .itc-parts .pb u{display:block;height:100%;background:#8f9bff;text-decoration:none}
-.itc-parts .pv{text-align:right;font-weight:600;color:var(--ivory,#f3efe5)}
+.itc-parts .pv{text-align:right;font-weight:600;color:#cfcabf}
 .itc-parts .pv em{font-style:normal;font-weight:400;margin-left:6px;color:var(--muted,#98a0ad)}
 .itc .mw-chips{margin-top:18px}
 .itc .mw-opts{gap:8px}
