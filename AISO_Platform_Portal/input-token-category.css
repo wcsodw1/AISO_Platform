@@ -1,0 +1,87 @@
+/* Benchmark > Input token category: reuses the .mw card of "Choose a vendor". All text >= 16px (PF_UI). Every number is tokens. */
+.itc.mw{min-height:440px;padding:34px 40px;align-items:start}
+.itc .mw-stage{align-self:center}
+.itc .mw-big{font-size:clamp(36px,4.6vw,64px)}
+.itc .mw-spec{margin-top:10px}
+.itc i{font-style:normal;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+.itc small,.itc-more small,.itc-tokref small{margin-left:6px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+.itc-rows{display:grid;gap:0;margin-top:22px;border-top:1px solid rgba(244,239,228,.14)}
+.itc-r{padding:12px 0;border-bottom:1px solid rgba(244,239,228,.14)}
+.itc .hv-fold.itc-r.hv-closed,.itc .hv-fold.itc-r{padding-top:12px!important;padding-bottom:12px!important}
+.itc-r>header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;position:relative;padding-right:26px;cursor:pointer}
+.itc-r>header::after{content:"▾";position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--gold,#c8b875)}
+.itc-r.hv-closed>header::after{transform:translateY(-50%) rotate(-90deg)}
+.itc-r.hv-closed>:not(header){display:none!important}
+.itc-r h4{margin:0;font-size:19px;color:var(--ivory,#f3efe5)}
+.itc-hv{text-align:right;white-space:nowrap}
+.itc-hv b{font-size:30px;line-height:1.1;font-weight:700;color:var(--ivory,#f3efe5)}
+.itc-hv span{margin-left:8px;font-size:16px;color:var(--muted,#98a0ad)}
+.itc-d{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:6px;padding-right:26px;font-size:16px;line-height:1.4;color:var(--muted,#98a0ad)}
+.itc-d>span:last-child{margin-left:auto;text-align:right}
+.itc-par{border-bottom:0}
+.itc-par>header h4{color:#e0a040}   /* 1 · your input = amber */
+.itc-har>header h4{color:#8f9bff}   /* 2 · harness = blue */
+.itc-subs{margin:0 0 0 12px;padding-left:18px;border-left:2px solid rgba(224,160,64,.6);border-bottom:1px solid rgba(244,239,228,.14)}
+.itc-subs .itc-r{padding-top:6px!important;padding-bottom:6px!important;border-bottom:0}
+.itc-sub h4{font-size:16px;font-weight:500;color:#cfcabf}
+.itc-sub .itc-hv b{font-size:19px;font-weight:600;color:#cfcabf}
+.itc-sub .itc-hv span{font-size:16px}
+.itc-sub>header::after{font-size:16px}
+.itc-parts{list-style:none;margin:0 0 0 12px;padding:6px 0 4px 18px;border-left:2px solid rgba(143,155,255,.6);display:grid;gap:2px;border-bottom:1px solid rgba(244,239,228,.14)}
+.itc-parts li{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(40px,.6fr) minmax(110px,auto) 52px;align-items:center;gap:14px;min-height:32px;font-size:16px}
+.itc-parts .pl{color:#cfcabf;font-weight:500}
+.itc-parts .pb{height:6px;border-radius:3px;background:rgba(244,239,228,.12);overflow:hidden}
+.itc-parts .pb u{display:block;height:100%;background:#8f9bff;text-decoration:none}
+.itc-parts .pv{text-align:right;font-weight:600;color:#cfcabf}
+.itc-parts .pv em{font-style:normal;font-weight:400;margin-left:6px;color:var(--muted,#98a0ad)}
+.itc .mw-chips{margin-top:18px}
+.itc .mw-opts{gap:8px}
+.itc .mw-opt{flex-direction:row;align-items:center;justify-content:space-between;min-height:52px;padding:0 22px}
+.itc .mw-opt.sug{border-style:dashed}
+.itc .mw-l b{font-size:22px}
+.itc-lv{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 0;font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold,#c8b875)}
+.itc-lv:first-child{margin-top:0}
+.itc-lv em{font-style:normal}
+.itc-lv span{font-size:16px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted,#98a0ad)}
+.itc-ref{margin:4px 0 0;font-size:16px;line-height:1.5;color:var(--muted,#98a0ad)}
+.itc-tokref{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 28px;margin-top:14px;padding:14px 22px;border:1px solid rgba(244,239,228,.18);border-radius:14px;font-size:16px;color:var(--ivory,#f3efe5)}
+.itc-tokref b{color:var(--gold,#c8b875);font-weight:700}
+.itc-more{margin-top:14px;border:1px solid rgba(244,239,228,.18);border-radius:14px;padding:0 22px}
+.itc-more summary{padding:16px 0;font-size:18px;color:var(--ivory,#f3efe5);cursor:pointer}
+.itc-more[open] summary{color:var(--gold,#c8b875)}
+.itc-table td,.itc-table th{white-space:nowrap}
+.itc-note{margin:14px 0 18px;font-size:16px;color:var(--muted,#98a0ad)}
+@media(max-width:900px){.itc.mw{padding:24px 20px}}
+
+.itc-d>span:first-child small.zhs{display:block;margin:2px 0 0}
+.itc-tot>header h4{color:#6fdc9a}   /* 3 · total = green */
+.itc-tot{margin-top:2px;border-bottom:0}
+
+.itc-subs-tot{border-left-color:rgba(111,220,154,.6)}
+
+.itc-aux .itc-sub h4,.itc-aux .itc-sub .itc-hv b{color:#a9a69c;font-weight:500}   /* auxiliary rows: quieter than the primary computed row */
+.itc-aux .itc-sub .itc-hv b{font-size:17px}
+.itc-tot .itc-hv b{font-size:34px}
+
+.itc-leg{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin:8px 0 0 14px;padding-left:18px;font-size:16px;color:#cfcabf}
+.itc-leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.itc-leg i.re{background:#8f9bff}.itc-leg i.nw{background:#e0a040}.itc-leg i.u{width:auto;height:auto;background:none;margin:0;font-size:16px;color:var(--muted,#98a0ad)}
+.itc-parts .pb u{position:relative}
+.itc-parts .pb u s{position:absolute;right:0;top:0;bottom:0;background:#e0a040;text-decoration:none}
+.itc-subs-tot.itc-aux{margin-top:4px}
+.itc-leg span{white-space:nowrap}.itc-leg .u{color:var(--muted,#98a0ad)}
+.itc-parts .pn{text-align:right;font-weight:600;color:#e0a040}
+
+.itc-doc>header h4{color:var(--gold,#c8b875)}
+.itc-pg{margin-left:10px;font-size:22px;font-weight:700;color:var(--ivory,#f3efe5)}
+.itc-pg small{font-size:16px;font-weight:400}
+.itc-doc .itc-hv b{font-size:22px}
+.itc-docnote{margin:12px 0 0;font-size:16px;line-height:1.5;color:#cfcabf}
+.itc-docnote small.zhs{display:block;margin:4px 0 0}
+.itc-docnote small.zhs{white-space:normal;overflow-wrap:anywhere}
+
+.itc-doc>header{flex-wrap:wrap}
+.itc-ex{flex-basis:100%;margin:4px 0 0;padding-right:0;font-size:16px;line-height:1.45;color:#a9a69c}
+.itc-ex small{margin-left:6px}
+.itc-doc>header h4{flex:1 1 auto;min-width:0}.itc-doc .itc-hv{flex:0 0 auto}
+.itc-exl{color:#e0a040;font-weight:600}.itc-exl small{margin-left:6px}
