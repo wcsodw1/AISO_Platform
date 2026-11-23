@@ -67,7 +67,7 @@
   function docStage(c) {
     const d = D.document, tpp = d.tokens_per_page, lv = d.levels.map(l => {
       const ex = d.samples.filter(x => x.level === l.id), tks = ex.map(x => x.tokens), tk = !ex.length ? "—" : tks.length > 1 ? `${k(Math.min(...tks))} – ${k(Math.max(...tks))}` : k(tks[0]);
-      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi(l.name[0], l.name[1])} <span class="itc-pg">${bi(l.label[0], l.label[1])}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span><p class="itc-ex">${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
+      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi(l.name[0], l.name[1])} <span class="itc-pg">${bi(l.label[0], l.label[1])}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span><p class="itc-ex"><span class="itc-exl">${bi("Reference document", "參考文件")}:</span> ${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
         <div class="itc-d"><span>${bi("Test input " + l.bench, "測試輸入 " + l.bench)}</span><span>${ex.map(x => `${x.file_mb} MB · ${x.pages ? x.pages : "≈" + x.pages_est} ${"pages"} · ${k(x.tokens)}`).join("  |  ")}${ex.length ? " <i>tokens</i>" : ""}</span></div></section>`; }).join("");
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi("scenarios by file size", "情境：依檔案大小")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)} · ${esc(c.hint[1])}</p>
