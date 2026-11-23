@@ -83,3 +83,4 @@
 .itc-doc>header{flex-wrap:wrap}
 .itc-ex{flex-basis:100%;margin:4px 0 0;padding-right:0;font-size:16px;line-height:1.45;color:#a9a69c}
 .itc-ex small{margin-left:6px}
+.itc-doc>header h4{flex:1 1 auto;min-width:0}.itc-doc .itc-hv{flex:0 0 auto}

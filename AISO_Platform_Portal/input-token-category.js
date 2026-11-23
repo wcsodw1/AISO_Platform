@@ -40,21 +40,13 @@
       pnew: Object.fromEntries(PARTS.map(p => [p[0], avg(frh.map(r => notCached(r)[p[0]]))])),
       reuse: span(sp.map(r => r.cum_read)), comp: span(sp.map(r => r.cum_new)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
-  // Levels = the category's AVERAGE COMPUTED INPUT PER TURN (row 3: input tokens actually processed = not read from the cache), fixed bands:
-  // Low < 20k tokens · Mid 20k–30k tokens · High >= 30k tokens
-  const LV = [["Low", "低"], ["Mid", "中"], ["High", "高"]], BANDS = [2e4, 3e4], BAND_TXT = ["< 20k", "20k – 30k", "≥ 30k"];
-  function levels() {
-    const m = {}, a = D.categories.filter(c => c.kind !== "document").map(c => ({ id: c.id, f: stats(rowsOf(c.id)).comp.avg })).sort((x, y) => x.f - y.f);
-    a.forEach(x => { x.lv = x.f < BANDS[0] ? 0 : x.f < BANDS[1] ? 1 : 2; m[x.id] = x.lv; });
-    return { of: m, ord: a };
-  }
   const T = n => `${k(n)} <i>tokens</i>`;
   const row = (en, zh, avgN, left, s) => fold("", en, zh, avgN, left, s);
 
   function stage(id) {
     const c0 = D.categories.find(x => x.id === id); if (c0.kind === "document") return docStage(c0);
-    const c = c0, s = stats(rowsOf(id)), L = LV[levels().of[id]], calls = s.calls.toFixed(s.calls < 10 ? 1 : 0), pc = v => { const t = s.reuse.avg + s.comp.avg, x = t ? v / t * 100 : 0; return x.toFixed(1); };
-    return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
+    const c = c0, s = stats(rowsOf(id)), calls = s.calls.toFixed(s.calls < 10 ? 1 : 0), pc = v => { const t = s.reuse.avg + s.comp.avg, x = t ? v / t * 100 : 0; return x.toFixed(1); };
+    return `<p class="mw-kicker">${bi("Category", "類別")}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-rows">
         ${fold("itc-par", "1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
@@ -70,26 +62,23 @@
       </div>
       <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${calls} ${bi("calls", "次呼叫")}</span><span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
   }
-  // Document: levels by PAGE COUNT (a person can see pages; file size is shown but NOT used, because images inflate it: 14 MB = 4.1k tokens)
+  // Document: Low / Mid / High by FILE SIZE (what you can see in a file manager). Each level shows the tokens actually measured for the example files.
+  // Caveat shown on the card: images inflate file size, so pages (~330 tokens per page) predict tokens better.
   function docStage(c) {
-    const d = D.document, lv = d.levels.map((l, i) => {
-      const pages = l.pages[1] ? `${l.pages[0]}–${l.pages[1]}` : `${l.pages[0]}+`, tk = l.tokens[1] ? `${k(l.tokens[0])} – ${k(l.tokens[1])}` : `≥ ${k(l.tokens[0])}`, ex = d.samples.filter(x => x.level === l.id);
-      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi("Level " + (i + 1), "等級 " + (i + 1))} <span class="itc-pg">${pages} ${bi("pages", "頁")}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span><p class="itc-ex">${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
-        <div class="itc-d"><span>${bi("Test input " + l.bench.join(" · "), "測試輸入 " + l.bench.join(" · "))}</span><span>${ex.length ? `${ex.map(x => k(x.tokens)).join(" · ")} <i>tokens</i>` : ""}</span></div></section>`; }).join("");
-    return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi("by document pages", "依文件頁數")}</p>
+    const d = D.document, tpp = d.tokens_per_page, lv = d.levels.map(l => {
+      const ex = d.samples.filter(x => x.level === l.id), tks = ex.map(x => x.tokens), tk = !ex.length ? "—" : tks.length > 1 ? `${k(Math.min(...tks))} – ${k(Math.max(...tks))}` : k(tks[0]);
+      return `<section class="itc-r itc-doc hv-fold hv-closed"><header><h4>${bi(l.name[0], l.name[1])} <span class="itc-pg">${bi(l.label[0], l.label[1])}</span></h4><span class="itc-hv"><b>${tk} <i>tokens</i></b></span><p class="itc-ex">${ex.length ? ex.map(x => esc(x.name)).join(" · ") : bi("no sample yet", "尚無樣本")}</p></header>
+        <div class="itc-d"><span>${bi("Test input " + l.bench, "測試輸入 " + l.bench)}</span><span>${ex.map(x => `${x.file_mb} MB · ${x.pages ? x.pages : "≈" + x.pages_est} ${"pages"} · ${k(x.tokens)}`).join("  |  ")}${ex.length ? " <i>tokens</i>" : ""}</span></div></section>`; }).join("");
+    return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi("scenarios by file size", "情境：依檔案大小")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)} · ${esc(c.hint[1])}</p>
       <div class="itc-rows">${lv}</div>
-      <p class="itc-docnote">${bi(`≈ ${d.tokens_per_page} tokens per page (manuals; ${d.samples.length} documents measured). Dense text pages ≈ ${d.dense_tokens_per_page} (estimate). Add ≈ 20–50 tokens for your question; output ≈ 500.`, `手冊約每頁 ${d.tokens_per_page} tokens（量了 ${d.samples.length} 份）；純文字密集頁約 ${d.dense_tokens_per_page}（估算）。再加問題約 20–50 tokens，輸出約 500。`)}</p>
+      <p class="itc-docnote">${bi(d.size_note[0] + ` (10 pages ≈ ${k(10 * tpp)} · 100 ≈ ${k(100 * tpp)} · 500 ≈ ${k(500 * tpp)} tokens). Add ≈ 20–50 tokens for your question; output ≈ 500.`, d.size_note[1] + `（10 頁 ≈ ${k(10 * tpp)}、100 頁 ≈ ${k(100 * tpp)}、500 頁 ≈ ${k(500 * tpp)} tokens）。再加問題約 20–50 tokens，輸出約 500。`)}</p>
       <div class="mw-chips"><span class="mw-chip">${d.samples.length} ${bi("documents", "份文件")}</span><span class="mw-chip">${bi("1st ask: whole document computed", "第一次：整份都要計算")}</span><span class="mw-chip">${bi("Follow-up: cache hit (expected)", "追問：預期命中快取")}</span></div>`;
   }
   function docTable() {
     const d = D.document;
-    return `<div class="table-wrap"><table class="v2-table itc-table"><thead><tr><th>${bi("Document", "文件")}</th><th>${bi("Pages", "頁數")}</th><th>${bi("File size", "檔案大小")}</th><th>${bi("Characters", "字元")}</th><th>${bi("Tokens", "tokens")}</th><th>${bi("Tokens / page", "每頁 tokens")}</th><th>${bi("Level", "等級")}</th></tr></thead><tbody>${d.samples.map(x => `<tr><td>${esc(x.name)}</td><td>${x.pages ? x.pages : "≈" + x.pages_est}</td><td>${x.file_mb} MB</td><td>${x.chars.toLocaleString()}</td><td>${x.tokens.toLocaleString()}</td><td>${x.pages ? Math.round(x.tokens / x.pages) : "—"}</td><td>${d.levels.findIndex(l => l.id === x.level) + 1}</td></tr>`).join("")}</tbody></table></div>
+    return `<div class="table-wrap"><table class="v2-table itc-table"><thead><tr><th>${bi("Document", "文件")}</th><th>${bi("Pages", "頁數")}</th><th>${bi("File size", "檔案大小")}</th><th>${bi("Characters", "字元")}</th><th>${bi("Tokens", "tokens")}</th><th>${bi("Tokens / page", "每頁 tokens")}</th><th>${bi("Level", "等級")}</th></tr></thead><tbody>${d.samples.map(x => `<tr><td>${esc(x.name)}</td><td>${x.pages ? x.pages : "≈" + x.pages_est}</td><td>${x.file_mb} MB</td><td>${x.chars.toLocaleString()}</td><td>${x.tokens.toLocaleString()}</td><td>${x.pages ? Math.round(x.tokens / x.pages) : "—"}</td><td>${d.levels.find(l => l.id === x.level).name[0]}</td></tr>`).join("")}</tbody></table></div>
       <p class="itc-note">${bi(d.size_note[0], d.size_note[1])} ${bi(d.method[0], d.method[1])}</p>`;
-  }
-  function docGroup() {
-    const c = D.categories.find(x => x.kind === "document"); if (!c) return "";
-    return `<p class="itc-lv"><em>${bi("By pages", "依頁數")}</em><span>pages → tokens</span></p><button type="button" class="mw-opt${c.id === sel ? " sel" : ""}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${D.document.samples.length} ${bi("documents", "份文件")}</span></button>`;
   }
   function table() {
     const cs = D.categories.find(x => x.id === sel); if (cs && cs.kind === "document") return docTable();
@@ -101,12 +90,8 @@
   function render() {
     root.innerHTML =`<div class="mw itc"><div class="mw-stage">${stage(sel)}</div>
       <div class="mw-panel"><h3 class="mw-q">${bi("Choose a category", "選擇類別")}</h3>
-        <div class="mw-opts" role="listbox">${docGroup()}${[0, 1, 2].map(l => {
-          const g = levels().ord.filter(x => x.lv === l); if (!g.length) return "";
-          return `<p class="itc-lv"><em>${bi(LV[l][0], LV[l][1])}</em><span>${BAND_TXT[l]} <i>tokens</i></span></p>` + g.map(x => { const c = D.categories.find(y => y.id === x.id);
-            return `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${rowsOf(c.id).length} ${bi("samples", "筆")}</span></button>`; }).join("");
-        }).join("")}</div>
-        <p class="itc-ref">${bi("Level = category avg of 3 · Computed input", "分級 = 3 · 實際計算輸入的類別平均")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
+        <div class="mw-opts" role="listbox">${D.categories.map(c => `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${c.kind === "document" ? `${D.document.samples.length} ${bi("documents", "份文件")}` : `${rowsOf(c.id).length} ${bi("samples", "筆")}`}</span></button>`).join("")}</div>
+        <p class="itc-ref">${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
       <div class="itc-tokref"><b>${bi("Rule of thumb", "換算參考")}</b>
         <span>${bi("Chinese", "中文")} ≈ 1–2 <i>tokens</i> / ${bi("char", "字")}</span>
         <span>${bi("English", "英文")} ≈ 0.25–0.33 <i>tokens</i> / ${bi("char", "字元")} (≈ 1.3 / ${bi("word", "單字")})</span>

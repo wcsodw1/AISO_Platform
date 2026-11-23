@@ -1389,63 +1389,52 @@
   "dense_tokens_per_page": 700,
   "levels": [
    {
-    "id": "d1",
-    "pages": [
+    "id": "low",
+    "name": [
+     "Low",
+     "低"
+    ],
+    "mb": [
+     0,
+     1
+    ],
+    "label": [
+     "under 1 MB",
+     "1 MB 以下"
+    ],
+    "bench": "4K"
+   },
+   {
+    "id": "mid",
+    "name": [
+     "Mid",
+     "中"
+    ],
+    "mb": [
      1,
      10
     ],
-    "tokens": [
-     0,
-     3300
+    "label": [
+     "1 – 10 MB",
+     "1 – 10 MB"
     ],
-    "bench": [
-     "4K"
-    ]
+    "bench": "16K · 32K"
    },
    {
-    "id": "d2",
-    "pages": [
-     11,
-     100
+    "id": "high",
+    "name": [
+     "High",
+     "高"
     ],
-    "tokens": [
-     3600,
-     33000
-    ],
-    "bench": [
-     "8K",
-     "16K",
-     "32K"
-    ]
-   },
-   {
-    "id": "d3",
-    "pages": [
-     101,
-     500
-    ],
-    "tokens": [
-     33300,
-     165000
-    ],
-    "bench": [
-     "64K",
-     "128K"
-    ]
-   },
-   {
-    "id": "d4",
-    "pages": [
-     501,
+    "mb": [
+     10,
      null
     ],
-    "tokens": [
-     165300,
-     null
+    "label": [
+     "10 MB and up",
+     "10 MB 以上"
     ],
-    "bench": [
-     "256K"
-    ]
+    "bench": "varies 4K – 64K+"
    }
   ],
   "samples": [
@@ -1454,7 +1443,7 @@
     "pages": 5,
     "chars": 4133,
     "tokens": 1614,
-    "level": "d1",
+    "level": "low",
     "file_mb": 0.161
    },
    {
@@ -1463,7 +1452,7 @@
     "pages_est": 6,
     "chars": 3499,
     "tokens": 1945,
-    "level": "d1",
+    "level": "low",
     "file_mb": 0.04
    },
    {
@@ -1471,7 +1460,7 @@
     "pages": 12,
     "chars": 6508,
     "tokens": 4132,
-    "level": "d2",
+    "level": "high",
     "file_mb": 14.0
    },
    {
@@ -1479,7 +1468,7 @@
     "pages": 50,
     "chars": 54665,
     "tokens": 16391,
-    "level": "d2",
+    "level": "mid",
     "file_mb": 2.36
    },
    {
@@ -1487,7 +1476,7 @@
     "pages": 77,
     "chars": 79341,
     "tokens": 25435,
-    "level": "d2",
+    "level": "mid",
     "file_mb": 3.56
    }
   ],
@@ -1496,8 +1485,8 @@
    "每份文件抽出文字後用 cl100k_base 分詞器計算（只算文字，不含圖片）。Claude 與本地模型的分詞器約有 10–40% 的差異。"
   ],
   "size_note": [
-   "File size does not predict tokens: tokens per page stay within 323–344, but tokens per MB range from 0.3k to 48k (images inflate the file). Use pages.",
-   "檔案大小無法預測 token：每頁約 323–344 tokens 很穩定，但每 MB 的 token 數從 0.3k 到 48k（圖片會讓檔案變大）。請用頁數。"
+   "File size is only a rough guide: images make a file large but add few tokens (a 14 MB PDF is only 4.1k tokens). Pages predict tokens much better: ≈ 330 per page.",
+   "檔案大小只是粗略參考：圖片會讓檔案變大，但不會增加多少 token（14 MB 的 PDF 只有 4.1k tokens）。頁數準很多：每頁約 330 tokens。"
   ]
  }
 }
