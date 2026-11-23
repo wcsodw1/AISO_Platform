@@ -1,0 +1,19 @@
+/* Benchmark > Input token category: reuses the .mw card of "Choose a vendor". All text >= 16px (PF_UI). */
+.itc.mw{min-height:440px;padding:34px 40px}
+.itc .mw-big{font-size:clamp(36px,4.6vw,64px)}
+.itc .mw-spec{margin-top:10px}
+.itc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 28px;margin-top:26px}
+.itc-grid b{display:block;font-size:34px;line-height:1.1;color:var(--ivory,#f3efe5);font-weight:700}
+.itc-grid span{display:block;margin-top:4px;font-size:16px;color:var(--muted,#98a0ad)}
+.itc-grid small,.itc-ref small,.itc-more small{margin-left:6px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
+.itc .mw-opts{gap:10px}
+.itc .mw-opt{min-height:60px}
+.itc .mw-opt.sug{border-style:dashed}
+.itc .mw-l b{font-size:22px}
+.itc-ref{margin:4px 0 0;font-size:16px;color:var(--muted,#98a0ad)}
+.itc-more{margin-top:14px;border:1px solid rgba(244,239,228,.18);border-radius:14px;padding:0 22px}
+.itc-more summary{padding:16px 0;font-size:18px;color:var(--ivory,#f3efe5);cursor:pointer}
+.itc-more[open] summary{color:var(--gold,#c8b875)}
+.itc-table td,.itc-table th{white-space:nowrap}
+.itc-note{margin:14px 0 18px;font-size:16px;color:var(--muted,#98a0ad)}
+@media(max-width:900px){.itc.mw{padding:24px 20px}.itc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

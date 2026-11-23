@@ -14,6 +14,7 @@
   <script src="site-glow.js?v=1.28.0" defer></script>
   <script src="back-nav.js?v=1" defer></script>
   <link rel="stylesheet" href="benchmark.css?v=family-31">
+  <link rel="stylesheet" href="input-token-category.css?v=2">
   <link rel="stylesheet" href="gptoss-v2.css?v=59m">
   <link rel="stylesheet" href="debug-notes.css?v=2">
   <link rel="stylesheet" href="tesla.css?v=50m">
@@ -33,17 +34,22 @@
     </section>
     <nav class="bh-menu" role="tablist" aria-label="Benchmark menu">
       <div class="bh-grp"><button type="button" role="tab" data-tab="benchmarking" class="on"><b>Benchmarking<small class="zhs">實測</small></b><small>Machine → Run → Result</small></button></div>
+      <div class="bh-grp"><button type="button" role="tab" data-tab="tokens"><b>Input token category<small class="zhs">輸入類別</small></b><small>Prompt type → input tokens</small></button></div>
     </nav>
     <section class="bh-panel" id="tabBenchmarking" role="tabpanel">
       <div id="bhPicker"></div>
     </section>
+    <section class="bh-panel" id="tabTokens" role="tabpanel" hidden>
+      <div id="itcRoot"></div>
+    </section>
   </main>
 <script src="machine-picker.js?v=15"></script>
+<script src="input-token-category.js?v=2" defer></script>
 <script>
 if((location.hash||"")==="#sota")location.replace("research.html");
 (function(){
  MachinePicker.mount(document.getElementById("bhPicker"));
- var tabs=document.querySelectorAll(".bh-menu button"),panels={benchmarking:document.getElementById("tabBenchmarking")};
+ var tabs=document.querySelectorAll(".bh-menu button"),panels={benchmarking:document.getElementById("tabBenchmarking"),tokens:document.getElementById("tabTokens")};
  function open(k){if(!panels[k])k="benchmarking";tabs.forEach(function(b){b.classList.toggle("on",b.dataset.tab===k);b.setAttribute("aria-selected",b.dataset.tab===k)});Object.keys(panels).forEach(function(x){panels[x].hidden=x!==k});try{history.replaceState(null,"","#"+k)}catch(e){}}
  tabs.forEach(function(b){b.addEventListener("click",function(){open(b.dataset.tab)})});
  open((location.hash||"").slice(1)||"benchmarking");

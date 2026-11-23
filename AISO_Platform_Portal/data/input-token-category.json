@@ -1,0 +1,834 @@
+{
+ "version": 1,
+ "updated": "2026-11-23",
+ "note": [
+  "Token counts of real Claude Code turns. Harness, cumulative input and output come from API usage; your text and images are estimates. No message text is stored.",
+  "真實 Claude Code 互動的 token 統計。Harness、累計輸入、輸出來自 API 用量；使用者文字與圖片為估算。不存任何訊息內容。"
+ ],
+ "sessions": {
+  "A": [
+   "Web app coding session",
+   "網頁應用程式 coding session"
+  ],
+  "B": [
+   "Benchmark operations session",
+   "Benchmark 操作 session"
+  ]
+ },
+ "categories": [
+  {
+   "id": "coding",
+   "main": true,
+   "en": "Coding Prompt",
+   "zh": "編碼",
+   "hint": [
+    "Edit or debug code, UI, framework",
+    "改程式、UI、framework、除錯"
+   ]
+  },
+  {
+   "id": "chat",
+   "main": true,
+   "en": "Normal Conversation Prompt",
+   "zh": "一般對話",
+   "hint": [
+    "Questions, clarification, planning",
+    "問答、釐清、規劃"
+   ]
+  },
+  {
+   "id": "web",
+   "main": true,
+   "en": "Web Crawl Prompt",
+   "zh": "網頁瀏覽／爬取",
+   "hint": [
+    "Browse or look up pages online",
+    "操作瀏覽器、上網查找"
+   ]
+  },
+  {
+   "id": "analysis",
+   "main": false,
+   "en": "Analysis / Code reading",
+   "zh": "調查分析",
+   "hint": [
+    "Read code or data, no change",
+    "讀程式或資料，不改"
+   ]
+  },
+  {
+   "id": "ops",
+   "main": false,
+   "en": "Ops / Deploy",
+   "zh": "維運部署",
+   "hint": [
+    "Deploy, stop, status checks",
+    "部署、停止、狀態確認"
+   ]
+  },
+  {
+   "id": "docs",
+   "main": false,
+   "en": "Docs / Summary",
+   "zh": "整理文件",
+   "hint": [
+    "Summaries and write-ups",
+    "摘要、彙整"
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "session": "A",
+   "user_text": 4,
+   "user_img": 826,
+   "images": 1,
+   "harness": 220000,
+   "cum_input": 665000,
+   "calls": 3,
+   "output": 934,
+   "seconds": 18,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 5,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 224000,
+   "cum_input": 8500000,
+   "calls": 34,
+   "output": 22000,
+   "seconds": 247,
+   "cat": "coding",
+   "sub": [
+    "Character + lighting",
+    "角色外型＋燈光"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 11,
+   "user_img": 39,
+   "images": 1,
+   "harness": 269000,
+   "cum_input": 539000,
+   "calls": 2,
+   "output": 705,
+   "seconds": 16,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 16,
+   "user_img": 787,
+   "images": 1,
+   "harness": 270000,
+   "cum_input": 1100000,
+   "calls": 4,
+   "output": 1300,
+   "seconds": 22,
+   "cat": "coding",
+   "sub": [
+    "Character look",
+    "角色外型"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 4,
+   "user_img": 132,
+   "images": 1,
+   "harness": 274000,
+   "cum_input": 826000,
+   "calls": 3,
+   "output": 2100,
+   "seconds": 30,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 12,
+   "user_img": 0,
+   "images": 0,
+   "harness": 277000,
+   "cum_input": 554000,
+   "calls": 2,
+   "output": 1100,
+   "seconds": 20,
+   "cat": "coding",
+   "sub": [
+    "Login",
+    "登入帳號"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 6,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 279000,
+   "cum_input": 562000,
+   "calls": 2,
+   "output": 809,
+   "seconds": 16,
+   "cat": "coding",
+   "sub": [
+    "UI colour",
+    "UI 顏色"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 19,
+   "user_img": 0,
+   "images": 0,
+   "harness": 282000,
+   "cum_input": 564000,
+   "calls": 2,
+   "output": 668,
+   "seconds": 16,
+   "cat": "coding",
+   "sub": [
+    "UI colour",
+    "UI 顏色"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 8,
+   "user_img": 0,
+   "images": 0,
+   "harness": 282000,
+   "cum_input": 1100000,
+   "calls": 4,
+   "output": 1400,
+   "seconds": 67,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 0,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 286000,
+   "cum_input": 287000,
+   "calls": 1,
+   "output": 712,
+   "seconds": 10,
+   "cat": "chat",
+   "sub": [
+    "Unclear question, no change",
+    "看不懂，沒改"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 22,
+   "user_img": 0,
+   "images": 0,
+   "harness": 293000,
+   "cum_input": 883000,
+   "calls": 3,
+   "output": 1900,
+   "seconds": 26,
+   "cat": "chat",
+   "sub": [
+    "How-to",
+    "操作說明"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 14,
+   "user_img": 164,
+   "images": 1,
+   "harness": 298000,
+   "cum_input": 2100000,
+   "calls": 7,
+   "output": 6600,
+   "seconds": 55,
+   "cat": "coding",
+   "sub": [
+    "Tool integration",
+    "工具整合"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 19,
+   "user_img": 556,
+   "images": 1,
+   "harness": 313000,
+   "cum_input": 1600000,
+   "calls": 5,
+   "output": 2300,
+   "seconds": 29,
+   "cat": "coding",
+   "sub": [
+    "Tool integration",
+    "工具整合"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 1,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 320000,
+   "cum_input": 1600000,
+   "calls": 5,
+   "output": 2600,
+   "seconds": 32,
+   "cat": "ops",
+   "sub": [
+    "Stop a program",
+    "關程式"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 0,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 326000,
+   "cum_input": 1300000,
+   "calls": 4,
+   "output": 2200,
+   "seconds": 41,
+   "cat": "coding",
+   "sub": [
+    "Debug start-up error",
+    "修啟動錯誤"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 14,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 330000,
+   "cum_input": 665000,
+   "calls": 2,
+   "output": 1700,
+   "seconds": 23,
+   "cat": "chat",
+   "sub": [
+    "Technical assessment",
+    "技術評估"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 0,
+   "user_img": 4500,
+   "images": 3,
+   "harness": 83000,
+   "cum_input": 279000,
+   "calls": 3,
+   "output": 2900,
+   "seconds": 32,
+   "cat": "analysis",
+   "sub": [
+    "Read code, no change",
+    "讀程式，沒改"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 16,
+   "user_img": 0,
+   "images": 0,
+   "harness": 97000,
+   "cum_input": 404000,
+   "calls": 4,
+   "output": 1700,
+   "seconds": 28,
+   "cat": "chat",
+   "sub": [
+    "Troubleshooting Q&A",
+    "排查問答"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 41,
+   "user_img": 2500,
+   "images": 2,
+   "harness": 106000,
+   "cum_input": 332000,
+   "calls": 3,
+   "output": 2600,
+   "seconds": 23,
+   "cat": "chat",
+   "sub": [
+    "Planning discussion",
+    "規劃討論"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 98,
+   "user_img": 0,
+   "images": 0,
+   "harness": 113000,
+   "cum_input": 3000000,
+   "calls": 20,
+   "output": 15000,
+   "seconds": 129,
+   "cat": "coding",
+   "sub": [
+    "Framework (AI architecture)",
+    "framework（AI 架構）"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 36,
+   "user_img": 772,
+   "images": 1,
+   "harness": 165000,
+   "cum_input": 2300000,
+   "calls": 13,
+   "output": 9400,
+   "seconds": 87,
+   "cat": "coding",
+   "sub": [
+    "Login flow (face)",
+    "登入流程（人臉）"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 4,
+   "user_img": 306,
+   "images": 1,
+   "harness": 187000,
+   "cum_input": 1900000,
+   "calls": 10,
+   "output": 4300,
+   "seconds": 44,
+   "cat": "coding",
+   "sub": [
+    "Login flow (face)",
+    "登入流程（人臉）"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 14,
+   "user_img": 334,
+   "images": 1,
+   "harness": 196000,
+   "cum_input": 1600000,
+   "calls": 8,
+   "output": 3900,
+   "seconds": 40,
+   "cat": "coding",
+   "sub": [
+    "Login flow (face)",
+    "登入流程（人臉）"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 29,
+   "user_img": 3100,
+   "images": 2,
+   "harness": 207000,
+   "cum_input": 1900000,
+   "calls": 9,
+   "output": 6300,
+   "seconds": 63,
+   "cat": "coding",
+   "sub": [
+    "Framework (AI UI)",
+    "framework（AI 整合 UI）"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 13,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 222000,
+   "cum_input": 4700000,
+   "calls": 19,
+   "output": 16000,
+   "seconds": 142,
+   "cat": "coding",
+   "sub": [
+    "Account + character",
+    "帳號＋角色外型"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 16,
+   "user_img": 1900,
+   "images": 2,
+   "harness": 265000,
+   "cum_input": 3900000,
+   "calls": 14,
+   "output": 9400,
+   "seconds": 88,
+   "cat": "coding",
+   "sub": [
+    "Character + permissions",
+    "角色外型＋權限表"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 1,
+   "user_img": 0,
+   "images": 0,
+   "harness": 287000,
+   "cum_input": 1400000,
+   "calls": 5,
+   "output": 1900,
+   "seconds": 54,
+   "cat": "ops",
+   "sub": [
+    "Deploy",
+    "部署"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 8,
+   "user_img": 85,
+   "images": 1,
+   "harness": 290000,
+   "cum_input": 3800000,
+   "calls": 13,
+   "output": 4800,
+   "seconds": 78,
+   "cat": "web",
+   "sub": [
+    "Settings, needs online lookup",
+    "設定（需上網查找）"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 1,
+   "user_img": 0,
+   "images": 0,
+   "harness": 302000,
+   "cum_input": 1200000,
+   "calls": 4,
+   "output": 851,
+   "seconds": 40,
+   "cat": "ops",
+   "sub": [
+    "Deploy",
+    "部署"
+   ]
+  },
+  {
+   "session": "A",
+   "user_text": 6,
+   "user_img": 0,
+   "images": 0,
+   "harness": 303000,
+   "cum_input": 2800000,
+   "calls": 9,
+   "output": 4800,
+   "seconds": 78,
+   "cat": "ops",
+   "sub": [
+    "Deploy fix + notes",
+    "部署修正＋說明"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 11,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 69521,
+   "cum_input": 71065,
+   "calls": 1,
+   "output": 1352,
+   "seconds": 15,
+   "cat": "chat",
+   "sub": [
+    "Read a screenshot",
+    "看截圖判讀"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 29,
+   "user_img": 0,
+   "images": 0,
+   "harness": 72389,
+   "cum_input": 366192,
+   "calls": 5,
+   "output": 1117,
+   "seconds": 46,
+   "cat": "web",
+   "sub": [
+    "Open a page in the browser (blocked by login)",
+    "開瀏覽器看頁面（被密碼擋住）"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 3,
+   "user_img": 0,
+   "images": 0,
+   "harness": 74998,
+   "cum_input": 75001,
+   "calls": 1,
+   "output": 192,
+   "seconds": 2,
+   "cat": "chat",
+   "sub": [
+    "Missing attachment",
+    "沒收到附件"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 4,
+   "user_img": 555,
+   "images": 1,
+   "harness": 75263,
+   "cum_input": 75822,
+   "calls": 1,
+   "output": 662,
+   "seconds": 6,
+   "cat": "chat",
+   "sub": [
+    "Clarify",
+    "釐清"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 0,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 76795,
+   "cum_input": 78328,
+   "calls": 1,
+   "output": 1263,
+   "seconds": 10,
+   "cat": "analysis",
+   "sub": [
+    "Interpret results from a screenshot",
+    "由截圖解讀結果"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 20,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 80554,
+   "cum_input": 82107,
+   "calls": 1,
+   "output": 1210,
+   "seconds": 12,
+   "cat": "chat",
+   "sub": [
+    "Correct the direction",
+    "修正方向"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 13,
+   "user_img": 0,
+   "images": 0,
+   "harness": 83326,
+   "cum_input": 251441,
+   "calls": 3,
+   "output": 1461,
+   "seconds": 15,
+   "cat": "analysis",
+   "sub": [
+    "Read source code",
+    "讀原始碼"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 11,
+   "user_img": 0,
+   "images": 0,
+   "harness": 85032,
+   "cum_input": 170877,
+   "calls": 2,
+   "output": 424,
+   "seconds": 5,
+   "cat": "web",
+   "sub": [
+    "Check a page in the browser (blocked by login)",
+    "瀏覽器看頁面（被密碼擋住）"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 4,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 86917,
+   "cum_input": 88454,
+   "calls": 1,
+   "output": 1273,
+   "seconds": 12,
+   "cat": "chat",
+   "sub": [
+    "Read a screenshot",
+    "看截圖判讀"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 6,
+   "user_img": 0,
+   "images": 0,
+   "harness": 89737,
+   "cum_input": 89743,
+   "calls": 1,
+   "output": 718,
+   "seconds": 6,
+   "cat": "chat",
+   "sub": [
+    "Advice",
+    "建議"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 17,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 91265,
+   "cum_input": 784786,
+   "calls": 8,
+   "output": 2880,
+   "seconds": 29,
+   "cat": "analysis",
+   "sub": [
+    "Read source code",
+    "讀原始碼"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 12430,
+   "user_img": 0,
+   "images": 0,
+   "harness": 113333,
+   "cum_input": 255416,
+   "calls": 2,
+   "output": 1873,
+   "seconds": 18,
+   "cat": "ops",
+   "sub": [
+    "Check deploy state + links",
+    "確認上線狀態＋連結"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 390,
+   "user_img": 0,
+   "images": 0,
+   "harness": 131057,
+   "cum_input": 1355496,
+   "calls": 10,
+   "output": 3989,
+   "seconds": 41,
+   "cat": "coding",
+   "sub": [
+    "UI change (collapse two sections)",
+    "UI 改動（兩區收合）"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 275,
+   "user_img": 0,
+   "images": 0,
+   "harness": 144810,
+   "cum_input": 439386,
+   "calls": 3,
+   "output": 2186,
+   "seconds": 20,
+   "cat": "analysis",
+   "sub": [
+    "Check imported data",
+    "確認資料是否已匯入"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 20,
+   "user_img": 0,
+   "images": 0,
+   "harness": 148542,
+   "cum_input": 950696,
+   "calls": 6,
+   "output": 4466,
+   "seconds": 38,
+   "cat": "docs",
+   "sub": [
+    "Summary from other sessions",
+    "彙整其他 session"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 15,
+   "user_img": 0,
+   "images": 0,
+   "harness": 170472,
+   "cum_input": 170487,
+   "calls": 1,
+   "output": 524,
+   "seconds": 5,
+   "cat": "chat",
+   "sub": [
+    "Clarify",
+    "釐清"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 8,
+   "user_img": 0,
+   "images": 0,
+   "harness": 171022,
+   "cum_input": 171030,
+   "calls": 1,
+   "output": 466,
+   "seconds": 4,
+   "cat": "docs",
+   "sub": [
+    "One-line summary",
+    "一句話摘要"
+   ]
+  }
+ ]
+}
