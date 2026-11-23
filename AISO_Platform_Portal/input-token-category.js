@@ -52,8 +52,9 @@
         ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg,bi("Before your message", "訊息之前"), s.har)}
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
           return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
-        ${fold("itc-tot", "3 · Total input", "整輪總輸入", s.cum.avg, bi(`Sum of ${calls} API calls`, `${calls} 次 API 呼叫加總`), s.cum)}
-        ${s.spn ? `<div class="itc-subs itc-subs-tot">${fold("itc-sub", "Reused (cache hit)", "快取重用", s.reuse.avg, bi(`${pc(s.reuse.avg)}% of total`, `佔總輸入 ${pc(s.reuse.avg)}%`), s.reuse)}${fold("itc-sub", "Computed (new)", "實際計算", s.comp.avg, bi(`${pc(s.comp.avg)}% of total`, `佔總輸入 ${pc(s.comp.avg)}%`), s.comp)}</div>` : ""}
+        ${s.spn ? `${fold("itc-tot", "3 · Computed input", "實際計算輸入", s.comp.avg, bi(`${pc(s.comp.avg)}% of total · new input actually processed`, `佔總輸入 ${pc(s.comp.avg)}% · 真正處理的新輸入`), s.comp)}
+        <div class="itc-subs itc-subs-tot itc-aux">${fold("itc-sub", "Reused (cache hit)", "快取重用", s.reuse.avg, bi(`${pc(s.reuse.avg)}% of total · read from the cache`, `佔總輸入 ${pc(s.reuse.avg)}% · 讀取快取`), s.reuse)}${fold("itc-sub", "Total input", "整輪總輸入", s.cum.avg, bi(`Reused + computed · sum of ${calls} API calls`, `重用 + 計算 · ${calls} 次 API 呼叫加總`), s.cum)}</div>`
+          : fold("itc-tot", "3 · Total input", "整輪總輸入", s.cum.avg, bi(`Sum of ${calls} API calls`, `${calls} 次 API 呼叫加總`), s.cum)}
       </div>
       <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${calls} ${bi("calls", "次呼叫")}</span><span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
   }
@@ -71,7 +72,7 @@
           return `<p class="itc-lv"><em>${bi(LV[l][0], LV[l][1])}</em><span>${BAND_TXT[l]} <i>tokens</i></span></p>` + g.map(x => { const c = D.categories.find(y => y.id === x.id);
             return `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${rowsOf(c.id).length} ${bi("samples", "筆")}</span></button>`; }).join("");
         }).join("")}</div>
-        <p class="itc-ref">${bi("Level = category avg of 3 · Total input", "分級 = 3 · 總輸入的類別平均")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
+        <p class="itc-ref">${bi("Level = category avg of Total input (reused + computed)", "分級 = 整輪總輸入（重用 + 計算）的類別平均")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
       <div class="itc-tokref"><b>${bi("Rule of thumb", "換算參考")}</b>
         <span>${bi("Chinese", "中文")} ≈ 1–2 <i>tokens</i> / ${bi("char", "字")}</span>
         <span>${bi("English", "英文")} ≈ 0.25–0.33 <i>tokens</i> / ${bi("char", "字元")} (≈ 1.3 / ${bi("word", "單字")})</span>

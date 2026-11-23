@@ -58,3 +58,7 @@
 .itc-tot{margin-top:2px;border-bottom:0}
 
 .itc-subs-tot{border-left-color:rgba(111,220,154,.6)}
+
+.itc-aux .itc-sub h4,.itc-aux .itc-sub .itc-hv b{color:#a9a69c;font-weight:500}   /* auxiliary rows: quieter than the primary computed row */
+.itc-aux .itc-sub .itc-hv b{font-size:17px}
+.itc-tot .itc-hv b{font-size:34px}
