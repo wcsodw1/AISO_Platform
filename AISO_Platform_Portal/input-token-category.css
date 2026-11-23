@@ -7,6 +7,9 @@
 .itc small,.itc-more small,.itc-tokref small{margin-left:6px;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
 .itc-rows{display:grid;gap:0;margin-top:22px;border-top:1px solid rgba(244,239,228,.14)}
 .itc-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 24px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(244,239,228,.14)}
+.itc-sub{padding:8px 0 8px 14px;border-bottom:1px dashed rgba(244,239,228,.12)}
+.itc-sub .itc-rl h4{font-size:17px;font-weight:600}
+.itc-sub .itc-rv b{font-size:22px}
 .itc-rl h4{margin:0;font-size:19px;color:var(--ivory,#f3efe5)}
 .itc-rl p{margin:4px 0 0;font-size:16px;line-height:1.4;color:var(--muted,#98a0ad)}
 .itc-rv{text-align:right}

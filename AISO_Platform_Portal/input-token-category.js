@@ -17,11 +17,15 @@
   // what the harness is made of (estimated from the session log, scaled to the measured harness total)
   const PARTS = [["sys", "System prompt & tools", "系統提示、工具定義"], ["mem", "Memory & skills", "記憶、技能、提醒"], ["conv", "Conversation history", "對話歷史"],
     ["web", "Web crawl / browser", "網頁瀏覽、爬取"], ["api", "API / MCP tools", "API、MCP 工具"], ["code", "Shell & files", "指令與檔案"]];
+  const grp = rs => ({ n: rs.length, ...span(rs.map(r => r.user_text + r.user_img)), t: avg(rs.map(r => r.user_text)), i: avg(rs.map(r => r.user_img)) });
+  const sub = (en, zh, g, note) => `<div class="itc-r itc-sub"><div class="itc-rl"><h4>${bi(en, zh)}</h4><p>${g.n} ${bi("turns", "輪")}${note ? " · " + note : ""}</p></div>
+    <div class="itc-rv">${g.n ? `<b>${T(g.avg)}</b><span>${bi("Avg", "平均")}</span><p>${bi("Min", "最低")} ${k(g.min)} – ${bi("Max", "最高")} ${k(g.max)} <i>tokens</i></p>` : `<b>—</b>`}</div></div>`;
   const rowsOf = id => D.rows.filter(r => r.cat === id);
   function stats(rows) {
     const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), part = key => avg(hp.map(r => r.hp[key]));
     return { n: rows.length, msg: span(msg), txt: avg(rows.map(r => r.user_text)), img: avg(rows.map(r => r.user_img)), har: { ...span(rows.map(r => r.harness)), avg: avg(hp.length ? hp.map(r => r.harness) : rows.map(r => r.harness)) },
       parts: Object.fromEntries(PARTS.map(p => [p[0], part(p[0])])), hpn: hp.length,
+      onlyTxt: grp(rows.filter(r => !(r.user_img > 0))), withImg: grp(rows.filter(r => r.user_img > 0)),
       cum: span(rows.map(r => r.cum_input)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
   // three levels by average whole-turn input, split into equal thirds (the groups follow the data, so a new category lands in the right level by itself)
@@ -40,7 +44,9 @@
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-rows">
-        ${row("1 · Your input", "你的輸入", s.msg.avg, `${bi("Text", "文字")} ${k(s.txt)} + ${bi("Image", "圖片")} ${k(s.img)} <i>tokens</i>`, s.msg)}
+        ${row("1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
+        ${sub("Text only", "純文字", s.onlyTxt, "")}
+        ${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `${bi("text", "文字")} ${k(s.withImg.t)} + ${bi("image", "圖片")} ${k(s.withImg.i)} <i>tokens</i>` : "")}
         ${row("2 · Harness", "開場上下文", s.har.avg, bi("Everything sent before your message", "你的訊息之前送出的全部內容"), s.har)}
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
           return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
