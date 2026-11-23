@@ -21,7 +21,7 @@
   // every row is a hover-fold panel (hover-fold.js): the header shows name + average, the detail line (turns, min, max) opens on hover / click
   const fold = (cls, en, zh, avgN, left, s) => `<section class="itc-r ${cls} hv-fold hv-closed"><header><h4>${bi(en, zh)}</h4><span class="itc-hv">${s ? `<b>${T(avgN)}</b><span>${bi("Avg", "平均")}</span>` : `<b>—</b>`}</span></header>
     <div class="itc-d"><span>${left}</span><span>${s ? `${bi("Min", "最低")} ${k(s.min)} – ${bi("Max", "最高")} ${k(s.max)} <i>tokens</i>` : ""}</span></div></section>`;
-  const sub = (en, zh, g, note) => fold("itc-sub", en, zh, g.avg, `${g.n} ${bi("turns", "輪")}${note ? " · " + note : ""}`, g.n ? g : null);
+  const sub = (en, zh, g, nEn, nZh) => fold("itc-sub", en, zh, g.avg, bi(`${g.n} turns${nEn ? " · " + nEn : ""}`, `${g.n} 輪${nZh ? " · " + nZh : ""}`), g.n ? g : null);
   const rowsOf = id => D.rows.filter(r => r.cat === id);
   function stats(rows) {
     const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), part = key => avg(hp.map(r => r.hp[key]));
@@ -30,28 +30,30 @@
       onlyTxt: grp(rows.filter(r => !(r.user_img > 0))), withImg: grp(rows.filter(r => r.user_img > 0)),
       cum: span(rows.map(r => r.cum_input)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
-  // three levels by average whole-turn input, split into equal thirds (the groups follow the data, so a new category lands in the right level by itself)
-  const LV = [["Low", "低"], ["Mid", "中"], ["High", "高"]];
+  // Levels = the category's AVERAGE TOTAL INPUT PER TURN (row 3: the input of every API call in the turn added up), fixed bands:
+  // Low < 500k tokens · Mid 500k–1.5M tokens · High >= 1.5M tokens
+  const LV = [["Low", "低"], ["Mid", "中"], ["High", "高"]], BANDS = [5e5, 1.5e6], BAND_TXT = ["< 500k", "500k – 1.5M", "≥ 1.5M"];
   function levels() {
     const m = {}, a = D.categories.map(c => ({ id: c.id, f: stats(rowsOf(c.id)).cum.avg })).sort((x, y) => x.f - y.f);
-    a.forEach((x, i) => { x.lv = Math.min(2, Math.floor(i * 3 / a.length)); m[x.id] = x.lv; });
+    a.forEach(x => { x.lv = x.f < BANDS[0] ? 0 : x.f < BANDS[1] ? 1 : 2; m[x.id] = x.lv; });
     return { of: m, ord: a };
   }
   const T = n => `${k(n)} <i>tokens</i>`;
   const row = (en, zh, avgN, left, s) => fold("", en, zh, avgN, left, s);
 
   function stage(id) {
-    const c = D.categories.find(x => x.id === id), s = stats(rowsOf(id)), L = LV[levels().of[id]], first = s.har.avg + s.msg.avg;
+    const c = D.categories.find(x => x.id === id), s = stats(rowsOf(id)), L = LV[levels().of[id]], calls = s.calls.toFixed(s.calls < 10 ? 1 : 0);
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-rows">
         ${fold("itc-par", "1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
-        <div class="itc-subs">${sub("Text only", "純文字", s.onlyTxt, "")}${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `${bi("text", "文字")} ${k(s.withImg.t)} + ${bi("image", "圖片")} ${k(s.withImg.i)} <i>tokens</i>` : "")}</div>
-        ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg,bi("Everything sent before your message", "你的訊息之前送出的全部內容"), s.har)}
+        <div class="itc-subs">${sub("Text only", "純文字", s.onlyTxt, "", "")}${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `text ${k(s.withImg.t)} + image ${k(s.withImg.i)} tokens` : "", s.withImg.n ? `文字 ${k(s.withImg.t)} + 圖片 ${k(s.withImg.i)} tokens` : "")}</div>
+        ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg,bi("Before your message", "訊息之前"), s.har)}
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
           return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
+        ${fold("itc-tot", "3 · Total input", "整輪總輸入", s.cum.avg, bi(`Sum of ${calls} API calls`, `${calls} 次 API 呼叫加總`), s.cum)}
       </div>
-      <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${bi("Whole turn", "整輪")} ${k(s.cum.avg)} <i>tokens</i> · ${s.calls.toFixed(s.calls < 10 ? 1 : 0)} ${bi("calls", "次")}</span><span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
+      <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${calls} ${bi("calls", "次呼叫")}</span><span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
   }
   function table() {
     const rows = D.rows.map((r, i) => ({ ...r, i: i + 1 })).filter(r => r.cat === sel);
@@ -64,10 +66,10 @@
       <div class="mw-panel"><h3 class="mw-q">${bi("Choose a category", "選擇類別")}</h3>
         <div class="mw-opts" role="listbox">${[0, 1, 2].map(l => {
           const g = levels().ord.filter(x => x.lv === l); if (!g.length) return "";
-          return `<p class="itc-lv"><em>${bi(LV[l][0], LV[l][1])}</em><span>${k(g[0].f)}${g.length > 1 ? "–" + k(g[g.length - 1].f) : ""} <i>tokens</i></span></p>` + g.map(x => { const c = D.categories.find(y => y.id === x.id);
+          return `<p class="itc-lv"><em>${bi(LV[l][0], LV[l][1])}</em><span>${BAND_TXT[l]} <i>tokens</i></span></p>` + g.map(x => { const c = D.categories.find(y => y.id === x.id);
             return `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${rowsOf(c.id).length} ${bi("samples", "筆")}</span></button>`; }).join("");
         }).join("")}</div>
-        <p class="itc-ref">${bi("Level = avg whole-turn input", "分級依整輪平均輸入")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
+        <p class="itc-ref">${bi("Level = category avg of 3 · Total input", "分級 = 3 · 總輸入的類別平均")} · ${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
       <div class="itc-tokref"><b>${bi("Rule of thumb", "換算參考")}</b>
         <span>${bi("Chinese", "中文")} ≈ 1–2 <i>tokens</i> / ${bi("char", "字")}</span>
         <span>${bi("English", "英文")} ≈ 0.25–0.33 <i>tokens</i> / ${bi("char", "字元")} (≈ 1.3 / ${bi("word", "單字")})</span>
