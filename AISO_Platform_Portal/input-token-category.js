@@ -74,7 +74,7 @@
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi("scenarios by file size", "情境：依檔案大小")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)} · ${esc(c.hint[1])}</p>
       <div class="itc-rows">${lv}</div>
-      <p class="itc-docnote">${bi(d.size_note[0] + ` (10 pages ≈ ${k(10 * tpp)} · 100 ≈ ${k(100 * tpp)} · 500 ≈ ${k(500 * tpp)} tokens). Add ≈ 20–50 tokens for your question; output ≈ 500.`, d.size_note[1] + `（10 頁 ≈ ${k(10 * tpp)}、100 頁 ≈ ${k(100 * tpp)}、500 頁 ≈ ${k(500 * tpp)} tokens）。再加問題約 20–50 tokens，輸出約 500。`)}</p>
+      <p class="itc-docnote">${bi(`1 page ≈ ${tpp} tokens (10 pages ≈ ${kk(10 * tpp)} · 100 ≈ ${kk(100 * tpp)} · 500 ≈ ${kk(500 * tpp)}). File size is a rough guide only.`, `1 頁 ≈ ${tpp} tokens（10 頁 ≈ ${kk(10 * tpp)}、100 頁 ≈ ${kk(100 * tpp)}、500 頁 ≈ ${kk(500 * tpp)}）。檔案大小僅供參考。`)}</p>
       <div class="mw-chips"><span class="mw-chip">${d.samples.length} ${bi("documents", "份文件")}</span><span class="mw-chip">${bi("1st ask: whole document computed", "第一次：整份都要計算")}</span><span class="mw-chip">${bi("Follow-up: cache hit (expected)", "追問：預期命中快取")}</span></div>`;
   }
   function docTable() {
