@@ -19,11 +19,19 @@
     const f = med(rows.map(first)), you = med(rows.map(r => r.user_text + r.user_img));
     return { n: rows.length, first: f, you, pct: f ? you / f * 100 : 0, cum: med(rows.map(r => r.cum_input)), calls: med(rows.map(r => r.calls)), out: med(rows.map(r => r.output)), sec: med(rows.map(r => r.seconds)) };
   }
-  const stat = (v, en, zh) => `<div><b>${v}</b><span>${esc(en)}<small class="zhs">${esc(zh)}</small></span></div>`;
+  // three levels by median first-call input, split into equal thirds (the groups follow the data, so a new category lands in the right level by itself)
+  const LV = [["Low", "低"], ["Mid", "中"], ["High", "高"]];
+  function levels() {
+    const m = {}, a = D.categories.map(c => ({ id: c.id, f: stats(rowsOf(c.id)).first })).sort((x, y) => x.f - y.f);
+    a.forEach((x, i) => { x.lv = Math.min(2, Math.floor(i * 3 / a.length)); m[x.id] = x.lv; });
+    return { of: m, ord: a };
+  }
+  const stat = (v, en, zh) =>`<div><b>${v}</b><span>${esc(en)}<small class="zhs">${esc(zh)}</small></span></div>`;
 
   function stage(id) {
     const c = D.categories.find(x => x.id === id), s = stats(rowsOf(id));
-    return `<p class="mw-kicker">${bi("Category", "類別")}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
+    const L = LV[levels().of[id]];
+    return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-grid">${stat(k(s.first), "First call", "首次輸入")}${stat(k(s.cum), "Whole turn", "整輪輸入")}${stat(k(s.out), "Output", "輸出")}
         ${stat(k(s.you), "Your message", "你的訊息")}${stat(String(s.calls), "API calls", "次數")}${stat(dur(s.sec), "Duration", "時間")}</div>
@@ -37,7 +45,11 @@
   function render() {
     root.innerHTML = `<div class="mw itc"><div class="mw-stage">${stage(sel)}</div>
       <div class="mw-panel"><h3 class="mw-q">${bi("Choose a category", "選擇類別")}</h3>
-        <div class="mw-opts" role="listbox">${D.categories.map(c => `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${rowsOf(c.id).length} ${bi("samples", "筆")}</span></button>`).join("")}</div>
+        <div class="mw-opts" role="listbox">${[0, 1, 2].map(l => {
+          const g = levels().ord.filter(x => x.lv === l); if (!g.length) return "";
+          return `<p class="itc-lv"><em>${bi(LV[l][0], LV[l][1])}</em><span>${k(g[0].f)}${g.length > 1 ? "–" + k(g[g.length - 1].f) : ""}</span></p>` + g.map(x => { const c = D.categories.find(y => y.id === x.id);
+            return `<button type="button" class="mw-opt${c.id === sel ? " sel" : ""}${c.main ? "" : " sug"}" data-id="${c.id}"><span class="mw-l"><b>${esc(nm(c))}</b></span><span class="mw-r">${rowsOf(c.id).length} ${bi("samples", "筆")}</span></button>`; }).join("");
+        }).join("")}</div>
         <p class="itc-ref">${bi("Benchmark inputs", "Benchmark 輸入")} ${BENCH.join(" · ")}</p></div></div>
       <details class="itc-more"${open ? " open" : ""}><summary>${bi("Samples", "樣本表")} · ${esc(nm(D.categories.find(c => c.id === sel)))}</summary>${table()}</details>`;
   }
