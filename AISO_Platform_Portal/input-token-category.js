@@ -18,8 +18,10 @@
   const PARTS = [["sys", "System prompt & tools", "系統提示、工具定義"], ["mem", "Memory & skills", "記憶、技能、提醒"], ["conv", "Conversation history", "對話歷史"],
     ["web", "Web crawl / browser", "網頁瀏覽、爬取"], ["api", "API / MCP tools", "API、MCP 工具"], ["code", "Shell & files", "指令與檔案"]];
   const grp = rs => ({ n: rs.length, ...span(rs.map(r => r.user_text + r.user_img)), t: avg(rs.map(r => r.user_text)), i: avg(rs.map(r => r.user_img)) });
-  const sub = (en, zh, g, note) => `<div class="itc-r itc-sub"><div class="itc-rl"><h4>${bi(en, zh)}</h4><p>${g.n} ${bi("turns", "輪")}${note ? " · " + note : ""}</p></div>
-    <div class="itc-rv">${g.n ? `<b>${T(g.avg)}</b><span>${bi("Avg", "平均")}</span><p>${bi("Min", "最低")} ${k(g.min)} – ${bi("Max", "最高")} ${k(g.max)} <i>tokens</i></p>` : `<b>—</b>`}</div></div>`;
+  // every row is a hover-fold panel (hover-fold.js): the header shows name + average, the detail line (turns, min, max) opens on hover / click
+  const fold = (cls, en, zh, avgN, left, s) => `<section class="itc-r ${cls} hv-fold hv-closed"><header><h4>${bi(en, zh)}</h4><span class="itc-hv">${s ? `<b>${T(avgN)}</b><span>${bi("Avg", "平均")}</span>` : `<b>—</b>`}</span></header>
+    <div class="itc-d"><span>${left}</span><span>${s ? `${bi("Min", "最低")} ${k(s.min)} – ${bi("Max", "最高")} ${k(s.max)} <i>tokens</i>` : ""}</span></div></section>`;
+  const sub = (en, zh, g, note) => fold("itc-sub", en, zh, g.avg, `${g.n} ${bi("turns", "輪")}${note ? " · " + note : ""}`, g.n ? g : null);
   const rowsOf = id => D.rows.filter(r => r.cat === id);
   function stats(rows) {
     const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), part = key => avg(hp.map(r => r.hp[key]));
@@ -36,8 +38,7 @@
     return { of: m, ord: a };
   }
   const T = n => `${k(n)} <i>tokens</i>`;
-  const row = (en, zh, avgN, sub, s) => `<div class="itc-r"><div class="itc-rl"><h4>${bi(en, zh)}</h4><p>${sub}</p></div>
-    <div class="itc-rv"><b>${T(avgN)}</b><span>${bi("Avg", "平均")}</span><p>${bi("Min", "最低")} ${k(s.min)} – ${bi("Max", "最高")} ${k(s.max)} <i>tokens</i></p></div></div>`;
+  const row = (en, zh, avgN, left, s) => fold("", en, zh, avgN, left, s);
 
   function stage(id) {
     const c = D.categories.find(x => x.id === id), s = stats(rowsOf(id)), L = LV[levels().of[id]], first = s.har.avg + s.msg.avg;
@@ -58,8 +59,9 @@
     return `<div class="table-wrap"><table class="v2-table itc-table"><thead><tr><th>#</th><th>${bi("Detail", "細項")}</th><th>${bi("Text", "文字")}</th><th>${bi("Image", "圖片")}</th><th>${bi("Harness", "開場")}</th><th>${bi("API calls total (calls)", "整輪（次數）")}</th><th>${bi("Output", "輸出")}</th><th>${bi("Time", "時間")}</th></tr></thead><tbody>${rows.map(r => `<tr><td>${r.i}</td><td>${bi(r.sub[0], r.sub[1])}</td><td>${k(r.user_text)}</td><td>${k(r.user_img)}${r.images ? ` (${r.images})` : ""}</td><td>${k(r.harness)}</td><td>${k(r.cum_input)} (${r.calls})</td><td>${k(r.output)}</td><td>${dur(r.seconds)}</td></tr>`).join("")}</tbody></table></div>
       <p class="itc-note">${bi("All numbers are tokens.", "表內數字單位皆為 token。")} ${bi(D.note[0], D.note[1])}</p>`;
   }
+  const bindFold = el => { if (window.HoverFold) window.HoverFold.init(el); };
   function render() {
-    root.innerHTML = `<div class="mw itc"><div class="mw-stage">${stage(sel)}</div>
+    root.innerHTML =`<div class="mw itc"><div class="mw-stage">${stage(sel)}</div>
       <div class="mw-panel"><h3 class="mw-q">${bi("Choose a category", "選擇類別")}</h3>
         <div class="mw-opts" role="listbox">${[0, 1, 2].map(l => {
           const g = levels().ord.filter(x => x.lv === l); if (!g.length) return "";
@@ -72,13 +74,14 @@
         <span>${bi("English", "英文")} ≈ 0.25–0.33 <i>tokens</i> / ${bi("char", "字元")} (≈ 1.3 / ${bi("word", "單字")})</span>
         <span>${bi("Image", "圖片")} ≈ 100–1,600 <i>tokens</i> / ${bi("image", "張")}</span></div>
       <details class="itc-more"${open ? " open" : ""}><summary>${bi("Samples", "樣本表")} · ${esc(nm(D.categories.find(c => c.id === sel)))}</summary>${table()}</details>`;
+    bindFold(root);
   }
   root.addEventListener("click", e => { const o = e.target.closest(".mw-opt"); if (!o) return; sel = o.dataset.id; render(); });
   root.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("itc-more")) open = e.target.open; }, true);
   root.addEventListener("mouseover", e => {       // hover previews a category on the left without changing the choice
     const o = e.target.closest(".mw-opt"), st = root.querySelector(".mw-stage");
-    if (o && st) st.innerHTML = stage(o.dataset.id);
+    if (o && st) { st.innerHTML = stage(o.dataset.id); bindFold(st); }
   });
-  root.addEventListener("mouseout", e => { const st = root.querySelector(".mw-stage"); if (st && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".mw-opt"))) st.innerHTML = stage(sel); });
+  root.addEventListener("mouseout", e => { const st = root.querySelector(".mw-stage"); if (st && e.target.closest(".mw-opt") && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".mw-opt"))) { st.innerHTML = stage(sel); bindFold(st); } });
   fetch("data/input-token-category.json", { cache: "no-store" }).then(r => r.json()).then(d => { D = d; render(); }).catch(() => { root.innerHTML = `<p class="itc-ref">${bi("Could not load the data file.", "無法載入資料檔。")}</p>`; });
 })();
