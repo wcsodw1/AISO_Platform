@@ -17,6 +17,17 @@
  },
  "categories": [
   {
+   "id": "document",
+   "kind": "document",
+   "main": true,
+   "en": "Document",
+   "zh": "文件",
+   "hint": [
+    "Paste or attach a document, then summarize or ask questions",
+    "貼上或附上文件，請它摘要或問答"
+   ]
+  },
+  {
    "id": "coding",
    "main": true,
    "en": "Coding Prompt",
@@ -64,16 +75,6 @@
    "hint": [
     "Deploy, stop, status checks",
     "部署、停止、狀態確認"
-   ]
-  },
-  {
-   "id": "docs",
-   "main": false,
-   "en": "Docs / Summary",
-   "zh": "整理文件",
-   "hint": [
-    "Summaries and write-ups",
-    "摘要、彙整"
    ]
   }
  ],
@@ -1308,7 +1309,7 @@
    "calls": 6,
    "output": 4466,
    "seconds": 38,
-   "cat": "docs",
+   "cat": "analysis",
    "sub": [
     "Summary from other sessions",
     "彙整其他 session"
@@ -1364,7 +1365,7 @@
    "calls": 1,
    "output": 466,
    "seconds": 4,
-   "cat": "docs",
+   "cat": "analysis",
    "sub": [
     "One-line summary",
     "一句話摘要"
@@ -1382,5 +1383,121 @@
    "first_read": 170483,
    "first_new": 547
   }
- ]
+ ],
+ "document": {
+  "tokens_per_page": 330,
+  "dense_tokens_per_page": 700,
+  "levels": [
+   {
+    "id": "d1",
+    "pages": [
+     1,
+     10
+    ],
+    "tokens": [
+     0,
+     3300
+    ],
+    "bench": [
+     "4K"
+    ]
+   },
+   {
+    "id": "d2",
+    "pages": [
+     11,
+     100
+    ],
+    "tokens": [
+     3600,
+     33000
+    ],
+    "bench": [
+     "8K",
+     "16K",
+     "32K"
+    ]
+   },
+   {
+    "id": "d3",
+    "pages": [
+     101,
+     500
+    ],
+    "tokens": [
+     33300,
+     165000
+    ],
+    "bench": [
+     "64K",
+     "128K"
+    ]
+   },
+   {
+    "id": "d4",
+    "pages": [
+     501,
+     null
+    ],
+    "tokens": [
+     165300,
+     null
+    ],
+    "bench": [
+     "256K"
+    ]
+   }
+  ],
+  "samples": [
+   {
+    "name": "Server guide",
+    "pages": 5,
+    "chars": 4133,
+    "tokens": 1614,
+    "level": "d1",
+    "file_mb": 0.161
+   },
+   {
+    "name": "Hardware spec (docx)",
+    "pages": null,
+    "pages_est": 6,
+    "chars": 3499,
+    "tokens": 1945,
+    "level": "d1",
+    "file_mb": 0.04
+   },
+   {
+    "name": "POC report",
+    "pages": 12,
+    "chars": 6508,
+    "tokens": 4132,
+    "level": "d2",
+    "file_mb": 14.0
+   },
+   {
+    "name": "Install manual A",
+    "pages": 50,
+    "chars": 54665,
+    "tokens": 16391,
+    "level": "d2",
+    "file_mb": 2.36
+   },
+   {
+    "name": "Install manual B",
+    "pages": 77,
+    "chars": 79341,
+    "tokens": 25435,
+    "level": "d2",
+    "file_mb": 3.56
+   }
+  ],
+  "method": [
+   "Text extracted from each document, tokens counted with the cl100k_base tokenizer (text only; images not counted). Claude and local-model tokenizers differ by roughly 10–40%.",
+   "每份文件抽出文字後用 cl100k_base 分詞器計算（只算文字，不含圖片）。Claude 與本地模型的分詞器約有 10–40% 的差異。"
+  ],
+  "size_note": [
+   "File size does not predict tokens: tokens per page stay within 323–344, but tokens per MB range from 0.3k to 48k (images inflate the file). Use pages.",
+   "檔案大小無法預測 token：每頁約 323–344 tokens 很穩定，但每 MB 的 token 數從 0.3k 到 48k（圖片會讓檔案變大）。請用頁數。"
+  ]
+ }
 }

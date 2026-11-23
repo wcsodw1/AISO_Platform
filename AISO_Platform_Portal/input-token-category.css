@@ -71,3 +71,11 @@
 .itc-subs-tot.itc-aux{margin-top:4px}
 .itc-leg span{white-space:nowrap}.itc-leg .u{color:var(--muted,#98a0ad)}
 .itc-parts .pn{text-align:right;font-weight:600;color:#e0a040}
+
+.itc-doc>header h4{color:var(--gold,#c8b875)}
+.itc-pg{margin-left:10px;font-size:22px;font-weight:700;color:var(--ivory,#f3efe5)}
+.itc-pg small{font-size:16px;font-weight:400}
+.itc-doc .itc-hv b{font-size:22px}
+.itc-docnote{margin:12px 0 0;font-size:16px;line-height:1.5;color:#cfcabf}
+.itc-docnote small.zhs{display:block;margin:4px 0 0}
+.itc-docnote small.zhs{white-space:normal;overflow-wrap:anywhere}
