@@ -56,3 +56,5 @@
 .itc-d>span:first-child small.zhs{display:block;margin:2px 0 0}
 .itc-tot>header h4{color:#6fdc9a}   /* 3 · total = green */
 .itc-tot{margin-top:2px;border-bottom:0}
+
+.itc-subs-tot{border-left-color:rgba(111,220,154,.6)}

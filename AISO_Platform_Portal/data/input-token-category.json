@@ -100,7 +100,11 @@
     "web": 7970,
     "api": 797,
     "code": 68334
-   }
+   },
+   "cum_read": 662417,
+   "cum_new": 3022,
+   "first_read": 219504,
+   "first_new": 1388
   },
   {
    "session": "A",
@@ -124,7 +128,11 @@
     "web": 7920,
     "api": 792,
     "code": 68979
-   }
+   },
+   "cum_read": 8471008,
+   "cum_new": 46009,
+   "first_read": 222795,
+   "first_new": 2427
   },
   {
    "session": "A",
@@ -148,7 +156,11 @@
     "web": 34258,
     "api": 737,
     "code": 75042
-   }
+   },
+   "cum_read": 538154,
+   "cum_new": 1172,
+   "first_read": 268732,
+   "first_new": 694
   },
   {
    "session": "A",
@@ -172,7 +184,11 @@
     "web": 34260,
     "api": 737,
     "code": 75070
-   }
+   },
+   "cum_read": 1084418,
+   "cum_new": 2622,
+   "first_read": 270150,
+   "first_new": 886
   },
   {
    "session": "A",
@@ -196,7 +212,11 @@
     "web": 34235,
     "api": 737,
     "code": 75835
-   }
+   },
+   "cum_read": 822681,
+   "cum_new": 3222,
+   "first_read": 273081,
+   "first_new": 1054
   },
   {
    "session": "A",
@@ -220,7 +240,11 @@
     "web": 34467,
     "api": 742,
     "code": 76558
-   }
+   },
+   "cum_read": 553171,
+   "cum_new": 1013,
+   "first_read": 276576,
+   "first_new": 23
   },
   {
    "session": "A",
@@ -244,7 +268,11 @@
     "web": 34569,
     "api": 744,
     "code": 76898
-   }
+   },
+   "cum_read": 558702,
+   "cum_new": 3483,
+   "first_read": 277878,
+   "first_new": 2950
   },
   {
    "session": "A",
@@ -268,7 +296,11 @@
     "web": 34413,
     "api": 740,
     "code": 76581
-   }
+   },
+   "cum_read": 563351,
+   "cum_new": 443,
+   "first_read": 281662,
+   "first_new": 31
   },
   {
    "session": "A",
@@ -292,7 +324,11 @@
     "web": 34275,
     "api": 737,
     "code": 76311
-   }
+   },
+   "cum_read": 1130991,
+   "cum_new": 1401,
+   "first_read": 282389,
+   "first_new": 17
   },
   {
    "session": "A",
@@ -316,7 +352,11 @@
     "web": 34699,
     "api": 857,
     "code": 77364
-   }
+   },
+   "cum_read": 284028,
+   "cum_new": 3257,
+   "first_read": 284028,
+   "first_new": 3257
   },
   {
    "session": "A",
@@ -340,7 +380,11 @@
     "web": 34751,
     "api": 858,
     "code": 77482
-   }
+   },
+   "cum_read": 627575,
+   "cum_new": 255072,
+   "first_read": 40571,
+   "first_new": 252046
   },
   {
    "session": "A",
@@ -364,7 +408,11 @@
     "web": 34711,
     "api": 873,
     "code": 79020
-   }
+   },
+   "cum_read": 1867984,
+   "cum_new": 271065,
+   "first_read": 40571,
+   "first_new": 257176
   },
   {
    "session": "A",
@@ -388,7 +436,11 @@
     "web": 34506,
     "api": 868,
     "code": 86607
-   }
+   },
+   "cum_read": 1576100,
+   "cum_new": 6329,
+   "first_read": 312538,
+   "first_new": 654
   },
   {
    "session": "A",
@@ -412,7 +464,11 @@
     "web": 34410,
     "api": 866,
     "code": 90530
-   }
+   },
+   "cum_read": 1610211,
+   "cum_new": 5213,
+   "first_read": 319491,
+   "first_new": 1592
   },
   {
    "session": "A",
@@ -436,7 +492,11 @@
     "web": 34211,
     "api": 1034,
     "code": 91144
-   }
+   },
+   "cum_read": 1308995,
+   "cum_new": 3538,
+   "first_read": 325509,
+   "first_new": 1570
   },
   {
    "session": "A",
@@ -460,7 +520,11 @@
     "web": 33891,
     "api": 1024,
     "code": 91540
-   }
+   },
+   "cum_read": 662114,
+   "cum_new": 3220,
+   "first_read": 330265,
+   "first_new": 1588
   },
   {
    "session": "A",
@@ -484,7 +548,11 @@
     "web": 0,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 223854,
+   "cum_new": 55339,
+   "first_read": 41180,
+   "first_new": 46258
   },
   {
    "session": "A",
@@ -508,7 +576,11 @@
     "web": 0,
     "api": 203,
     "code": 12800
-   }
+   },
+   "cum_read": 398034,
+   "cum_new": 6336,
+   "first_read": 97012,
+   "first_new": 24
   },
   {
    "session": "A",
@@ -532,7 +604,11 @@
     "web": 0,
     "api": 4174,
     "code": 15592
-   }
+   },
+   "cum_read": 323314,
+   "cum_new": 8246,
+   "first_read": 104304,
+   "first_new": 3812
   },
   {
    "session": "A",
@@ -556,7 +632,11 @@
     "web": 0,
     "api": 3679,
     "code": 17084
-   }
+   },
+   "cum_read": 2933165,
+   "cum_new": 50992,
+   "first_read": 113111,
+   "first_new": 129
   },
   {
    "session": "A",
@@ -580,7 +660,11 @@
     "web": 13194,
     "api": 2790,
     "code": 50509
-   }
+   },
+   "cum_read": 2187254,
+   "cum_new": 144415,
+   "first_read": 41180,
+   "first_new": 124789
   },
   {
    "session": "A",
@@ -604,7 +688,11 @@
     "web": 20285,
     "api": 2803,
     "code": 58398
-   }
+   },
+   "cum_read": 1902415,
+   "cum_new": 8680,
+   "first_read": 186625,
+   "first_new": 397
   },
   {
    "session": "A",
@@ -628,7 +716,11 @@
     "web": 27109,
     "api": 2789,
     "code": 57442
-   }
+   },
+   "cum_read": 1592764,
+   "cum_new": 7514,
+   "first_read": 196097,
+   "first_new": 440
   },
   {
    "session": "A",
@@ -652,7 +744,11 @@
     "web": 31559,
     "api": 2896,
     "code": 59280
-   }
+   },
+   "cum_read": 1927920,
+   "cum_new": 16083,
+   "first_read": 204322,
+   "first_new": 5462
   },
   {
    "session": "A",
@@ -676,7 +772,11 @@
     "web": 35589,
     "api": 2947,
     "code": 61326
-   }
+   },
+   "cum_read": 4668396,
+   "cum_new": 42843,
+   "first_read": 221339,
+   "first_new": 2306
   },
   {
    "session": "A",
@@ -700,7 +800,11 @@
     "web": 53186,
     "api": 3016,
     "code": 75277
-   }
+   },
+   "cum_read": 3863272,
+   "cum_new": 20921,
+   "first_read": 265166,
+   "first_new": 2216
   },
   {
    "session": "A",
@@ -724,7 +828,11 @@
     "web": 62342,
     "api": 3080,
     "code": 78570
-   }
+   },
+   "cum_read": 1438047,
+   "cum_new": 1868,
+   "first_read": 286938,
+   "first_new": 7
   },
   {
    "session": "A",
@@ -748,7 +856,11 @@
     "web": 62408,
     "api": 3175,
     "code": 79125
-   }
+   },
+   "cum_read": 3836787,
+   "cum_new": 12247,
+   "first_read": 289472,
+   "first_new": 185
   },
   {
    "session": "A",
@@ -772,7 +884,11 @@
     "web": 70817,
     "api": 3269,
     "code": 79848
-   }
+   },
+   "cum_read": 1210147,
+   "cum_new": 821,
+   "first_read": 302311,
+   "first_new": 7
   },
   {
    "session": "A",
@@ -796,7 +912,11 @@
     "web": 70737,
     "api": 3356,
     "code": 79875
-   }
+   },
+   "cum_read": 2765129,
+   "cum_new": 7874,
+   "first_read": 303407,
+   "first_new": 12
   },
   {
    "session": "B",
@@ -820,7 +940,11 @@
     "web": 0,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 50381,
+   "cum_new": 20684,
+   "first_read": 50381,
+   "first_new": 20684
   },
   {
    "session": "B",
@@ -844,7 +968,11 @@
     "web": 0,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 332626,
+   "cum_new": 33566,
+   "first_read": 40581,
+   "first_new": 31837
   },
   {
    "session": "B",
@@ -868,7 +996,11 @@
     "web": 5186,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 74605,
+   "cum_new": 396,
+   "first_read": 74605,
+   "first_new": 396
   },
   {
    "session": "B",
@@ -892,7 +1024,11 @@
     "web": 5135,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 75191,
+   "cum_new": 631,
+   "first_read": 75191,
+   "first_new": 631
   },
   {
    "session": "B",
@@ -916,7 +1052,11 @@
     "web": 4819,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 76482,
+   "cum_new": 1846,
+   "first_read": 76482,
+   "first_new": 1846
   },
   {
    "session": "B",
@@ -940,7 +1080,11 @@
     "web": 4283,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 79589,
+   "cum_new": 2518,
+   "first_read": 79589,
+   "first_new": 2518
   },
   {
    "session": "B",
@@ -964,7 +1108,11 @@
     "web": 3793,
     "api": 0,
     "code": 0
-   }
+   },
+   "cum_read": 250539,
+   "cum_new": 902,
+   "first_read": 83315,
+   "first_new": 24
   },
   {
    "session": "B",
@@ -988,7 +1136,11 @@
     "web": 3752,
     "api": 0,
     "code": 240
-   }
+   },
+   "cum_read": 169248,
+   "cum_new": 1629,
+   "first_read": 84209,
+   "first_new": 834
   },
   {
    "session": "B",
@@ -1012,7 +1164,11 @@
     "web": 6616,
     "api": 0,
     "code": 223
-   }
+   },
+   "cum_read": 86086,
+   "cum_new": 2368,
+   "first_read": 86086,
+   "first_new": 2368
   },
   {
    "session": "B",
@@ -1036,7 +1192,11 @@
     "web": 6285,
     "api": 0,
     "code": 212
-   }
+   },
+   "cum_read": 88450,
+   "cum_new": 1293,
+   "first_read": 88450,
+   "first_new": 1293
   },
   {
    "session": "B",
@@ -1060,7 +1220,11 @@
     "web": 6415,
     "api": 0,
     "code": 216
-   }
+   },
+   "cum_read": 770056,
+   "cum_new": 14730,
+   "first_read": 90459,
+   "first_new": 2356
   },
   {
    "session": "B",
@@ -1084,7 +1248,11 @@
     "web": 7139,
     "api": 0,
     "code": 13142
-   }
+   },
+   "cum_read": 166342,
+   "cum_new": 89074,
+   "first_read": 40581,
+   "first_new": 85182
   },
   {
    "session": "B",
@@ -1124,7 +1292,11 @@
     "web": 8854,
     "api": 111,
     "code": 15845
-   }
+   },
+   "cum_read": 332378,
+   "cum_new": 107008,
+   "first_read": 40581,
+   "first_new": 104504
   },
   {
    "session": "B",
@@ -1148,7 +1320,11 @@
     "web": 8878,
     "api": 111,
     "code": 17157
-   }
+   },
+   "cum_read": 930450,
+   "cum_new": 20246,
+   "first_read": 147583,
+   "first_new": 979
   },
   {
    "session": "B",
@@ -1172,7 +1348,11 @@
     "web": 8796,
     "api": 13258,
     "code": 21156
-   }
+   },
+   "cum_read": 167813,
+   "cum_new": 2674,
+   "first_read": 167813,
+   "first_new": 2674
   },
   {
    "session": "B",
@@ -1196,7 +1376,11 @@
     "web": 8812,
     "api": 13282,
     "code": 21195
-   }
+   },
+   "cum_read": 170483,
+   "cum_new": 547,
+   "first_read": 170483,
+   "first_new": 547
   }
  ]
 }

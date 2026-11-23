@@ -24,11 +24,12 @@
   const sub = (en, zh, g, nEn, nZh) => fold("itc-sub", en, zh, g.avg, bi(`${g.n} turns${nEn ? " · " + nEn : ""}`, `${g.n} 輪${nZh ? " · " + nZh : ""}`), g.n ? g : null);
   const rowsOf = id => D.rows.filter(r => r.cat === id);
   function stats(rows) {
-    const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), part = key => avg(hp.map(r => r.hp[key]));
+    const msg = rows.map(r => r.user_text + r.user_img), hp = rows.filter(r => r.hp), sp = rows.filter(r => r.cum_new != null), part = key => avg(hp.map(r => r.hp[key]));
     return { n: rows.length, msg: span(msg), txt: avg(rows.map(r => r.user_text)), img: avg(rows.map(r => r.user_img)), har: { ...span(rows.map(r => r.harness)), avg: avg(hp.length ? hp.map(r => r.harness) : rows.map(r => r.harness)) },
       parts: Object.fromEntries(PARTS.map(p => [p[0], part(p[0])])), hpn: hp.length,
       onlyTxt: grp(rows.filter(r => !(r.user_img > 0))), withImg: grp(rows.filter(r => r.user_img > 0)),
-      cum: span(rows.map(r => r.cum_input)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
+      cum: { ...span(rows.map(r => r.cum_input)), avg: avg((sp.length ? sp : rows).map(r => r.cum_input)) }, spn: sp.length,
+      reuse: span(sp.map(r => r.cum_read)), comp: span(sp.map(r => r.cum_new)), calls: avg(rows.map(r => r.calls)), out: avg(rows.map(r => r.output)), sec: avg(rows.map(r => r.seconds)) };
   }
   // Levels = the category's AVERAGE TOTAL INPUT PER TURN (row 3: the input of every API call in the turn added up), fixed bands:
   // Low < 500k tokens · Mid 500k–1.5M tokens · High >= 1.5M tokens
@@ -42,7 +43,7 @@
   const row = (en, zh, avgN, left, s) => fold("", en, zh, avgN, left, s);
 
   function stage(id) {
-    const c = D.categories.find(x => x.id === id), s = stats(rowsOf(id)), L = LV[levels().of[id]], calls = s.calls.toFixed(s.calls < 10 ? 1 : 0);
+    const c = D.categories.find(x => x.id === id), s = stats(rowsOf(id)), L = LV[levels().of[id]], calls = s.calls.toFixed(s.calls < 10 ? 1 : 0), pc = v => { const t = s.reuse.avg + s.comp.avg, x = t ? v / t * 100 : 0; return x.toFixed(1); };
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-rows">
@@ -52,13 +53,14 @@
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
           return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
         ${fold("itc-tot", "3 · Total input", "整輪總輸入", s.cum.avg, bi(`Sum of ${calls} API calls`, `${calls} 次 API 呼叫加總`), s.cum)}
+        ${s.spn ? `<div class="itc-subs itc-subs-tot">${fold("itc-sub", "Reused (cache hit)", "快取重用", s.reuse.avg, bi(`${pc(s.reuse.avg)}% of total`, `佔總輸入 ${pc(s.reuse.avg)}%`), s.reuse)}${fold("itc-sub", "Computed (new)", "實際計算", s.comp.avg, bi(`${pc(s.comp.avg)}% of total`, `佔總輸入 ${pc(s.comp.avg)}%`), s.comp)}</div>` : ""}
       </div>
       <div class="mw-chips"><span class="mw-chip">${s.n} ${bi("samples", "筆")}</span>${s.n < 5 ? `<span class="mw-chip off">${bi("few samples", "樣本少")}</span>` : ""}<span class="mw-chip">${calls} ${bi("calls", "次呼叫")}</span><span class="mw-chip">${bi("Output", "輸出")} ${k(s.out)} <i>tokens</i></span><span class="mw-chip">${bi("Duration", "時間")} ${dur(s.sec)}</span></div>`;
   }
   function table() {
     const rows = D.rows.map((r, i) => ({ ...r, i: i + 1 })).filter(r => r.cat === sel);
-    return `<div class="table-wrap"><table class="v2-table itc-table"><thead><tr><th>#</th><th>${bi("Detail", "細項")}</th><th>${bi("Text", "文字")}</th><th>${bi("Image", "圖片")}</th><th>${bi("Harness", "開場")}</th><th>${bi("API calls total (calls)", "整輪（次數）")}</th><th>${bi("Output", "輸出")}</th><th>${bi("Time", "時間")}</th></tr></thead><tbody>${rows.map(r => `<tr><td>${r.i}</td><td>${bi(r.sub[0], r.sub[1])}</td><td>${k(r.user_text)}</td><td>${k(r.user_img)}${r.images ? ` (${r.images})` : ""}</td><td>${k(r.harness)}</td><td>${k(r.cum_input)} (${r.calls})</td><td>${k(r.output)}</td><td>${dur(r.seconds)}</td></tr>`).join("")}</tbody></table></div>
-      <p class="itc-note">${bi("All numbers are tokens.", "表內數字單位皆為 token。")} ${bi(D.note[0], D.note[1])}</p>`;
+    return `<div class="table-wrap"><table class="v2-table itc-table"><thead><tr><th>#</th><th>${bi("Detail", "細項")}</th><th>${bi("Text", "文字")}</th><th>${bi("Image", "圖片")}</th><th>${bi("Harness", "開場")}</th><th>${bi("API calls total (calls)", "整輪（次數）")}</th><th>${bi("Computed (new)", "實際計算")}</th><th>${bi("Output", "輸出")}</th><th>${bi("Time", "時間")}</th></tr></thead><tbody>${rows.map(r => `<tr><td>${r.i}</td><td>${bi(r.sub[0], r.sub[1])}</td><td>${k(r.user_text)}</td><td>${k(r.user_img)}${r.images ? ` (${r.images})` : ""}</td><td>${k(r.harness)}</td><td>${k(r.cum_input)} (${r.calls})</td><td>${r.cum_new != null ? k(r.cum_new) : "—"}</td><td>${k(r.output)}</td><td>${dur(r.seconds)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="itc-note">${bi("All numbers are tokens. Reused = read from the cache; Computed = new input actually processed (uncached + newly cached).", "表內數字單位皆為 token。快取重用 = 讀取快取；實際計算 = 真正處理的新輸入（未快取＋新寫入快取）。")} ${bi(D.note[0], D.note[1])}</p>`;
   }
   const bindFold = el => { if (window.HoverFold) window.HoverFold.init(el); };
   function render() {
