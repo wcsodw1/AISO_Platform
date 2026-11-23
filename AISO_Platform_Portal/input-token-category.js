@@ -45,10 +45,9 @@
     return `<p class="mw-kicker">${bi("Category", "類別")} · ${bi(L[0], L[1])}${c.main ? "" : ` · ${bi("Suggested", "建議")}`}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       <div class="itc-rows">
-        ${row("1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
-        ${sub("Text only", "純文字", s.onlyTxt, "")}
-        ${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `${bi("text", "文字")} ${k(s.withImg.t)} + ${bi("image", "圖片")} ${k(s.withImg.i)} <i>tokens</i>` : "")}
-        ${row("2 · Harness", "開場上下文", s.har.avg, bi("Everything sent before your message", "你的訊息之前送出的全部內容"), s.har)}
+        ${fold("itc-par", "1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
+        <div class="itc-subs">${sub("Text only", "純文字", s.onlyTxt, "")}${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `${bi("text", "文字")} ${k(s.withImg.t)} + ${bi("image", "圖片")} ${k(s.withImg.i)} <i>tokens</i>` : "")}</div>
+        ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg,bi("Everything sent before your message", "你的訊息之前送出的全部內容"), s.har)}
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0;
           return `<li><span class="pl">${bi(p[1], p[2])}</span><span class="pb"><u style="width:${Math.min(100, pc).toFixed(1)}%"></u></span><span class="pv">${k(v)} <i>tokens</i> <em>${pc < 1 ? "<1" : Math.round(pc)}%</em></span></li>`; }).join("")}</ul>
       </div>

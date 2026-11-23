@@ -18,14 +18,20 @@
 .itc-hv span{margin-left:8px;font-size:16px;color:var(--muted,#98a0ad)}
 .itc-d{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:6px;padding-right:26px;font-size:16px;line-height:1.4;color:var(--muted,#98a0ad)}
 .itc-d>span:last-child{margin-left:auto;text-align:right}
-.itc-sub{padding-left:14px;border-bottom:1px dashed rgba(244,239,228,.12)}
-.itc-sub h4{font-size:17px;font-weight:600}
-.itc-sub .itc-hv b{font-size:22px}
-.itc-parts{list-style:none;margin:0;padding:6px 0 4px 14px;display:grid;gap:2px;border-bottom:1px solid rgba(244,239,228,.14)}
+.itc-par{border-bottom:0}
+.itc-par>header h4{color:#e0a040}   /* 1 · your input = amber */
+.itc-har>header h4{color:#8f9bff}   /* 2 · harness = blue */
+.itc-subs{margin:0 0 0 12px;padding-left:18px;border-left:2px solid rgba(224,160,64,.6);border-bottom:1px solid rgba(244,239,228,.14)}
+.itc-subs .itc-r{padding-top:6px!important;padding-bottom:6px!important;border-bottom:0}
+.itc-sub h4{font-size:16px;font-weight:500;color:#cfcabf}
+.itc-sub .itc-hv b{font-size:19px;font-weight:600;color:#cfcabf}
+.itc-sub .itc-hv span{font-size:16px}
+.itc-sub>header::after{font-size:16px}
+.itc-parts{list-style:none;margin:0 0 0 12px;padding:6px 0 4px 18px;border-left:2px solid rgba(143,155,255,.6);display:grid;gap:2px;border-bottom:1px solid rgba(244,239,228,.14)}
 .itc-parts li{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(40px,.6fr) minmax(120px,auto);align-items:center;gap:14px;min-height:32px;font-size:16px}
 .itc-parts .pl{color:var(--ivory,#f3efe5)}
 .itc-parts .pb{height:6px;border-radius:3px;background:rgba(244,239,228,.12);overflow:hidden}
-.itc-parts .pb u{display:block;height:100%;background:var(--gold,#c8b875);text-decoration:none}
+.itc-parts .pb u{display:block;height:100%;background:#8f9bff;text-decoration:none}
 .itc-parts .pv{text-align:right;font-weight:600;color:var(--ivory,#f3efe5)}
 .itc-parts .pv em{font-style:normal;font-weight:400;margin-left:6px;color:var(--muted,#98a0ad)}
 .itc .mw-chips{margin-top:18px}
