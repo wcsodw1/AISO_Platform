@@ -1,0 +1,1492 @@
+{
+ "version": 1,
+ "updated": "2026-11-23",
+ "note": [
+  "Token counts of real Claude Code turns. Harness, whole-turn input and output come from API usage; your text/images and the harness split are estimates (the split is scaled so the parts add up to the measured harness). No message text is stored.",
+  "真實 Claude Code 互動的 token 統計。Harness、整輪輸入、輸出來自 API 用量；你的文字／圖片與 Harness 的分類為估算（分類已按實測 Harness 總量調整，各項加總相等）。不存任何訊息內容。"
+ ],
+ "sessions": {
+  "A": [
+   "Web app coding session",
+   "網頁應用程式 coding session"
+  ],
+  "B": [
+   "Benchmark operations session",
+   "Benchmark 操作 session"
+  ]
+ },
+ "categories": [
+  {
+   "id": "document",
+   "kind": "document",
+   "main": true,
+   "en": "Document",
+   "zh": "文件",
+   "hint": [
+    "Paste or attach a document, then summarize or ask questions",
+    "貼上或附上文件，請它摘要或問答"
+   ]
+  },
+  {
+   "id": "coding",
+   "main": true,
+   "en": "Coding Prompt",
+   "zh": "編碼",
+   "hint": [
+    "Edit or debug code, UI, framework",
+    "改程式、UI、framework、除錯"
+   ]
+  },
+  {
+   "id": "chat",
+   "main": true,
+   "en": "Normal Conversation Prompt",
+   "zh": "一般對話",
+   "hint": [
+    "Questions, clarification, planning",
+    "問答、釐清、規劃"
+   ]
+  },
+  {
+   "id": "web",
+   "main": true,
+   "en": "Web Crawl Prompt",
+   "zh": "網頁瀏覽／爬取",
+   "hint": [
+    "Browse or look up pages online",
+    "操作瀏覽器、上網查找"
+   ]
+  },
+  {
+   "id": "analysis",
+   "main": false,
+   "en": "Analysis / Code reading",
+   "zh": "調查分析",
+   "hint": [
+    "Read code or data, no change",
+    "讀程式或資料，不改"
+   ]
+  },
+  {
+   "id": "ops",
+   "main": false,
+   "en": "Ops / Deploy",
+   "zh": "維運部署",
+   "hint": [
+    "Deploy, stop, status checks",
+    "部署、停止、狀態確認"
+   ]
+  }
+ ],
+ "rows": [
+  {
+   "session": "A",
+   "user_text": 4,
+   "user_img": 826,
+   "images": 1,
+   "harness": 220000,
+   "cum_input": 665000,
+   "calls": 3,
+   "output": 934,
+   "seconds": 18,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23398,
+    "conv": 71817,
+    "web": 7970,
+    "api": 797,
+    "code": 68334
+   },
+   "cum_read": 662417,
+   "cum_new": 3022,
+   "first_read": 219504,
+   "first_new": 1388
+  },
+  {
+   "session": "A",
+   "user_text": 5,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 224000,
+   "cum_input": 8500000,
+   "calls": 34,
+   "output": 22000,
+   "seconds": 247,
+   "cat": "coding",
+   "sub": [
+    "Character + lighting",
+    "角色外型＋燈光"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23437,
+    "conv": 75188,
+    "web": 7920,
+    "api": 792,
+    "code": 68979
+   },
+   "cum_read": 8471008,
+   "cum_new": 46009,
+   "first_read": 222795,
+   "first_new": 2427
+  },
+  {
+   "session": "A",
+   "user_text": 11,
+   "user_img": 39,
+   "images": 1,
+   "harness": 269000,
+   "cum_input": 539000,
+   "calls": 2,
+   "output": 705,
+   "seconds": 16,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23715,
+    "conv": 87564,
+    "web": 34258,
+    "api": 737,
+    "code": 75042
+   },
+   "cum_read": 538154,
+   "cum_new": 1172,
+   "first_read": 268732,
+   "first_new": 694
+  },
+  {
+   "session": "A",
+   "user_text": 16,
+   "user_img": 787,
+   "images": 1,
+   "harness": 270000,
+   "cum_input": 1100000,
+   "calls": 4,
+   "output": 1300,
+   "seconds": 22,
+   "cat": "coding",
+   "sub": [
+    "Character look",
+    "角色外型"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 23753,
+    "conv": 88496,
+    "web": 34260,
+    "api": 737,
+    "code": 75070
+   },
+   "cum_read": 1084418,
+   "cum_new": 2622,
+   "first_read": 270150,
+   "first_new": 886
+  },
+  {
+   "session": "A",
+   "user_text": 4,
+   "user_img": 132,
+   "images": 1,
+   "harness": 274000,
+   "cum_input": 826000,
+   "calls": 3,
+   "output": 2100,
+   "seconds": 30,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24221,
+    "conv": 91288,
+    "web": 34235,
+    "api": 737,
+    "code": 75835
+   },
+   "cum_read": 822681,
+   "cum_new": 3222,
+   "first_read": 273081,
+   "first_new": 1054
+  },
+  {
+   "session": "A",
+   "user_text": 12,
+   "user_img": 0,
+   "images": 0,
+   "harness": 277000,
+   "cum_input": 554000,
+   "calls": 2,
+   "output": 1100,
+   "seconds": 20,
+   "cat": "coding",
+   "sub": [
+    "Login",
+    "登入帳號"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24365,
+    "conv": 93184,
+    "web": 34467,
+    "api": 742,
+    "code": 76558
+   },
+   "cum_read": 553171,
+   "cum_new": 1013,
+   "first_read": 276576,
+   "first_new": 23
+  },
+  {
+   "session": "A",
+   "user_text": 6,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 279000,
+   "cum_input": 562000,
+   "calls": 2,
+   "output": 809,
+   "seconds": 16,
+   "cat": "coding",
+   "sub": [
+    "UI colour",
+    "UI 顏色"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24469,
+    "conv": 94636,
+    "web": 34569,
+    "api": 744,
+    "code": 76898
+   },
+   "cum_read": 558702,
+   "cum_new": 3483,
+   "first_read": 277878,
+   "first_new": 2950
+  },
+  {
+   "session": "A",
+   "user_text": 19,
+   "user_img": 0,
+   "images": 0,
+   "harness": 282000,
+   "cum_input": 564000,
+   "calls": 2,
+   "output": 668,
+   "seconds": 16,
+   "cat": "coding",
+   "sub": [
+    "UI colour",
+    "UI 顏色"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24469,
+    "conv": 98113,
+    "web": 34413,
+    "api": 740,
+    "code": 76581
+   },
+   "cum_read": 563351,
+   "cum_new": 443,
+   "first_read": 281662,
+   "first_new": 31
+  },
+  {
+   "session": "A",
+   "user_text": 8,
+   "user_img": 0,
+   "images": 0,
+   "harness": 282000,
+   "cum_input": 1100000,
+   "calls": 4,
+   "output": 1400,
+   "seconds": 67,
+   "cat": "coding",
+   "sub": [
+    "3D scene",
+    "3D 場景"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24469,
+    "conv": 98524,
+    "web": 34275,
+    "api": 737,
+    "code": 76311
+   },
+   "cum_read": 1130991,
+   "cum_new": 1401,
+   "first_read": 282389,
+   "first_new": 17
+  },
+  {
+   "session": "A",
+   "user_text": 0,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 286000,
+   "cum_input": 287000,
+   "calls": 1,
+   "output": 712,
+   "seconds": 10,
+   "cat": "chat",
+   "sub": [
+    "Unclear question, no change",
+    "看不懂，沒改"
+   ],
+   "hp": {
+    "sys": 47684,
+    "mem": 24507,
+    "conv": 100889,
+    "web": 34699,
+    "api": 857,
+    "code": 77364
+   },
+   "cum_read": 284028,
+   "cum_new": 3257,
+   "first_read": 284028,
+   "first_new": 3257
+  },
+  {
+   "session": "A",
+   "user_text": 22,
+   "user_img": 0,
+   "images": 0,
+   "harness": 293000,
+   "cum_input": 883000,
+   "calls": 3,
+   "output": 1900,
+   "seconds": 26,
+   "cat": "chat",
+   "sub": [
+    "How-to",
+    "操作說明"
+   ],
+   "hp": {
+    "sys": 47283,
+    "mem": 28411,
+    "conv": 104215,
+    "web": 34751,
+    "api": 858,
+    "code": 77482
+   },
+   "cum_read": 627575,
+   "cum_new": 255072,
+   "first_read": 40571,
+   "first_new": 252046
+  },
+  {
+   "session": "A",
+   "user_text": 14,
+   "user_img": 164,
+   "images": 1,
+   "harness": 298000,
+   "cum_input": 2100000,
+   "calls": 7,
+   "output": 6600,
+   "seconds": 55,
+   "cat": "coding",
+   "sub": [
+    "Tool integration",
+    "工具整合"
+   ],
+   "hp": {
+    "sys": 47426,
+    "mem": 29887,
+    "conv": 106083,
+    "web": 34711,
+    "api": 873,
+    "code": 79020
+   },
+   "cum_read": 1867984,
+   "cum_new": 271065,
+   "first_read": 40571,
+   "first_new": 257176
+  },
+  {
+   "session": "A",
+   "user_text": 19,
+   "user_img": 556,
+   "images": 1,
+   "harness": 313000,
+   "cum_input": 1600000,
+   "calls": 5,
+   "output": 2300,
+   "seconds": 29,
+   "cat": "coding",
+   "sub": [
+    "Tool integration",
+    "工具整合"
+   ],
+   "hp": {
+    "sys": 47426,
+    "mem": 30107,
+    "conv": 113486,
+    "web": 34506,
+    "api": 868,
+    "code": 86607
+   },
+   "cum_read": 1576100,
+   "cum_new": 6329,
+   "first_read": 312538,
+   "first_new": 654
+  },
+  {
+   "session": "A",
+   "user_text": 1,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 320000,
+   "cum_input": 1600000,
+   "calls": 5,
+   "output": 2600,
+   "seconds": 32,
+   "cat": "ops",
+   "sub": [
+    "Stop a program",
+    "關程式"
+   ],
+   "hp": {
+    "sys": 47426,
+    "mem": 30292,
+    "conv": 116476,
+    "web": 34410,
+    "api": 866,
+    "code": 90530
+   },
+   "cum_read": 1610211,
+   "cum_new": 5213,
+   "first_read": 319491,
+   "first_new": 1592
+  },
+  {
+   "session": "A",
+   "user_text": 0,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 326000,
+   "cum_input": 1300000,
+   "calls": 4,
+   "output": 2200,
+   "seconds": 41,
+   "cat": "coding",
+   "sub": [
+    "Debug start-up error",
+    "修啟動錯誤"
+   ],
+   "hp": {
+    "sys": 47934,
+    "mem": 30474,
+    "conv": 121203,
+    "web": 34211,
+    "api": 1034,
+    "code": 91144
+   },
+   "cum_read": 1308995,
+   "cum_new": 3538,
+   "first_read": 325509,
+   "first_new": 1570
+  },
+  {
+   "session": "A",
+   "user_text": 14,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 330000,
+   "cum_input": 665000,
+   "calls": 2,
+   "output": 1700,
+   "seconds": 23,
+   "cat": "chat",
+   "sub": [
+    "Technical assessment",
+    "技術評估"
+   ],
+   "hp": {
+    "sys": 47934,
+    "mem": 30512,
+    "conv": 125099,
+    "web": 33891,
+    "api": 1024,
+    "code": 91540
+   },
+   "cum_read": 662114,
+   "cum_new": 3220,
+   "first_read": 330265,
+   "first_new": 1588
+  },
+  {
+   "session": "A",
+   "user_text": 0,
+   "user_img": 4500,
+   "images": 3,
+   "harness": 83000,
+   "cum_input": 279000,
+   "calls": 3,
+   "output": 2900,
+   "seconds": 32,
+   "cat": "analysis",
+   "sub": [
+    "Read code, no change",
+    "讀程式，沒改"
+   ],
+   "hp": {
+    "sys": 48661,
+    "mem": 18753,
+    "conv": 15586,
+    "web": 0,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 223854,
+   "cum_new": 55339,
+   "first_read": 41180,
+   "first_new": 46258
+  },
+  {
+   "session": "A",
+   "user_text": 16,
+   "user_img": 0,
+   "images": 0,
+   "harness": 97000,
+   "cum_input": 404000,
+   "calls": 4,
+   "output": 1700,
+   "seconds": 28,
+   "cat": "chat",
+   "sub": [
+    "Troubleshooting Q&A",
+    "排查問答"
+   ],
+   "hp": {
+    "sys": 48661,
+    "mem": 18900,
+    "conv": 16436,
+    "web": 0,
+    "api": 203,
+    "code": 12800
+   },
+   "cum_read": 398034,
+   "cum_new": 6336,
+   "first_read": 97012,
+   "first_new": 24
+  },
+  {
+   "session": "A",
+   "user_text": 41,
+   "user_img": 2500,
+   "images": 2,
+   "harness": 106000,
+   "cum_input": 332000,
+   "calls": 3,
+   "output": 2600,
+   "seconds": 23,
+   "cat": "chat",
+   "sub": [
+    "Planning discussion",
+    "規劃討論"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 18976,
+    "conv": 18181,
+    "web": 0,
+    "api": 4174,
+    "code": 15592
+   },
+   "cum_read": 323314,
+   "cum_new": 8246,
+   "first_read": 104304,
+   "first_new": 3812
+  },
+  {
+   "session": "A",
+   "user_text": 98,
+   "user_img": 0,
+   "images": 0,
+   "harness": 113000,
+   "cum_input": 3000000,
+   "calls": 20,
+   "output": 15000,
+   "seconds": 129,
+   "cat": "coding",
+   "sub": [
+    "Framework (AI architecture)",
+    "framework（AI 架構）"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 18976,
+    "conv": 24184,
+    "web": 0,
+    "api": 3679,
+    "code": 17084
+   },
+   "cum_read": 2933165,
+   "cum_new": 50992,
+   "first_read": 113111,
+   "first_new": 129
+  },
+  {
+   "session": "A",
+   "user_text": 36,
+   "user_img": 772,
+   "images": 1,
+   "harness": 165000,
+   "cum_input": 2300000,
+   "calls": 13,
+   "output": 9400,
+   "seconds": 87,
+   "cat": "coding",
+   "sub": [
+    "Login flow (face)",
+    "登入流程（人臉）"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19152,
+    "conv": 30278,
+    "web": 13194,
+    "api": 2790,
+    "code": 50509
+   },
+   "cum_read": 2187254,
+   "cum_new": 144415,
+   "first_read": 41180,
+   "first_new": 124789
+  },
+  {
+   "session": "A",
+   "user_text": 4,
+   "user_img": 306,
+   "images": 1,
+   "harness": 187000,
+   "cum_input": 1900000,
+   "calls": 10,
+   "output": 4300,
+   "seconds": 44,
+   "cat": "coding",
+   "sub": [
+    "Login flow (face)",
+    "登入流程（人臉）"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19328,
+    "conv": 37109,
+    "web": 20285,
+    "api": 2803,
+    "code": 58398
+   },
+   "cum_read": 1902415,
+   "cum_new": 8680,
+   "first_read": 186625,
+   "first_new": 397
+  },
+  {
+   "session": "A",
+   "user_text": 14,
+   "user_img": 334,
+   "images": 1,
+   "harness": 196000,
+   "cum_input": 1600000,
+   "calls": 8,
+   "output": 3900,
+   "seconds": 40,
+   "cat": "coding",
+   "sub": [
+    "Login flow (face)",
+    "登入流程（人臉）"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19464,
+    "conv": 40119,
+    "web": 27109,
+    "api": 2789,
+    "code": 57442
+   },
+   "cum_read": 1592764,
+   "cum_new": 7514,
+   "first_read": 196097,
+   "first_new": 440
+  },
+  {
+   "session": "A",
+   "user_text": 29,
+   "user_img": 3100,
+   "images": 2,
+   "harness": 207000,
+   "cum_input": 1900000,
+   "calls": 9,
+   "output": 6300,
+   "seconds": 63,
+   "cat": "coding",
+   "sub": [
+    "Framework (AI UI)",
+    "framework（AI 整合 UI）"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19639,
+    "conv": 44549,
+    "web": 31559,
+    "api": 2896,
+    "code": 59280
+   },
+   "cum_read": 1927920,
+   "cum_new": 16083,
+   "first_read": 204322,
+   "first_new": 5462
+  },
+  {
+   "session": "A",
+   "user_text": 13,
+   "user_img": 1500,
+   "images": 1,
+   "harness": 222000,
+   "cum_input": 4700000,
+   "calls": 19,
+   "output": 16000,
+   "seconds": 142,
+   "cat": "coding",
+   "sub": [
+    "Account + character",
+    "帳號＋角色外型"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 19815,
+    "conv": 53246,
+    "web": 35589,
+    "api": 2947,
+    "code": 61326
+   },
+   "cum_read": 4668396,
+   "cum_new": 42843,
+   "first_read": 221339,
+   "first_new": 2306
+  },
+  {
+   "session": "A",
+   "user_text": 16,
+   "user_img": 1900,
+   "images": 2,
+   "harness": 265000,
+   "cum_input": 3900000,
+   "calls": 14,
+   "output": 9400,
+   "seconds": 88,
+   "cat": "coding",
+   "sub": [
+    "Character + permissions",
+    "角色外型＋權限表"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20137,
+    "conv": 64307,
+    "web": 53186,
+    "api": 3016,
+    "code": 75277
+   },
+   "cum_read": 3863272,
+   "cum_new": 20921,
+   "first_read": 265166,
+   "first_new": 2216
+  },
+  {
+   "session": "A",
+   "user_text": 1,
+   "user_img": 0,
+   "images": 0,
+   "harness": 287000,
+   "cum_input": 1400000,
+   "calls": 5,
+   "output": 1900,
+   "seconds": 54,
+   "cat": "ops",
+   "sub": [
+    "Deploy",
+    "部署"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20275,
+    "conv": 73656,
+    "web": 62342,
+    "api": 3080,
+    "code": 78570
+   },
+   "cum_read": 1438047,
+   "cum_new": 1868,
+   "first_read": 286938,
+   "first_new": 7
+  },
+  {
+   "session": "A",
+   "user_text": 8,
+   "user_img": 85,
+   "images": 1,
+   "harness": 290000,
+   "cum_input": 3800000,
+   "calls": 13,
+   "output": 4800,
+   "seconds": 78,
+   "cat": "web",
+   "sub": [
+    "Settings, needs online lookup",
+    "設定（需上網查找）"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20457,
+    "conv": 75758,
+    "web": 62408,
+    "api": 3175,
+    "code": 79125
+   },
+   "cum_read": 3836787,
+   "cum_new": 12247,
+   "first_read": 289472,
+   "first_new": 185
+  },
+  {
+   "session": "A",
+   "user_text": 1,
+   "user_img": 0,
+   "images": 0,
+   "harness": 302000,
+   "cum_input": 1200000,
+   "calls": 4,
+   "output": 851,
+   "seconds": 40,
+   "cat": "ops",
+   "sub": [
+    "Deploy",
+    "部署"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20779,
+    "conv": 78210,
+    "web": 70817,
+    "api": 3269,
+    "code": 79848
+   },
+   "cum_read": 1210147,
+   "cum_new": 821,
+   "first_read": 302311,
+   "first_new": 7
+  },
+  {
+   "session": "A",
+   "user_text": 6,
+   "user_img": 0,
+   "images": 0,
+   "harness": 303000,
+   "cum_input": 2800000,
+   "calls": 9,
+   "output": 4800,
+   "seconds": 78,
+   "cat": "ops",
+   "sub": [
+    "Deploy fix + notes",
+    "部署修正＋說明"
+   ],
+   "hp": {
+    "sys": 49077,
+    "mem": 20923,
+    "conv": 79032,
+    "web": 70737,
+    "api": 3356,
+    "code": 79875
+   },
+   "cum_read": 2765129,
+   "cum_new": 7874,
+   "first_read": 303407,
+   "first_new": 12
+  },
+  {
+   "session": "B",
+   "user_text": 11,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 69521,
+   "cum_input": 71065,
+   "calls": 1,
+   "output": 1352,
+   "seconds": 15,
+   "cat": "chat",
+   "sub": [
+    "Read a screenshot",
+    "看截圖判讀"
+   ],
+   "hp": {
+    "sys": 50617,
+    "mem": 18904,
+    "conv": 0,
+    "web": 0,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 50381,
+   "cum_new": 20684,
+   "first_read": 50381,
+   "first_new": 20684
+  },
+  {
+   "session": "B",
+   "user_text": 29,
+   "user_img": 0,
+   "images": 0,
+   "harness": 72389,
+   "cum_input": 366192,
+   "calls": 5,
+   "output": 1117,
+   "seconds": 46,
+   "cat": "web",
+   "sub": [
+    "Open a page in the browser (blocked by login)",
+    "開瀏覽器看頁面（被密碼擋住）"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16290,
+    "conv": 13549,
+    "web": 0,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 332626,
+   "cum_new": 33566,
+   "first_read": 40581,
+   "first_new": 31837
+  },
+  {
+   "session": "B",
+   "user_text": 3,
+   "user_img": 0,
+   "images": 0,
+   "harness": 74998,
+   "cum_input": 75001,
+   "calls": 1,
+   "output": 192,
+   "seconds": 2,
+   "cat": "chat",
+   "sub": [
+    "Missing attachment",
+    "沒收到附件"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16328,
+    "conv": 10934,
+    "web": 5186,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 74605,
+   "cum_new": 396,
+   "first_read": 74605,
+   "first_new": 396
+  },
+  {
+   "session": "B",
+   "user_text": 4,
+   "user_img": 555,
+   "images": 1,
+   "harness": 75263,
+   "cum_input": 75822,
+   "calls": 1,
+   "output": 662,
+   "seconds": 6,
+   "cat": "chat",
+   "sub": [
+    "Clarify",
+    "釐清"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16366,
+    "conv": 11212,
+    "web": 5135,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 75191,
+   "cum_new": 631,
+   "first_read": 75191,
+   "first_new": 631
+  },
+  {
+   "session": "B",
+   "user_text": 0,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 76795,
+   "cum_input": 78328,
+   "calls": 1,
+   "output": 1263,
+   "seconds": 10,
+   "cat": "analysis",
+   "sub": [
+    "Interpret results from a screenshot",
+    "由截圖解讀結果"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16404,
+    "conv": 13022,
+    "web": 4819,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 76482,
+   "cum_new": 1846,
+   "first_read": 76482,
+   "first_new": 1846
+  },
+  {
+   "session": "B",
+   "user_text": 20,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 80554,
+   "cum_input": 82107,
+   "calls": 1,
+   "output": 1210,
+   "seconds": 12,
+   "cat": "chat",
+   "sub": [
+    "Correct the direction",
+    "修正方向"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16442,
+    "conv": 17279,
+    "web": 4283,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 79589,
+   "cum_new": 2518,
+   "first_read": 79589,
+   "first_new": 2518
+  },
+  {
+   "session": "B",
+   "user_text": 13,
+   "user_img": 0,
+   "images": 0,
+   "harness": 83326,
+   "cum_input": 251441,
+   "calls": 3,
+   "output": 1461,
+   "seconds": 15,
+   "cat": "analysis",
+   "sub": [
+    "Read source code",
+    "讀原始碼"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16442,
+    "conv": 20541,
+    "web": 3793,
+    "api": 0,
+    "code": 0
+   },
+   "cum_read": 250539,
+   "cum_new": 902,
+   "first_read": 83315,
+   "first_new": 24
+  },
+  {
+   "session": "B",
+   "user_text": 11,
+   "user_img": 0,
+   "images": 0,
+   "harness": 85032,
+   "cum_input": 170877,
+   "calls": 2,
+   "output": 424,
+   "seconds": 5,
+   "cat": "web",
+   "sub": [
+    "Check a page in the browser (blocked by login)",
+    "瀏覽器看頁面（被密碼擋住）"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16442,
+    "conv": 22048,
+    "web": 3752,
+    "api": 0,
+    "code": 240
+   },
+   "cum_read": 169248,
+   "cum_new": 1629,
+   "first_read": 84209,
+   "first_new": 834
+  },
+  {
+   "session": "B",
+   "user_text": 4,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 86917,
+   "cum_input": 88454,
+   "calls": 1,
+   "output": 1273,
+   "seconds": 12,
+   "cat": "chat",
+   "sub": [
+    "Read a screenshot",
+    "看截圖判讀"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16480,
+    "conv": 21048,
+    "web": 6616,
+    "api": 0,
+    "code": 223
+   },
+   "cum_read": 86086,
+   "cum_new": 2368,
+   "first_read": 86086,
+   "first_new": 2368
+  },
+  {
+   "session": "B",
+   "user_text": 6,
+   "user_img": 0,
+   "images": 0,
+   "harness": 89737,
+   "cum_input": 89743,
+   "calls": 1,
+   "output": 718,
+   "seconds": 6,
+   "cat": "chat",
+   "sub": [
+    "Advice",
+    "建議"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16480,
+    "conv": 24210,
+    "web": 6285,
+    "api": 0,
+    "code": 212
+   },
+   "cum_read": 88450,
+   "cum_new": 1293,
+   "first_read": 88450,
+   "first_new": 1293
+  },
+  {
+   "session": "B",
+   "user_text": 17,
+   "user_img": 1533,
+   "images": 1,
+   "harness": 91265,
+   "cum_input": 784786,
+   "calls": 8,
+   "output": 2880,
+   "seconds": 29,
+   "cat": "analysis",
+   "sub": [
+    "Read source code",
+    "讀原始碼"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 16518,
+    "conv": 25566,
+    "web": 6415,
+    "api": 0,
+    "code": 216
+   },
+   "cum_read": 770056,
+   "cum_new": 14730,
+   "first_read": 90459,
+   "first_new": 2356
+  },
+  {
+   "session": "B",
+   "user_text": 12430,
+   "user_img": 0,
+   "images": 0,
+   "harness": 113333,
+   "cum_input": 255416,
+   "calls": 2,
+   "output": 1873,
+   "seconds": 18,
+   "cat": "ops",
+   "sub": [
+    "Check deploy state + links",
+    "確認上線狀態＋連結"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 17554,
+    "conv": 32948,
+    "web": 7139,
+    "api": 0,
+    "code": 13142
+   },
+   "cum_read": 166342,
+   "cum_new": 89074,
+   "first_read": 40581,
+   "first_new": 85182
+  },
+  {
+   "session": "B",
+   "user_text": 390,
+   "user_img": 0,
+   "images": 0,
+   "harness": 131057,
+   "cum_input": 1355496,
+   "calls": 10,
+   "output": 3989,
+   "seconds": 41,
+   "cat": "coding",
+   "sub": [
+    "UI change (collapse two sections)",
+    "UI 改動（兩區收合）"
+   ]
+  },
+  {
+   "session": "B",
+   "user_text": 275,
+   "user_img": 0,
+   "images": 0,
+   "harness": 144810,
+   "cum_input": 439386,
+   "calls": 3,
+   "output": 2186,
+   "seconds": 20,
+   "cat": "analysis",
+   "sub": [
+    "Check imported data",
+    "確認資料是否已匯入"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 21207,
+    "conv": 56243,
+    "web": 8854,
+    "api": 111,
+    "code": 15845
+   },
+   "cum_read": 332378,
+   "cum_new": 107008,
+   "first_read": 40581,
+   "first_new": 104504
+  },
+  {
+   "session": "B",
+   "user_text": 20,
+   "user_img": 0,
+   "images": 0,
+   "harness": 148542,
+   "cum_input": 950696,
+   "calls": 6,
+   "output": 4466,
+   "seconds": 38,
+   "cat": "analysis",
+   "sub": [
+    "Summary from other sessions",
+    "彙整其他 session"
+   ],
+   "hp": {
+    "sys": 42550,
+    "mem": 21207,
+    "conv": 58639,
+    "web": 8878,
+    "api": 111,
+    "code": 17157
+   },
+   "cum_read": 930450,
+   "cum_new": 20246,
+   "first_read": 147583,
+   "first_new": 979
+  },
+  {
+   "session": "B",
+   "user_text": 15,
+   "user_img": 0,
+   "images": 0,
+   "harness": 170472,
+   "cum_input": 170487,
+   "calls": 1,
+   "output": 524,
+   "seconds": 5,
+   "cat": "chat",
+   "sub": [
+    "Clarify",
+    "釐清"
+   ],
+   "hp": {
+    "sys": 44613,
+    "mem": 21247,
+    "conv": 61402,
+    "web": 8796,
+    "api": 13258,
+    "code": 21156
+   },
+   "cum_read": 167813,
+   "cum_new": 2674,
+   "first_read": 167813,
+   "first_new": 2674
+  },
+  {
+   "session": "B",
+   "user_text": 8,
+   "user_img": 0,
+   "images": 0,
+   "harness": 171022,
+   "cum_input": 171030,
+   "calls": 1,
+   "output": 466,
+   "seconds": 4,
+   "cat": "analysis",
+   "sub": [
+    "One-line summary",
+    "一句話摘要"
+   ],
+   "hp": {
+    "sys": 44613,
+    "mem": 21247,
+    "conv": 61873,
+    "web": 8812,
+    "api": 13282,
+    "code": 21195
+   },
+   "cum_read": 170483,
+   "cum_new": 547,
+   "first_read": 170483,
+   "first_new": 547
+  }
+ ],
+ "document": {
+  "tokens_per_page": 330,
+  "dense_tokens_per_page": 700,
+  "levels": [
+   {
+    "id": "low",
+    "name": [
+     "Low",
+     "低"
+    ],
+    "mb": [
+     0,
+     1
+    ],
+    "label": [
+     "under 1 MB",
+     "1 MB 以下"
+    ],
+    "bench": "4K"
+   },
+   {
+    "id": "mid",
+    "name": [
+     "Mid",
+     "中"
+    ],
+    "mb": [
+     1,
+     10
+    ],
+    "label": [
+     "1 – 10 MB",
+     "1 – 10 MB"
+    ],
+    "bench": "16K · 32K"
+   },
+   {
+    "id": "high",
+    "name": [
+     "High",
+     "高"
+    ],
+    "mb": [
+     10,
+     null
+    ],
+    "label": [
+     "10 MB and up",
+     "10 MB 以上"
+    ],
+    "bench": "varies 4K – 64K+"
+   }
+  ],
+  "samples": [
+   {
+    "name": "HPE AI Service Startup Operation Guide",
+    "pages": 5,
+    "chars": 4133,
+    "tokens": 1614,
+    "level": "low",
+    "file_mb": 0.161
+   },
+   {
+    "name": "Intel Arc B390 Document",
+    "pages": null,
+    "pages_est": 6,
+    "chars": 3499,
+    "tokens": 1945,
+    "level": "low",
+    "file_mb": 0.04
+   },
+   {
+    "name": "AISO Pro6000 aiDAPTIV POC v36",
+    "pages": 12,
+    "chars": 6508,
+    "tokens": 4132,
+    "level": "high",
+    "file_mb": 14.0
+   },
+   {
+    "name": "Phison aiDAPTIV Middleware 3.0 – Install SOP & User Manual (v0.1)",
+    "pages": 50,
+    "chars": 54665,
+    "tokens": 16391,
+    "level": "mid",
+    "file_mb": 2.36
+   },
+   {
+    "name": "Phison aiDAPTIVLink 3.0 – Install SOP & User Manual (v1.1)",
+    "pages": 77,
+    "chars": 79341,
+    "tokens": 25435,
+    "level": "mid",
+    "file_mb": 3.56
+   }
+  ],
+  "method": [
+   "Text extracted from each document, tokens counted with the cl100k_base tokenizer (text only; images not counted). Claude and local-model tokenizers differ by roughly 10–40%.",
+   "每份文件抽出文字後用 cl100k_base 分詞器計算（只算文字，不含圖片）。Claude 與本地模型的分詞器約有 10–40% 的差異。"
+  ],
+  "size_note": [
+   "File size is only a rough guide: images make a file large but add few tokens (a 14 MB PDF is only 4.1k tokens). Pages predict tokens much better: ≈ 330 per page.",
+   "檔案大小只是粗略參考：圖片會讓檔案變大，但不會增加多少 token（14 MB 的 PDF 只有 4.1k tokens）。頁數準很多：每頁約 330 tokens。"
+  ]
+ }
+}
