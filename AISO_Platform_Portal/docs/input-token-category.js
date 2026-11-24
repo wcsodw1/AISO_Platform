@@ -148,7 +148,10 @@
       <details class="itc-more"${open ? " open" : ""}><summary>${bi("Samples", "樣本表")} · ${esc(nm(D.categories.find(c => c.id === sel)))}</summary>${table()}</details>`;
     bindFold(root);
   }
-  root.addEventListener("click", e => { const o = e.target.closest(".mw-opt"); if (!o) return; sel = o.dataset.id; render(); });
+  // phone: the picker is a sticky chip row above the content; keep the chosen chip in view and jump to the top of its content
+  const phone = () => window.matchMedia && matchMedia("(max-width:640px)").matches;
+  const centerSel = () => { const row = root.querySelector(".mw-opts"), c = row && row.querySelector(".mw-opt.sel"); if (row && c && row.scrollWidth > row.clientWidth) row.scrollLeft = c.offsetLeft - (row.clientWidth - c.offsetWidth) / 2; };
+  root.addEventListener("click", e => { const o = e.target.closest(".mw-opt"); if (!o) return; sel = o.dataset.id; render(); if (phone()) { centerSel(); const st = root.querySelector(".mw-stage"); if (st && st.getBoundingClientRect().top < 0) st.scrollIntoView({ block: "start" }); } });
   root.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("itc-more")) open = e.target.open; }, true);
   root.addEventListener("mouseover", e => {       // hover previews a category on the left without changing the choice
     const o = e.target.closest(".mw-opt"), st = root.querySelector(".mw-stage");
