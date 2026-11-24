@@ -126,3 +126,4 @@
 .itc-doc>header h4{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:22px;font-weight:700;color:var(--gold,#c8b875)}
 .itc-doc>header .itc-mets{flex:0 0 100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0 0;font-size:16px;font-weight:400;color:var(--muted,#98a0ad)}
 .itc-doc>header .itc-mets b{font-weight:500;color:#cfcabf}
+.itc-doc .itc-hv .itc-recx{font-size:16px;font-weight:400;color:#cfcabf;margin-left:10px}

@@ -54,14 +54,13 @@
   const REC_LV = [4096, 8192, 16384, 32768, 65536, 131072], pct = (a, p) => { if (!a.length) return 0; const i = (a.length - 1) * p, lo = Math.floor(i), hi = Math.min(lo + 1, a.length - 1); return a[lo] + (a[hi] - a[lo]) * (i - lo); };
   const recOf = avgN => { let b = 0; REC_LV.forEach((v, i) => { if (Math.abs(Math.log(avgN / v)) < Math.abs(Math.log(avgN / REC_LV[b]))) b = i; }); return b; };
   const lvNm = (i, v) => REC_LV[i] / 1024 + "K" + (v > REC_LV[REC_LV.length - 1] * 1.5 ? "+" : "");
-  // main = level of `mainV`; range = from level of `loV` to level of `hiV` (the main level is always inside the range)
-  const recSpan = (mainV, loV, hiV, top) => { const m = recOf(mainV), l = Math.min(recOf(loV), m), h = Math.max(recOf(hiV), m); return { main: lvNm(m, mainV), also: [l !== m ? lvNm(l, loV) : "", h !== m ? lvNm(h, top == null ? hiV : top) : ""].filter(Boolean) }; };
-  const recText = (vals) => { const a = vals.slice().sort((x, y) => x - y), m = pct(a, .5), h = pct(a, .9), lm = lvNm(recOf(m), m), lh = lvNm(recOf(h), h); return { main: lm, also: lh !== lm ? [lh] : [] }; };   // files: two values = typical (median) and heavy (90th percentile)
+  // every recommendation has the same shape: one main level + two also-test levels (the neighbours; at the ends, the two nearest on the open side)
+  const recOne = mainV => { const m = recOf(mainV), n = REC_LV.length; let a = m - 1, b = m + 1; if (a < 0) { a = m + 1; b = m + 2; } else if (b > n - 1) { a = m - 2; b = m - 1; } const nm = i => REC_LV[i] / 1024 + "K"; return { main: lvNm(m, mainV), also: [nm(a), nm(b)] }; };
+  const recHtml = (r, tip) => `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b><span class="itc-alt">${bi("Also test", "建議可加測")} ${r.also.join(" · ")}</span></p>`;
   function recLine(s) {
     if (!s.spn) return "";
-    const med = pct(s.cnv, .5), p90 = pct(s.cnv, .9), mi = recOf(s.comp.avg), r = recSpan(s.comp.avg, REC_LV[Math.max(0, mi - 1)], REC_LV[Math.min(REC_LV.length - 1, mi + 1)]);
-    const tip = `Recommended = level of the average new input ${k(s.comp.avg)} tokens. Also test = one level below and one above. For reference: median ${k(med)} (a typical turn), 90th percentile ${k(p90)} (a heavy turn); the average is pulled up by cold-start turns. / 推薦＝平均新輸入 ${k(s.comp.avg)} tokens 所在檔位；可加測＝往下、往上各一個檔位。參考：中位數 ${k(med)}（一般輪次）、第 90 百分位 ${k(p90)}（較重輪次）；平均被冷啟動輪次拉高。`;
-    return `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b>${r.also.length ? `<span class="itc-alt">${bi("Also test", "建議可加測")} ${r.also.join(" · ")}</span>` : ""}</p>`;
+    const med = pct(s.cnv, .5), p90 = pct(s.cnv, .9), r = recOne(s.comp.avg);
+    return recHtml(r, `Main = level of the average new input ${k(s.comp.avg)} tokens; also test = the two neighbouring levels. For reference: median ${k(med)} (a typical turn), 90th percentile ${k(p90)} (a heavy turn); the average is pulled up by cold-start turns. / 主推薦＝平均新輸入 ${k(s.comp.avg)} tokens 所在檔位；可加測＝相鄰兩個檔位。參考：中位數 ${k(med)}（一般輪次）、第 90 百分位 ${k(p90)}（較重輪次）；平均被冷啟動輪次拉高。`);
   }
   function stage(id) {
     const c0 = D.categories.find(x => x.id === id); if (c0.kind === "document") return docStage(c0);
@@ -102,9 +101,8 @@
   const rng = (a, f) => { const x = a.filter(v => v != null); if (!x.length) return "—"; const lo = Math.min(...x), hi = Math.max(...x); return lo === hi ? f(lo) : f(lo) + "–" + f(hi); };
   const unitOf = (d, x) => (d.types.find(t => t.id === x.type) || d.types[0]).unit, qty = (d, x) => unitOf(d, x) === "page" ? (x.pages || x.pages_est || null) : x.lines;
   function docRec(d) {
-    const a = d.samples.map(x => x.tokens).sort((x, y) => x - y), r = recText(a);
-    const tip = `Two values: the typical file (median ${k(pct(a, .5))} tokens) and a heavy file (90th percentile ${k(pct(a, .9))} tokens). / 兩個值：一般檔案（中位數 ${k(pct(a, .5))} tokens）與較大檔案（第 90 百分位 ${k(pct(a, .9))} tokens）。`;
-    return `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b>${r.also.map(x => `<b>${x}</b>`).join("")}</p>`;
+    const a = d.samples.map(x => x.tokens).sort((x, y) => x - y), m = pct(a, .5), r = recOne(m);
+    return recHtml(r, `Main = level of the median file ${k(m)} tokens (90th percentile ${k(pct(a, .9))}); also test = the two neighbouring levels. / 主推薦＝檔案中位數 ${k(m)} tokens 所在檔位（第 90 百分位 ${k(pct(a, .9))}）；可加測＝相鄰兩個檔位。`);
   }
   function docStage(c) {
     const d = D.document, mix = ex => d.types.map(t => { const m = ex.filter(x => x.type === t.id).length; return m ? `${t.zh.split("（")[0].split("／")[0]} ${m}` : ""; }).filter(Boolean).join(" · ");
@@ -115,8 +113,8 @@
     const ty = d.types.map(t => {
       const ex = d.samples.filter(x => x.type === t.id), n = ex.length; if (!n) return "";
       const unit = t.unit === "page" ? bi("page", "頁") : bi("line", "行"), fm = [...new Set(ex.map(x => x.format).filter(Boolean))].map(f => f.toUpperCase()).join(" · ");
-      const per = rng(ex.map(x => { const q = qty(d, x); return q ? x.tokens / q : null; }), v => v < 10 ? v.toFixed(1) : String(Math.round(v))), r = recText(ex.map(x => x.tokens));
-      const rec = `<span class="itc-recl">${bi("Recommended", "推薦")}</span> ${[r.main, ...r.also].map(x => `<span class="itc-recb">${x}</span>`).join(" ")}`;
+      const per = rng(ex.map(x => { const q = qty(d, x); return q ? x.tokens / q : null; }), v => v < 10 ? v.toFixed(1) : String(Math.round(v))), r = recOne(pct(ex.map(x => x.tokens).sort((x, y) => x - y), .5));
+      const rec = `<span class="itc-recl">${bi("Recommended", "推薦")}</span> <span class="itc-recb">${r.main}</span> <span class="itc-recx">${bi("also", "加測")} ${r.also.join(" · ")}</span>`;
       return row(bi(t.en, t.zh), bi(`${n} ${n === 1 ? "file" : "files"}`, `${n} 份`), rec, `<span>${fm}</span><span>${rng(ex.map(x => x.tokens), k)} <i>tokens</i></span><span>${bi("Tokens per", "每")}${unit} <b>${per}</b></span>`, false); }).join("");
     return `<p class="mw-kicker">${bi("Category", "類別")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
