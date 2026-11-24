@@ -207,8 +207,6 @@ body.rw-on .bm-auth{display:none!important}
 .mw-panel{min-width:0}.mw-opts{min-width:0}
 @media(max-width:700px){.kv-spec>div{grid-template-columns:1fr;gap:2px}}
 
-.rw-optcat{margin:26px 0 0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#98a0ad);font-weight:700}.rw-optcat small{margin-left:8px;letter-spacing:.04em;text-transform:none}.rw-kinds.rw-opt{margin-top:10px}
-
 .rw-shell2 #rwShell .tm-panel[data-p="live"]{min-height:220px}.rw-shell2 #rwShell .tm-tabs{display:none}      /* the Run page shell shows only the Live shell */
 .rw-opts{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}.rw-opts .rw-msg{flex:0 0 100%;margin:0 0 4px}
 .rw-chip{padding:12px 18px;border:1px solid rgba(244,239,228,.25);border-radius:12px;background:transparent;color:#f3efe5;font:600 16px/1.2 inherit;cursor:pointer}
@@ -227,3 +225,17 @@ body[data-rw-step="run"] .mw-stage{position:sticky;top:96px}
 .rw-chip.soon{opacity:.45;cursor:default}span.rw-chip{display:inline-block;cursor:default}
 .rw-next{margin:0;font-size:18px;color:#f3efe5}.rw-next b{color:var(--gold,#d8c779)}
 .rw-optr{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid rgba(244,239,228,.1)}.rw-optr em{font-style:normal;font-weight:700;font-size:18px;color:#f3efe5}.rw-optr small{font-size:16px;color:#c9c2ad}.rw-optr.soon{opacity:.5}
+/* aiDAPTIV own zone under the llama.cpp steps (read-only status, rows open the result page) */
+.rw-aidh{margin:34px 0 0;font-size:21.5px;font-weight:700;color:var(--gold,#c8b875)}
+.rw-aidh small{font-size:16px;font-weight:500;margin-left:10px;color:var(--muted,#9aa0a8)}
+.rw-aid{margin-top:12px}
+a.rw-kind{text-decoration:none;box-sizing:border-box}
+.rw-kind.ok em{color:#7fd6a8}
+.rw-kind.run em{color:var(--gold,#d8c779)}
+.rw-aidp .rw-ul{margin:6px 0 0;padding-left:22px;display:grid;gap:8px;font-size:16px}
+.rw-aidp .rw-sum dd{font-size:18px}
+.rw-kind.sel{border-color:var(--gold,#d8c779);background:rgba(200,184,117,.12)}
+body[data-rw-step="aid"] .mw{align-items:start}
+body[data-rw-step="aid"] .mw-stage{position:sticky;top:96px}
+@media(max-width:900px){body[data-rw-step="aid"] .mw-stage{position:static}}
+.rw-aidlog{margin:0;padding:12px 14px;max-height:320px;overflow:auto;white-space:pre;font-size:16px;line-height:1.5;background:rgba(0,0,0,.28);border-radius:10px;color:var(--ivory,#f4efe4)}
