@@ -630,3 +630,70 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 /* the test-password note stays on the button row (right side); any message goes on its own line below */
 .lr .lr-runrow .lr-pwnote{order:4}
 .lr .lr-runrow .lr-runmsg{order:5;flex-basis:100%}
+
+/* step 4: Phase 2 test table (data/litellm-phase2.json). Hover a row for what it needs and its history. */
+.lr{--s4:#7aaee8}
+.lr .lr-stp.s4{color:var(--s4)}.lr .lr-stp.s4 i{background:var(--s4)}
+.lr .p2-top{position:relative;margin-bottom:16px}
+.lr .p2-top .lr-big{margin-right:0}
+.lr .p2-upd{margin:6px 0 0;color:var(--muted);font-size:16px}
+.lr .p2-upd small{margin-left:8px}
+.lr .p2-tb{width:100%;border-collapse:collapse;font-size:17px;color:var(--ivory)}
+.lr .p2-tb thead th{padding:10px 12px;text-align:left;color:var(--gold);font-size:16px;font-weight:700;border-bottom:1px solid var(--line)}
+.lr .p2-tb td{padding:12px;vertical-align:top;border-bottom:1px solid rgba(244,239,228,.08);line-height:1.35}
+.lr .p2-tb small{display:block;color:var(--muted);font-size:16px;font-weight:500}
+.lr .p2-tb thead th small{display:inline;margin-left:8px}
+.lr .p2-g th{padding:18px 12px 8px;text-align:left;font-size:21.5px;font-weight:800;color:var(--s4);border-bottom:1px solid var(--line)}
+.lr .p2-g th span{display:inline-grid;place-items:center;width:34px;height:34px;margin-right:10px;border-radius:50%;background:var(--s4);color:#10141c;font-size:18px;vertical-align:middle}
+.lr .p2-g th small{display:inline;margin-left:10px}
+.lr .p2-g th em{float:right;font-style:normal;color:var(--muted);font-size:17px;font-weight:600}
+.lr .p2-id{width:56px;color:var(--muted);font-weight:700}
+.lr .p2-t{position:relative;width:30%;font-weight:700}
+.lr .p2-c{width:42%}
+.lr .p2-res{display:block;margin-top:6px;color:var(--green)}
+.lr .p2-res small{color:var(--muted)}
+.lr .p2-row:hover,.lr .p2-row:focus{background:rgba(122,174,232,.07);outline:none}
+.lr .p2-st{display:inline-block;padding:2px 12px;border:1px solid currentColor;border-radius:999px;font-style:normal;font-size:16px;font-weight:700;white-space:nowrap}
+.lr .p2-st small{display:inline;margin-left:6px;color:inherit;font-weight:500}
+.lr .p2-st.done{color:var(--green)}.lr .p2-st.running{color:var(--blue)}.lr .p2-st.setup{color:var(--gold)}.lr .p2-st.blocked{color:var(--red)}.lr .p2-st.planned{color:var(--muted)}
+/* hover Notes: unrolls like a curtain from the top-left of the cell */
+.lr .p2-tip{position:absolute;left:12px;top:calc(100% - 6px);z-index:30;width:min(560px,86vw);padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#171c25;box-shadow:0 18px 40px #000;font-weight:500;font-size:16px;clip-path:inset(0 0 100% 0);opacity:0;pointer-events:none;transition:clip-path .22s ease,opacity .15s ease}
+.lr .p2-row:hover .p2-tip,.lr .p2-row:focus .p2-tip,.lr .p2-row:focus-within .p2-tip{clip-path:inset(0);opacity:1}
+.lr .p2-tip p{margin:0 0 8px}
+.lr .p2-tip .p2-th{margin:10px 0 4px;color:var(--gold);font-weight:700}
+.lr .p2-tip ul{margin:0;padding-left:20px}
+.lr .p2-tip li{margin:0 0 4px}
+.lr .p2-foot{margin:14px 0 0;color:var(--muted);font-size:16px}
+.lr .p2-foot small{display:inline;margin-left:8px}
+@media(max-width:760px){
+  .lr .p2-tb,.lr .p2-tb tbody,.lr .p2-tb tr,.lr .p2-tb td,.lr .p2-tb th{display:block;width:auto}
+  .lr .p2-tb thead{display:none}
+  .lr .p2-row{padding:10px 0;border-bottom:1px solid rgba(244,239,228,.08)}
+  .lr .p2-tb td{border:0;padding:4px 12px}
+  .lr .p2-t,.lr .p2-c{width:auto}
+  .lr .p2-tip{position:static;width:auto;margin-top:8px;clip-path:none;opacity:1;display:none}
+  .lr .p2-row:hover .p2-tip,.lr .p2-row:focus .p2-tip,.lr .p2-row:focus-within .p2-tip{display:block}
+}
+/* the shared .zhs is nowrap; long Chinese lines in this table and its hover panel must wrap */
+.lr .p2-tb small,.lr .p2-tip small,.lr .p2-foot small,.lr .p2-top small{white-space:normal}
+.lr .p2-tb .p2-st small{white-space:nowrap}
+
+/* Phase 1 / Phase 2 switch: two big titles under the hero; the chosen one is lit, the other panel is hidden */
+.lr .lr-ptabs{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 22px}
+.lr .lr-ptab{display:flex;align-items:baseline;gap:12px;min-height:0;padding:12px 24px 14px;border:1px solid var(--line);border-bottom:5px solid transparent;border-radius:14px;background:rgba(255,255,255,.02);color:var(--muted);font:inherit;font-size:30px;font-weight:800;line-height:1.15;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.lr .lr-ptab:hover{color:var(--ivory);border-color:var(--gold)}
+.lr .lr-ptab small.zhs{margin:0;font-size:20px;font-weight:500;color:inherit;opacity:.8}
+.lr .lr-ptab em{margin-left:10px;padding:1px 12px;border:1px solid currentColor;border-radius:999px;font-style:normal;font-size:16px;font-weight:700;white-space:nowrap}
+.lr .lr-ptab em:empty{display:none}
+.lr .lr-ptab em small.zhs{margin-left:6px;font-size:16px}
+.lr .lr-ptab.p1c.on{color:var(--ivory);border-bottom-color:var(--s1);background:rgba(214,178,107,.10)}
+.lr .lr-ptab.p2c.on{color:var(--ivory);border-bottom-color:var(--s4);background:rgba(122,174,232,.10)}
+.lr .lr-ptab.p1c em{color:var(--green)}
+.lr .lr-ptab.p2c em{color:var(--s4)}
+.lr .lr-off{display:none!important}
+.lr .p2-top .lr-big{font-size:30px}
+@media(max-width:760px){.lr .lr-ptab{font-size:24px;padding:10px 16px 12px;flex:1 1 100%}}
+/* one short line under each phase title */
+.lr .lr-ptab{display:grid;grid-template-columns:auto auto auto;justify-content:start;align-items:baseline;column-gap:12px;text-align:left}
+.lr .lr-ptab .lr-pdesc{grid-column:1/-1;margin-top:4px;font-size:17px;font-weight:500;color:var(--gold)}
+.lr .lr-ptab .lr-pdesc small.zhs{margin-left:8px;font-size:17px;color:var(--gold);opacity:.85}

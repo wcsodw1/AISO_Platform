@@ -1,0 +1,355 @@
+{
+  "updated": "2026-11-24",
+  "note_en": "Status of every LiteLLM test. Pass criteria are proposed and fixed before each run. To record a run: change the status and add a line to its history.",
+  "note_zh": "每項 LiteLLM 測試的狀態。通過標準先訂再測；每次測試後更新狀態並在 history 加一行。",
+  "statuses": {
+    "done": [
+      "Done",
+      "完成"
+    ],
+    "running": [
+      "Running",
+      "進行中"
+    ],
+    "setup": [
+      "Setup needed",
+      "待設定"
+    ],
+    "blocked": [
+      "Blocked",
+      "受阻"
+    ],
+    "planned": [
+      "Planned",
+      "規劃中"
+    ]
+  },
+  "phase1": {
+    "id": "P1",
+    "en": "One machine vs two machines",
+    "zh": "單機對兩機",
+    "crit_en": "Mean aggregate TPS gain at least 1.3x",
+    "crit_zh": "平均總吞吐至少 1.3 倍",
+    "status": "done",
+    "result_en": "x1.73 (AISO1 vs AISO1 + PRO6000, 2026-11-17)",
+    "result_zh": "×1.73（AISO1 對 AISO1 + PRO6000，2026-11-17）",
+    "needs_en": "Not like-for-like: AISO1 ran Q4, PRO6000 ran BF16. It shows gateway scaling, not LiteLLM overhead.",
+    "needs_zh": "不是同條件：AISO1 用 Q4、PRO6000 用 BF16。只證明分流，沒量到閘道額外延遲。",
+    "history": [
+      {
+        "at": "2026-11-17",
+        "status": "done",
+        "en": "Two smoke runs, NP 4, 100 output tokens: mean x1.73, passed.",
+        "zh": "兩次 smoke（NP 4、輸出 100 tokens）：平均 ×1.73，通過。"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "key": "A",
+      "en": "Prove the claims",
+      "zh": "證明好處",
+      "tests": [
+        {
+          "id": "A1",
+          "en": "Failover",
+          "zh": "備援",
+          "crit_en": "0 failed requests; recovered within 30 s",
+          "crit_zh": "失敗請求為 0；30 秒內恢復",
+          "status": "done",
+          "needs_en": "Mac drill with two fake backends only. After the kill all traffic went to the survivor at once; the restarted backend rejoined in about 5 s. Not tested: a hung backend (the PRO6000 timeout is 600 s) or a cut stream. A drill on the real machine needs the owner's OK.",
+          "needs_zh": "僅在 Mac 用兩個假後端驗證。關掉後全部流量立即改走另一台；重啟的後端約 5 秒回到服務。尚未測：後端卡住不回應（PRO6000 逾時設 600 秒）、串流中途被切斷。真機演練要先問 owner。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            },
+            {
+              "at": "2026-11-24",
+              "status": "done",
+              "en": "Local LiteLLM v1.110.0, 2 fake backends, 4 clients for 70 s, one backend killed at 15 s and restarted at 40 s. 1 retry: 2 failed in each of 3 runs (in flight). 3 retries: 0 failed in 2 runs.",
+              "zh": "本機 LiteLLM v1.110.0、2 個假後端、4 個用戶端跑 70 秒，第 15 秒關掉一個、第 40 秒重啟。重試 1 次：3 次各有 2 個失敗（在途）。重試 3 次：2 次皆 0 失敗。"
+            }
+          ],
+          "result_en": "Passes with 3 retries: 0 of about 700 failed (2 runs). Today's setting, 1 retry: 2 of about 700 failed in every run (3 runs), both in flight at the kill; none after.",
+          "result_zh": "重試 3 次通過：約 700 個請求 0 個失敗（2 次）。現行設定重試 1 次：每次都有 2 個失敗（3 次），皆是關掉當下在途的請求，之後 0 個。"
+        },
+        {
+          "id": "A2",
+          "en": "Single entry",
+          "zh": "統一入口",
+          "crit_en": "3 apps, 1 address, own keys; limits do not leak",
+          "crit_zh": "3 個應用、1 個網址、各自金鑰；限額互不影響",
+          "status": "blocked",
+          "needs_en": "Needs virtual keys, which need a database. The PRO6000 gateway has none yet (db: not connected).",
+          "needs_zh": "需要 virtual key，也就需要資料庫；PRO6000 閘道目前沒有（db: not connected）。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "blocked",
+              "en": "No database on the gateway.",
+              "zh": "閘道沒有資料庫。"
+            }
+          ]
+        },
+        {
+          "id": "A3",
+          "en": "Easy scaling",
+          "zh": "易擴充",
+          "crit_en": "Throughput grows with 1, 2, 3 backends",
+          "crit_zh": "1、2、3 個後端時吞吐隨之成長",
+          "status": "blocked",
+          "needs_en": "Needs a third backend (HPE GPU, not arrived).",
+          "needs_zh": "需要第三個後端（HPE GPU 尚未到）。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "blocked",
+              "en": "Waiting for HPE GPU.",
+              "zh": "等待 HPE GPU。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "B",
+      "en": "Fair baseline",
+      "zh": "公平基準",
+      "tests": [
+        {
+          "id": "B1",
+          "en": "Same-spec pair (GPU4 + GPU5)",
+          "zh": "同規格兩卡",
+          "crit_en": "Mean aggregate TPS gain at least 1.3x",
+          "crit_zh": "平均總吞吐至少 1.3 倍",
+          "status": "setup",
+          "needs_en": "Open the SSH tunnel, set the test key variable (LITELLM_PRO6000_KEY), then press Run on this page. Ask the owner first: shared machine.",
+          "needs_zh": "開 SSH tunnel、設定測試金鑰變數（LITELLM_PRO6000_KEY），再按本頁 Run。共用機器，先問 owner。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "setup",
+              "en": "Tunnel closed; key variable name does not match the config.",
+              "zh": "tunnel 未開；金鑰變數名稱與設定檔不符。"
+            }
+          ]
+        },
+        {
+          "id": "B2",
+          "en": "Client-side round-robin",
+          "zh": "用戶端自行輪流",
+          "crit_en": "Report LiteLLM vs no-gateway round-robin",
+          "crit_zh": "報告 LiteLLM 與無閘道輪流的差距",
+          "status": "planned",
+          "needs_en": "Add a third arm to the smoke script: apps spread requests themselves. This is what shows LiteLLM's own value.",
+          "needs_zh": "smoke 腳本加第三組：應用自己分流。這才看得出 LiteLLM 本身的價值。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "B3",
+          "en": "Gateway overhead",
+          "zh": "閘道額外延遲",
+          "crit_en": "Added latency measured with a fast fake backend",
+          "crit_zh": "用快速假後端量出額外延遲",
+          "status": "planned",
+          "needs_en": "Fake backend replies at once; gateway time = through-gateway minus direct.",
+          "needs_zh": "假後端立即回應；閘道時間 = 經閘道減去直連。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "B4",
+          "en": "Load curve",
+          "zh": "負載曲線",
+          "crit_en": "NP 4, 8, 16, 32; 5 repeats; range reported",
+          "crit_zh": "NP 4、8、16、32；各 5 次；報範圍",
+          "status": "planned",
+          "needs_en": "Finds where the gateway or the machines saturate.",
+          "needs_zh": "找出閘道或機器的飽和點。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "B5",
+          "en": "Routing strategy",
+          "zh": "路由策略",
+          "crit_en": "least-busy vs simple-shuffle vs latency-based",
+          "crit_zh": "least-busy、simple-shuffle、latency-based 三者比較",
+          "status": "planned",
+          "needs_en": "Pick by aggregate TPS and p95 TTFT on the same load.",
+          "needs_zh": "同一負載下，依總吞吐與 p95 TTFT 選擇。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "C",
+      "en": "Governance",
+      "zh": "治理",
+      "tests": [
+        {
+          "id": "C1",
+          "en": "Database and virtual keys",
+          "zh": "資料庫與金鑰",
+          "crit_en": "A key stops at its budget; spend logged per key",
+          "crit_zh": "金鑰達預算即停；每把金鑰的用量有紀錄",
+          "status": "blocked",
+          "needs_en": "Add Postgres. Restarting the shared gateway needs the owner's OK; a Mac PoC avoids that.",
+          "needs_zh": "加 Postgres。重啟共用閘道要 owner 同意；Mac PoC 可避開。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "blocked",
+              "en": "Gateway has no database.",
+              "zh": "閘道沒有資料庫。"
+            }
+          ]
+        },
+        {
+          "id": "C2",
+          "en": "Metrics and tracing",
+          "zh": "指標與追蹤",
+          "crit_en": "Requests, latency, errors visible per model",
+          "crit_zh": "每個模型的請求數、延遲、錯誤可見",
+          "status": "planned",
+          "needs_en": "/metrics into the existing Prometheus and Grafana on PRO6000; Langfuse or OpenTelemetry for traces.",
+          "needs_zh": "/metrics 接 PRO6000 現有的 Prometheus 與 Grafana；追蹤用 Langfuse 或 OpenTelemetry。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "C3",
+          "en": "High availability",
+          "zh": "高可用",
+          "crit_en": "Stop one gateway: 0 failed requests",
+          "crit_zh": "停掉一個閘道：失敗請求為 0",
+          "status": "planned",
+          "needs_en": "Two gateway instances plus Redis for shared cooldown and limits. Pin the image version.",
+          "needs_zh": "兩個閘道實例加 Redis，共用冷卻與限流；固定 image 版本。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "D",
+      "en": "Harness layer",
+      "zh": "Harness 層",
+      "tests": [
+        {
+          "id": "D1",
+          "en": "Context-length fallback",
+          "zh": "上下文長度備援",
+          "crit_en": "Over-limit prompt reroutes with no error",
+          "crit_zh": "超長提示自動改道、無錯誤",
+          "status": "planned",
+          "needs_en": "Fallback between the long and balanced groups.",
+          "needs_zh": "在 long 與 balanced 兩組之間設 fallback。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "D2",
+          "en": "Harness on one endpoint",
+          "zh": "Harness 單一入口",
+          "crit_en": "Same task finishes after only an alias change",
+          "crit_zh": "只改別名，同一任務仍能完成",
+          "status": "planned",
+          "needs_en": "Pydantic AI Harness or OpenCode, pointed only at the gateway (harness fixed, model swappable).",
+          "needs_zh": "Pydantic AI Harness 或 OpenCode 只指向閘道（Harness 固定、模型可換）。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "D3",
+          "en": "Response cache",
+          "zh": "回應快取",
+          "crit_en": "Repeat prompt faster; no stale multi-turn answer",
+          "crit_zh": "重複提示更快；多輪對話無過期答案",
+          "status": "planned",
+          "needs_en": "Exact-match Redis cache for chat. Skip semantic cache for agent traffic.",
+          "needs_zh": "聊天用 Redis 完全比對快取；Agent 流量不用語意快取。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        },
+        {
+          "id": "D4",
+          "en": "GPU-aware layer below",
+          "zh": "下層 GPU 感知調度",
+          "crit_en": "Compare with GPU-aware AP or vLLM Router",
+          "crit_zh": "與 GPU-aware AP 或 vLLM Router 比較",
+          "status": "planned",
+          "needs_en": "LiteLLM does keys and quotas; a GPU-aware layer picks the replica.",
+          "needs_zh": "LiteLLM 管金鑰與配額；GPU 感知層挑副本。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
