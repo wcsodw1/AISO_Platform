@@ -143,17 +143,25 @@
           "zh": "用戶端自行輪流",
           "crit_en": "Report LiteLLM vs no-gateway round-robin",
           "crit_zh": "報告 LiteLLM 與無閘道輪流的差距",
-          "status": "planned",
-          "needs_en": "Add a third arm to the smoke script: apps spread requests themselves. This is what shows LiteLLM's own value.",
-          "needs_zh": "smoke 腳本加第三組：應用自己分流。這才看得出 LiteLLM 本身的價值。",
+          "status": "done",
+          "needs_en": "Simulated backends (A 0.2 s, B 0.3 s, each slows 25% per extra request in flight), 16 at once, 3 repeats. The gain comes from load awareness, which an app could build itself; LiteLLM spares every app from doing it. Recheck on real GPUs in B1.",
+          "needs_zh": "模擬後端（A 0.2 秒、B 0.3 秒，每多一個在途請求就慢 25%），同時 16 個，重複 3 次。優勢來自「看負載」，應用程式自己也能做；LiteLLM 的價值是讓每個應用不必各做一遍。要在 B1 用真 GPU 再確認。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "planned",
               "en": "Listed.",
               "zh": "已列入。"
+            },
+            {
+              "at": "2026-11-24",
+              "status": "done",
+              "en": "Simulated backends, 16 at once, 480 requests, 3 repeats. One backend 16.7 req/s (p95 957 ms); client round-robin 20.7 (p95 1206); LiteLLM least-busy 23.3 (p95 849) = +12% throughput and -30% p95 vs round-robin.",
+              "zh": "模擬後端，同時 16 個、480 個請求、重複 3 次。單一後端 16.7 req/s（p95 957 ms）；用戶端輪流 20.7（p95 1206）；LiteLLM least-busy 23.3（p95 849），比輪流吞吐 +12%、p95 −30%。"
             }
-          ]
+          ],
+          "result_en": "LiteLLM least-busy: 23.3 req/s, p95 849 ms. Client round-robin: 20.7 req/s, p95 1206 ms. One backend: 16.7 req/s.",
+          "result_zh": "LiteLLM least-busy：23.3 req/s、p95 849 ms。用戶端輪流：20.7 req/s、p95 1206 ms。單一後端：16.7 req/s。"
         },
         {
           "id": "B3",
@@ -161,17 +169,25 @@
           "zh": "閘道額外延遲",
           "crit_en": "Added latency measured with a fast fake backend",
           "crit_zh": "用快速假後端量出額外延遲",
-          "status": "planned",
-          "needs_en": "Fake backend replies at once; gateway time = through-gateway minus direct.",
-          "needs_zh": "假後端立即回應；閘道時間 = 經閘道減去直連。",
+          "status": "done",
+          "needs_en": "Mac only, instant fake backend, 3 repeats. At 8 requests at once the gateway queues (p50 41 ms) because one worker saturates; the PRO6000 gateway is started without --num_workers. Real model replies take seconds, so 5 ms is small; it matters for many short requests.",
+          "needs_zh": "僅在 Mac 用「立即回應」的假後端，重複 3 次。同時 8 個請求時閘道會排隊（p50 41 ms），因為單一 worker 飽和；PRO6000 閘道啟動時沒設 --num_workers。真實模型回應要數秒，5 ms 相對很小；請求很短又很多時才看得出來。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "planned",
               "en": "Listed.",
               "zh": "已列入。"
+            },
+            {
+              "at": "2026-11-24",
+              "status": "done",
+              "en": "Instant fake backend, direct vs through LiteLLM v1.110.0, 3 repeats. 1 at a time: p50 0.11 -> 5.45 ms (+5.3), p95 +6.9. Streaming: first token +5.7 ms, +0.5 ms per chunk. 8 at once: p50 0.57 -> 40.9 ms; gateway tops out near 187 req/s (direct 12,700).",
+              "zh": "立即回應的假後端，直連對經 LiteLLM v1.110.0，重複 3 次。一次 1 個：p50 0.11 → 5.45 ms（+5.3）、p95 +6.9。串流：首字 +5.7 ms、每段 +0.5 ms。一次 8 個：p50 0.57 → 40.9 ms；閘道上限約 187 req/s（直連 12,700）。"
             }
-          ]
+          ],
+          "result_en": "Adds about 5 ms per request (p50 +5.3, p95 +6.9), 5.7 ms to the first token and 0.5 ms per streamed chunk. One worker tops out near 190 requests/s.",
+          "result_zh": "每個請求約多 5 ms（p50 +5.3、p95 +6.9）；首字多 5.7 ms，串流每段多 0.5 ms。單一 worker 上限約每秒 190 個請求。"
         },
         {
           "id": "B4",
@@ -197,17 +213,25 @@
           "zh": "路由策略",
           "crit_en": "least-busy vs simple-shuffle vs latency-based",
           "crit_zh": "least-busy、simple-shuffle、latency-based 三者比較",
-          "status": "planned",
-          "needs_en": "Pick by aggregate TPS and p95 TTFT on the same load.",
-          "needs_zh": "同一負載下，依總吞吐與 p95 TTFT 選擇。",
+          "status": "done",
+          "needs_en": "Keep least-busy, which is today's PRO6000 setting. Simulated backends only, same load as B2; recheck on the real GPUs in B1 and B4.",
+          "needs_zh": "維持 least-busy，也就是 PRO6000 現行設定。僅模擬後端，負載與 B2 相同；要在 B1、B4 用真 GPU 再確認。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "planned",
               "en": "Listed.",
               "zh": "已列入。"
+            },
+            {
+              "at": "2026-11-24",
+              "status": "done",
+              "en": "Same simulated load for all three. least-busy 23.3 req/s (p95 849); simple-shuffle 20.9 (p95 1292); latency-based 16.5 (p95 975), about the same as a single backend (16.7).",
+              "zh": "三者用同一個模擬負載。least-busy 23.3 req/s（p95 849）；simple-shuffle 20.9（p95 1292）；latency-based 16.5（p95 975），和單一後端（16.7）差不多。"
             }
-          ]
+          ],
+          "result_en": "least-busy wins: 23.3 req/s, p95 849 ms. simple-shuffle: 20.9 req/s, p95 1292 ms (same as round-robin). latency-based: 16.5 req/s, p95 975 ms (no better than one backend).",
+          "result_zh": "least-busy 最好：23.3 req/s、p95 849 ms。simple-shuffle：20.9 req/s、p95 1292 ms（和輪流相同）。latency-based：16.5 req/s、p95 975 ms（不比單一後端好）。"
         }
       ]
     },
