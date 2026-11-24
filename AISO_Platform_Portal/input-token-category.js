@@ -56,12 +56,18 @@
   const lvNm = (i, v) => REC_LV[i] / 1024 + "K" + (v > REC_LV[REC_LV.length - 1] * 1.5 ? "+" : "");
   // main = level of `mainV`; range = from level of `loV` to level of `hiV` (the main level is always inside the range)
   const recSpan = (mainV, loV, hiV, top) => { const m = recOf(mainV), l = Math.min(recOf(loV), m), h = Math.max(recOf(hiV), m); return { main: lvNm(m, mainV), also: [l !== m ? lvNm(l, loV) : "", h !== m ? lvNm(h, top == null ? hiV : top) : ""].filter(Boolean) }; };
-  const recText = (vals) => { const a = vals.slice().sort((x, y) => x - y); return recSpan(pct(a, .5), a[0], a[a.length - 1]); };   // file types: main = median file, range = smallest to largest real file
+  const recText = (vals) => { const a = vals.slice().sort((x, y) => x - y), m = pct(a, .5), h = pct(a, .9), lm = lvNm(recOf(m), m), lh = lvNm(recOf(h), h); return { main: lm, also: lh !== lm ? [lh] : [] }; };   // files: two values = typical (median) and heavy (90th percentile)
   function recLine(s) {
     if (!s.spn) return "";
     const med = pct(s.cnv, .5), p90 = pct(s.cnv, .9), mi = recOf(s.comp.avg), r = recSpan(s.comp.avg, REC_LV[Math.max(0, mi - 1)], REC_LV[Math.min(REC_LV.length - 1, mi + 1)]);
     const tip = `Recommended = level of the average new input ${k(s.comp.avg)} tokens. Also test = one level below and one above. For reference: median ${k(med)} (a typical turn), 90th percentile ${k(p90)} (a heavy turn); the average is pulled up by cold-start turns. / 推薦＝平均新輸入 ${k(s.comp.avg)} tokens 所在檔位；可加測＝往下、往上各一個檔位。參考：中位數 ${k(med)}（一般輪次）、第 90 百分位 ${k(p90)}（較重輪次）；平均被冷啟動輪次拉高。`;
     return `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b>${r.also.length ? `<span class="itc-alt">${bi("Also test", "建議可加測")} ${r.also.join(" · ")}</span>` : ""}</p>`;
+  }
+  // typed-input stats of ChatGPT turns (counts only; no usage data exists for them, so no harness / cache / output)
+  function gptRow(id) {
+    const g = D.chatgpt && D.chatgpt.cats[id]; if (!g || !g.text_turns) return "";
+    const ip = g.img_turns_known ? Math.round(g.img_turns / g.img_turns_known * 100) : 0;
+    return `<div class="itc-subs">${fold("itc-sub", "ChatGPT sessions", "其他平台 ChatGPT", g.text_avg, bi(`${g.turns} turns · median ${g.text_med} · images in ${ip}% of turns · estimated`, `${g.turns} 輪 · 中位數 ${g.text_med} · ${ip}% 的輪次有圖片 · 估算`), { min: g.text_min, max: g.text_max })}</div>`;
   }
   function stage(id) {
     const c0 = D.categories.find(x => x.id === id); if (c0.kind === "document") return docStage(c0);
@@ -73,6 +79,7 @@
         <section class="itc-g itc-gin hv-fold hv-closed"><header><h3>${bi("Input", "輸入")}</h3><span class="itc-hv"><b>${k(s.spn ? s.comp.avg : s.cum.avg)}</b><span>tokens ${s.spn ? bi("new", "新") : bi("total", "總共")}</span></span></header><div class="itc-gb">
         ${fold("itc-par", "1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
         <div class="itc-subs">${sub("Text only", "純文字", s.onlyTxt, "", "")}${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `text ${k(s.withImg.t)} + image ${k(s.withImg.i)} tokens` : "", s.withImg.n ? `文字 ${k(s.withImg.t)} + 圖片 ${k(s.withImg.i)} tokens` : "")}</div>
+        ${gptRow(id)}
         ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg, bi("Before your message", "訊息之前"), s.har, s.spn ? `<span class="itc-hv3"><span class="nw"><b>${k(s.hc.avg)}</b><em>${bi("New", "新")}</em></span><span class="re"><b>${k(s.hr)}</b><em>${bi("Reused", "快取重用")}</em></span><span class="tt"><b>${k(s.har.avg)}</b><em>${bi("Total", "總共")}</em></span></span>` : "")}
         ${s.spn ? `<p class="itc-leg"><span><i class="re"></i>${bi("Reused", "快取重用")} ${k(s.hr)}</span><span><i class="nw"></i>${bi("Not cached", "未快取")} ${k(s.hc.avg)}</span><span class="u">tokens</span></p>` : ""}
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0, nw = Math.min(v, s.pnew[p[0]] || 0), nwp = v ? nw / v * 100 : 0;
@@ -102,9 +109,9 @@
   const rng = (a, f) => { const x = a.filter(v => v != null); if (!x.length) return "—"; const lo = Math.min(...x), hi = Math.max(...x); return lo === hi ? f(lo) : f(lo) + "–" + f(hi); };
   const unitOf = (d, x) => (d.types.find(t => t.id === x.type) || d.types[0]).unit, qty = (d, x) => unitOf(d, x) === "page" ? (x.pages || x.pages_est || null) : x.lines;
   function docRec(d) {
-    const a = d.samples.map(x => x.tokens), r = recText(a), m = pct(a.slice().sort((x, y) => x - y), .5);
-    const tip = `Recommended = level of the median file ${k(m)} tokens. Also test = the levels of the smallest and largest real file. / 推薦＝檔案中位數 ${k(m)} tokens 所在檔位；可加測＝最小與最大真實檔案所在檔位。`;
-    return `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b>${r.also.length ? `<span class="itc-alt">${bi("Also test", "建議可加測")} ${r.also.join(" · ")}</span>` : ""}</p>`;
+    const a = d.samples.map(x => x.tokens).sort((x, y) => x - y), r = recText(a);
+    const tip = `Two values: the typical file (median ${k(pct(a, .5))} tokens) and a heavy file (90th percentile ${k(pct(a, .9))} tokens). / 兩個值：一般檔案（中位數 ${k(pct(a, .5))} tokens）與較大檔案（第 90 百分位 ${k(pct(a, .9))} tokens）。`;
+    return `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b>${r.also.map(x => `<b>${x}</b>`).join("")}</p>`;
   }
   function docStage(c) {
     const d = D.document, mix = ex => d.types.map(t => { const m = ex.filter(x => x.type === t.id).length; return m ? `${t.zh.split("（")[0].split("／")[0]} ${m}` : ""; }).filter(Boolean).join(" · ");
@@ -115,14 +122,14 @@
     const ty = d.types.map(t => {
       const ex = d.samples.filter(x => x.type === t.id), n = ex.length; if (!n) return "";
       const unit = t.unit === "page" ? bi("page", "頁") : bi("line", "行"), fm = [...new Set(ex.map(x => x.format).filter(Boolean))].map(f => f.toUpperCase()).join(" · ");
-      const per = rng(ex.map(x => { const q = qty(d, x); return q ? x.tokens / q : null; }), v => v < 10 ? v.toFixed(1) : String(Math.round(v)));
-      return row(`${bi(t.en, t.zh)} <span class="itc-fmt">${fm}</span>`, bi(`${n} ${n === 1 ? "file" : "files"}`, `${n} 份`), rng(ex.map(x => x.tokens), k) + " <i>tokens</i>", `<span>${bi("Tokens per", "每")}${unit} <b>${per}</b></span>${(() => { const r = recText(ex.map(x => x.tokens)); return `<span>${bi("Recommended", "推薦")} <b class="itc-recb">${r.main}</b>${r.also.length ? ` <i>· ${bi("also", "加測")} ${r.also.join(" · ")}</i>` : ""}</span>`; })()}`, false); }).join("");
+      const per = rng(ex.map(x => { const q = qty(d, x); return q ? x.tokens / q : null; }), v => v < 10 ? v.toFixed(1) : String(Math.round(v))), r = recText(ex.map(x => x.tokens));
+      const rec = `<span class="itc-recl">${bi("Recommended", "推薦")}</span> ${[r.main, ...r.also].map(x => `<span class="itc-recb">${x}</span>`).join(" ")}`;
+      return row(bi(t.en, t.zh), bi(`${n} ${n === 1 ? "file" : "files"}`, `${n} 份`), rec, `<span>${fm}</span><span>${rng(ex.map(x => x.tokens), k)} <i>tokens</i></span><span>${bi("Tokens per", "每")}${unit} <b>${per}</b></span>`, false); }).join("");
     return `<p class="mw-kicker">${bi("Category", "類別")}</p>
       <h2 class="mw-big">${esc(nm(c))}</h2><p class="mw-spec">${esc(c.zh)}</p>
       ${docRec(d)}
-      <p class="itc-sec">${bi("By benchmark input level", "依測試輸入檔位")}</p><div class="itc-rows">${lv}</div>
-      <p class="itc-sec">${bi("By file type", "依檔案類型")}</p><div class="itc-rows">${ty}</div>
-      <p class="itc-docnote">${bi("Each file sits under its nearest level. Few samples, reference only. The file alone, without the client's harness.", "每份檔案歸到最近的檔位。樣本少，僅供參考。只算檔案本身，不含客戶端的 Harness。")}</p>`;
+      <div class="itc-seg" role="tablist"><button type="button" role="tab" class="on" data-p="lv">${bi("By token count", "依 token 數")}</button><button type="button" role="tab" data-p="ty">${bi("By file type", "依檔案類型")}</button></div>
+      <div class="itc-pane itc-rows" data-p="lv">${lv}</div><div class="itc-pane itc-rows" data-p="ty" hidden>${ty}</div>`;
   }
   function docTable() {
     const d = D.document;
@@ -156,6 +163,7 @@
     const o = e.target.closest(".mw-opt"), st = root.querySelector(".mw-stage");
     if (o && st) { st.innerHTML = stage(o.dataset.id); bindFold(st); }
   });
+  root.addEventListener("click", e => { const b = e.target.closest(".itc-seg button"); if (!b) return; const st = b.closest(".mw-stage"); st.querySelectorAll(".itc-seg button").forEach(x => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-selected", String(on)); }); st.querySelectorAll(".itc-pane").forEach(x => { x.hidden = x.dataset.p !== b.dataset.p; }); });
   root.addEventListener("mouseout", e => { const st = root.querySelector(".mw-stage"); if (st && e.target.closest(".mw-opt") && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".mw-opt"))) { st.innerHTML = stage(sel); bindFold(st); } });
   fetch("data/input-token-category.json", { cache: "no-store" }).then(r => r.json()).then(d => { D = d; render(); }).catch(() => { root.innerHTML = `<p class="itc-ref">${bi("Could not load the data file.", "無法載入資料檔。")}</p>`; });
 })();

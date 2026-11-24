@@ -232,3 +232,88 @@ div:has(>.home-title-zh)>h2{color:var(--fashion-ivory,#f3efe5)!important}
 
 /* the word Decode in "TPS (Decode only)" is highlighted */
 .bv-h .bv-dec{font-style:normal;color:var(--gold,#d8c779);text-shadow:0 0 14px rgba(216,199,121,.45)}
+
+/* No rounded frames anywhere on the platform (David, 2026-11-24). Only the intentional circles (dots, brand mark, orbit rings) are re-asserted below, one rule each so a bad selector cannot drop the rest. */
+*,*::before,*::after{border-radius:0!important}
+.agent-demo-sidebar footer i{border-radius:50%!important}
+.agent-orbit{border-radius:50%!important}
+.app-card-plus{border-radius:50%!important}
+.app-hub-ring{border-radius:50%!important}
+.benchmark-console li>span{border-radius:50%!important}
+.benchmark-console>header i{border-radius:50%!important}
+.bh-matrix li i{border-radius:50%!important}
+.brand-mark{border-radius:50%!important}
+.brand-site .category-card.is-home-orbiting .category-visual:before{border-radius:50%!important}
+.brand-site .category-card:before{border-radius:50%!important}
+.brand-site .category-card:nth-child(2):before{border-radius:50%!important}
+.brand-site .category-card:nth-child(3):before{border-radius:50%!important}
+.bs .bs-axis input[type=range]::-moz-range-thumb{border-radius:50%!important}
+.bs .bs-axis input[type=range]::-webkit-slider-thumb{border-radius:50%!important}
+.bs .bs-let{border-radius:50%!important}
+.bs .bs-pt{border-radius:50%!important}
+.bs .bs-stp i{border-radius:50%!important}
+.button.bh-btn .bh-arrow{border-radius:50%!important}
+.case-stage-rail span{border-radius:50%!important}
+.category-card:after{border-radius:50%!important}
+.category-card:before{border-radius:50%!important}
+.category-foot:after{border-radius:50%!important}
+.category-projection-base{border-radius:50%!important}
+.consulting-card-top>b{border-radius:50%!important}
+.consulting-card:before{border-radius:50%!important}
+.consulting-flow>i{border-radius:50%!important}
+.ct-track b{border-radius:50%!important}
+.cursor-glow{border-radius:50%!important}
+.demo-platform{border-radius:50%!important}
+.demo-viewport i{border-radius:50%!important}
+.depth-glow{border-radius:50%!important}
+.depth-orbit{border-radius:50%!important}
+.depth-preview-badge i{border-radius:50%!important}
+.depth-shadow{border-radius:50%!important}
+.device-header:after{border-radius:50%!important}
+.dn-btn{border-radius:50%!important}
+.dn-x{border-radius:50%!important}
+.galaxy-disc{border-radius:50%!important}
+.galaxy-dust{border-radius:50%!important}
+.galaxy-glow{border-radius:50%!important}
+.gb-st i{border-radius:50%!important}
+.hero-summary{border-radius:50%!important}
+.hero-summary:after{border-radius:50%!important}
+.hero:after{border-radius:50%!important}
+.info{border-radius:50%!important}
+.interface-windowbar i{border-radius:50%!important}
+.kv-dot{border-radius:50%!important}
+.llama-send{border-radius:50%!important}
+.lm-next li:before{border-radius:50%!important}
+.lm-point-h i{border-radius:50%!important}
+.lr .lr-ef li>i{border-radius:50%!important}
+.lr .lr-fn h4 i{border-radius:50%!important}
+.lr .lr-fst i{border-radius:50%!important}
+.lr .lr-legend i{border-radius:50%!important}
+.lr .lr-light i{border-radius:50%!important}
+.lr .lr-steps li b{border-radius:50%!important}
+.lr .lr-stp i{border-radius:50%!important}
+.lr .p2-g th span{border-radius:50%!important}
+.machine-core{border-radius:50%!important}
+.product-media-placeholder:after{border-radius:50%!important}
+.product-media-placeholder:before{border-radius:50%!important}
+.product-media.has-image:after{border-radius:50%!important}
+.projection-base{border-radius:50%!important}
+.proof-tag i{border-radius:50%!important}
+.rp-st i{border-radius:50%!important}
+.rw-state i{border-radius:50%!important}
+.showreel-play{border-radius:50%!important}
+.showreel-play:after{border-radius:50%!important}
+.showreel-play:before{border-radius:50%!important}
+.st #secPick .cmp-pick>span em{border-radius:50%!important}
+.st .rp-legend i{border-radius:50%!important}
+.st .rp-tip i{border-radius:50%!important}
+.st-run-card i{border-radius:50%!important}
+.st-tier i{border-radius:50%!important}
+.tab-button:after{border-radius:50%!important}
+.tip{border-radius:50%!important}
+.tm-fly-max{border-radius:50%!important}
+.tm-fly-x{border-radius:50%!important}
+.upd-bar [data-x]{border-radius:50%!important}
+.v2-dot{border-radius:50%!important}
+.wq-leg i{border-radius:50%!important}
+.wq-tab .v2-sw{border-radius:50%!important}

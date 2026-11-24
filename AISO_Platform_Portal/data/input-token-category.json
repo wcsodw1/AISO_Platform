@@ -2516,14 +2516,14 @@
   "types": [
    {
     "id": "doc",
-    "en": "Document (PDF / Word / slides)",
-    "zh": "文件（PDF／Word／簡報）",
+    "en": "Document",
+    "zh": "文件",
     "unit": "page"
    },
    {
     "id": "table",
-    "en": "Spreadsheet / table",
-    "zh": "試算表／表格",
+    "en": "Spreadsheet",
+    "zh": "試算表",
     "unit": "line"
    },
    {
@@ -2546,7 +2546,7 @@
    },
    {
     "id": "config",
-    "en": "Config / build file",
+    "en": "Config / build",
     "zh": "設定／建置檔",
     "unit": "line"
    },
@@ -2558,16 +2558,87 @@
    },
    {
     "id": "skill",
-    "en": "Skill file (SKILL.md)",
-    "zh": "Skill 指令檔（SKILL.md）",
+    "en": "Skill (SKILL.md)",
+    "zh": "Skill 指令檔",
     "unit": "line"
    },
    {
     "id": "log",
-    "en": "Log file",
-    "zh": "日誌檔",
+    "en": "Log",
+    "zh": "日誌",
     "unit": "line"
    }
   ]
+ },
+ "chatgpt": {
+  "sessions": 5,
+  "turns": 100,
+  "note": [
+   "Turns from five ChatGPT sessions (collected 2026-11-24). Only the typed text and attachment counts are known: there is no API or gateway usage, so harness, cache, whole-turn input and output are unknown. Typed-text tokens are rough per-session estimates, not a model tokenizer. Only counts are stored, no message text.",
+   "來自五個 ChatGPT 對話（2026-11-24 收集）。只知道使用者輸入的文字與附件數量：沒有 API 或閘道用量，所以 Harness、快取、整輪輸入與輸出都未知。文字 token 是各對話自訂的粗估，不是模型分詞器。只存數量，不存訊息內容。"
+  ],
+  "judgment": "Turns with an attached file count as Document; Document-labelled drafting or slide-writing turns without a file count as Normal Conversation; other labels kept.",
+  "cats": {
+   "chat": {
+    "turns": 64,
+    "text_turns": 35,
+    "img_turns_known": 50,
+    "img_turns": 21,
+    "files": 0,
+    "text_avg": 135,
+    "text_med": 18,
+    "text_p90": 74,
+    "text_min": 1,
+    "text_max": 3742
+   },
+   "analysis": {
+    "turns": 27,
+    "text_turns": 6,
+    "img_turns_known": 26,
+    "img_turns": 23,
+    "files": 0,
+    "text_avg": 112,
+    "text_med": 60,
+    "text_p90": 263,
+    "text_min": 5,
+    "text_max": 413
+   },
+   "web": {
+    "turns": 6,
+    "text_turns": 6,
+    "img_turns_known": 6,
+    "img_turns": 1,
+    "files": 0,
+    "text_avg": 131,
+    "text_med": 27,
+    "text_p90": 355,
+    "text_min": 8,
+    "text_max": 660
+   },
+   "coding": {
+    "turns": 1,
+    "text_turns": 1,
+    "img_turns_known": 1,
+    "img_turns": 0,
+    "files": 0,
+    "text_avg": 82,
+    "text_med": 82,
+    "text_p90": 82,
+    "text_min": 82,
+    "text_max": 82
+   },
+   "document": {
+    "turns": 2,
+    "text_turns": 2,
+    "img_turns_known": 2,
+    "img_turns": 1,
+    "files": 3,
+    "text_avg": 6,
+    "text_med": 6,
+    "text_p90": 11,
+    "text_min": 0,
+    "text_max": 12
+   }
+  }
  }
 }
