@@ -365,6 +365,47 @@
   $("lrTermBig").onclick = function () { termBig = !termBig; $("lrTermBody").classList.toggle("big", termBig); this.firstChild.nodeValue = termBig ? "Collapse " : "Expand "; this.querySelector("small").textContent = termBig ? "收合" : "展開全部"; };
   $("lrTermCopy").onclick = function () { var t = $("lrTermBody").innerText, b = this; (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.querySelector("small").textContent = "已複製"; setTimeout(function () { b.querySelector("small").textContent = "複製"; }, 1500); }).catch(function () { var r = document.createRange(); r.selectNodeContents($("lrTermBody")); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }); };
 
+  /* ---------- step 4: Phase 2 tests. All content lives in data/litellm-phase2.json: edit the status there after each run ---------- */
+  function renderPhase2(P) {
+    var ST = P.statuses;
+    function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + esc(t[0]) + '<small class="zhs">' + esc(t[1]) + "</small></em>"; }
+    function tip(t) {
+      var h = (t.history || []).map(function (x) { return "<li><b>" + esc(x.at) + "</b> " + esc((ST[x.status] || [x.status])[0]) + ": " + esc(x.en) + '<small class="zhs">' + esc(x.zh) + "</small></li>"; }).join("");
+      return '<div class="p2-tip"><p class="p2-tn">' + esc(t.needs_en) + '<small class="zhs">' + esc(t.needs_zh) + '</small></p><p class="p2-th">History<small class="zhs">每次紀錄</small></p><ul>' + h + "</ul></div>";
+    }
+    function row(t, extra) {
+      return '<tr class="p2-row" tabindex="0"><td class="p2-id">' + esc(t.id) + '</td><td class="p2-t">' + esc(t.en) + '<small class="zhs">' + esc(t.zh) + "</small>" + tip(t) + '</td><td class="p2-c">' + esc(t.crit_en) + '<small class="zhs">' + esc(t.crit_zh) + "</small>" + (extra || "") + "</td><td>" + pill(t.status) + "</td></tr>";
+    }
+    var all = [], body = "";
+    P.groups.forEach(function (g) {
+      var done = g.tests.filter(function (t) { return t.status === "done"; }).length;
+      all = all.concat(g.tests);
+      body += '<tr class="p2-g"><th colspan="4"><span>' + esc(g.key) + "</span>" + esc(g.en) + '<small class="zhs">' + esc(g.zh) + '</small><em>' + done + " / " + g.tests.length + "</em></th></tr>" + g.tests.map(function (t) { return row(t); }).join("");
+    });
+    var n = all.length, d = all.filter(function (t) { return t.status === "done"; }).length, r = all.filter(function (t) { return t.status === "running"; }).length;
+    $("lrTab2n").innerHTML = d + " / " + n;   /* progress inside the Phase 2 tab */
+    $("lrP2").innerHTML =
+      '<div class="lr-box lr-concl p2-top"><p class="lr-big">' + d + " of " + n + " tests done" + (r ? ", " + r + " running" : "") + '<small class="zhs">共 ' + n + " 項測試，已完成 " + d + (r ? "、進行中 " + r : "") + "</small></p>" +
+      '<p class="p2-upd">Updated ' + esc(P.updated) + '<small class="zhs">更新日期</small></p></div>' +
+      '<table class="p2-tb"><thead><tr><th>#</th><th>Test<small class="zhs">測試</small></th><th>Pass criterion<small class="zhs">通過標準（先訂再測）</small></th><th>Status<small class="zhs">狀態</small></th></tr></thead><tbody>' + body + "</tbody></table>" +
+      '<p class="p2-foot">' + esc(P.note_en) + '<small class="zhs">' + esc(P.note_zh) + "</small></p>";
+  }
+  /* Phase 1 / Phase 2 switch: #phase1 or #phase2 in the address opens that one; Phase 2 (the open work) is the default */
+  (function () {
+    var tabs = [["1", $("lrTab1")], ["2", $("lrTab2")]];
+    function show(k) {
+      tabs.forEach(function (t) { var on = t[0] === k; t[1].classList.toggle("on", on); if (t[1].setAttribute) t[1].setAttribute("aria-selected", on ? "true" : "false"); });
+      $("lrPhase2").classList.toggle("lr-off", k !== "2"); $("lrMain").classList.toggle("lr-off", k !== "1");
+      try { history.replaceState(null, "", k === "1" ? "#phase1" : "#phase2"); } catch (e) { }
+    }
+    tabs.forEach(function (t) { t[1].onclick = function () { show(t[0]); }; });
+    var h = ""; try { h = location.hash; } catch (e) { }
+    show(/phase1/i.test(h) ? "1" : "2");
+  })();
+  fetch("data/litellm-phase2.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(renderPhase2).catch(function () {
+    $("lrP2").innerHTML = '<p class="lr-resnote">Phase 2 list is not available.<small class="zhs">第二階段清單暫時無法顯示</small></p>';
+  });
+
   checkStatus();
   paintPrev(loadHist()[0] || null, "Last run");
   refreshHealth(); setInterval(function () { if (!poll) refreshHealth(); }, 10000);

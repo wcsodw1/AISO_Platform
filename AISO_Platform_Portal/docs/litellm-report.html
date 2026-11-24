@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=60">
   <link rel="stylesheet" href="tesla.css?v=49">
-  <link rel="stylesheet" href="litellm-report.css?v=62">
+  <link rel="stylesheet" href="litellm-report.css?v=69">
 </head>
 <body>
   <header class="site-header">
@@ -32,7 +32,16 @@
       <p class="v2-sub">One Entry, Many Machines<span class="zh-i">一個入口・多台機器</span></p>
     </section>
 
-    <section class="report-section" id="lrMain">
+    <div class="lr-ptabs" role="tablist" aria-label="Phase">
+      <button type="button" class="lr-ptab p1c" role="tab" data-ph="1" id="lrTab1" aria-controls="lrMain">Phase 1<small class="zhs">第一階段</small><em>Done<small class="zhs">完成</small></em><span class="lr-pdesc">Spread-load test<small class="zhs">分流實測</small></span></button>
+      <button type="button" class="lr-ptab p2c" role="tab" data-ph="2" id="lrTab2" aria-controls="lrPhase2">Phase 2<small class="zhs">第二階段</small><em id="lrTab2n"></em><span class="lr-pdesc">Proof &amp; tuning<small class="zhs">補證據・調優</small></span></button>
+    </div>
+
+    <section class="report-section lr-ph2" id="lrPhase2" role="tabpanel" aria-labelledby="lrTab2">
+      <div class="lr-p2" id="lrP2"></div>
+    </section>
+
+    <section class="report-section" id="lrMain" role="tabpanel" aria-labelledby="lrTab1">
       <p class="lr-stp s1"><i>1</i><span>LiteLLM<small class="zhs">架構</small></span></p>
       <div class="lr-box" id="lrFlow"></div>
 
@@ -57,7 +66,7 @@
     </section>
   </main>
   <script src="run-gate.js"></script>
-  <script src="litellm-report.js?v=63"></script>
+  <script src="litellm-report.js?v=68"></script>
   <script src="research-menu.js?v=7" defer></script>
   <script src="ui-min-type.js?v=2" defer></script>
 <script src="update-check.js?v=2" defer></script>
