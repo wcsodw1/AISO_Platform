@@ -1,0 +1,453 @@
+{
+ "dataset": "PRO6000 aiDAPTIV 3.05 benchmark (GPT-OSS-20B + the four Q4_K_M models, original precision)",
+ "evidence_until": "2026-11-24 17:15:55",
+ "updated": "2026-11-24 17:15:55",
+ "live": false,
+ "note": "Live: written while the test runs. Without = mean of 3 repeats, Cold = Run1, Warm = mean of Run2/Run3.",
+ "comparability": {
+  "text": "2 run(s) excluded because the model stopped before the asked output length (no valid TPOT / TPS): GPT-OSS-20B with NP1 8K. Own test: aiDAPTIV middleware NXUNA305A1 (vLLM 0.25.1), ONE GPU, original precision (GPT-OSS-20B native, the other four BF16), Output 1000 or 256, both modes with --disable-gpu-reuse, max-model-len 20000. Not comparable with the 70B / 120B vLLM test (3.03, TP4) or the llama.cpp Q4_K_M test. FlashInfer sampler is off in both modes (no CUDA toolkit in the image). A model that cannot start is simply missing."
+ },
+ "profile": {
+  "machine": "PRO6000 · NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8 GPU system)",
+  "framework": "vLLM 0.25.1 + aiDAPTIV NXUNA305A1",
+  "gpu_count_system": 8,
+  "gpus_used": 1,
+  "np": [
+   1,
+   10,
+   30
+  ],
+  "input_tokens": [
+   4096,
+   8192,
+   16384
+  ],
+  "output_tokens": [
+   1024,
+   256
+  ]
+ },
+ "progress": {
+  "without": {
+   "done": 27,
+   "total": 54
+  },
+  "with": {
+   "done": 25,
+   "total": 54
+  },
+  "by_model": {
+   "GPT-OSS-20B": {
+    "1024": {
+     "without": 27,
+     "with": 25
+    },
+    "256": {
+     "without": 0,
+     "with": 0
+    }
+   }
+  },
+  "per_cell": 27,
+  "current": "",
+  "job": "",
+  "invalid": [
+   {
+    "model": "GPT-OSS-20B",
+    "mode": "with",
+    "np": 1,
+    "input": 8000,
+    "run": 2,
+    "tokens": 681,
+    "asked": 1000.0
+   },
+   {
+    "model": "GPT-OSS-20B",
+    "mode": "with",
+    "np": 1,
+    "input": 8000,
+    "run": 3,
+    "tokens": 681,
+    "asked": 1000.0
+   }
+  ],
+  "log_tail": []
+ },
+ "pro6000_runs": [
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 1,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 158.503,
+    "cold": 345.66,
+    "warm": 66.495
+   },
+   "tpot_ms": {
+    "without": 4.213,
+    "cold": 4.21,
+    "warm": 4.225
+   },
+   "aggregate_tps": {
+    "without": 228.787,
+    "cold": 219.54,
+    "warm": 233.215
+   },
+   "normalized_tps": {
+    "without": 228.787,
+    "cold": 219.54,
+    "warm": 233.215
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.1623,
+      0.1568,
+      0.1564
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 1,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 341.17,
+    "cold": 388.78
+   },
+   "tpot_ms": {
+    "without": 4.4,
+    "cold": 4.42
+   },
+   "aggregate_tps": {
+    "without": 210.903,
+    "cold": 207.87
+   },
+   "normalized_tps": {
+    "without": 210.903,
+    "cold": 207.87
+   },
+   "status": "RUNNING",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 0
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.3458,
+      0.3311,
+      0.3466
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 1,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 795.167,
+    "cold": 886.57,
+    "warm": 161.885
+   },
+   "tpot_ms": {
+    "without": 4.717,
+    "cold": 4.73,
+    "warm": 4.73
+   },
+   "aggregate_tps": {
+    "without": 181.557,
+    "cold": 178.01,
+    "warm": 204.565
+   },
+   "normalized_tps": {
+    "without": 181.557,
+    "cold": 178.01,
+    "warm": 204.565
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.8063,
+      0.7794,
+      0.7999
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 10,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 588.72,
+    "cold": 999.51,
+    "warm": 76.895
+   },
+   "tpot_ms": {
+    "without": 9.837,
+    "cold": 9.62,
+    "warm": 9.25
+   },
+   "aggregate_tps": {
+    "without": 953.56,
+    "cold": 922.18,
+    "warm": 1036.28
+   },
+   "normalized_tps": {
+    "without": 95.356,
+    "cold": 92.218,
+    "warm": 103.628
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.5937,
+      0.5897,
+      0.5828
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 10,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 1494.77,
+    "cold": 2065.91,
+    "warm": 130.8
+   },
+   "tpot_ms": {
+    "without": 12.003,
+    "cold": 10.37,
+    "warm": 10.86
+   },
+   "aggregate_tps": {
+    "without": 1348.157,
+    "cold": 1336.75,
+    "warm": 1625.835
+   },
+   "normalized_tps": {
+    "without": 134.816,
+    "cold": 133.675,
+    "warm": 162.584
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.4961,
+      1.4962,
+      1.492
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 10,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 3316.703,
+    "cold": 4283.25,
+    "warm": 229.965
+   },
+   "tpot_ms": {
+    "without": 17.95,
+    "cold": 15.29,
+    "warm": 12.685
+   },
+   "aggregate_tps": {
+    "without": 522.833,
+    "cold": 498.6,
+    "warm": 737.675
+   },
+   "normalized_tps": {
+    "without": 52.283,
+    "cold": 49.86,
+    "warm": 73.767
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      3.3211,
+      3.3287,
+      3.3003
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 30,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 1548.087,
+    "cold": 2315.64,
+    "warm": 96.04
+   },
+   "tpot_ms": {
+    "without": 14.343,
+    "cold": 13.81,
+    "warm": 12.565
+   },
+   "aggregate_tps": {
+    "without": 2074.503,
+    "cold": 1993.69,
+    "warm": 2454.195
+   },
+   "normalized_tps": {
+    "without": 69.15,
+    "cold": 66.456,
+    "warm": 81.806
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.5436,
+      1.5539,
+      1.5468
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 30,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 3934.303,
+    "cold": 5080.26,
+    "warm": 210.25
+   },
+   "tpot_ms": {
+    "without": 18.853,
+    "cold": 19.31,
+    "warm": 16.5
+   },
+   "aggregate_tps": {
+    "without": 1285.28,
+    "cold": 1199.97,
+    "warm": 1840.885
+   },
+   "normalized_tps": {
+    "without": 42.843,
+    "cold": 39.999,
+    "warm": 61.363
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      3.9282,
+      3.9383,
+      3.9364
+     ]
+    }
+   }
+  },
+  {
+   "model": "GPT-OSS-20B",
+   "output": 1024,
+   "np": 30,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 10555.913,
+    "cold": 12493.07,
+    "warm": 1598.605
+   },
+   "tpot_ms": {
+    "without": 29.12,
+    "cold": 29.31,
+    "warm": 24.78
+   },
+   "aggregate_tps": {
+    "without": 745.4,
+    "cold": 702.1,
+    "warm": 1341.28
+   },
+   "normalized_tps": {
+    "without": 24.847,
+    "cold": 23.403,
+    "warm": 44.709
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      10.5608,
+      10.5468,
+      10.5601
+     ]
+    }
+   }
+  }
+ ],
+ "source_file": "benchmark logs of the PRO6000 aiDAPTIV 3.05 run"
+}

@@ -9,7 +9,7 @@ const METRICS={
  normalized_tps:{short:"TPS (Normalized)",zh:"每請求每秒輸出 token",unit:"tok/s",higher:true},
  aggregate_tps:{short:"TPS (Aggregate)",zh:"NP 個請求合計每秒輸出 token",unit:"tok/s",higher:true}};
 const SERIES=[{key:"without",label:"Without aiDAPTIV",sum:"Without",color:"#8f9bff"},{key:"cold",label:"Cold (Run1)",sum:"Cold",color:"#ff8a4c"},{key:"warm",label:"Warm (Run2/3 avg)",sum:"Warm",color:"#4fd1b0"}];
-const INPUTS=[1024,2048,4096,8192,16384],kn=n=>n/1024+"K";
+let INPUTS=[1024,2048,4096,8192,16384];const kn=n=>n/1024+"K",ko=o=>o>=1024?o/1024+"K":String(o);
 let DS,MODEL,OUT,NP;
 const runs=()=>DS.pro6000_runs;
 const models=()=>[...new Set(runs().map(r=>r.model))];
@@ -21,7 +21,7 @@ function card(group,items,cur){return items.map(([k,l])=>`<button type="button" 
 function controls(){
  MODEL=pick(models(),MODEL);OUT=pick(outs(MODEL),OUT);NP=pick(nps(MODEL,OUT),NP);
  $s("pModel").innerHTML=card("model",models().map(m=>[m,m]),MODEL);
- $s("pOut").innerHTML=card("out",outs(MODEL).map(o=>[o,"Output "+(o/1024)+"K"]),OUT);
+ $s("pOut").innerHTML=card("out",outs(MODEL).map(o=>[o,"Output "+ko(o)]),OUT);
  $s("pNp").innerHTML=card("np",nps(MODEL,OUT).map(n=>[n,"NP"+n]),NP);
  document.querySelectorAll("#secPick .cmp-tabs button").forEach(b=>b.onclick=()=>{const g=b.dataset.g;if(g==="model")MODEL=b.dataset.k;if(g==="out")OUT=+b.dataset.k;if(g==="np")NP=+b.dataset.k;render()});
 }
@@ -29,7 +29,7 @@ function metrics(){
  const w=Math.max(320,($s("pMetrics").clientWidth||860)-100);
  $s("pMetrics").innerHTML=BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:INPUTS.map(i=>({label:kn(i),sub:i.toLocaleString("en-US"),i})),series:SERIES,
   get:(mk,g)=>{const r=cell(g.i);if(!r)return null;const key=k==="ttft_s"?"ttft_ms":k,v=r[key]&&r[key][mk];if(!Number.isFinite(v))return null;return {[k]:k==="ttft_s"?v/1000:v}},
-  baseline:"without",width:w,context:`${MODEL} · Output ${OUT/1024}K · NP${NP}`,message:"",tableNote:"差異以 Without aiDAPTIV 為基準；綠色 + 表示較佳、紅色 − 表示較差"})));
+  baseline:"without",width:w,context:`${MODEL} · Output ${ko(OUT)} · NP${NP}`,message:"",tableNote:"差異以 Without aiDAPTIV 為基準；綠色 + 表示較佳、紅色 − 表示較差"})));
 }
 function notes(){
  const p=DS.profile;
@@ -53,24 +53,33 @@ function table(){
  const rows=INPUTS.map(i=>{const r=cell(i);if(!r)return `<tr class="st-ovrow"><td>${kn(i)}</td><td colspan="12"><span class="st-wait">未測 Not tested</span></td></tr>`;
   return `<tr><td>${kn(i)}</td>${SERIES.map(s=>f(r,"ttft_ms",s.key,2)).join("")}${SERIES.map(s=>f(r,"tpot_ms",s.key,1)).join("")}${SERIES.map(s=>f(r,"normalized_tps",s.key,1)).join("")}${SERIES.map(s=>f(r,"aggregate_tps",s.key,1)).join("")}</tr>`}).join("");
  const grp=(t,u)=>`<th class="l" colspan="3">${t}<small>${u}</small></th>`;
- $s("pTableSub").textContent=`${MODEL} · Output ${OUT/1024}K · NP${NP} · Without / Cold / Warm 並排；「—」= 該欄沒有資料。`;
+ $s("pTableSub").textContent=`${MODEL} · Output ${ko(OUT)} · NP${NP} · Without / Cold / Warm 並排；「—」= 該欄沒有資料。`;
  $s("pTable").innerHTML=`<thead><tr><th rowspan="2">Input</th>${grp("TTFT","s")}${grp("TPOT","ms")}${grp("TPS Norm","tok/s/請求")}${grp("Aggregate","tok/s")}</tr><tr>${[0,1,2,3].map(()=>SERIES.map(s=>`<th>${esc(s.sum)}</th>`).join("")).join("")}</tr></thead><tbody>${rows}</tbody>`;
 }
 function cover(){
- const rows=models().flatMap(m=>outs(m).map(o=>{const n=nps(m,o);return `<tr><td>${esc(m)}</td><td>Output ${o/1024}K</td><td>NP${n.join(" / NP")} · ${runs().filter(r=>r.model===m&&r.output===o).length} 組</td></tr>`})).join("");
+ const rows=models().flatMap(m=>outs(m).map(o=>{const n=nps(m,o);return `<tr><td>${esc(m)}</td><td>Output ${ko(o)}</td><td>NP${n.join(" / NP")} · ${runs().filter(r=>r.model===m&&r.output===o).length} 組</td></tr>`})).join("");
  $s("pCover").innerHTML=`<thead><tr><th>Model</th><th>Output</th><th class="l">PRO6000 已有資料</th></tr></thead><tbody>${rows}</tbody>`;
 }
 function repeats(){
  const el=$s("pRepeat");if(!el||typeof RC==="undefined")return;
- el.innerHTML=RC.html({width:el.clientWidth,machines:[{key:"without",label:"Without aiDAPTIV",color:SERIES[0].color}],runsFor:()=>runs().filter(r=>r.model===MODEL&&r.output===OUT&&r.np===NP&&r.repeats&&r.repeats.without).map(r=>({np:r.np,input:r.input,repeats:{ttft_s:r.repeats.without.ttft_s}})),metric:"ttft_s",inputs:INPUTS,np:NP,title:`${MODEL} · Output ${OUT/1024}K · NP${NP}`});
+ el.innerHTML=RC.html({width:el.clientWidth,machines:[{key:"without",label:"Without aiDAPTIV",color:SERIES[0].color}],runsFor:()=>runs().filter(r=>r.model===MODEL&&r.output===OUT&&r.np===NP&&r.repeats&&r.repeats.without).map(r=>({np:r.np,input:r.input,repeats:{ttft_s:r.repeats.without.ttft_s}})),metric:"ttft_s",inputs:INPUTS,np:NP,title:`${MODEL} · Output ${ko(OUT)} · NP${NP}`});
  RC.bind(el);
 }
 function render(){controls();params();metrics();table();cover();repeats();notes()}
 document.addEventListener("hvopen",()=>repeats());
-fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
+const loaded=(d,file)=>{DS=d;if(window.PRO_DATA_FILE)INPUTS=[...new Set(runs().map(r=>r.input))].sort((a,b)=>a-b);const dl=$s("pDl");if(dl)dl.href=file||"#";render();
+ $s("pFoot").textContent=window.PRO_DATA_FILE?liveText(d):`資料更新至 ${DS.evidence_until}；由 data/benchmark-registry.json 登錄的 PRO6000 資料集自動帶入。`};
+const liveText=d=>{const p=d.progress||{},f=k=>p[k]?`${p[k].done}/${p[k].total}`:"—";return `${d.live?"測試進行中，頁面每 15 秒自動更新（不用重新整理）":"測試完成"} · Without ${f("without")} · With aiDAPTIV ${f("with")} · 更新 ${d.updated}`};
+const getJson=f=>fetch(f+(f.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(f+" "+r.status);return r.json()});
+if(window.PRO_DATA_FILE){
+ const f=window.PRO_DATA_FILE;let last="";
+ const tick=()=>getJson(f).then(d=>{const sig=JSON.stringify([d.updated,d.pro6000_runs.length]);if(sig!==last){last=sig;loaded(d,f)}else if($s("pFoot"))$s("pFoot").textContent=liveText(d);$s("stErr").textContent="";if(!d.live&&window.__poll){clearInterval(window.__poll);window.__poll=null}}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
+ tick();window.__poll=setInterval(tick,15000);
+}else fetch("data/benchmark-registry.json",{cache:"no-store"}).then(r=>r.json()).then(reg=>{
  const e=(reg.single_machines||[]).find(x=>x.machine==="pro6000");if(!e)throw new Error("registry: pro6000 missing");
  window.__pfile=e.file;return fetch(e.file,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(e.file+" "+r.status);return r.json()})
-}).then(d=>{DS=d;$s("pDl").href=window.__pfile||"#";render();$s("pFoot").textContent=`資料更新至 ${DS.evidence_until}；由 data/benchmark-registry.json 登錄的 PRO6000 資料集自動帶入。`}).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
+}).then(d=>loaded(d,window.__pfile)).catch(e=>{$s("stErr").textContent="載入失敗："+e.message});
+
 /* Preflight record (runner, manifest, image, model files): data/pro6000-preflight.json, written after each preflight */
 fetch("data/pro6000-preflight.json",{cache:"no-store"}).then(r=>r.json()).then(p=>{
  const mono=v=>`<code>${esc(v)}</code>`,row=(k,v)=>`<tr><th>${k}</th><td>${v}</td></tr>`;

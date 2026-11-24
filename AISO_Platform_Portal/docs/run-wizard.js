@@ -102,7 +102,8 @@
     { en: "Weights", zh: "權重", opts: [["qat", "QAT (Gemma Q4_0)", "QAT", "needs the official QAT GGUF 需先下載官方 QAT 模型檔", "Quantization-aware trained Gemma weights", "量化感知訓練的 Gemma 權重"],
                                       ["nvfp4", "NVFP4", "NVFP4", "needs vLLM / TensorRT-LLM 需換引擎", "NVIDIA 4-bit float weights", "NVIDIA 4 位元浮點權重"]] },
     { en: "Decoding", zh: "解碼", opts: [["mtp", "MTP", "MTP 推測解碼", "needs MTP weights 需 MTP 權重", "Speculative decoding with a draft head", "用草稿頭做推測解碼"]] }];
-  const OPT_LABEL = k => { for (const g of OPT_GROUPS) for (const o of g.opts) if (o[0] === k) return g.en + " " + o[1]; return k; };
+  const OPT_EXTRA = { qat: "QAT Q4_0", mtp: "QAT + MTP", mtp_q4km: "MTP (Q4_K_M)" };
+  const OPT_LABEL = k => { if (OPT_EXTRA[k]) return OPT_EXTRA[k]; for (const g of OPT_GROUPS) for (const o of g.opts) if (o[0] === k) return g.en + " " + o[1]; return k; };
   const hasOpt = () => EXEC.machine === "pro6000_llamacpp" && !!EXEC.stdspec;
   function optNote() {
     const s = EXEC.status || {}, q = (s.queued || []).length;
@@ -114,14 +115,68 @@
     if (S()[st.step][0] !== "run") return "";      // the test kinds (Smoke / Standard / KV cache) appear only after the engine and the model are chosen - the same on every machine (David 2026-11-18)
     const m = mergedOf(EXEC.status || {}), ids = Object.keys(m), pass = ids.filter(k => m[k].state === "pass").length;
     const k = (kind, n, en, zh, note) => `<li><button type="button" class="rw-kind${EXEC.kind === kind ? " sel" : ""}" data-act="ekind" data-kind="${kind}"><span class="rw-kn">Step ${n}</span><b>${en}<small class="zhs">${zh}</small></b><em>${note}</em></button></li>`;
-    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${hasOpt() ? k("optimize", 3, "Optimize Test", "優化測試", optNote()) : ""}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>${optKindsHtml()}`;
+    return `<ol class="rw-kinds">${k("smoke", 1, "Smoke Test", "冒煙測試", ids.length ? `${pass}/${ids.length} PASS` : "")}${k("standard", 2, "Standard Test", "標準測試", stdNote())}${hasOpt() ? k("optimize", 3, "Optimize Test", "優化測試", optNote()) : ""}${baseOf(EXEC.machine) === "gb10" && window.GbPanel ? k("gb10m", 3, "Weight Quantization Test", "權重量化測試", window.GbPanel.note()) : ""}${baseOf(EXEC.machine) === "aiso1" && window.KvPanel ? k("kvcache", 3, "KV cache Test", "KV cache 測試", window.KvPanel.note()) : ""}</ol>`;
   }
-  // GB10: MTP and QAT are a category of their own (not Step 4/5): "Optimization tests"
-  function optKindsHtml() {
-    if (baseOf(EXEC.machine) !== "gb10" || !window.GbOpt) return "";
-    const o = (kind, en, zh) => `<li><button type="button" class="rw-kind${EXEC.kind === kind ? " sel" : ""}" data-act="ekind" data-kind="${kind}"><b>${en}<small class="zhs">${zh}</small></b></button></li>`;
-    const n = window.GbOpt.note();
-    return `<p class="rw-optcat">Optimization tests<small class="zhs">優化測試</small>${n ? ` · ${n}` : ""}</p><ol class="rw-kinds rw-opt">${o("gb10mtp", "MTP test", "MTP 測試")}${o("gb10qat", "QAT test", "QAT 測試")}</ol>`;
+  // aiDAPTIV has its own zone under the llama.cpp steps (David 2026-11-24: 「aiDAPTIV要有屬於自己的一區」). Read-only status of the aiDAPTIV 3.05 test, polled from the live dataset; each row opens the result page C.
+  const AID = { d: null, sig: "", on: false, sel: "" };
+  function aidLoad() {
+    fetch("data/benchmark-pro6000/AISO_PRO6000_aiDAPTIV305_GPTOSS20B_live.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(d => {
+      const sig = d ? JSON.stringify([d.updated, d.progress]) : "";
+      if (sig !== AID.sig) { AID.sig = sig; AID.d = d; render(); } aidFeed();
+    }).catch(() => {});
+  }
+  function aidHtml() {
+    if (machineId() !== "pro6000" || S()[st.step][0] !== "run") return "";
+    if (!AID.on) { AID.on = true; aidLoad(); setInterval(aidLoad, 5000); }
+    const p = (AID.d && AID.d.progress) || null, w = p ? p.without : { done: 0, total: 27 }, a = p ? p.with : { done: 0, total: 27 };
+    const row = (n, en, zh, note, cls) => `<li><button type="button" class="rw-kind ${cls}${AID.sel === n ? " sel" : ""}" data-act="aid" data-aid="${n}"><span class="rw-kn">${n}</span><b>${en}<small class="zhs">${zh}</small></b><em>${note}</em></button></li>`;
+    const st3 = x => x.done >= x.total && x.total ? "PASS" : x.done ? `${x.done}/${x.total}` : bi("Queued", "排隊中");
+    return `<p class="rw-aidh">aiDAPTIV 3.05<small class="zhs">GPT-OSS-20B · ${bi("own zone", "獨立測試區")}</small></p><ol class="rw-kinds rw-aid">`
+      + row("A1", "Preflight", "預檢", p ? "PASS" : "—", p ? "ok" : "")
+      + row("A2", "Smoke Test", "冒煙測試", w.done ? "PASS" : "—", w.done ? "ok" : "")
+      + row("A3", "Standard", "標準測試", st3(w), w.done >= w.total && w.total ? "ok" : w.done ? "run" : "")
+      + row("A4", "aiDAPTIV", "啟用 aiDAPTIV", st3(a), a.done >= a.total && a.total ? "ok" : a.done ? "run" : "")
+      + `</ol>`;
+  }
+  // the ONE Run log (bottom of the page) follows the selected zone: llama.cpp lines normally, the aiDAPTIV 3.05 run while an aiDAPTIV step (A1-A4) is selected
+  const AIDLOG = { shown: false, lines: "" };
+  function aidFeed() {
+    const body = $("termBody"); if (!body) return;
+    if (!window.__tlogWrapped && typeof window.tlog === "function") {      // while the aiDAPTIV run is shown nothing else may write into the Run log (status poll, hints, "Last smoke test")
+      const orig = window.tlog; window.__tlogWrapped = true; window.tlog = function (t, c) { if (AIDLOG.shown) return; return orig.call(this, t, c); };
+    }
+    const on = !!(AID.sel && machineId() === "pro6000" && S()[st.step][0] === "run"), hb = $("termPanel") && $("termPanel").querySelector("header b");
+    if (!on) { if (AIDLOG.shown) { AIDLOG.shown = false; AIDLOG.lines = ""; body.textContent = ""; EXEC.seen = new Set(); EXEC.doneNote = false; if (hb) hb.textContent = "RUN LOG"; } return; }
+    const d = AID.d || {}, p = d.progress || {}, lines = (p.log_tail || []).filter(l => !/^\[/.test(l)).join("\n") + "|" + (p.current || "");
+    if (AIDLOG.shown && AIDLOG.lines === lines && body.textContent.trim()) return;      // rewrite when something cleared the box
+    AIDLOG.shown = true; AIDLOG.lines = lines;
+    const tm = (d.updated || "").slice(11) || new Date().toTimeString().slice(0, 8), mk = (t, c) => `<span class="tl ${c || ""}"><i>${tm}</i> ${esc(t)}</span>\n`;
+    body.innerHTML = mk("aiDAPTIV 3.05 · " + (p.current ? p.current : d.live === false ? "finished" : "waiting")) + (p.log_tail || []).filter(l => !/^\[/.test(l)).map(l => mk(l.replace(/^=+\s*/, "").replace(/\s*=+$/, ""), /FAIL|Traceback|Error/.test(l) ? "err" : "")).join("");
+    body.scrollTop = body.scrollHeight;
+    if (hb) hb.textContent = "RUN LOG · aiDAPTIV 3.05";
+    const ts2 = $("termState"); if (ts2) ts2.textContent = d.live ? "running" : "done";
+  }
+  function aidPanel() {
+    const d = AID.d || {}, p = d.progress || {}, w = p.without || { done: 0, total: 0 }, a = p.with || { done: 0, total: 0 }, per = p.per_cell || 27, bm = p.by_model || {};
+    const step = AID.sel, mode = step === "A4" ? "with" : "without", mine = mode === "with" ? a : w;
+    const kv = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
+    const titles = { A1: bi("Preflight", "預檢"), A2: bi("Smoke test", "冒煙測試"), A3: bi("Standard test", "標準測試"), A4: bi("aiDAPTIV test", "啟用 aiDAPTIV 測試") };
+    const sum = fold("asum", bi("Summary", "摘要") + `<small class="zhs">${bi("machine · models · test", "機器 · 模型 · 測試")}</small>`, `<dl class="rw-sum">${kv("Machine", "PRO6000 · GPU 1 only")}${kv("Middleware", "aiDAPTIV NXUNA305A1 · vLLM 0.25.1")}${kv("Models", "GPT-OSS-20B")}${kv("Precision", "original")}</dl>`, true);
+    const par = fold("apar", bi("Parameters", "測試參數") + `<small class="zhs">4096/8192/16384 × NP 1/10/30</small>`, `<dl class="rw-sum">${kv("Input", "4096 / 8192 / 16384")}${kv("NP", "1 / 10 / 30")}${kv("Output", "1024 and 256")}${kv("Repeat", "3 runs (Without: average of 3 · Cold: Run1 · Warm: average of Run2/3)")}${kv("Max model len", "20000 · prefix cache off (--disable-gpu-reuse)")}</dl>`, false);
+    const ORDER = [["GPT-OSS-20B", "1024"], ["Gemma-4-31B", "1024"], ["Laguna-XS-2.1", "1024"], ["Nemotron-3.5-30B", "1024"], ["Gemma-4-26B", "1024"],
+                   ["GPT-OSS-20B", "256"], ["Gemma-4-26B", "256"], ["Gemma-4-31B", "256"], ["Laguna-XS-2.1", "256"], ["Nemotron-3.5-30B", "256"]];      // the real run order on the machine
+    const prog = (mode2) => ORDER.filter(([m]) => bm[m]).map(([m, o], i) => { const n = ((bm[m] || {})[o] || {})[mode2] || 0, retry = m === "Gemma-4-26B" && o === "1024" && !n, st = n >= per ? "PASS" : n ? bi("Running", "進行中") : retry ? bi("Retry queued", "補跑排隊中") : bi("Queued", "排隊中"); return `<div><dt>${i + 1}. ${esc(m)} · ${o === "1024" ? "Out 1K" : "Out " + o}</dt><dd>${n}/${per} · ${st}</dd></div>`; }).join("");
+    const models = fold("amod", bi("Models", "模型") + `<small class="zhs">${bi("progress per model", "各模型進度")}</small>`, `<dl class="rw-sum">${prog(mode) || "<div><dt>—</dt><dd>—</dd></div>"}</dl>`, true);
+    const ago = d.updated ? Math.max(0, Math.round((Date.now() - new Date(d.updated.replace(" ", "T")).getTime()) / 1000)) : null;
+    const now = `<p class="rw-next">${d.live === false ? bi("Finished", "已完成") : bi("Running now", "目前進行") + ": " + esc((p.job || "—") + (p.current ? " · last result: " + p.current : ""))}${ago != null ? ` · ${bi("updated", "更新於")} ${ago}s ${bi("ago", "前")}` : ""}</p>`;
+    const run = fold("arun", bi("This run", "本次測試") + `<small class="zhs">${esc(d.updated || "")}</small>`, `<dl class="rw-sum">${kv("Standard (Without)", `${w.done}/${w.total}`)}${kv("aiDAPTIV (With)", `${a.done}/${a.total}`)}${kv("Excluded runs", ((p.invalid || []).length) + " (model stopped early)")}${kv("Updated", d.updated || "—")}</dl>`, false);
+    const checks = ["GPU 1 was free before each model (the run aborts if it is not)", "GPU 1 is pinned by its UUID: the container is privileged and would otherwise see all 8 GPUs", "FlashInfer sampler is off in both modes (no CUDA toolkit in the image)", "MoE models use the Triton MoE backend (no nvcc for the FlashInfer one)", "Client script patched for vLLM 0.25.1 (MultiModalDataDict moved)"];
+    let body;
+    if (step === "A1") body = sum + fold("achk", bi("Checks", "檢查項目") + `<small class="zhs">PASS</small>`, `<ul class="rw-ul">${checks.map(c => `<li>${esc(c)}</li>`).join("")}</ul>`, true);
+    else if (step === "A2") body = sum + fold("achk", bi("First request", "第一筆請求") + `<small class="zhs">${w.done ? "PASS" : "—"}</small>`, `<p class="rw-msg">${w.done ? bi("The server started and answered the first conditions (GPT-OSS-20B, NP1, 4K).", "伺服器已啟動，並回應第一批條件（GPT-OSS-20B、NP1、4K）。") : bi("Not run yet.", "尚未執行。")}</p>`, true);
+    else body = sum + par + now + models + run;
+    return { title: titles[step] || titles.A3, ok: false, last: true, next: "",
+      body: `<div class="rw-aidp">${body}<div class="rw-row"><a class="rw-btn" href="stress-test-pro6000-305.html">${bi("Open the result page", "開啟結果頁")} →</a></div></div>` };
   }
   // same wording as machine-picker.js on the hub (kept in step by hand: two machines)
   const HUBCARD = {
@@ -138,9 +193,10 @@
     const hub = HUBCARD[machineId()];
     if (hub) {      // the same left side as the Benchmark hub (vendor · scale, name, spec, chips), so going from one screen to the next only changes the right side; the first chip is the machine state instead of "Online"
       const busy = EXEC.status && EXEC.status.busy;
-      const state = WEB && !EXEC.on ? "" : !EXEC.on && !EXEC.loading ? `<span class="mw-chip off">${bi("● Not loaded", "未載入")}</span>` : !EXEC.status ? `<span class="mw-chip wait">${bi("● Checking", "檢查中")}</span>` : busy ? `<span class="mw-chip busy">${bi("● Busy", "忙碌中")}</span>` : EXEC.status.kv_running ? `<span class="mw-chip busy">${bi("● KV cache test running", "KV cache 測試中")}</span>` : EXEC.status.external ? `<span class="mw-chip busy">${bi("● In use by others", "他人使用中")}</span>` : `<span class="mw-chip on">${bi("● Idle", "閒置")}</span>`;
+      const ours = AID.d && AID.d.live && AID.d.updated && Date.now() - new Date(AID.d.updated.replace(" ", "T")).getTime() < 120000, state0 = ours ? `<span class="mw-chip on">${bi("● aiDAPTIV test running", "● aiDAPTIV 測試進行中")}</span>` : "";
+      const state = ours ? state0 : WEB && !EXEC.on ? "" : !EXEC.on && !EXEC.loading ? `<span class="mw-chip off">${bi("● Not loaded", "未載入")}</span>` : !EXEC.status ? `<span class="mw-chip wait">${bi("● Checking", "檢查中")}</span>` : busy ? `<span class="mw-chip busy">${bi("● Busy", "忙碌中")}</span>` : EXEC.status.kv_running ? `<span class="mw-chip busy">${bi("● KV cache test running", "KV cache 測試中")}</span>` : EXEC.status.external ? `<span class="mw-chip busy">${bi("● In use by others", "他人使用中")}</span>` : `<span class="mw-chip on">${bi("● Idle", "閒置")}</span>`;
       return `<p class="mw-kicker">${esc(hub.vendor)} · ${bi(hub.tier[0], hub.tier[1])}</p><h2 class="mw-big">${esc(hub.name)}</h2><p class="mw-spec">${esc(hub.spec)}</p>
-      <div class="mw-chips">${state}${engChip}${EXEC.needLocal ? `<span class="mw-chip off">${bi("View only", "僅檢視")}</span>` : ""}</div>${kindsHtml()}`;
+      <div class="mw-chips">${state}${engChip}${EXEC.needLocal ? `<span class="mw-chip off">${bi("View only", "僅檢視")}</span>` : ""}</div>${kindsHtml()}${aidHtml()}`;
     }
     return `<p class="mw-kicker">${bi("Run benchmark", "實測")}${tier ? " · " + esc(tier) : ""}</p><div class="rw-namerow"><h2 class="mw-big">${esc(name)}</h2></div>
       <p class="mw-spec">${esc(card ? card.textContent : "")}</p>
@@ -149,6 +205,7 @@
 
   function question() {
     const id = S()[st.step][0];
+    if (AID.sel && machineId() === "pro6000" && id === "run") return aidPanel();
     if (WEB && !EXEC.on && HUBCARD[machineId()]) return { title: bi("Contact us to get a License", "請與客服人員聯繫取得 License"), ok: false, auto: true, next: "",
       body: `<p class="rw-msg">${bi("A License is needed to run a live test. Our team will set it up for you.", "實機測試需要 License，請與客服人員聯繫取得。")}</p>${snapHtml()}` };
     if (!EXEC.on && !EXEC.loading && HUBCARD[machineId()]) {     // the executor did not answer: say so, instead of showing the old "Detect models" flow that cannot work here
@@ -165,7 +222,6 @@
           EXEC.models.map(m => opt("xm:" + m.id, `<b>${esc(m.id)}</b>`, esc(specText(m.id)), pick === m.id)).join("") };
     }
     if (EXEC.on && id === "run" && EXEC.kind === "gb10m" && window.GbPanel) { window.GbPanel.init(render); return window.GbPanel.question(); }
-    if (EXEC.on && id === "run" && (EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbOpt) { window.GbOpt.init(render); return window.GbOpt.question(EXEC.kind); }
     if (EXEC.on && id === "run" && EXEC.kind === "kvcache" && window.KvPanel) { window.KvPanel.init(render); return window.KvPanel.question(); }
     if (EXEC.on && id === "run" && (EXEC.kind === "standard" || EXEC.kind === "optimize")) {
       const opt = EXEC.kind === "optimize"; EXEC.variant = EXEC.variant || "kv_q8";
@@ -243,7 +299,7 @@
     // the Run log is moved out and back on every redraw, which resets its scroll to the top: remember where the reader was (at the bottom = keep following the new lines)
     const tb = $("termBody"), keep = tb && tb.isConnected ? { top: tb.scrollTop, bottom: tb.scrollHeight - tb.scrollTop - tb.clientHeight < 120 } : null;
     parkConnect(); parkTerm(); parkProgress();
-    document.body.dataset.rwStep = S()[st.step][0];      // run-progress.css shows the Progress / Run log block only on the "run" step (after the model and the test were chosen)
+    document.body.dataset.rwStep = (AID.sel && machineId() === "pro6000" && S()[st.step][0] === "run") ? "aid" : S()[st.step][0];      // "aid": the llama.cpp Progress block is hidden, the Run log stays and follows the aiDAPTIV run      // run-progress.css shows the Progress / Run log block only on the "run" step (after the model and the test were chosen)
     const q = question(), bars = S().map((_, i) => `<span class="${i <= st.step ? "on" : ""}"></span>`).join("");
     root.innerHTML = `<div class="mw"><div class="mw-stage">${stage()}</div><div class="mw-panel"><div class="mw-bars" aria-label="Step ${st.step + 1} of ${S().length}">${bars}</div>
       ${EXEC.on && EXEC.status && EXEC.status.busy && S()[st.step][0] !== "run" ? benchHtml() : ""}
@@ -267,6 +323,7 @@
       // notices belong in the Terminal, not on the card
       if (!EXEC.hinted && typeof tlog === "function") { EXEC.hinted = true; tlog("The test password is asked first. Nothing runs without it. 開始前會先要求輸入測試密碼，沒有密碼不會執行。"); }
     }
+    aidFeed();
   }
 
   function pick(id) {
@@ -396,9 +453,9 @@
   }
   function streamToTerminal(s) {
     streamPrep(s);
-    if (!s || !s.ok || EXEC.kind === "kvcache" || EXEC.kind === "gb10m" || EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") return;      // the KV cache panel writes its own log into the Run log
+    if (!s || !s.ok || EXEC.kind === "kvcache" || EXEC.kind === "gb10m") return;      // the KV cache panel writes its own log into the Run log
     window.__rwBusy = !!s.busy;
-    const ts = document.getElementById("termState"); if (ts) ts.textContent = s.busy ? "running" : (EXEC.watch ? "done" : "idle");
+    const ts = document.getElementById("termState"); if (ts) ts.textContent = AIDLOG.shown ? (AID.d && AID.d.live ? "running" : "done") : s.busy ? "running" : (EXEC.watch ? "done" : "idle");
     if (s.busy && !EXEC.watch) EXEC.watch = true;
     if (!EXEC.watch) {      // page opened after a run: show the last run once, in the Terminal
       const pr = progressOf(s), ids = Object.keys(pr);
@@ -576,6 +633,7 @@
   }
   // arrived from the Benchmark menu while a test is running: open the engine that is running, on its Run step (where the Run log is)
   function applyJump() {
+    try { const g = JSON.parse(sessionStorage.getItem("aiso-aid-go") || "null"); if (g && machineId() === "pro6000" && Date.now() - g.t < 20000) { sessionStorage.removeItem("aiso-aid-go"); AID.sel = g.sel || "A3"; st.step = 2; return true; } } catch (e) {}
     let j = null; try { j = JSON.parse(sessionStorage.getItem("aiso-jump") || "null"); sessionStorage.removeItem("aiso-jump"); } catch (e) { return false; }
     if (!j || !j.machine || Date.now() - j.t > 20000 || baseOf(j.machine) !== machineId()) return false;
     EXEC.kindSet = false; if (j.machine !== (EXEC.execId || machineId())) switchEngine(j.machine);
@@ -629,18 +687,19 @@
       else if (b) { st.step = Math.max(0, st.step - 1); render(); }
       else if (a && !a.disabled) {
         const act = a.dataset.act;
-        if (act === "next") { st.step = Math.min(S().length - 1, st.step + 1); render(); }
+        if (act === "ekind") AID.sel = "";
+        if (act === "aid") { AID.sel = a.dataset.aid; render(); }
+        else if (act === "next") { st.step = Math.min(S().length - 1, st.step + 1); render(); }
         else if (act === "discover") { $("liveDiscover").click(); }
         else if (act === "eretry") { EXEC.loading = true; EXEC.msg = ""; render(); detectExec().then(() => { EXEC.loading = false; render(); }); }
         else if (act === "ebase") { switchEngine(machineId()); }
         else if (act === "epdd") { EXEC.pdOpen = !EXEC.pdOpen; render(); }
         else if (act === "eparamreset") { resetParams(); render(); }
-        else if (act === "ekind") { EXEC.kindUser = true; const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { const gbk = k => k === "gb10m" || k === "gb10mtp" || k === "gb10qat"; if (gbk(EXEC.kind) && !gbk(was)) window.GbPanel.attachTerminal(); else if (!gbk(EXEC.kind)) window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
+        else if (act === "ekind") { EXEC.kindUser = true; const was = EXEC.kind; EXEC.kind = a.dataset.kind; if (window.GbPanel) { if (EXEC.kind === "gb10m" && was !== "gb10m") window.GbPanel.attachTerminal(); else if (EXEC.kind !== "gb10m") window.GbPanel.detachTerminal(); } if (window.KvPanel) { if (EXEC.kind === "kvcache" && was !== "kvcache") window.KvPanel.attachTerminal(); else if (EXEC.kind !== "kvcache") window.KvPanel.detachTerminal(); } render(); }
         else if (act === "gbw") { window.GbPanel.setWeights(a.dataset.w); }
         else if (act === "gbstart") { window.GbPanel.start(); }
         else if (act === "gbstop") { window.GbPanel.stop(); }
-        else if (act === "gboptsel") { window.GbOpt.select(a.dataset.cat, a.dataset.v); }
-        else if (act === "erefresh") { if ((EXEC.kind === "gb10m" || EXEC.kind === "gb10mtp" || EXEC.kind === "gb10qat") && window.GbPanel) window.GbPanel.load(); loadExecStatus(); if (EXEC.kind === "kvcache" && window.KvPanel) window.KvPanel.load(); }
+        else if (act === "erefresh") { if (EXEC.kind === "gb10m" && window.GbPanel) window.GbPanel.load(); loadExecStatus(); if (EXEC.kind === "kvcache" && window.KvPanel) window.KvPanel.load(); }
         else if (act === "kvstage") { window.KvPanel.setStage(a.dataset.stage); }
         else if (act === "kvstart") { window.KvPanel.start(a.dataset.stage, a.dataset.step); }
         else if (act === "kvstop") { window.KvPanel.stop(); }
