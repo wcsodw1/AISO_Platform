@@ -233,87 +233,695 @@ div:has(>.home-title-zh)>h2{color:var(--fashion-ivory,#f3efe5)!important}
 /* the word Decode in "TPS (Decode only)" is highlighted */
 .bv-h .bv-dec{font-style:normal;color:var(--gold,#d8c779);text-shadow:0 0 14px rgba(216,199,121,.45)}
 
-/* No rounded frames anywhere on the platform (David, 2026-11-24). Only the intentional circles (dots, brand mark, orbit rings) are re-asserted below, one rule each so a bad selector cannot drop the rest. */
+/* Small corner radius (David, 2026-11-24): everything is square by default, previously-rounded frames get a small 4px radius (no pills, no big curves); intentional circles keep 50%. One rule per selector so a bad selector cannot drop the rest. */
 *,*::before,*::after{border-radius:0!important}
-.agent-demo-sidebar footer i{border-radius:50%!important}
-.agent-orbit{border-radius:50%!important}
-.app-card-plus{border-radius:50%!important}
-.app-hub-ring{border-radius:50%!important}
-.benchmark-console li>span{border-radius:50%!important}
-.benchmark-console>header i{border-radius:50%!important}
-.bh-matrix li i{border-radius:50%!important}
-.brand-mark{border-radius:50%!important}
-.brand-site .category-card.is-home-orbiting .category-visual:before{border-radius:50%!important}
-.brand-site .category-card:before{border-radius:50%!important}
-.brand-site .category-card:nth-child(2):before{border-radius:50%!important}
-.brand-site .category-card:nth-child(3):before{border-radius:50%!important}
-.bs .bs-axis input[type=range]::-moz-range-thumb{border-radius:50%!important}
-.bs .bs-axis input[type=range]::-webkit-slider-thumb{border-radius:50%!important}
-.bs .bs-let{border-radius:50%!important}
-.bs .bs-pt{border-radius:50%!important}
-.bs .bs-stp i{border-radius:50%!important}
-.button.bh-btn .bh-arrow{border-radius:50%!important}
-.case-stage-rail span{border-radius:50%!important}
-.category-card:after{border-radius:50%!important}
-.category-card:before{border-radius:50%!important}
-.category-foot:after{border-radius:50%!important}
-.category-projection-base{border-radius:50%!important}
-.consulting-card-top>b{border-radius:50%!important}
-.consulting-card:before{border-radius:50%!important}
-.consulting-flow>i{border-radius:50%!important}
-.ct-track b{border-radius:50%!important}
-.cursor-glow{border-radius:50%!important}
-.demo-platform{border-radius:50%!important}
-.demo-viewport i{border-radius:50%!important}
-.depth-glow{border-radius:50%!important}
-.depth-orbit{border-radius:50%!important}
-.depth-preview-badge i{border-radius:50%!important}
-.depth-shadow{border-radius:50%!important}
-.device-header:after{border-radius:50%!important}
-.dn-btn{border-radius:50%!important}
-.dn-x{border-radius:50%!important}
-.galaxy-disc{border-radius:50%!important}
-.galaxy-dust{border-radius:50%!important}
-.galaxy-glow{border-radius:50%!important}
-.gb-st i{border-radius:50%!important}
-.hero-summary{border-radius:50%!important}
-.hero-summary:after{border-radius:50%!important}
-.hero:after{border-radius:50%!important}
-.info{border-radius:50%!important}
-.interface-windowbar i{border-radius:50%!important}
-.kv-dot{border-radius:50%!important}
-.llama-send{border-radius:50%!important}
-.lm-next li:before{border-radius:50%!important}
-.lm-point-h i{border-radius:50%!important}
-.lr .lr-ef li>i{border-radius:50%!important}
-.lr .lr-fn h4 i{border-radius:50%!important}
-.lr .lr-fst i{border-radius:50%!important}
-.lr .lr-legend i{border-radius:50%!important}
-.lr .lr-light i{border-radius:50%!important}
-.lr .lr-steps li b{border-radius:50%!important}
-.lr .lr-stp i{border-radius:50%!important}
-.lr .p2-g th span{border-radius:50%!important}
-.machine-core{border-radius:50%!important}
-.product-media-placeholder:after{border-radius:50%!important}
-.product-media-placeholder:before{border-radius:50%!important}
-.product-media.has-image:after{border-radius:50%!important}
-.projection-base{border-radius:50%!important}
-.proof-tag i{border-radius:50%!important}
-.rp-st i{border-radius:50%!important}
-.rw-state i{border-radius:50%!important}
-.showreel-play{border-radius:50%!important}
-.showreel-play:after{border-radius:50%!important}
-.showreel-play:before{border-radius:50%!important}
-.st #secPick .cmp-pick>span em{border-radius:50%!important}
-.st .rp-legend i{border-radius:50%!important}
-.st .rp-tip i{border-radius:50%!important}
-.st-run-card i{border-radius:50%!important}
-.st-tier i{border-radius:50%!important}
-.tab-button:after{border-radius:50%!important}
-.tip{border-radius:50%!important}
-.tm-fly-max{border-radius:50%!important}
-.tm-fly-x{border-radius:50%!important}
-.upd-bar [data-x]{border-radius:50%!important}
-.v2-dot{border-radius:50%!important}
-.wq-leg i{border-radius:50%!important}
-.wq-tab .v2-sw{border-radius:50%!important}
+#legacyConfig input{border-radius:4px!important}
+#legacyConfig select{border-radius:4px!important}
+#livePanel input{border-radius:4px!important}
+#livePanel select{border-radius:4px!important}
+#livePanel textarea{border-radius:4px!important}
+#reportModelSelect{border-radius:4px!important}
+#tooltip{border-radius:4px!important}
+.about-contact{border-radius:4px!important}
+.access-actions button{border-radius:4px!important}
+.access-capability{border-radius:4px!important}
+.access-card{border-radius:4px!important}
+.access-field input{border-radius:4px!important}
+.access-tier{border-radius:4px!important}
+.agent-capability{border-radius:4px!important}
+.agent-composer{border-radius:4px!important}
+.agent-composer button{border-radius:4px!important}
+.agent-demo{border-radius:4px!important}
+.agent-demo-sidebar>button{border-radius:4px!important}
+.agent-stack span{border-radius:4px!important}
+.app-card{border-radius:4px!important}
+.app-card-glyph i{border-radius:4px!important}
+.app-card-room b{border-radius:4px!important}
+.app-card-room i:nth-child(1){border-radius:4px!important}
+.app-card-tags em{border-radius:4px!important}
+.app-card-top i{border-radius:4px!important}
+.app-card-ui{border-radius:4px!important}
+.app-card-ui i{border-radius:4px!important}
+.app-deck{border-radius:4px!important}
+.app-hub{border-radius:4px!important}
+.app-illustration{border-radius:4px!important}
+.app-illustration>span{border-radius:4px!important}
+.app-panel-close{border-radius:4px!important}
+.arch-node{border-radius:4px!important}
+.arch-pool{border-radius:4px!important}
+.ba .ba-chart{border-radius:4px!important}
+.ba .ba-chip{border-radius:4px!important}
+.ba .ba-filters select{border-radius:4px!important}
+.ba .ba-leg i{border-radius:4px!important}
+.ba .ba-more button{border-radius:4px!important}
+.ba .ba-params dl{border-radius:4px!important}
+.ba .ba-row{border-radius:4px!important}
+.ba .ba-tab{border-radius:4px!important}
+.ba .ba-wrap{border-radius:4px!important}
+.back-button{border-radius:4px!important}
+.badge{border-radius:4px!important}
+.benchmark-card{border-radius:4px!important}
+.benchmark-console{border-radius:4px!important}
+.benchmark-cta-grid article{border-radius:4px!important}
+.benchmark-evidence-schema{border-radius:4px!important}
+.benchmark-hero{border-radius:4px!important}
+.benchmark-highlight{border-radius:4px!important}
+.benchmark-lab-section{border-radius:4px!important}
+.benchmark-matrix{border-radius:4px!important}
+.benchmark-metrics{border-radius:4px!important}
+.benchmark-types a{border-radius:4px!important}
+.benchmark-why{border-radius:4px!important}
+.bh-flow span{border-radius:4px!important}
+.bh-grp{border-radius:4px!important}
+.bh-matrix article{border-radius:4px!important}
+.bh-matrix li{border-radius:4px!important}
+.bh-menu button{border-radius:4px!important}
+.bh-metrics div{border-radius:4px!important}
+.bh-proof article{border-radius:4px!important}
+.bh-wf{border-radius:4px!important}
+.bhub-metrics article{border-radius:4px!important}
+.bhub-proof article{border-radius:4px!important}
+.bm-auth span{border-radius:4px!important}
+.bm-back a{border-radius:4px!important}
+.bm-notice{border-radius:4px!important}
+.bm-proof{border-radius:4px!important}
+.bm-side{border-radius:4px!important}
+.bm-workspace{border-radius:4px!important}
+.br-chip{border-radius:4px!important}
+.br-go{border-radius:4px!important}
+.br-lc{border-radius:4px!important}
+.br-m{border-radius:4px!important}
+.br-mode{border-radius:4px!important}
+.br-noimg{border-radius:4px!important}
+.br-pane{border-radius:4px!important}
+.brand-hero{border-radius:4px!important}
+.brand-hero .hero-kicker{border-radius:4px!important}
+.brand-site .category-card{border-radius:4px!important}
+.brand-site .category-card .category-visual{border-radius:4px!important}
+.brand-site .category-card.is-home-orbiting .category-visual:after{border-radius:4px!important}
+.brand-site .category-card:nth-child(2){border-radius:4px!important}
+.brand-site .category-card:nth-child(3){border-radius:4px!important}
+.bs .bs-axis{border-radius:4px!important}
+.bs .bs-axis input[type=range]::-moz-range-track{border-radius:4px!important}
+.bs .bs-axis input[type=range]::-webkit-slider-runnable-track{border-radius:4px!important}
+.bs .bs-bar{border-radius:4px!important}
+.bs .bs-bar.open{border-radius:4px!important}
+.bs .bs-blk{border-radius:4px!important}
+.bs .bs-calcbtn{border-radius:4px!important}
+.bs .bs-card{border-radius:4px!important}
+.bs .bs-chk{border-radius:4px!important}
+.bs .bs-count{border-radius:4px!important}
+.bs .bs-dash{border-radius:4px!important}
+.bs .bs-dashbox{border-radius:4px!important}
+.bs .bs-dl2{border-radius:4px!important}
+.bs .bs-dn{border-radius:4px!important}
+.bs .bs-dtbl thead button{border-radius:4px!important}
+.bs .bs-dx{border-radius:4px!important}
+.bs .bs-fly-in{border-radius:4px!important}
+.bs .bs-form input{border-radius:4px!important}
+.bs .bs-form select{border-radius:4px!important}
+.bs .bs-fw{border-radius:4px!important}
+.bs .bs-grid td.lim{border-radius:4px!important}
+.bs .bs-ha{border-radius:4px!important}
+.bs .bs-hist{border-radius:4px!important}
+.bs .bs-id .bs-nophoto{border-radius:4px!important}
+.bs .bs-id img{border-radius:4px!important}
+.bs .bs-insum{border-radius:4px!important}
+.bs .bs-key{border-radius:4px!important}
+.bs .bs-lenbig{border-radius:4px!important}
+.bs .bs-level{border-radius:4px!important}
+.bs .bs-matrix td.mx{border-radius:4px!important}
+.bs .bs-mchip{border-radius:4px!important}
+.bs .bs-menu-bar{border-radius:4px!important}
+.bs .bs-more{border-radius:4px!important}
+.bs .bs-nch{border-radius:4px!important}
+.bs .bs-npp{border-radius:4px!important}
+.bs .bs-photo .bs-nophoto{border-radius:4px!important}
+.bs .bs-photo img{border-radius:4px!important}
+.bs .bs-pkrow{border-radius:4px!important}
+.bs .bs-pksel select{border-radius:4px!important}
+.bs .bs-pop{border-radius:4px!important}
+.bs .bs-pop .bs-fwrow{border-radius:4px!important}
+.bs .bs-qp{border-radius:4px!important}
+.bs .bs-quant b{border-radius:4px!important}
+.bs .bs-rc{border-radius:4px!important}
+.bs .bs-rc-row{border-radius:4px!important}
+.bs .bs-setrow{border-radius:4px!important}
+.bs .bs-setsum{border-radius:4px!important}
+.bs .bs-settbl tbody td:last-child{border-radius:4px!important}
+.bs .bs-settbl tbody th{border-radius:4px!important}
+.bs .bs-spd{border-radius:4px!important}
+.bs .bs-spdbtn{border-radius:4px!important}
+.bs .bs-step{border-radius:4px!important}
+.bs .bs-tag{border-radius:4px!important}
+.bs .bs-tip{border-radius:4px!important}
+.bs .bs-why-link{border-radius:4px!important}
+.bs-dlg .bs-fm{border-radius:4px!important}
+.bs-dlg .bs-st{border-radius:4px!important}
+.bs-dlg.bs-calcin{border-radius:4px!important}
+.bs-dlg.bs-curtain{border-radius:4px!important}
+.bs-step{border-radius:4px!important}
+.button{border-radius:4px!important}
+.button.bh-btn{border-radius:4px!important}
+.button.bs-entry{border-radius:4px!important}
+.button.secondary{border-radius:4px!important}
+.bv-group{border-radius:4px!important}
+.bv-mh{border-radius:4px!important}
+.bv-mode{border-radius:4px!important}
+.bv-more{border-radius:4px!important}
+.bv-warn{border-radius:4px!important}
+.capability-grid article{border-radius:4px!important}
+.case-arch{border-radius:4px!important}
+.case-arch-img{border-radius:4px!important}
+.case-arch-img span{border-radius:4px!important}
+.case-bom summary{border-radius:4px!important}
+.case-disclaimer{border-radius:4px!important}
+.case-flow{border-radius:4px!important}
+.case-kpis span{border-radius:4px!important}
+.case-note{border-radius:4px!important}
+.case-scale b{border-radius:4px!important}
+.case-spec{border-radius:4px!important}
+.case-stage-body header em{border-radius:4px!important}
+.case-tags span{border-radius:4px!important}
+.category-card{border-radius:4px!important}
+.category-card h3{border-radius:4px!important}
+.category-card-main{border-radius:4px!important}
+.category-order{border-radius:4px!important}
+.category-product-link{border-radius:4px!important}
+.category-product-thumb{border-radius:4px!important}
+.category-server-counts b{border-radius:4px!important}
+.category-visual-server-image .category-product-image{border-radius:4px!important}
+.category-visual-workstation-products .category-product-image.image-2{border-radius:4px!important}
+.chart-grid article{border-radius:4px!important}
+.check-row label{border-radius:4px!important}
+.choice-card{border-radius:4px!important}
+.cmp-av i{border-radius:4px!important}
+.cmp-av span i{border-radius:4px!important}
+.cmp-badge{border-radius:4px!important}
+.cmp-other{border-radius:4px!important}
+.connection-card{border-radius:4px!important}
+.consulting-flow{border-radius:4px!important}
+.consulting-flow-six{border-radius:4px!important}
+.consulting-flow-six>span{border-radius:4px!important}
+.consulting-teaser{border-radius:4px!important}
+.contact-brief{border-radius:4px!important}
+.contact-brief li{border-radius:4px!important}
+.contact-card{border-radius:4px!important}
+.ct-track:before{border-radius:4px!important}
+.dc-hero{border-radius:4px!important}
+.dc-intake{border-radius:4px!important}
+.dc-intake-grid>span{border-radius:4px!important}
+.dc-pipeline{border-radius:4px!important}
+.dc-pipeline li{border-radius:4px!important}
+.demo-message{border-radius:4px!important}
+.demo-result{border-radius:4px!important}
+.demo-steps span{border-radius:4px!important}
+.demo-viewport{border-radius:4px!important}
+.depth-interaction-hint{border-radius:4px!important}
+.depth-preview-badge{border-radius:4px!important}
+.device-card{border-radius:4px!important}
+.device-card:before{border-radius:4px!important}
+.device-hero-media .product-media{border-radius:4px!important}
+.device-page{border-radius:4px!important}
+.dm-btn{border-radius:4px!important}
+.dm-fly{border-radius:4px!important}
+.dm-fly a{border-radius:4px!important}
+.dn-count{border-radius:4px!important}
+.dn-panel{border-radius:4px!important}
+.dn-tabs button{border-radius:4px!important}
+.empty-state{border-radius:4px!important}
+.fc .fc-box{border-radius:4px!important}
+.fc .fc-chip{border-radius:4px!important}
+.fc .fc-concl{border-radius:4px!important}
+.fc .fc-fill{border-radius:4px!important}
+.fc .fc-idx button{border-radius:4px!important}
+.fc .fc-nb{border-radius:4px!important}
+.fc .fc-nf{border-radius:4px!important}
+.fc .fc-pick{border-radius:4px!important}
+.fc .fc-tabs button{border-radius:4px!important}
+.fc .fc-track{border-radius:4px!important}
+.fc-box{border-radius:4px!important}
+.featured-product-card{border-radius:4px!important}
+.file-list{border-radius:4px!important}
+.flow-step-detail footer{border-radius:4px!important}
+.flow-step-detail li{border-radius:4px!important}
+.flow-step-detail ul{border-radius:4px!important}
+.form-grid fieldset{border-radius:4px!important}
+.form-grid input{border-radius:4px!important}
+.form-grid select{border-radius:4px!important}
+.form-grid textarea{border-radius:4px!important}
+.fw-opt{border-radius:4px!important}
+.fw-opt span{border-radius:4px!important}
+.gap-box{border-radius:4px!important}
+.gap-chip{border-radius:4px!important}
+.gb-concl{border-radius:4px!important}
+.gb-gr span{border-radius:4px!important}
+.gb-st{border-radius:4px!important}
+.gd{border-radius:4px!important}
+.gd-bt{border-radius:4px!important}
+.gd-bt i{border-radius:4px!important}
+.gd-panel{border-radius:4px!important}
+.gd-sw{border-radius:4px!important}
+.gd-tile{border-radius:4px!important}
+.gd-tip{border-radius:4px!important}
+.gd-vars button{border-radius:4px!important}
+.gpu-chip{border-radius:4px!important}
+.guide-tabs button{border-radius:4px!important}
+.hero{border-radius:4px!important}
+.hero .eyebrow{border-radius:4px!important}
+.hero-kicker{border-radius:4px!important}
+.hero-showreel .showreel-frame{border-radius:4px!important}
+.hero:before{border-radius:4px!important}
+.hintbox{border-radius:4px!important}
+.info-pop{border-radius:4px!important}
+.integrity-card{border-radius:4px!important}
+.interface-answer{border-radius:4px!important}
+.interface-composer{border-radius:4px!important}
+.interface-mock{border-radius:4px!important}
+.interface-showcase{border-radius:4px!important}
+.interface-showcase button{border-radius:4px!important}
+.interface-skeleton i{border-radius:4px!important}
+.interface-user{border-radius:4px!important}
+.issue-card{border-radius:4px!important}
+.itc-g{border-radius:4px!important}
+.itc-r.itc-tot{border-radius:4px!important}
+.itc-seg button{border-radius:4px!important}
+.job-card .job-actions button{border-radius:4px!important}
+.job-section{border-radius:4px!important}
+.kv-bar{border-radius:4px!important}
+.kv-log{border-radius:4px!important}
+.kv-n{border-radius:4px!important}
+.kv-step{border-radius:4px!important}
+.kv-wrap{border-radius:4px!important}
+.legend i{border-radius:4px!important}
+.live-connect{border-radius:4px!important}
+.llama-input{border-radius:4px!important}
+.llama-message-assistant{border-radius:4px!important}
+.llama-message-user{border-radius:4px!important}
+.lm-bar i{border-radius:4px!important}
+.lm-bar u{border-radius:4px!important}
+.lm-chip{border-radius:4px!important}
+.lm-defs>div{border-radius:4px!important}
+.lm-how{border-radius:4px!important}
+.lm-legend i{border-radius:4px!important}
+.lm-next{border-radius:4px!important}
+.lm-next li{border-radius:4px!important}
+.lm-plot{border-radius:4px!important}
+.lm-point{border-radius:4px!important}
+.lm-point-m section{border-radius:4px!important}
+.lm-raw summary{border-radius:4px!important}
+.lm-seg{border-radius:4px!important}
+.lm-vsum>div{border-radius:4px!important}
+.lr .lr-box{border-radius:4px!important}
+.lr .lr-bud .lr-fill{border-radius:4px!important}
+.lr .lr-bud .lr-track{border-radius:4px!important}
+.lr .lr-chart{border-radius:4px!important}
+.lr .lr-concl{border-radius:4px!important}
+.lr .lr-done{border-radius:4px!important}
+.lr .lr-dr{border-radius:4px!important}
+.lr .lr-ef li{border-radius:4px!important}
+.lr .lr-fill{border-radius:4px!important}
+.lr .lr-fn{border-radius:4px!important}
+.lr .lr-ghost{border-radius:4px!important}
+.lr .lr-imp{border-radius:4px!important}
+.lr .lr-inp{border-radius:4px!important}
+.lr .lr-inp em{border-radius:4px!important}
+.lr .lr-ka{border-radius:4px!important}
+.lr .lr-kbar{border-radius:4px!important}
+.lr .lr-kbar u{border-radius:4px!important}
+.lr .lr-kpi{border-radius:4px!important}
+.lr .lr-kpill{border-radius:4px!important}
+.lr .lr-langsel button{border-radius:4px!important}
+.lr .lr-langtag{border-radius:4px!important}
+.lr .lr-live{border-radius:4px!important}
+.lr .lr-mr{border-radius:4px!important}
+.lr .lr-nb{border-radius:4px!important}
+.lr .lr-nf{border-radius:4px!important}
+.lr .lr-openlocal{border-radius:4px!important}
+.lr .lr-pend{border-radius:4px!important}
+.lr .lr-plan>li{border-radius:4px!important}
+.lr .lr-plan>li:not(:last-child)::after{border-radius:4px!important}
+.lr .lr-play{border-radius:4px!important}
+.lr .lr-prev{border-radius:4px!important}
+.lr .lr-prevtag{border-radius:4px!important}
+.lr .lr-proof{border-radius:4px!important}
+.lr .lr-ptab{border-radius:4px!important}
+.lr .lr-ptab em{border-radius:4px!important}
+.lr .lr-qs{border-radius:4px!important}
+.lr .lr-resnote{border-radius:4px!important}
+.lr .lr-rs li{border-radius:4px!important}
+.lr .lr-run2{border-radius:4px!important}
+.lr .lr-runbtn{border-radius:4px!important}
+.lr .lr-script{border-radius:4px!important}
+.lr .lr-side{border-radius:4px!important}
+.lr .lr-skiphint{border-radius:4px!important}
+.lr .lr-snd{border-radius:4px!important}
+.lr .lr-sq i{border-radius:4px!important}
+.lr .lr-steps li{border-radius:4px!important}
+.lr .lr-tabs button{border-radius:4px!important}
+.lr .lr-tag{border-radius:4px!important}
+.lr .lr-term{border-radius:4px!important}
+.lr .lr-term-h button{border-radius:4px!important}
+.lr .lr-tg{border-radius:4px!important}
+.lr .lr-to i{border-radius:4px!important}
+.lr .lr-toolp{border-radius:4px!important}
+.lr .lr-toolp pre{border-radius:4px!important}
+.lr .lr-tools button{border-radius:4px!important}
+.lr .lr-track{border-radius:4px!important}
+.lr .p2-st{border-radius:4px!important}
+.lr .p2-tip{border-radius:4px!important}
+.machine-card{border-radius:4px!important}
+.machine-front{border-radius:4px!important}
+.machine-front i{border-radius:4px!important}
+.machine-top{border-radius:4px!important}
+.manage-form-card{border-radius:4px!important}
+.manage-item{border-radius:4px!important}
+.manage-list{border-radius:4px!important}
+.metric{border-radius:4px!important}
+.mock-fold{border-radius:4px!important}
+.model-card>span{border-radius:4px!important}
+.model-evidence-legend span{border-radius:4px!important}
+.model-facts div{border-radius:4px!important}
+.model-group{border-radius:4px!important}
+.model-table{border-radius:4px!important}
+.mw{border-radius:4px!important}
+.mw-back{border-radius:4px!important}
+.mw-bars span{border-radius:4px!important}
+.mw-chip{border-radius:4px!important}
+.mw-next{border-radius:4px!important}
+.mw-opt{border-radius:4px!important}
+.mw-refresh{border-radius:4px!important}
+.mz-bar{border-radius:4px!important}
+.mz-card{border-radius:4px!important}
+.mz-global{border-radius:4px!important}
+.mz-lines li{border-radius:4px!important}
+.mz-models .mz-card:nth-child(1){border-radius:4px!important}
+.mz-models .mz-card:nth-child(2){border-radius:4px!important}
+.mz-models .mz-card:nth-child(3){border-radius:4px!important}
+.nav-dropdown{border-radius:4px!important}
+.nav-research .nd-fly{border-radius:4px!important}
+.nav-research .nd-fly a{border-radius:4px!important}
+.nav-research .nd-g{border-radius:4px!important}
+.nav-research .nd-mb{border-radius:4px!important}
+.note{border-radius:4px!important}
+.pc-row{border-radius:4px!important}
+.pc-unit-card{border-radius:4px!important}
+.pc-unit-card em{border-radius:4px!important}
+.pg-back{border-radius:4px!important}
+.picker-column{border-radius:4px!important}
+.picker-console{border-radius:4px!important}
+.pipeline-card{border-radius:4px!important}
+.poc-case-goal{border-radius:4px!important}
+.poc-phase{border-radius:4px!important}
+.poc-phase em{border-radius:4px!important}
+.poc-real-case{border-radius:4px!important}
+.pp{border-radius:4px!important}
+.pp button.sel::before{border-radius:4px!important}
+.principle-card{border-radius:4px!important}
+.process-next{border-radius:4px!important}
+.product-media-count{border-radius:4px!important}
+.product-media-note{border-radius:4px!important}
+.proof-tag{border-radius:4px!important}
+.pt-diffbox{border-radius:4px!important}
+.pt-fold{border-radius:4px!important}
+.pt-same{border-radius:4px!important}
+.rd-st{border-radius:4px!important}
+.ref-card{border-radius:4px!important}
+.ref-open{border-radius:4px!important}
+.ref-stages li{border-radius:4px!important}
+.report-section{border-radius:4px!important}
+.report-tools select{border-radius:4px!important}
+.resource-card{border-radius:4px!important}
+.resource-product-card{border-radius:4px!important}
+.rg-box{border-radius:4px!important}
+.rg-box input{border-radius:4px!important}
+.rg-row button{border-radius:4px!important}
+.rp-bar{border-radius:4px!important}
+.rp-bar i{border-radius:4px!important}
+.rp-log{border-radius:4px!important}
+.rp-m{border-radius:4px!important}
+.rp-st{border-radius:4px!important}
+.rr-bar{border-radius:4px!important}
+.rr-bar i{border-radius:4px!important}
+.rr-opts em{border-radius:4px!important}
+.run-summary div{border-radius:4px!important}
+.rw-aidlog{border-radius:4px!important}
+.rw-bar{border-radius:4px!important}
+.rw-bar i{border-radius:4px!important}
+.rw-bench{border-radius:4px!important}
+.rw-btn{border-radius:4px!important}
+.rw-chip{border-radius:4px!important}
+.rw-connect{border-radius:4px!important}
+.rw-fold{border-radius:4px!important}
+.rw-kind{border-radius:4px!important}
+.rw-log{border-radius:4px!important}
+.rw-met div{border-radius:4px!important}
+.rw-params{border-radius:4px!important}
+.rw-pdd{border-radius:4px!important}
+.rw-pf input{border-radius:4px!important}
+.rw-prog li{border-radius:4px!important}
+.rw-reset{border-radius:4px!important}
+.rw-state{border-radius:4px!important}
+.rw-term{border-radius:4px!important}
+.rw-verdict{border-radius:4px!important}
+.sb-control{border-radius:4px!important}
+.sb-control button{border-radius:4px!important}
+.sb-fields select{border-radius:4px!important}
+.sb-job{border-radius:4px!important}
+.sb-parameters span{border-radius:4px!important}
+.sb-taxonomy span{border-radius:4px!important}
+.scripts-access-status button{border-radius:4px!important}
+.scripts-code-field{border-radius:4px!important}
+.scripts-gate{border-radius:4px!important}
+.scripts-gate-form{border-radius:4px!important}
+.scripts-gate-lock{border-radius:4px!important}
+.scripts-gate-tag{border-radius:4px!important}
+.scripts-unlock-button{border-radius:4px!important}
+.search-box{border-radius:4px!important}
+.search-result{border-radius:4px!important}
+.sec-detail .dt-tabs button{border-radius:4px!important}
+.showreel-frame{border-radius:4px!important}
+.site-header .brand-mark{border-radius:4px!important}
+.site-header .nav-dropdown a{border-radius:4px!important}
+.site-nav .nav-dropdown button{border-radius:4px!important}
+.sp-compare{border-radius:4px!important}
+.sp-model{border-radius:4px!important}
+.sp-run{border-radius:4px!important}
+.sp-vendor{border-radius:4px!important}
+.st #secPick .cmp-tabs button{border-radius:4px!important}
+.st #secPick .gap-chip{border-radius:4px!important}
+.st #secPick .gap-fwb{border-radius:4px!important}
+.st #secPick a.cmp-two{border-radius:4px!important}
+.st .bv-mode button{border-radius:4px!important}
+.st .bv-more{border-radius:4px!important}
+.st .kvx .cmp-tabs button{border-radius:4px!important}
+.st .kvx .kv-notes>b{border-radius:4px!important}
+.st .kvx .kv-notes>div{border-radius:4px!important}
+.st .kvx .kv-pill{border-radius:4px!important}
+.st .kvx .kv-same .kv-bar{border-radius:4px!important}
+.st .pair-btn{border-radius:4px!important}
+.st .pair-btn.all{border-radius:4px!important}
+.st .rp-card{border-radius:4px!important}
+.st .rp-mh i{border-radius:4px!important}
+.st .rp-tip{border-radius:4px!important}
+.st .st-tabs:not(.cmp-tabs) button{border-radius:4px!important}
+.st .st-view button{border-radius:4px!important}
+.st-run-card{border-radius:4px!important}
+.st-tabs button{border-radius:4px!important}
+.st-tier{border-radius:4px!important}
+.st-tier li a{border-radius:4px!important}
+.st-tier li span{border-radius:4px!important}
+.st-view{border-radius:4px!important}
+.status-chip{border-radius:4px!important}
+.summary-cards span{border-radius:4px!important}
+.sz-bars{border-radius:4px!important}
+.sz-break{border-radius:4px!important}
+.sz-break>div{border-radius:4px!important}
+.sz-calcbox{border-radius:4px!important}
+.sz-curtain-body{border-radius:4px!important}
+.sz-curtain-tab{border-radius:4px!important}
+.sz-curtain.open .sz-curtain-tab{border-radius:4px!important}
+.sz-curtain:focus-within .sz-curtain-tab{border-radius:4px!important}
+.sz-curtain:hover .sz-curtain-tab{border-radius:4px!important}
+.sz-custom{border-radius:4px!important}
+.sz-custom textarea{border-radius:4px!important}
+.sz-detail{border-radius:4px!important}
+.sz-dot{border-radius:4px!important}
+.sz-empty{border-radius:4px!important}
+.sz-est{border-radius:4px!important}
+.sz-flag{border-radius:4px!important}
+.sz-flist li{border-radius:4px!important}
+.sz-hn-calc .sz-hn-panel.on{border-radius:4px!important}
+.sz-hn-panel{border-radius:4px!important}
+.sz-hn-pick .sz-hn-panel.on{border-radius:4px!important}
+.sz-hn-tab{border-radius:4px!important}
+.sz-in-grid fieldset:nth-child(1){border-radius:4px!important}
+.sz-in-grid fieldset:nth-child(2){border-radius:4px!important}
+.sz-in-grid fieldset:nth-child(3){border-radius:4px!important}
+.sz-inputs fieldset{border-radius:4px!important}
+.sz-jump{border-radius:4px!important}
+.sz-modes button{border-radius:4px!important}
+.sz-more summary{border-radius:4px!important}
+.sz-more-body{border-radius:4px!important}
+.sz-more-tab{border-radius:4px!important}
+.sz-more-tab:focus{border-radius:4px!important}
+.sz-more-tab:hover{border-radius:4px!important}
+.sz-more[open] .sz-legend{border-radius:4px!important}
+.sz-more[open] summary{border-radius:4px!important}
+.sz-ncard{border-radius:4px!important}
+.sz-opt{border-radius:4px!important}
+.sz-pick-head{border-radius:4px!important}
+.sz-ref{border-radius:4px!important}
+.sz-ref-row{border-radius:4px!important}
+.sz-row.fin{border-radius:4px!important}
+.sz-sci{border-radius:4px!important}
+.sz-seg{border-radius:4px!important}
+.sz-top{border-radius:4px!important}
+.sz-warnp{border-radius:4px!important}
+.tab-button{border-radius:4px!important}
+.tab-button:nth-child(2){border-radius:4px!important}
+.table-wrap{border-radius:4px!important}
+.tb-badge{border-radius:4px!important}
+.tb-cmd{border-radius:4px!important}
+.tb-empty{border-radius:4px!important}
+.tb-err{border-radius:4px!important}
+.tb-issue{border-radius:4px!important}
+.teaser-stages li{border-radius:4px!important}
+.term{border-radius:4px!important}
+.term header #termClear{border-radius:4px!important}
+.term header #termCopy{border-radius:4px!important}
+.term header #termGrow{border-radius:4px!important}
+.tier-switch button{border-radius:4px!important}
+.tm-badge{border-radius:4px!important}
+.tm-btn{border-radius:4px!important}
+.tm-empty{border-radius:4px!important}
+.tm-fly-inline .tm-fly-panel{border-radius:4px!important}
+.tm-fly-inline .tm-fly-tab{border-radius:4px!important}
+.tm-fly-panel{border-radius:4px!important}
+.tm-fly-tab{border-radius:4px!important}
+.tm-fly.full .tm-fly-panel{border-radius:4px!important}
+.tm-input input{border-radius:4px!important}
+.tm-input textarea{border-radius:4px!important}
+.tm-login input{border-radius:4px!important}
+.tm-pick select{border-radius:4px!important}
+.tm-root{border-radius:4px!important}
+.tm-screen{border-radius:4px!important}
+.tm-term{border-radius:4px!important}
+.tm-term .tm-input .tm-pw{border-radius:4px!important}
+.tm-term .tm-input textarea{border-radius:4px!important}
+.topbar .nav-dropdown a{border-radius:4px!important}
+.upd-bar{border-radius:4px!important}
+.upd-bar [data-r]{border-radius:4px!important}
+.v2-bs{border-radius:4px!important}
+.v2-bvs{border-radius:4px!important}
+.v2-card{border-radius:4px!important}
+.v2-chart{border-radius:4px!important}
+.v2-chartwrap{border-radius:4px!important}
+.v2-chips li{border-radius:4px!important}
+.v2-dir{border-radius:4px!important}
+.v2-dl{border-radius:4px!important}
+.v2-evcard{border-radius:4px!important}
+.v2-evid{border-radius:4px!important}
+.v2-legend i{border-radius:4px!important}
+.v2-legend2 i{border-radius:4px!important}
+.v2-links a{border-radius:4px!important}
+.v2-pane{border-radius:4px!important}
+.v2-seg{border-radius:4px!important}
+.v2-setup{border-radius:4px!important}
+.v2-ssd{border-radius:4px!important}
+.v2-sw{border-radius:4px!important}
+.v2-take{border-radius:4px!important}
+.v2-verdict{border-radius:4px!important}
+.v2-wcard{border-radius:4px!important}
+.verification-stack{border-radius:4px!important}
+.verification-stack span{border-radius:4px!important}
+.view-tabs button{border-radius:4px!important}
+.wf-chip{border-radius:4px!important}
+.wf-item{border-radius:4px!important}
+button{border-radius:4px!important}
+input{border-radius:4px!important}
+select{border-radius:4px!important}
+textarea{border-radius:4px!important}
+/* circles win over any small-radius rule (extra id specificity) */
+.agent-demo-sidebar footer i:not(#_){border-radius:50%!important}
+.agent-orbit:not(#_){border-radius:50%!important}
+.app-card-plus:not(#_){border-radius:50%!important}
+.app-hub-ring:not(#_){border-radius:50%!important}
+.benchmark-console li>span:not(#_){border-radius:50%!important}
+.benchmark-console>header i:not(#_){border-radius:50%!important}
+.bh-matrix li i:not(#_){border-radius:50%!important}
+.brand-mark:not(#_){border-radius:50%!important}
+.brand-site .category-card.is-home-orbiting .category-visual:not(#_):before{border-radius:50%!important}
+.brand-site .category-card:not(#_):before{border-radius:50%!important}
+.brand-site .category-card:nth-child(2):not(#_):before{border-radius:50%!important}
+.brand-site .category-card:nth-child(3):not(#_):before{border-radius:50%!important}
+.bs .bs-axis input[type=range]::-moz-range-thumb:not(#_){border-radius:50%!important}
+.bs .bs-axis input[type=range]::-webkit-slider-thumb:not(#_){border-radius:50%!important}
+.bs .bs-let:not(#_){border-radius:50%!important}
+.bs .bs-pt:not(#_){border-radius:50%!important}
+.bs .bs-stp i:not(#_){border-radius:50%!important}
+.button.bh-btn .bh-arrow:not(#_){border-radius:50%!important}
+.case-stage-rail span:not(#_){border-radius:50%!important}
+.category-card:not(#_):after{border-radius:50%!important}
+.category-card:not(#_):before{border-radius:50%!important}
+.category-foot:not(#_):after{border-radius:50%!important}
+.category-projection-base:not(#_){border-radius:50%!important}
+.consulting-card-top>b:not(#_){border-radius:50%!important}
+.consulting-card:not(#_):before{border-radius:50%!important}
+.consulting-flow>i:not(#_){border-radius:50%!important}
+.ct-track b:not(#_){border-radius:50%!important}
+.cursor-glow:not(#_){border-radius:50%!important}
+.demo-platform:not(#_){border-radius:50%!important}
+.demo-viewport i:not(#_){border-radius:50%!important}
+.depth-glow:not(#_){border-radius:50%!important}
+.depth-orbit:not(#_){border-radius:50%!important}
+.depth-preview-badge i:not(#_){border-radius:50%!important}
+.depth-shadow:not(#_){border-radius:50%!important}
+.device-header:not(#_):after{border-radius:50%!important}
+.dn-btn:not(#_){border-radius:50%!important}
+.dn-x:not(#_){border-radius:50%!important}
+.galaxy-disc:not(#_){border-radius:50%!important}
+.galaxy-dust:not(#_){border-radius:50%!important}
+.galaxy-glow:not(#_){border-radius:50%!important}
+.gb-st i:not(#_){border-radius:50%!important}
+.hero-summary:not(#_){border-radius:50%!important}
+.hero-summary:not(#_):after{border-radius:50%!important}
+.hero:not(#_):after{border-radius:50%!important}
+.info:not(#_){border-radius:50%!important}
+.interface-windowbar i:not(#_){border-radius:50%!important}
+.kv-dot:not(#_){border-radius:50%!important}
+.llama-send:not(#_){border-radius:50%!important}
+.lm-next li:not(#_):before{border-radius:50%!important}
+.lm-point-h i:not(#_){border-radius:50%!important}
+.lr .lr-ef li>i:not(#_){border-radius:50%!important}
+.lr .lr-fn h4 i:not(#_){border-radius:50%!important}
+.lr .lr-fst i:not(#_){border-radius:50%!important}
+.lr .lr-legend i:not(#_){border-radius:50%!important}
+.lr .lr-light i:not(#_){border-radius:50%!important}
+.lr .lr-steps li b:not(#_){border-radius:50%!important}
+.lr .lr-stp i:not(#_){border-radius:50%!important}
+.lr .p2-g th span:not(#_){border-radius:50%!important}
+.machine-core:not(#_){border-radius:50%!important}
+.product-media-placeholder:not(#_):after{border-radius:50%!important}
+.product-media-placeholder:not(#_):before{border-radius:50%!important}
+.product-media.has-image:not(#_):after{border-radius:50%!important}
+.projection-base:not(#_){border-radius:50%!important}
+.proof-tag i:not(#_){border-radius:50%!important}
+.rp-st i:not(#_){border-radius:50%!important}
+.rw-state i:not(#_){border-radius:50%!important}
+.showreel-play:not(#_){border-radius:50%!important}
+.showreel-play:not(#_):after{border-radius:50%!important}
+.showreel-play:not(#_):before{border-radius:50%!important}
+.st #secPick .cmp-pick>span em:not(#_){border-radius:50%!important}
+.st .rp-legend i:not(#_){border-radius:50%!important}
+.st .rp-tip i:not(#_){border-radius:50%!important}
+.st-run-card i:not(#_){border-radius:50%!important}
+.st-tier i:not(#_){border-radius:50%!important}
+.tab-button:not(#_):after{border-radius:50%!important}
+.tip:not(#_){border-radius:50%!important}
+.tm-fly-max:not(#_){border-radius:50%!important}
+.tm-fly-x:not(#_){border-radius:50%!important}
+.upd-bar [data-x]:not(#_){border-radius:50%!important}
+.v2-dot:not(#_){border-radius:50%!important}
+.wq-leg i:not(#_){border-radius:50%!important}
+.wq-tab .v2-sw:not(#_){border-radius:50%!important}
