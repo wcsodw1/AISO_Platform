@@ -63,12 +63,6 @@
     const tip = `Recommended = level of the average new input ${k(s.comp.avg)} tokens. Also test = one level below and one above. For reference: median ${k(med)} (a typical turn), 90th percentile ${k(p90)} (a heavy turn); the average is pulled up by cold-start turns. / 推薦＝平均新輸入 ${k(s.comp.avg)} tokens 所在檔位；可加測＝往下、往上各一個檔位。參考：中位數 ${k(med)}（一般輪次）、第 90 百分位 ${k(p90)}（較重輪次）；平均被冷啟動輪次拉高。`;
     return `<p class="itc-rec" title="${esc(tip)}"><span>${bi("Recommended input", "推薦測試輸入")}</span><b>${r.main}</b>${r.also.length ? `<span class="itc-alt">${bi("Also test", "建議可加測")} ${r.also.join(" · ")}</span>` : ""}</p>`;
   }
-  // typed-input stats of ChatGPT turns (counts only; no usage data exists for them, so no harness / cache / output)
-  function gptRow(id) {
-    const g = D.chatgpt && D.chatgpt.cats[id]; if (!g || !g.text_turns) return "";
-    const ip = g.img_turns_known ? Math.round(g.img_turns / g.img_turns_known * 100) : 0;
-    return `<div class="itc-subs">${fold("itc-sub", "ChatGPT sessions", "其他平台 ChatGPT", g.text_avg, bi(`${g.turns} turns · median ${g.text_med} · images in ${ip}% of turns · estimated`, `${g.turns} 輪 · 中位數 ${g.text_med} · ${ip}% 的輪次有圖片 · 估算`), { min: g.text_min, max: g.text_max })}</div>`;
-  }
   function stage(id) {
     const c0 = D.categories.find(x => x.id === id); if (c0.kind === "document") return docStage(c0);
     const c = c0, s = stats(usable(rowsOf(id))), calls = s.calls.toFixed(s.calls < 10 ? 1 : 0), pc = v => { const t = s.reuse.avg + s.comp.avg, x = t ? v / t * 100 : 0; return x.toFixed(1); };
@@ -79,7 +73,6 @@
         <section class="itc-g itc-gin hv-fold hv-closed"><header><h3>${bi("Input", "輸入")}</h3><span class="itc-hv"><b>${k(s.spn ? s.comp.avg : s.cum.avg)}</b><span>tokens ${s.spn ? bi("new", "新") : bi("total", "總共")}</span></span></header><div class="itc-gb">
         ${fold("itc-par", "1 · Your input", "你的輸入", s.msg.avg, bi("All turns", "全部輪次"), s.msg)}
         <div class="itc-subs">${sub("Text only", "純文字", s.onlyTxt, "", "")}${sub("Image + text", "圖片加文字", s.withImg, s.withImg.n ? `text ${k(s.withImg.t)} + image ${k(s.withImg.i)} tokens` : "", s.withImg.n ? `文字 ${k(s.withImg.t)} + 圖片 ${k(s.withImg.i)} tokens` : "")}</div>
-        ${gptRow(id)}
         ${fold("itc-har", "2 · Harness", "開場上下文", s.har.avg, bi("Before your message", "訊息之前"), s.har, s.spn ? `<span class="itc-hv3"><span class="nw"><b>${k(s.hc.avg)}</b><em>${bi("New", "新")}</em></span><span class="re"><b>${k(s.hr)}</b><em>${bi("Reused", "快取重用")}</em></span><span class="tt"><b>${k(s.har.avg)}</b><em>${bi("Total", "總共")}</em></span></span>` : "")}
         ${s.spn ? `<p class="itc-leg"><span><i class="re"></i>${bi("Reused", "快取重用")} ${k(s.hr)}</span><span><i class="nw"></i>${bi("Not cached", "未快取")} ${k(s.hc.avg)}</span><span class="u">tokens</span></p>` : ""}
         <ul class="itc-parts">${PARTS.map(p => { const v = s.parts[p[0]], pc = s.har.avg ? v / s.har.avg * 100 : 0, nw = Math.min(v, s.pnew[p[0]] || 0), nwp = v ? nw / v * 100 : 0;
