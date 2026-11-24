@@ -374,6 +374,7 @@
       return '<div class="p2-tip"><p class="p2-tn">' + esc(t.needs_en) + '<small class="zhs">' + esc(t.needs_zh) + '</small></p><p class="p2-th">History<small class="zhs">每次紀錄</small></p><ul>' + h + "</ul></div>";
     }
     function row(t, extra) {
+      if (!extra && t.result_en) extra = '<span class="p2-res">' + esc(t.result_en) + '<small class="zhs">' + esc(t.result_zh || "") + "</small></span>";
       return '<tr class="p2-row" tabindex="0"><td class="p2-id">' + esc(t.id) + '</td><td class="p2-t">' + esc(t.en) + '<small class="zhs">' + esc(t.zh) + "</small>" + tip(t) + '</td><td class="p2-c">' + esc(t.crit_en) + '<small class="zhs">' + esc(t.crit_zh) + "</small>" + (extra || "") + "</td><td>" + pill(t.status) + "</td></tr>";
     }
     var all = [], body = "";
