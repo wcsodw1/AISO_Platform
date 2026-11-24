@@ -1,9 +1,9 @@
 {
  "version": 1,
- "updated": "2026-11-23",
+ "updated": "2026-11-24",
  "note": [
-  "Token counts of real Claude Code turns. Harness, whole-turn input and output come from API usage; your text/images and the harness split are estimates (the split is scaled so the parts add up to the measured harness). No message text is stored.",
-  "真實 Claude Code 互動的 token 統計。Harness、整輪輸入、輸出來自 API 用量；你的文字／圖片與 Harness 的分類為估算（分類已按實測 Harness 總量調整，各項加總相等）。不存任何訊息內容。"
+  "Token counts of real Claude Code turns. Harness, whole-turn input and output come from API usage; your text/images and the harness split are estimates (the split is scaled so the parts add up to the measured harness). No message text is stored. The split of the turn-added tokens by type (files, commands, web, other tools, model output) is an estimate from the session log, scaled to the measured total; the final reply of a turn is excluded because it is not re-sent inside that turn. Output is split into reply text and tool-call parameters (estimated); thinking text is not stored in the logs, so Thinking is the measured output minus those estimates.",
+  "真實 Claude Code 互動的 token 統計。Harness、整輪輸入、輸出來自 API 用量；你的文字／圖片與 Harness 的分類為估算（分類已按實測 Harness 總量調整，各項加總相等）。不存任何訊息內容。 本輪新增依類型（檔案、指令、網頁、其他工具、模型輸出）的拆分，是依紀錄檔估算並按實測總量調整；每輪最後一則回覆不計（該輪內不會再送出）。 輸出拆成回覆文字與工具呼叫參數（估算）；紀錄檔沒有保存思考內容，所以「思考」＝實測輸出減去上述估算。"
  ],
  "sessions": {
   "A": [
@@ -105,7 +105,24 @@
    "cum_read": 662417,
    "cum_new": 3022,
    "first_read": 219504,
-   "first_new": 1388
+   "first_new": 1388,
+   "du_parts": {
+    "read": 0,
+    "cmd": 952,
+    "web": 0,
+    "other": 0,
+    "out": 56,
+    "call": 626
+   },
+   "out_parts": {
+    "text": 234,
+    "write": 0,
+    "cmd": 325,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 375
+   }
   },
   {
    "session": "A",
@@ -133,7 +150,24 @@
    "cum_read": 8471008,
    "cum_new": 46009,
    "first_read": 222795,
-   "first_new": 2427
+   "first_new": 2427,
+   "du_parts": {
+    "read": 0,
+    "cmd": 9487,
+    "web": 23463,
+    "other": 0,
+    "out": 116,
+    "call": 10516
+   },
+   "out_parts": {
+    "text": 492,
+    "write": 0,
+    "cmd": 3806,
+    "read": 0,
+    "web": 2179,
+    "other": 0,
+    "think": 15523
+   }
   },
   {
    "session": "A",
@@ -161,7 +195,24 @@
    "cum_read": 538154,
    "cum_new": 1172,
    "first_read": 268732,
-   "first_new": 694
+   "first_new": 694,
+   "du_parts": {
+    "read": 0,
+    "cmd": 23,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 455
+   },
+   "out_parts": {
+    "text": 194,
+    "write": 0,
+    "cmd": 215,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 296
+   }
   },
   {
    "session": "A",
@@ -189,7 +240,24 @@
    "cum_read": 1084418,
    "cum_new": 2622,
    "first_read": 270150,
-   "first_new": 886
+   "first_new": 886,
+   "du_parts": {
+    "read": 0,
+    "cmd": 889,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 847
+   },
+   "out_parts": {
+    "text": 227,
+    "write": 0,
+    "cmd": 389,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 684
+   }
   },
   {
    "session": "A",
@@ -217,7 +285,24 @@
    "cum_read": 822681,
    "cum_new": 3222,
    "first_read": 273081,
-   "first_new": 1054
+   "first_new": 1054,
+   "du_parts": {
+    "read": 0,
+    "cmd": 592,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 1576
+   },
+   "out_parts": {
+    "text": 213,
+    "write": 0,
+    "cmd": 274,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 1613
+   }
   },
   {
    "session": "A",
@@ -245,7 +330,24 @@
    "cum_read": 553171,
    "cum_new": 1013,
    "first_read": 276576,
-   "first_new": 23
+   "first_new": 23,
+   "du_parts": {
+    "read": 0,
+    "cmd": 142,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 848
+   },
+   "out_parts": {
+    "text": 231,
+    "write": 0,
+    "cmd": 335,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 534
+   }
   },
   {
    "session": "A",
@@ -273,7 +375,24 @@
    "cum_read": 558702,
    "cum_new": 3483,
    "first_read": 277878,
-   "first_new": 2950
+   "first_new": 2950,
+   "du_parts": {
+    "read": 0,
+    "cmd": 48,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 485
+   },
+   "out_parts": {
+    "text": 240,
+    "write": 0,
+    "cmd": 151,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 418
+   }
   },
   {
    "session": "A",
@@ -301,7 +420,24 @@
    "cum_read": 563351,
    "cum_new": 443,
    "first_read": 281662,
-   "first_new": 31
+   "first_new": 31,
+   "du_parts": {
+    "read": 0,
+    "cmd": 43,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 369
+   },
+   "out_parts": {
+    "text": 224,
+    "write": 0,
+    "cmd": 155,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 289
+   }
   },
   {
    "session": "A",
@@ -329,7 +465,24 @@
    "cum_read": 1130991,
    "cum_new": 1401,
    "first_read": 282389,
-   "first_new": 17
+   "first_new": 17,
+   "du_parts": {
+    "read": 0,
+    "cmd": 156,
+    "web": 0,
+    "other": 156,
+    "out": 0,
+    "call": 1072
+   },
+   "out_parts": {
+    "text": 184,
+    "write": 0,
+    "cmd": 229,
+    "read": 0,
+    "web": 0,
+    "other": 142,
+    "think": 845
+   }
   },
   {
    "session": "A",
@@ -357,7 +510,24 @@
    "cum_read": 284028,
    "cum_new": 3257,
    "first_read": 284028,
-   "first_new": 3257
+   "first_new": 3257,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 352,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 360
+   }
   },
   {
    "session": "A",
@@ -385,7 +555,24 @@
    "cum_read": 627575,
    "cum_new": 255072,
    "first_read": 40571,
-   "first_new": 252046
+   "first_new": 252046,
+   "du_parts": {
+    "read": 0,
+    "cmd": 2257,
+    "web": 0,
+    "other": 23,
+    "out": 0,
+    "call": 747
+   },
+   "out_parts": {
+    "text": 688,
+    "write": 0,
+    "cmd": 242,
+    "read": 0,
+    "web": 0,
+    "other": 22,
+    "think": 948
+   }
   },
   {
    "session": "A",
@@ -413,7 +600,24 @@
    "cum_read": 1867984,
    "cum_new": 271065,
    "first_read": 40571,
-   "first_new": 257176
+   "first_new": 257176,
+   "du_parts": {
+    "read": 244,
+    "cmd": 9337,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 4309
+   },
+   "out_parts": {
+    "text": 675,
+    "write": 710,
+    "cmd": 1076,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 4139
+   }
   },
   {
    "session": "A",
@@ -441,7 +645,24 @@
    "cum_read": 1576100,
    "cum_new": 6329,
    "first_read": 312538,
-   "first_new": 654
+   "first_new": 654,
+   "du_parts": {
+    "read": 0,
+    "cmd": 4427,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 1248
+   },
+   "out_parts": {
+    "text": 478,
+    "write": 0,
+    "cmd": 580,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 1242
+   }
   },
   {
    "session": "A",
@@ -469,7 +690,24 @@
    "cum_read": 1610211,
    "cum_new": 5213,
    "first_read": 319491,
-   "first_new": 1592
+   "first_new": 1592,
+   "du_parts": {
+    "read": 0,
+    "cmd": 1752,
+    "web": 0,
+    "other": 266,
+    "out": 0,
+    "call": 1603
+   },
+   "out_parts": {
+    "text": 626,
+    "write": 0,
+    "cmd": 457,
+    "read": 0,
+    "web": 0,
+    "other": 61,
+    "think": 1456
+   }
   },
   {
    "session": "A",
@@ -497,7 +735,24 @@
    "cum_read": 1308995,
    "cum_new": 3538,
    "first_read": 325509,
-   "first_new": 1570
+   "first_new": 1570,
+   "du_parts": {
+    "read": 0,
+    "cmd": 1253,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 715
+   },
+   "out_parts": {
+    "text": 659,
+    "write": 0,
+    "cmd": 358,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 1183
+   }
   },
   {
    "session": "A",
@@ -525,7 +780,24 @@
    "cum_read": 662114,
    "cum_new": 3220,
    "first_read": 330265,
-   "first_new": 1588
+   "first_new": 1588,
+   "du_parts": {
+    "read": 0,
+    "cmd": 1330,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 302
+   },
+   "out_parts": {
+    "text": 761,
+    "write": 0,
+    "cmd": 136,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 803
+   }
   },
   {
    "session": "A",
@@ -553,7 +825,24 @@
    "cum_read": 223854,
    "cum_new": 55339,
    "first_read": 41180,
-   "first_new": 46258
+   "first_new": 46258,
+   "du_parts": {
+    "read": 0,
+    "cmd": 7964,
+    "web": 0,
+    "other": 126,
+    "out": 303,
+    "call": 688
+   },
+   "out_parts": {
+    "text": 419,
+    "write": 0,
+    "cmd": 81,
+    "read": 0,
+    "web": 0,
+    "other": 246,
+    "think": 2154
+   }
   },
   {
    "session": "A",
@@ -581,7 +870,24 @@
    "cum_read": 398034,
    "cum_new": 6336,
    "first_read": 97012,
-   "first_new": 24
+   "first_new": 24,
+   "du_parts": {
+    "read": 0,
+    "cmd": 2717,
+    "web": 0,
+    "other": 3057,
+    "out": 42,
+    "call": 496
+   },
+   "out_parts": {
+    "text": 631,
+    "write": 0,
+    "cmd": 112,
+    "read": 0,
+    "web": 0,
+    "other": 91,
+    "think": 866
+   }
   },
   {
    "session": "A",
@@ -609,7 +915,24 @@
    "cum_read": 323314,
    "cum_new": 8246,
    "first_read": 104304,
-   "first_new": 3812
+   "first_new": 3812,
+   "du_parts": {
+    "read": 0,
+    "cmd": 3490,
+    "web": 0,
+    "other": 131,
+    "out": 286,
+    "call": 528
+   },
+   "out_parts": {
+    "text": 471,
+    "write": 0,
+    "cmd": 93,
+    "read": 0,
+    "web": 0,
+    "other": 125,
+    "think": 1911
+   }
   },
   {
    "session": "A",
@@ -637,7 +960,24 @@
    "cum_read": 2933165,
    "cum_new": 50992,
    "first_read": 113111,
-   "first_new": 129
+   "first_new": 129,
+   "du_parts": {
+    "read": 305,
+    "cmd": 30641,
+    "web": 10718,
+    "other": 95,
+    "out": 255,
+    "call": 8849
+   },
+   "out_parts": {
+    "text": 826,
+    "write": 1432,
+    "cmd": 2749,
+    "read": 0,
+    "web": 1157,
+    "other": 225,
+    "think": 8611
+   }
   },
   {
    "session": "A",
@@ -665,7 +1005,24 @@
    "cum_read": 2187254,
    "cum_new": 144415,
    "first_read": 41180,
-   "first_new": 124789
+   "first_new": 124789,
+   "du_parts": {
+    "read": 324,
+    "cmd": 8150,
+    "web": 6696,
+    "other": 91,
+    "out": 220,
+    "call": 4144
+   },
+   "out_parts": {
+    "text": 855,
+    "write": 1262,
+    "cmd": 391,
+    "read": 0,
+    "web": 666,
+    "other": 135,
+    "think": 6091
+   }
   },
   {
    "session": "A",
@@ -693,7 +1050,24 @@
    "cum_read": 1902415,
    "cum_new": 8680,
    "first_read": 186625,
-   "first_new": 397
+   "first_new": 397,
+   "du_parts": {
+    "read": 81,
+    "cmd": 876,
+    "web": 5311,
+    "other": 68,
+    "out": 53,
+    "call": 1894
+   },
+   "out_parts": {
+    "text": 662,
+    "write": 501,
+    "cmd": 336,
+    "read": 0,
+    "web": 506,
+    "other": 153,
+    "think": 2142
+   }
   },
   {
    "session": "A",
@@ -721,7 +1095,24 @@
    "cum_read": 1592764,
    "cum_new": 7514,
    "first_read": 196097,
-   "first_new": 440
+   "first_new": 440,
+   "du_parts": {
+    "read": 94,
+    "cmd": 1248,
+    "web": 3514,
+    "other": 79,
+    "out": 26,
+    "call": 2113
+   },
+   "out_parts": {
+    "text": 574,
+    "write": 578,
+    "cmd": 246,
+    "read": 0,
+    "web": 471,
+    "other": 145,
+    "think": 1886
+   }
   },
   {
    "session": "A",
@@ -749,7 +1140,24 @@
    "cum_read": 1927920,
    "cum_new": 16083,
    "first_read": 204322,
-   "first_new": 5462
+   "first_new": 5462,
+   "du_parts": {
+    "read": 169,
+    "cmd": 2769,
+    "web": 4455,
+    "other": 95,
+    "out": 81,
+    "call": 3051
+   },
+   "out_parts": {
+    "text": 746,
+    "write": 745,
+    "cmd": 256,
+    "read": 0,
+    "web": 592,
+    "other": 136,
+    "think": 3825
+   }
   },
   {
    "session": "A",
@@ -777,7 +1185,24 @@
    "cum_read": 4668396,
    "cum_new": 42843,
    "first_read": 221339,
-   "first_new": 2306
+   "first_new": 2306,
+   "du_parts": {
+    "read": 510,
+    "cmd": 13952,
+    "web": 17852,
+    "other": 96,
+    "out": 310,
+    "call": 7817
+   },
+   "out_parts": {
+    "text": 867,
+    "write": 1605,
+    "cmd": 813,
+    "read": 0,
+    "web": 1854,
+    "other": 141,
+    "think": 10720
+   }
   },
   {
    "session": "A",
@@ -805,7 +1230,24 @@
    "cum_read": 3863272,
    "cum_new": 20921,
    "first_read": 265166,
-   "first_new": 2216
+   "first_new": 2216,
+   "du_parts": {
+    "read": 1381,
+    "cmd": 2538,
+    "web": 9378,
+    "other": 92,
+    "out": 157,
+    "call": 5159
+   },
+   "out_parts": {
+    "text": 751,
+    "write": 971,
+    "cmd": 677,
+    "read": 98,
+    "web": 1137,
+    "other": 144,
+    "think": 5622
+   }
   },
   {
    "session": "A",
@@ -833,7 +1275,24 @@
    "cum_read": 1438047,
    "cum_new": 1868,
    "first_read": 286938,
-   "first_new": 7
+   "first_new": 7,
+   "du_parts": {
+    "read": 0,
+    "cmd": 513,
+    "web": 0,
+    "other": 100,
+    "out": 52,
+    "call": 1197
+   },
+   "out_parts": {
+    "text": 522,
+    "write": 0,
+    "cmd": 513,
+    "read": 0,
+    "web": 0,
+    "other": 112,
+    "think": 753
+   }
   },
   {
    "session": "A",
@@ -861,7 +1320,24 @@
    "cum_read": 3836787,
    "cum_new": 12247,
    "first_read": 289472,
-   "first_new": 185
+   "first_new": 185,
+   "du_parts": {
+    "read": 54,
+    "cmd": 1401,
+    "web": 8325,
+    "other": 117,
+    "out": 126,
+    "call": 2040
+   },
+   "out_parts": {
+    "text": 522,
+    "write": 89,
+    "cmd": 374,
+    "read": 0,
+    "web": 689,
+    "other": 143,
+    "think": 2983
+   }
   },
   {
    "session": "A",
@@ -889,7 +1365,24 @@
    "cum_read": 1210147,
    "cum_new": 821,
    "first_read": 302311,
-   "first_new": 7
+   "first_new": 7,
+   "du_parts": {
+    "read": 0,
+    "cmd": 126,
+    "web": 0,
+    "other": 96,
+    "out": 0,
+    "call": 591
+   },
+   "out_parts": {
+    "text": 203,
+    "write": 0,
+    "cmd": 242,
+    "read": 0,
+    "web": 0,
+    "other": 77,
+    "think": 329
+   }
   },
   {
    "session": "A",
@@ -917,7 +1410,24 @@
    "cum_read": 2765129,
    "cum_new": 7874,
    "first_read": 303407,
-   "first_new": 12
+   "first_new": 12,
+   "du_parts": {
+    "read": 0,
+    "cmd": 1774,
+    "web": 4061,
+    "other": 96,
+    "out": 333,
+    "call": 1598
+   },
+   "out_parts": {
+    "text": 819,
+    "write": 0,
+    "cmd": 474,
+    "read": 0,
+    "web": 290,
+    "other": 99,
+    "think": 3118
+   }
   },
   {
    "session": "B",
@@ -945,7 +1455,24 @@
    "cum_read": 50381,
    "cum_new": 20684,
    "first_read": 50381,
-   "first_new": 20684
+   "first_new": 20684,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 529,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 823
+   }
   },
   {
    "session": "B",
@@ -1001,7 +1528,24 @@
    "cum_read": 74605,
    "cum_new": 396,
    "first_read": 74605,
-   "first_new": 396
+   "first_new": 396,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 113,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 79
+   }
   },
   {
    "session": "B",
@@ -1029,7 +1573,24 @@
    "cum_read": 75191,
    "cum_new": 631,
    "first_read": 75191,
-   "first_new": 631
+   "first_new": 631,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 242,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 420
+   }
   },
   {
    "session": "B",
@@ -1057,7 +1618,24 @@
    "cum_read": 76482,
    "cum_new": 1846,
    "first_read": 76482,
-   "first_new": 1846
+   "first_new": 1846,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 525,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 738
+   }
   },
   {
    "session": "B",
@@ -1085,7 +1663,24 @@
    "cum_read": 79589,
    "cum_new": 2518,
    "first_read": 79589,
-   "first_new": 2518
+   "first_new": 2518,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 581,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 629
+   }
   },
   {
    "session": "B",
@@ -1113,7 +1708,24 @@
    "cum_read": 250539,
    "cum_new": 902,
    "first_read": 83315,
-   "first_new": 24
+   "first_new": 24,
+   "du_parts": {
+    "read": 0,
+    "cmd": 301,
+    "web": 0,
+    "other": 0,
+    "out": 88,
+    "call": 489
+   },
+   "out_parts": {
+    "text": 536,
+    "write": 0,
+    "cmd": 161,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 764
+   }
   },
   {
    "session": "B",
@@ -1141,7 +1753,24 @@
    "cum_read": 169248,
    "cum_new": 1629,
    "first_read": 84209,
-   "first_new": 834
+   "first_new": 834,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 762,
+    "other": 0,
+    "out": 0,
+    "call": 33
+   },
+   "out_parts": {
+    "text": 191,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 61,
+    "other": 0,
+    "think": 172
+   }
   },
   {
    "session": "B",
@@ -1169,7 +1798,24 @@
    "cum_read": 86086,
    "cum_new": 2368,
    "first_read": 86086,
-   "first_new": 2368
+   "first_new": 2368,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 431,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 842
+   }
   },
   {
    "session": "B",
@@ -1197,7 +1843,24 @@
    "cum_read": 88450,
    "cum_new": 1293,
    "first_read": 88450,
-   "first_new": 1293
+   "first_new": 1293,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 384,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 334
+   }
   },
   {
    "session": "B",
@@ -1225,7 +1888,24 @@
    "cum_read": 770056,
    "cum_new": 14730,
    "first_read": 90459,
-   "first_new": 2356
+   "first_new": 2356,
+   "du_parts": {
+    "read": 0,
+    "cmd": 10749,
+    "web": 400,
+    "other": 0,
+    "out": 83,
+    "call": 1142
+   },
+   "out_parts": {
+    "text": 672,
+    "write": 0,
+    "cmd": 554,
+    "read": 0,
+    "web": 51,
+    "other": 0,
+    "think": 1603
+   }
   },
   {
    "session": "B",
@@ -1253,7 +1933,24 @@
    "cum_read": 166342,
    "cum_new": 89074,
    "first_read": 40581,
-   "first_new": 85182
+   "first_new": 85182,
+   "du_parts": {
+    "read": 0,
+    "cmd": 3281,
+    "web": 0,
+    "other": 29,
+    "out": 0,
+    "call": 583
+   },
+   "out_parts": {
+    "text": 604,
+    "write": 0,
+    "cmd": 141,
+    "read": 0,
+    "web": 0,
+    "other": 22,
+    "think": 1106
+   }
   },
   {
    "session": "B",
@@ -1297,7 +1994,24 @@
    "cum_read": 332378,
    "cum_new": 107008,
    "first_read": 40581,
-   "first_new": 104504
+   "first_new": 104504,
+   "du_parts": {
+    "read": 0,
+    "cmd": 1624,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 880
+   },
+   "out_parts": {
+    "text": 564,
+    "write": 0,
+    "cmd": 371,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 1251
+   }
   },
   {
    "session": "B",
@@ -1325,7 +2039,24 @@
    "cum_read": 930450,
    "cum_new": 20246,
    "first_read": 147583,
-   "first_new": 979
+   "first_new": 979,
+   "du_parts": {
+    "read": 0,
+    "cmd": 4401,
+    "web": 0,
+    "other": 13919,
+    "out": 0,
+    "call": 946
+   },
+   "out_parts": {
+    "text": 1294,
+    "write": 0,
+    "cmd": 212,
+    "read": 0,
+    "web": 0,
+    "other": 275,
+    "think": 2685
+   }
   },
   {
    "session": "B",
@@ -1353,7 +2084,24 @@
    "cum_read": 167813,
    "cum_new": 2674,
    "first_read": 167813,
-   "first_new": 2674
+   "first_new": 2674,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 179,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 345
+   }
   },
   {
    "session": "B",
@@ -1381,7 +2129,24 @@
    "cum_read": 170483,
    "cum_new": 547,
    "first_read": 170483,
-   "first_new": 547
+   "first_new": 547,
+   "du_parts": {
+    "read": 0,
+    "cmd": 0,
+    "web": 0,
+    "other": 0,
+    "out": 0,
+    "call": 0
+   },
+   "out_parts": {
+    "text": 296,
+    "write": 0,
+    "cmd": 0,
+    "read": 0,
+    "web": 0,
+    "other": 0,
+    "think": 170
+   }
   }
  ],
  "document": {
@@ -1444,7 +2209,9 @@
     "chars": 4133,
     "tokens": 1614,
     "level": "low",
-    "file_mb": 0.161
+    "file_mb": 0.161,
+    "type": "doc",
+    "format": ""
    },
    {
     "name": "Intel Arc B390 Document",
@@ -1453,7 +2220,9 @@
     "chars": 3499,
     "tokens": 1945,
     "level": "low",
-    "file_mb": 0.04
+    "file_mb": 0.04,
+    "type": "doc",
+    "format": "docx"
    },
    {
     "name": "AISO Pro6000 aiDAPTIV POC v36",
@@ -1461,7 +2230,9 @@
     "chars": 6508,
     "tokens": 4132,
     "level": "high",
-    "file_mb": 14.0
+    "file_mb": 14.0,
+    "type": "doc",
+    "format": ""
    },
    {
     "name": "Phison aiDAPTIV Middleware 3.0 – Install SOP & User Manual (v0.1)",
@@ -1469,7 +2240,9 @@
     "chars": 54665,
     "tokens": 16391,
     "level": "mid",
-    "file_mb": 2.36
+    "file_mb": 2.36,
+    "type": "doc",
+    "format": "pdf"
    },
    {
     "name": "Phison aiDAPTIVLink 3.0 – Install SOP & User Manual (v1.1)",
@@ -1477,16 +2250,324 @@
     "chars": 79341,
     "tokens": 25435,
     "level": "mid",
-    "file_mb": 3.56
+    "file_mb": 3.56,
+    "type": "doc",
+    "format": "pdf"
+   },
+   {
+    "name": "NVIDIA DGX B300 README",
+    "type": "md",
+    "pages": null,
+    "lines": 10,
+    "chars": 286,
+    "tokens": 188,
+    "file_mb": 0.0,
+    "format": "md"
+   },
+   {
+    "name": "SPARKLE Intel Arc Pro B70 AI Benchmark Research",
+    "type": "md",
+    "pages": null,
+    "lines": 165,
+    "chars": 6442,
+    "tokens": 3560,
+    "file_mb": 0.008,
+    "format": "md"
+   },
+   {
+    "name": "aiso_blender_agent_panel.py",
+    "type": "script",
+    "pages": null,
+    "lines": 600,
+    "chars": 15184,
+    "tokens": 3151,
+    "file_mb": 0.014,
+    "format": "py"
+   },
+   {
+    "name": "Makefile",
+    "type": "config",
+    "pages": null,
+    "lines": 29,
+    "chars": 1288,
+    "tokens": 364,
+    "file_mb": 0.001,
+    "format": "make"
+   },
+   {
+    "name": "requirements.txt",
+    "type": "config",
+    "pages": null,
+    "lines": 6,
+    "chars": 142,
+    "tokens": 39,
+    "file_mb": 0.0,
+    "format": "txt"
+   },
+   {
+    "name": "SKILL.md (PF_UI)",
+    "type": "skill",
+    "pages": null,
+    "lines": 88,
+    "chars": 11622,
+    "tokens": 3178,
+    "file_mb": 0.011,
+    "format": "md"
+   },
+   {
+    "name": "SKILL.md (PF_Sync)",
+    "type": "skill",
+    "pages": null,
+    "lines": 37,
+    "chars": 2170,
+    "tokens": 546,
+    "file_mb": 0.002,
+    "format": "md"
+   },
+   {
+    "name": "SKILL.md (PF_Bench)",
+    "type": "skill",
+    "pages": null,
+    "lines": 40,
+    "chars": 4448,
+    "tokens": 1227,
+    "file_mb": 0.004,
+    "format": "md"
+   },
+   {
+    "name": "SKILL.md (PF_Arc)",
+    "type": "skill",
+    "pages": null,
+    "lines": 50,
+    "chars": 2126,
+    "tokens": 490,
+    "file_mb": 0.002,
+    "format": "md"
+   },
+   {
+    "name": "SKILL.md (PF_Status)",
+    "type": "skill",
+    "pages": null,
+    "lines": 75,
+    "chars": 3527,
+    "tokens": 948,
+    "file_mb": 0.003,
+    "format": "md"
+   },
+   {
+    "name": "AISO Platform.bat",
+    "type": "script",
+    "pages": null,
+    "lines": 10,
+    "chars": 152,
+    "tokens": 56,
+    "file_mb": 0.0,
+    "format": "bat"
+   },
+   {
+    "name": "debug-notes.js",
+    "type": "script",
+    "pages": null,
+    "lines": 34,
+    "chars": 3327,
+    "tokens": 928,
+    "file_mb": 0.003,
+    "format": "js"
+   },
+   {
+    "name": "publish.sh",
+    "type": "script",
+    "pages": null,
+    "lines": 24,
+    "chars": 524,
+    "tokens": 153,
+    "file_mb": 0.0,
+    "format": "sh"
+   },
+   {
+    "name": "kvcache-report.html",
+    "type": "html",
+    "pages": null,
+    "lines": 7,
+    "chars": 624,
+    "tokens": 208,
+    "file_mb": 0.001,
+    "format": "html"
+   },
+   {
+    "name": "AI_MAX395_Before_vs_After_V5_Report.pdf",
+    "type": "doc",
+    "format": "pdf",
+    "pages": 6,
+    "lines": 363,
+    "chars": 6015,
+    "tokens": 2596,
+    "file_mb": 0.047
+   },
+   {
+    "name": "AIMAX395_Benchmark_Startup_Operation_Guide_v1.0.docx",
+    "type": "doc",
+    "format": "docx",
+    "pages": null,
+    "lines": 200,
+    "chars": 5410,
+    "tokens": 1881,
+    "file_mb": 0.042
+   },
+   {
+    "name": "B70_benchmark_all_cases_20261120.xlsx",
+    "type": "table",
+    "format": "xlsx",
+    "pages": null,
+    "lines": 214,
+    "chars": 37988,
+    "tokens": 17862,
+    "file_mb": 0.029
+   },
+   {
+    "name": "gpt-oss-20b-Q4_K_M_server_trials.csv",
+    "type": "table",
+    "format": "csv",
+    "pages": null,
+    "lines": 20,
+    "chars": 3910,
+    "tokens": 1741,
+    "file_mb": 0.004
+   },
+   {
+    "name": "PRO6000_benchmark_all_cases_20261120.csv",
+    "type": "table",
+    "format": "csv",
+    "pages": null,
+    "lines": 602,
+    "chars": 89647,
+    "tokens": 46084,
+    "file_mb": 0.091
+   },
+   {
+    "name": "environment.json",
+    "type": "data",
+    "format": "json",
+    "pages": null,
+    "lines": 37,
+    "chars": 2041,
+    "tokens": 784,
+    "file_mb": 0.002
+   },
+   {
+    "name": "AISO_PRO6000_vLLM_VIS_20260825.json",
+    "type": "data",
+    "format": "json",
+    "pages": null,
+    "lines": 3616,
+    "chars": 60173,
+    "tokens": 25480,
+    "file_mb": 0.058
+   },
+   {
+    "name": "pro6000-vis.json",
+    "type": "data",
+    "format": "json",
+    "pages": null,
+    "lines": 7193,
+    "chars": 225699,
+    "tokens": 90273,
+    "file_mb": 0.228
+   },
+   {
+    "name": "mini_workstation_benchmark.yaml",
+    "type": "data",
+    "format": "yaml",
+    "pages": null,
+    "lines": 16,
+    "chars": 304,
+    "tokens": 120,
+    "file_mb": 0.0
+   },
+   {
+    "name": "README.txt",
+    "type": "md",
+    "format": "txt",
+    "pages": null,
+    "lines": 2,
+    "chars": 62,
+    "tokens": 13,
+    "file_mb": 0.0
+   },
+   {
+    "name": "launcher.log (local server log)",
+    "type": "log",
+    "format": "log",
+    "pages": null,
+    "lines": 12023,
+    "chars": 1142201,
+    "tokens": 489744,
+    "file_mb": 1.089
    }
   ],
   "method": [
-   "Text extracted from each document, tokens counted with the cl100k_base tokenizer (text only; images not counted). Claude and local-model tokenizers differ by roughly 10–40%.",
-   "每份文件抽出文字後用 cl100k_base 分詞器計算（只算文字，不含圖片）。Claude 與本地模型的分詞器約有 10–40% 的差異。"
+   "Text extracted from each document, tokens counted with the cl100k_base tokenizer (text only; images not counted). Claude and local-model tokenizers differ by roughly 10–40%. Script, config and SKILL.md files are measured the same way (cl100k); they have lines, not pages. Spreadsheets are read as tab-separated text; PDF text is extracted with PDFKit; logs are raw text.",
+   "每份文件抽出文字後用 cl100k_base 分詞器計算（只算文字，不含圖片）。Claude 與本地模型的分詞器約有 10–40% 的差異。 腳本、設定檔、SKILL.md 以同樣方式（cl100k）量測；它們以行數計，沒有頁數。 試算表以 tab 分隔文字讀取；PDF 以 PDFKit 抽字；日誌為原始文字。"
   ],
   "size_note": [
    "File size is only a rough guide: images make a file large but add few tokens (a 14 MB PDF is only 4.1k tokens). Pages predict tokens much better: ≈ 330 per page.",
    "檔案大小只是粗略參考：圖片會讓檔案變大，但不會增加多少 token（14 MB 的 PDF 只有 4.1k tokens）。頁數準很多：每頁約 330 tokens。"
+  ],
+  "types": [
+   {
+    "id": "doc",
+    "en": "Document",
+    "zh": "文件",
+    "unit": "page"
+   },
+   {
+    "id": "table",
+    "en": "Spreadsheet",
+    "zh": "試算表",
+    "unit": "line"
+   },
+   {
+    "id": "data",
+    "en": "Structured data",
+    "zh": "結構化資料",
+    "unit": "line"
+   },
+   {
+    "id": "md",
+    "en": "Text / Markdown",
+    "zh": "純文字／Markdown",
+    "unit": "line"
+   },
+   {
+    "id": "script",
+    "en": "Script / code",
+    "zh": "程式腳本",
+    "unit": "line"
+   },
+   {
+    "id": "config",
+    "en": "Config / build",
+    "zh": "設定／建置檔",
+    "unit": "line"
+   },
+   {
+    "id": "html",
+    "en": "HTML / web page",
+    "zh": "HTML／網頁",
+    "unit": "line"
+   },
+   {
+    "id": "skill",
+    "en": "Skill (SKILL.md)",
+    "zh": "Skill 指令檔",
+    "unit": "line"
+   },
+   {
+    "id": "log",
+    "en": "Log",
+    "zh": "日誌",
+    "unit": "line"
+   }
   ]
  }
 }
