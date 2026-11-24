@@ -233,6 +233,39 @@ div:has(>.home-title-zh)>h2{color:var(--fashion-ivory,#f3efe5)!important}
 /* the word Decode in "TPS (Decode only)" is highlighted */
 .bv-h .bv-dec{font-style:normal;color:var(--gold,#d8c779);text-shadow:0 0 14px rgba(216,199,121,.45)}
 
+/* Phone layer for the Input token tab (David 2026-11-24 「手機版這樣叫人怎麼看」): title on one line, number on the next, nothing wider than the screen */
+@media (max-width:640px){
+ .itc .mw-stage,.itc .itc-rows,.itc .itc-g,.itc .itc-gb,.itc .itc-r,.itc .itc-subs,.itc .itc-parts,.itc .itc-pane{min-width:0;max-width:100%;box-sizing:border-box}
+ .itc .itc-rows{grid-template-columns:minmax(0,1fr)!important}
+ .itc .itc-g{padding:12px!important}
+ .itc .itc-g>header,.itc .itc-r>header{flex-wrap:wrap;gap:2px 10px}
+ .itc .itc-g>header h3,.itc .itc-r>header h4{flex:1 1 100%;min-width:0;white-space:normal}
+ .itc .itc-g>header .itc-hv,.itc .itc-r>header .itc-hv,.itc .itc-r>header .itc-hv3{flex:1 1 100%;margin-left:0;text-align:left;white-space:normal}
+ .itc .itc-g>header h3{font-size:22px}
+ .itc .itc-hv b{font-size:24px}
+ .itc .itc-g>header .itc-hv b,.itc .itc-r.itc-tot>header .itc-hv b,.itc .itc-rec b{font-size:28px}
+ .itc .itc-hv3{flex-wrap:wrap;gap:6px 18px;justify-content:flex-start}
+ .itc .itc-hv3>span{align-items:flex-start}
+ .itc .itc-subs,.itc .itc-parts{margin-left:0;padding-left:10px}
+ .itc .itc-parts li{grid-template-columns:minmax(0,1fr) auto auto;gap:2px 10px}
+ .itc .itc-parts .pl{grid-column:1/-1}
+ .itc .itc-d{flex-wrap:wrap;gap:2px 10px}
+ .itc .itc-seg button{flex:1 1 0;padding:8px 10px;font-size:16px}
+ .itc .itc-mets,.itc .itc-doc>header h4{white-space:normal!important}
+ /* category picker: a sticky chip row above the content, the chosen one filled */
+ .itc .mw-panel{order:-1;position:sticky;top:0;z-index:20;margin:0 0 12px;padding:10px 0!important;background:var(--bg,#0b0c0f);border:0!important}
+ .itc .mw-panel .mw-q,.itc .mw-panel .itc-ref{display:none}
+ .itc.mw{grid-template-columns:minmax(0,1fr)!important}
+ .itc .mw-panel,.itc .mw-opts{min-width:0;max-width:100%}
+ .itc .mw-opts{display:flex!important;flex-wrap:nowrap;gap:8px;overflow-x:auto;position:relative;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .itc .mw-opts::-webkit-scrollbar{display:none}
+ .itc .mw-opt{flex:0 0 auto;width:auto!important;min-height:0!important;padding:9px 14px!important;white-space:nowrap}
+ .itc .mw-opt .mw-r{display:none}
+ .itc .mw-opt .mw-l b{font-size:16px}
+ .itc .mw-opt.sel{background:#e0a040!important;border-color:#e0a040!important}
+ .itc .mw-opt.sel,.itc .mw-opt.sel *{color:#14161a!important}
+ .itc .mw-stage{scroll-margin-top:70px}
+}
 /* Small corner radius (David, 2026-11-24): everything is square by default, previously-rounded frames get a small 4px radius (no pills, no big curves); intentional circles keep 50%. One rule per selector so a bad selector cannot drop the rest. */
 *,*::before,*::after{border-radius:0!important}
 #legacyConfig input{border-radius:4px!important}
