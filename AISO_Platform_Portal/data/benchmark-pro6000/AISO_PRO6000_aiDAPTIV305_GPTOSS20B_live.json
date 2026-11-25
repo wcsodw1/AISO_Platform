@@ -1,11 +1,11 @@
 {
  "dataset": "PRO6000 aiDAPTIV 3.05 benchmark (GPT-OSS-20B + the four Q4_K_M models, original precision)",
- "evidence_until": "2026-11-25 13:06:03",
- "updated": "2026-11-25 13:06:03",
+ "evidence_until": "2026-11-25 14:31:33",
+ "updated": "2026-11-25 14:31:33",
  "live": false,
  "note": "Live: written while the test runs. Without = mean of 3 repeats, Cold = Run1, Warm = mean of Run2/Run3.",
  "comparability": {
-  "text": "Gemma-4-26B is partial: with aiDAPTIV the NP10 / 16K Warm runs and NP30 are not measured yet; a few conditions had 1-2 failed requests (counted over the successful ones). Own test: aiDAPTIV middleware NXUNA305A1 (vLLM 0.25.1), ONE GPU, original precision (GPT-OSS-20B native, Gemma-4-26B BF16 with the Triton MoE backend), Output 1000, both modes with --disable-gpu-reuse, max-model-len 20000. TPS and TPOT are derived from the asked output length and the benchmark wall time (the client's own token count re-tokenises the text and is unreliable); TPOT for NP above 1 is an approximation. Not comparable with the 70B / 120B vLLM test (3.03, TP4) or the llama.cpp Q4_K_M test. FlashInfer sampler is off in both modes (no CUDA toolkit in the image)."
+  "text": "A few conditions had 1-2 failed requests (counted over the successful ones). Own test: aiDAPTIV middleware NXUNA305A1 (vLLM 0.25.1), ONE GPU, original precision (GPT-OSS-20B native, Gemma-4-26B BF16 with the Triton MoE backend), Output 1000, both modes with --disable-gpu-reuse, max-model-len 20000. TPS and TPOT are derived from the asked output length and the benchmark wall time (the client's own token count re-tokenises the text and is unreliable); TPOT for NP above 1 is an approximation. Not comparable with the 70B / 120B vLLM test (3.03, TP4) or the llama.cpp Q4_K_M test. FlashInfer sampler is off in both modes (no CUDA toolkit in the image)."
  },
  "profile": {
   "machine": "PRO6000 · NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8 GPU system)",
@@ -33,7 +33,7 @@
    "total": 108
   },
   "with": {
-   "done": 43,
+   "done": 54,
    "total": 108
   },
   "by_model": {
@@ -50,7 +50,7 @@
    "Gemma-4-26B": {
     "1024": {
      "without": 27,
-     "with": 16
+     "with": 27
     },
     "256": {
      "without": 0,
@@ -660,26 +660,30 @@
    "input": 16384,
    "ttft_ms": {
     "without": 4208.97,
-    "cold": 5943.3
+    "cold": 6320.32,
+    "warm": 318.72
    },
    "tpot_ms": {
     "without": 21.833,
-    "cold": 21.578
+    "cold": 22.372,
+    "warm": 19.13
    },
    "aggregate_tps": {
     "without": 384.32,
-    "cold": 363.636
+    "cold": 348.797,
+    "warm": 514.695
    },
    "normalized_tps": {
     "without": 38.432,
-    "cold": 36.364
+    "cold": 34.88,
+    "warm": 51.47
    },
-   "status": "RUNNING",
+   "status": "PASS",
    "source": "vis_log",
    "n": {
     "without": 3,
     "cold": 1,
-    "warm": 0
+    "warm": 2
    },
    "repeats": {
     "without": {
@@ -697,23 +701,31 @@
    "np": 30,
    "input": 4096,
    "ttft_ms": {
-    "without": 2032.173
+    "without": 2032.173,
+    "cold": 3637.09,
+    "warm": 242.045
    },
    "tpot_ms": {
-    "without": 26.064
+    "without": 26.064,
+    "cold": 27.14,
+    "warm": 25.158
    },
    "aggregate_tps": {
-    "without": 1033.132
+    "without": 1033.132,
+    "cold": 943.089,
+    "warm": 1142.867
    },
    "normalized_tps": {
-    "without": 34.438
+    "without": 34.438,
+    "cold": 31.436,
+    "warm": 38.096
    },
-   "status": "RUNNING",
+   "status": "PASS",
    "source": "vis_log",
    "n": {
     "without": 3,
-    "cold": 0,
-    "warm": 0
+    "cold": 1,
+    "warm": 2
    },
    "repeats": {
     "without": {
@@ -731,23 +743,31 @@
    "np": 30,
    "input": 8192,
    "ttft_ms": {
-    "without": 4762.777
+    "without": 4762.777,
+    "cold": 7171.73,
+    "warm": 530.14
    },
    "tpot_ms": {
-    "without": 30.885
+    "without": 30.885,
+    "cold": 32.02,
+    "warm": 27.407
    },
    "aggregate_tps": {
-    "without": 786.149
+    "without": 786.149,
+    "cold": 715.015,
+    "warm": 1003.229
    },
    "normalized_tps": {
-    "without": 26.205
+    "without": 26.205,
+    "cold": 23.834,
+    "warm": 33.441
    },
-   "status": "RUNNING",
+   "status": "PASS",
    "source": "vis_log",
    "n": {
     "without": 3,
-    "cold": 0,
-    "warm": 0
+    "cold": 1,
+    "warm": 2
    },
    "repeats": {
     "without": {
@@ -765,23 +785,31 @@
    "np": 30,
    "input": 16384,
    "ttft_ms": {
-    "without": 12905.517
+    "without": 12905.517,
+    "cold": 17572.85,
+    "warm": 1433.38
    },
    "tpot_ms": {
-    "without": 40.698
+    "without": 40.698,
+    "cold": 44.281,
+    "warm": 30.331
    },
    "aggregate_tps": {
-    "without": 560.085
+    "without": 560.085,
+    "cold": 485.358,
+    "warm": 945.328
    },
    "normalized_tps": {
-    "without": 18.67
+    "without": 18.67,
+    "cold": 16.179,
+    "warm": 31.511
    },
-   "status": "RUNNING",
+   "status": "PASS",
    "source": "vis_log",
    "n": {
     "without": 3,
-    "cold": 0,
-    "warm": 0
+    "cold": 1,
+    "warm": 2
    },
    "repeats": {
     "without": {
