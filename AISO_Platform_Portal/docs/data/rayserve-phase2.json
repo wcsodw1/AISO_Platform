@@ -108,22 +108,22 @@
      "label_en": "The benefit",
      "label_zh": "效益",
      "proof": {
-      "title_en": "Same 16 users, different question length",
-      "title_zh": "同樣 16 人，不同的問題長度",
+      "title_en": "Same 16 users, longer questions",
+      "title_zh": "同樣 16 人，問題越來越長",
       "cols_en": [
-       "Input length",
-       "1 GPU, no Ray",
-       "2 GPUs, Ray Serve",
+       "Input",
+       "1 GPU",
+       "2 GPUs + Ray Serve",
        "Gain"
       ],
       "cols_zh": [
-       "輸入長度",
-       "1 張卡（不用 Ray）",
-       "2 張卡（Ray Serve）",
+       "輸入",
+       "1 張卡",
+       "2 張卡",
        "提升"
       ],
-      "unit_en": "tokens per second, higher is better",
-      "unit_zh": "每秒 token 數，越高越好",
+      "unit_en": "Speed (tokens/s), higher is better",
+      "unit_zh": "速度（每秒 token），越高越好",
       "rows": [
        [
         "1K",
@@ -144,8 +144,8 @@
         "+65%"
        ]
       ],
-      "note_en": "At 1K the 2 GPUs are barely busy, so the gain is small and the first word is slightly slower (122 vs 84 ms). From 4K on, one GPU is the bottleneck and the second replica pays off (first word 560 to 310 ms at 4K, 1382 to 820 ms at 8K).",
-      "note_zh": "1K 時兩張卡都沒滿載，提升很小，第一個字還稍慢（122 對 84 毫秒）。從 4K 起單張卡成為瓶頸，第二個副本才顯出價值（4K 第一個字 560→310 毫秒，8K 1382→820 毫秒）。"
+      "note_en": "The longer the question, the more one GPU struggles, and the second one helps.",
+      "note_zh": "問題越長，一張卡越吃力，第二張卡的幫助越大。"
      },
      "mean_en": "Check a second GPU really takes more users.",
      "mean_zh": "確認第二張卡真的能多扛人。",
