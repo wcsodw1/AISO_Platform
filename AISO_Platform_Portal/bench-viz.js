@@ -80,7 +80,7 @@ window.BV=(function(){
    if(o.skip)series.forEach((se,j)=>{if(!get(se.key,g)&&o.skip(se.key,g))s+=`<text class="bl dn" x="${x(q)+off(j)}" y="${y(0)-8}" text-anchor="middle" style="font-size:20px">✕<title>${esc(se.label)} · ${esc(g.label)}: SKIP</title></text>`});
   });
   groups.forEach((g,q)=>{s+=`<text x="${x(q)}" y="${H-46}" text-anchor="middle" class="xl">${esc(g.label)}</text><text x="${x(q)}" y="${H-20}" text-anchor="middle" class="xl2">${esc(g.sub||"")}</text>`});
-  return `<div class="v2-chartwrap bv-fit${series.length>=5?" bv-many":""}"><svg class="bv-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
+  return `<div class="v2-chartwrap bv-fit${series.length>=2||o.many?" bv-many":""}"><svg class="bv-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;width:100%;max-width:${W}px;height:auto;margin:0 auto" role="img" aria-label="${esc(def.short)} line chart">${s}</svg></div>`;
  }
  /* hover or click a line / point: that series is picked out, enlarged, its values drawn right at its points and the others dimmed; click again (or the empty chart) to release (David 2026-11-19) */
  (function(){if(window.__bvPick)return;window.__bvPick=1;const pin=new WeakMap();
