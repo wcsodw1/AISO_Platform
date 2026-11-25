@@ -29,7 +29,7 @@ function metrics(){
  const w=Math.max(320,($s("pMetrics").clientWidth||860)-100);
  $s("pMetrics").innerHTML=BV.blocks(Object.entries(METRICS).map(([k,d])=>({k,def:d,groups:INPUTS.map(i=>({label:kn(i),sub:i.toLocaleString("en-US"),i})),series:SERIES,
   get:(mk,g)=>{const r=cell(g.i);if(!r)return null;const key=k==="ttft_s"?"ttft_ms":k,v=r[key]&&r[key][mk];if(!Number.isFinite(v))return null;return {[k]:k==="ttft_s"?v/1000:v}},
-  baseline:"without",width:w,context:`${MODEL} · Output ${ko(OUT)} · NP${NP}`,message:"",tableNote:"差異以 Without aiDAPTIV 為基準；綠色 + 表示較佳、紅色 − 表示較差"})));
+  baseline:"without",many:true,width:w,context:`${MODEL} · Output ${ko(OUT)} · NP${NP}`,message:"",tableNote:"差異以 Without aiDAPTIV 為基準；綠色 + 表示較佳、紅色 − 表示較差"})));
 }
 function notes(){
  const p=DS.profile;
