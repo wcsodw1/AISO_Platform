@@ -51,3 +51,12 @@
 .rs-data[hidden]{display:none}
 .rs-data{overflow-x:auto}
 @media (max-width:900px){.rs-step{grid-template-columns:minmax(0,1fr)}.rs-step .rs-big{grid-column:1;grid-row:auto}}
+.rs-data{overflow-x:auto}
+@media (max-width:900px){.rs-step{grid-template-columns:minmax(0,1fr)}.rs-step .rs-big{grid-column:1;grid-row:auto}}
+/* data rows: no empty middle column - id | name | status, result under the name */
+.rs-data .p2-tb,.rs-data .p2-tb tbody{display:block;width:100%}
+.rs-data .p2-row{display:grid;grid-template-columns:3.5rem minmax(0,1fr) auto;gap:4px 16px;padding:10px 0;border-bottom:1px solid rgba(243,239,229,.1)}
+.rs-data .p2-row>td{display:block;padding:0;border:0}
+.rs-data .p2-row>.p2-t{grid-column:2;grid-row:1}
+.rs-data .p2-row>td:last-child{grid-column:3;grid-row:1}
+.rs-data .p2-row>.p2-c{grid-column:2/4;grid-row:2}
