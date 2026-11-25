@@ -50,83 +50,16 @@
   },
   "groups": [
     {
-      "key": "A",
-      "en": "Prove the claims",
-      "zh": "證明好處",
+      "key": "1",
+      "en": "Is it faster?",
+      "zh": "比較快嗎",
+      "benefit_en": "Same cards, with and without LiteLLM, so the gain is honest.",
+      "benefit_zh": "同樣的卡，有無 LiteLLM 比一比，數字才公平。",
       "tests": [
         {
-          "id": "A1",
-          "en": "Failover",
-          "zh": "備援",
-          "crit_en": "0 failed requests; recovered within 30 s",
-          "crit_zh": "失敗請求為 0；30 秒內恢復",
-          "status": "done",
-          "needs_en": "Mac drill with two fake backends only. After the kill all traffic went to the survivor at once; the restarted backend rejoined in about 5 s. Not tested: a hung backend (the PRO6000 timeout is 600 s) or a cut stream. A drill on the real machine needs the owner's OK.",
-          "needs_zh": "僅在 Mac 用兩個假後端驗證。關掉後全部流量立即改走另一台；重啟的後端約 5 秒回到服務。尚未測：後端卡住不回應（PRO6000 逾時設 600 秒）、串流中途被切斷。真機演練要先問 owner。",
-          "history": [
-            {
-              "at": "2026-11-24",
-              "status": "planned",
-              "en": "Listed.",
-              "zh": "已列入。"
-            },
-            {
-              "at": "2026-11-24",
-              "status": "done",
-              "en": "Local LiteLLM v1.110.0, 2 fake backends, 4 clients for 70 s, one backend killed at 15 s and restarted at 40 s. 1 retry: 2 failed in each of 3 runs (in flight). 3 retries: 0 failed in 2 runs.",
-              "zh": "本機 LiteLLM v1.110.0、2 個假後端、4 個用戶端跑 70 秒，第 15 秒關掉一個、第 40 秒重啟。重試 1 次：3 次各有 2 個失敗（在途）。重試 3 次：2 次皆 0 失敗。"
-            }
-          ],
-          "result_en": "Passes with 3 retries: 0 of about 700 failed (2 runs). Today's setting, 1 retry: 2 of about 700 failed in every run (3 runs), both in flight at the kill; none after.",
-          "result_zh": "重試 3 次通過：約 700 個請求 0 個失敗（2 次）。現行設定重試 1 次：每次都有 2 個失敗（3 次），皆是關掉當下在途的請求，之後 0 個。"
-        },
-        {
-          "id": "A2",
-          "en": "Single entry",
-          "zh": "統一入口",
-          "crit_en": "3 apps, 1 address, own keys; limits do not leak",
-          "crit_zh": "3 個應用、1 個網址、各自金鑰；限額互不影響",
-          "status": "blocked",
-          "needs_en": "Needs virtual keys, which need a database. The PRO6000 gateway has none yet (db: not connected).",
-          "needs_zh": "需要 virtual key，也就需要資料庫；PRO6000 閘道目前沒有（db: not connected）。",
-          "history": [
-            {
-              "at": "2026-11-24",
-              "status": "blocked",
-              "en": "No database on the gateway.",
-              "zh": "閘道沒有資料庫。"
-            }
-          ]
-        },
-        {
-          "id": "A3",
-          "en": "Easy scaling",
-          "zh": "易擴充",
-          "crit_en": "Throughput grows with 1, 2, 3 backends",
-          "crit_zh": "1、2、3 個後端時吞吐隨之成長",
-          "status": "blocked",
-          "needs_en": "Needs a third backend (HPE GPU, not arrived).",
-          "needs_zh": "需要第三個後端（HPE GPU 尚未到）。",
-          "history": [
-            {
-              "at": "2026-11-24",
-              "status": "blocked",
-              "en": "Waiting for HPE GPU.",
-              "zh": "等待 HPE GPU。"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "B",
-      "en": "Fair baseline",
-      "zh": "公平基準",
-      "tests": [
-        {
-          "id": "B1",
-          "en": "Same-spec pair (GPU6 + GPU7)",
-          "zh": "同規格兩卡（GPU6＋GPU7）",
+          "id": "1a",
+          "en": "Two cards vs one",
+          "zh": "兩張卡比一張",
           "crit_en": "Mean aggregate TPS gain at least 1.3x",
           "crit_zh": "平均總吞吐至少 1.3 倍",
           "status": "done",
@@ -153,17 +86,21 @@
             }
           ],
           "result_en": "Two cards 1.29x at 4 at once, 1.85x at 8. LiteLLM +27% over client round-robin at 4 at once, +1% at 8.",
-          "result_zh": "兩張卡：同時 4 個為 1.29 倍，8 個為 1.85 倍。LiteLLM 比客戶端輪流：4 個時多 27%，8 個時多 1%。"
+          "result_zh": "兩張卡：同時 4 個為 1.29 倍，8 個為 1.85 倍。LiteLLM 比客戶端輪流：4 個時多 27%，8 個時多 1%。",
+          "why_en": "How much faster with two cards?",
+          "why_zh": "兩張卡會快多少？",
+          "res_en": "Up to 1.85x faster",
+          "res_zh": "最多快 1.85 倍"
         },
         {
-          "id": "B2",
-          "en": "Client-side round-robin",
-          "zh": "用戶端自行輪流",
+          "id": "1b",
+          "en": "LiteLLM vs by hand",
+          "zh": "LiteLLM 比人工分流",
           "crit_en": "Report LiteLLM vs no-gateway round-robin",
           "crit_zh": "報告 LiteLLM 與無閘道輪流的差距",
           "status": "sim",
-          "needs_en": "Simulated backends (A 0.2 s, B 0.3 s, each slows 25% per extra request in flight), 16 at once, 3 repeats. The gain comes from load awareness, which an app could build itself; LiteLLM spares every app from doing it. Recheck on real GPUs in B1.",
-          "needs_zh": "模擬後端（A 0.2 秒、B 0.3 秒，每多一個在途請求就慢 25%），同時 16 個，重複 3 次。優勢來自「看負載」，應用程式自己也能做；LiteLLM 的價值是讓每個應用不必各做一遍。要在 B1 用真 GPU 再確認。",
+          "needs_en": "Simulated backends (A 0.2 s, B 0.3 s, each slows 25% per extra request in flight), 16 at once, 3 repeats. The gain comes from load awareness, which an app could build itself; LiteLLM spares every app from doing it. Recheck on real GPUs in 1a.",
+          "needs_zh": "模擬後端（A 0.2 秒、B 0.3 秒，每多一個在途請求就慢 25%），同時 16 個，重複 3 次。優勢來自「看負載」，應用程式自己也能做；LiteLLM 的價值是讓每個應用不必各做一遍。要在 1a 用真 GPU 再確認。",
           "history": [
             {
               "at": "2026-11-24",
@@ -180,17 +117,21 @@
             {
               "at": "2026-11-25",
               "status": "sim",
-              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in B1.",
-              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 B1。"
+              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in 1a.",
+              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 1a。"
             }
           ],
           "result_en": "LiteLLM least-busy: 23.3 req/s, p95 849 ms. Client round-robin: 20.7 req/s, p95 1206 ms. One backend: 16.7 req/s.",
-          "result_zh": "LiteLLM least-busy：23.3 req/s、p95 849 ms。用戶端輪流：20.7 req/s、p95 1206 ms。單一後端：16.7 req/s。"
+          "result_zh": "LiteLLM least-busy：23.3 req/s、p95 849 ms。用戶端輪流：20.7 req/s、p95 1206 ms。單一後端：16.7 req/s。",
+          "why_en": "Does LiteLLM beat splitting the work by hand?",
+          "why_zh": "LiteLLM 比自己分流好嗎？",
+          "res_en": "Up to 27% more work done",
+          "res_zh": "最多多做 27%"
         },
         {
-          "id": "B3",
-          "en": "Gateway overhead",
-          "zh": "閘道額外延遲",
+          "id": "1c",
+          "en": "Extra delay",
+          "zh": "多出的延遲",
           "crit_en": "Added latency measured with a fast fake backend",
           "crit_zh": "用快速假後端量出額外延遲",
           "status": "sim",
@@ -212,22 +153,26 @@
             {
               "at": "2026-11-25",
               "status": "sim",
-              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in B1.",
-              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 B1。"
+              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in 1a.",
+              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 1a。"
             }
           ],
           "result_en": "Adds about 5 ms per request (p50 +5.3, p95 +6.9), 5.7 ms to the first token and 0.5 ms per streamed chunk. One worker tops out near 190 requests/s.",
-          "result_zh": "每個請求約多 5 ms（p50 +5.3、p95 +6.9）；首字多 5.7 ms，串流每段多 0.5 ms。單一 worker 上限約每秒 190 個請求。"
+          "result_zh": "每個請求約多 5 ms（p50 +5.3、p95 +6.9）；首字多 5.7 ms，串流每段多 0.5 ms。單一 worker 上限約每秒 190 個請求。",
+          "why_en": "Does the middle layer slow answers down?",
+          "why_zh": "中間這層會讓回答變慢嗎？",
+          "res_en": "About 5 ms, hardly noticeable",
+          "res_zh": "約 5 毫秒，幾乎無感"
         },
         {
-          "id": "B4",
-          "en": "Load curve",
-          "zh": "負載曲線",
+          "id": "1d",
+          "en": "Busy hours",
+          "zh": "人多的時候",
           "crit_en": "NP 4, 8, 16, 32; 5 repeats; range reported",
           "crit_zh": "NP 4、8、16、32；各 5 次；報範圍",
           "status": "sim",
-          "needs_en": "Fake backends on a Mac (0.20 s base, +25% per extra request in flight), 3 repeats per level, concurrency 1 to 64. Not a GPU measurement; the real curve needs the real pair (B1).",
-          "needs_zh": "Mac 上的假後端（基礎 0.20 秒，每多一個在途請求慢 25%），每個併發數重複 3 次，併發 1 到 64。不是 GPU 量測；真實曲線要等真機成對（B1）。",
+          "needs_en": "Fake backends on a Mac (0.20 s base, +25% per extra request in flight), 3 repeats per level, concurrency 1 to 64. Not a GPU measurement; the real curve needs the real pair (1a).",
+          "needs_zh": "Mac 上的假後端（基礎 0.20 秒，每多一個在途請求慢 25%），每個併發數重複 3 次，併發 1 到 64。不是 GPU 量測；真實曲線要等真機成對（1a）。",
           "history": [
             {
               "at": "2026-11-24",
@@ -243,17 +188,21 @@
             }
           ],
           "result_en": "Simulated: gain grows with load, 0.9x at 1 request (gateway overhead) to 1.87x at 64.",
-          "result_zh": "模擬：負載越高優勢越大，1 個請求時 0.9 倍（閘道開銷），64 個時 1.87 倍。"
+          "result_zh": "模擬：負載越高優勢越大，1 個請求時 0.9 倍（閘道開銷），64 個時 1.87 倍。",
+          "why_en": "Does it keep up when many people ask?",
+          "why_zh": "很多人同時問，撐得住嗎？",
+          "res_en": "More people, bigger gain",
+          "res_zh": "人越多，優勢越大"
         },
         {
-          "id": "B5",
-          "en": "Routing strategy",
-          "zh": "路由策略",
+          "id": "1e",
+          "en": "Best way to share",
+          "zh": "最好的分配方式",
           "crit_en": "least-busy vs simple-shuffle vs latency-based",
           "crit_zh": "least-busy、simple-shuffle、latency-based 三者比較",
           "status": "sim",
-          "needs_en": "Keep least-busy, which is today's PRO6000 setting. Simulated backends only, same load as B2; recheck on the real GPUs in B1 and B4.",
-          "needs_zh": "維持 least-busy，也就是 PRO6000 現行設定。僅模擬後端，負載與 B2 相同；要在 B1、B4 用真 GPU 再確認。",
+          "needs_en": "Keep least-busy, which is today's PRO6000 setting. Simulated backends only, same load as 1b; recheck on the real GPUs in 1a and 1d.",
+          "needs_zh": "維持 least-busy，也就是 PRO6000 現行設定。僅模擬後端，負載與 1b 相同；要在 1a、1d 用真 GPU 再確認。",
           "history": [
             {
               "at": "2026-11-24",
@@ -270,60 +219,86 @@
             {
               "at": "2026-11-25",
               "status": "sim",
-              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in B1.",
-              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 B1。"
+              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in 1a.",
+              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 1a。"
             }
           ],
           "result_en": "least-busy wins: 23.3 req/s, p95 849 ms. simple-shuffle: 20.9 req/s, p95 1292 ms (same as round-robin). latency-based: 16.5 req/s, p95 975 ms (no better than one backend).",
-          "result_zh": "least-busy 最好：23.3 req/s、p95 849 ms。simple-shuffle：20.9 req/s、p95 1292 ms（和輪流相同）。latency-based：16.5 req/s、p95 975 ms（不比單一後端好）。"
-        }
-      ]
-    },
-    {
-      "key": "C",
-      "en": "Governance",
-      "zh": "治理",
-      "tests": [
+          "result_zh": "least-busy 最好：23.3 req/s、p95 849 ms。simple-shuffle：20.9 req/s、p95 1292 ms（和輪流相同）。latency-based：16.5 req/s、p95 975 ms（不比單一後端好）。",
+          "why_en": "Which rule shares the work best?",
+          "why_zh": "哪種分配規則最好？",
+          "res_en": "“Least busy” wins",
+          "res_zh": "「找最閒的」最好"
+        },
         {
-          "id": "C1",
-          "en": "Database and virtual keys",
-          "zh": "資料庫與金鑰",
-          "crit_en": "A key stops at its budget; spend logged per key",
-          "crit_zh": "金鑰達預算即停；每把金鑰的用量有紀錄",
+          "id": "1f",
+          "en": "Add a third machine",
+          "zh": "再加一台",
+          "crit_en": "Throughput grows with 1, 2, 3 backends",
+          "crit_zh": "1、2、3 個後端時吞吐隨之成長",
           "status": "blocked",
-          "needs_en": "Add Postgres. Restarting the shared gateway needs the owner's OK; a Mac PoC avoids that.",
-          "needs_zh": "加 Postgres。重啟共用閘道要 owner 同意；Mac PoC 可避開。",
+          "needs_en": "Needs a third backend (HPE GPU, not arrived).",
+          "needs_zh": "需要第三個後端（HPE GPU 尚未到）。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "blocked",
-              "en": "Gateway has no database.",
-              "zh": "閘道沒有資料庫。"
+              "en": "Waiting for HPE GPU.",
+              "zh": "等待 HPE GPU。"
             }
-          ]
-        },
+          ],
+          "why_en": "Does a new machine just work?",
+          "why_zh": "加一台機器，直接就能用嗎？"
+        }
+      ]
+    },
+    {
+      "key": "2",
+      "en": "Does it stay up?",
+      "zh": "撐得住嗎",
+      "benefit_en": "A machine dies or a prompt is too long: users should not notice.",
+      "benefit_zh": "機器掛了或輸入太長，使用者要無感。",
+      "tests": [
         {
-          "id": "C2",
-          "en": "Metrics and tracing",
-          "zh": "指標與追蹤",
-          "crit_en": "Requests, latency, errors visible per model",
-          "crit_zh": "每個模型的請求數、延遲、錯誤可見",
-          "status": "planned",
-          "needs_en": "/metrics into the existing Prometheus and Grafana on PRO6000; Langfuse or OpenTelemetry for traces.",
-          "needs_zh": "/metrics 接 PRO6000 現有的 Prometheus 與 Grafana；追蹤用 Langfuse 或 OpenTelemetry。",
+          "id": "2a",
+          "en": "A machine breaks",
+          "zh": "機器壞掉",
+          "crit_en": "0 failed requests; recovered within 30 s",
+          "crit_zh": "失敗請求為 0；30 秒內恢復",
+          "status": "done",
+          "needs_en": "Real run on PRO6000 GPU1 + GPU7 (llama.cpp), LiteLLM on a Mac via SSH tunnel, 8 requests at once for 95 s. At 25 s the GPU7 container was killed, at about 57 s started again. The Mac fake-backend drill (about 700 requests) gave the same picture.",
+          "needs_zh": "真機：PRO6000 GPU1＋GPU7（llama.cpp），LiteLLM 在 Mac 上經 SSH tunnel，同時 8 個請求跑 95 秒。第 25 秒關掉 GPU7 的容器，約第 57 秒再啟動。Mac 假後端演練（約 700 個請求）的結果一致。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "planned",
               "en": "Listed.",
               "zh": "已列入。"
+            },
+            {
+              "at": "2026-11-24",
+              "status": "done",
+              "en": "Local LiteLLM v1.110.0, 2 fake backends, 4 clients for 70 s, one backend killed at 15 s and restarted at 40 s. 1 retry: 2 failed in each of 3 runs (in flight). 3 retries: 0 failed in 2 runs.",
+              "zh": "本機 LiteLLM v1.110.0、2 個假後端、4 個用戶端跑 70 秒，第 15 秒關掉一個、第 40 秒重啟。重試 1 次：3 次各有 2 個失敗（在途）。重試 3 次：2 次皆 0 失敗。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "done",
+              "en": "Real GPUs: with 3 retries 728 requests, 0 failed through the kill and the restart. With 1 retry 656 requests, 5 failed: 3 within 1.2 s of the kill, 2 about 32 s later when the restarted backend was still loading. Keep num_retries at 3 or more.",
+              "zh": "真機：重試 3 次，728 個請求，關機與重啟全程 0 失敗。重試 1 次，656 個請求失敗 5 個：3 個在關機後 1.2 秒內，2 個在約 32 秒後（重啟的後端還在載入）。num_retries 建議 3 以上。"
             }
-          ]
+          ],
+          "result_en": "Real GPUs: 0 of 728 failed (3 retries); 5 of 656 with 1 retry",
+          "result_zh": "真機：重試 3 次，728 個 0 失敗；重試 1 次，656 個失敗 5 個",
+          "why_en": "Do users notice?",
+          "why_zh": "使用者會發現嗎？",
+          "res_en": "No: 0 of 728 requests failed",
+          "res_zh": "不會：728 個請求 0 失敗"
         },
         {
-          "id": "C3",
-          "en": "High availability",
-          "zh": "高可用",
+          "id": "2b",
+          "en": "The gateway breaks",
+          "zh": "閘道壞掉",
           "crit_en": "Stop one gateway: 0 failed requests",
           "crit_zh": "停掉一個閘道：失敗請求為 0",
           "status": "planned",
@@ -336,19 +311,14 @@
               "en": "Listed.",
               "zh": "已列入。"
             }
-          ]
-        }
-      ]
-    },
-    {
-      "key": "D",
-      "en": "Harness layer",
-      "zh": "Harness 層",
-      "tests": [
+          ],
+          "why_en": "Is there a backup for the middle layer?",
+          "why_zh": "中間這層壞了，有備援嗎？"
+        },
         {
-          "id": "D1",
-          "en": "Context-length fallback",
-          "zh": "上下文長度備援",
+          "id": "2c",
+          "en": "A very long question",
+          "zh": "超長的問題",
           "crit_en": "Over-limit prompt reroutes with no error",
           "crit_zh": "超長提示自動改道、無錯誤",
           "status": "planned",
@@ -361,12 +331,99 @@
               "en": "Listed.",
               "zh": "已列入。"
             }
-          ]
+          ],
+          "why_en": "Does it go to a machine that can take it?",
+          "why_zh": "會交給撐得住的機器嗎？"
+        }
+      ]
+    },
+    {
+      "key": "3",
+      "en": "Can everyone share it?",
+      "zh": "大家能共用嗎",
+      "benefit_en": "Keys, limits, monitoring and our Harness on one address.",
+      "benefit_zh": "金鑰、額度、監控與 Harness 都走同一個入口。",
+      "tests": [
+        {
+          "id": "3a",
+          "en": "One door",
+          "zh": "同一個入口",
+          "crit_en": "3 apps, 1 address, own keys; limits do not leak",
+          "crit_zh": "3 個應用、1 個網址、各自金鑰；限額互不影響",
+          "status": "done",
+          "needs_en": "Run on a Mac: LiteLLM v1.109.1 with a Postgres database in Docker, fake model backends. Key rules do not depend on the GPU, so fake backends are enough for this test. The shared PRO6000 gateway has no database, so it cannot do this yet.",
+          "needs_zh": "在 Mac 上跑：LiteLLM v1.109.1 加 Docker 裡的 Postgres 資料庫，模型後端用假的。金鑰規則跟 GPU 無關，所以假後端就夠。共用的 PRO6000 閘道沒有資料庫，目前還做不到這件事。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "blocked",
+              "en": "No database on the gateway.",
+              "zh": "閘道沒有資料庫。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "done",
+              "en": "3 keys from one address. No key and a wrong key: refused (401). App 1 and app 2 keys: accepted (200). App 3, allowed only model m2: m2 accepted (200), m refused (403).",
+              "zh": "一個網址發 3 把金鑰。沒金鑰、錯金鑰：拒絕（401）。應用 1、2 的金鑰：通過（200）。應用 3 只允許 m2：m2 通過（200）、m 被拒（403）。"
+            }
+          ],
+          "why_en": "Does everyone use one address, each with their own key?",
+          "why_zh": "大家用同一個網址、各用各的金鑰嗎？",
+          "res_en": "Yes: 3 apps, 1 address, wrong key refused",
+          "res_zh": "可以：3 個應用、1 個網址，錯的金鑰被拒絕"
         },
         {
-          "id": "D2",
-          "en": "Harness on one endpoint",
-          "zh": "Harness 單一入口",
+          "id": "3b",
+          "en": "Fair limits",
+          "zh": "公平的額度",
+          "crit_en": "A key stops at its budget; spend logged per key",
+          "crit_zh": "金鑰達預算即停；每把金鑰的用量有紀錄",
+          "status": "done",
+          "needs_en": "Same Mac setup as 3a. App 1 was capped at 3 requests a minute, app 2 had no cap. Spend per key is recorded in the database. Budgets in money were not tried because the fake backend has no price.",
+          "needs_zh": "同 3a 的 Mac 環境。應用 1 限每分鐘 3 次，應用 2 不限。每把金鑰的花費會記在資料庫。金額預算沒試，因為假後端沒有價格。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "blocked",
+              "en": "Gateway has no database.",
+              "zh": "閘道沒有資料庫。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "done",
+              "en": "App 1 (3 per minute): 8 requests gave 3 accepted then 5 refused (429). App 2 at the same time: 8 of 8 accepted. Per-key spend is available.",
+              "zh": "應用 1（每分鐘 3 次）：8 個請求，前 3 個通過、後 5 個被擋（429）。同時間應用 2：8 個全部通過。每把金鑰的花費查得到。"
+            }
+          ],
+          "why_en": "Does one team's limit leave the others alone?",
+          "why_zh": "一個團隊被限制，不會影響別人嗎？",
+          "res_en": "Yes: the capped app was stopped, the other never noticed",
+          "res_zh": "可以：被限額的應用被擋下，另一個毫無感覺"
+        },
+        {
+          "id": "3c",
+          "en": "See the usage",
+          "zh": "看見用量",
+          "crit_en": "Requests, latency, errors visible per model",
+          "crit_zh": "每個模型的請求數、延遲、錯誤可見",
+          "status": "planned",
+          "needs_en": "/metrics into the existing Prometheus and Grafana on PRO6000; Langfuse or OpenTelemetry for traces.",
+          "needs_zh": "/metrics 接 PRO6000 現有的 Prometheus 與 Grafana；追蹤用 Langfuse 或 OpenTelemetry。",
+          "history": [
+            {
+              "at": "2026-11-24",
+              "status": "planned",
+              "en": "Listed.",
+              "zh": "已列入。"
+            }
+          ],
+          "why_en": "Can we see who used how much?",
+          "why_zh": "看得到誰用了多少嗎？"
+        },
+        {
+          "id": "3d",
+          "en": "Our Harness",
+          "zh": "我們的 Harness",
           "crit_en": "Same task finishes after only an alias change",
           "crit_zh": "只改別名，同一任務仍能完成",
           "status": "planned",
@@ -379,12 +436,14 @@
               "en": "Listed.",
               "zh": "已列入。"
             }
-          ]
+          ],
+          "why_en": "Does our Harness work through one address?",
+          "why_zh": "Harness 只連一個網址也能運作嗎？"
         },
         {
-          "id": "D3",
-          "en": "Response cache",
-          "zh": "回應快取",
+          "id": "3e",
+          "en": "Remember answers",
+          "zh": "記住答案",
           "crit_en": "Repeat prompt faster; no stale multi-turn answer",
           "crit_zh": "重複提示更快；多輪對話無過期答案",
           "status": "planned",
@@ -397,12 +456,14 @@
               "en": "Listed.",
               "zh": "已列入。"
             }
-          ]
+          ],
+          "why_en": "Is the same question answered at once the second time?",
+          "why_zh": "同一題問第二次，會立刻回嗎？"
         },
         {
-          "id": "D4",
-          "en": "GPU-aware layer below",
-          "zh": "下層 GPU 感知調度",
+          "id": "3f",
+          "en": "See the GPUs",
+          "zh": "看見 GPU",
           "crit_en": "Compare with GPU-aware AP or vLLM Router",
           "crit_zh": "與 GPU-aware AP 或 vLLM Router 比較",
           "status": "planned",
@@ -415,7 +476,9 @@
               "en": "Listed.",
               "zh": "已列入。"
             }
-          ]
+          ],
+          "why_en": "Does it spread work by real GPU load?",
+          "why_zh": "能依 GPU 實際負載分配嗎？"
         }
       ]
     }

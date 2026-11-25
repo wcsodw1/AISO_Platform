@@ -697,3 +697,25 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-ptab{display:grid;grid-template-columns:auto auto auto;justify-content:start;align-items:baseline;column-gap:12px;text-align:left}
 .lr .lr-ptab .lr-pdesc{grid-column:1/-1;margin-top:4px;font-size:17px;font-weight:500;color:var(--gold)}
 .lr .lr-ptab .lr-pdesc small.zhs{margin-left:8px;font-size:17px;color:var(--gold);opacity:.85}
+/* Phase 2, clean version: group = numbered title + one gold line; row = name, one-line meaning, short result, status. Details live in the hover. */
+.lr .p2-t{width:46%}.lr .p2-c{width:30%}
+.lr .p2-gb{display:block;margin:6px 0 0 44px;font-style:normal;font-size:17px;font-weight:500;color:var(--gold)}
+.lr .p2-gb small{display:inline;margin-left:8px;color:var(--gold);opacity:.85}
+.lr .p2-why{display:block;margin-top:2px;color:var(--muted);font-weight:500;font-size:16px}
+.lr .p2-why small{display:inline;margin-left:8px}
+.lr .p2-res{margin-top:0;color:var(--muted)}
+.lr .p2-res.done{color:var(--green)}.lr .p2-res.sim{color:var(--gold)}
+.lr .p2-none{color:var(--muted)}
+.lr .p2-tb .p2-t small:not(.p2-why small){display:inline;margin-left:10px}
+/* three parts, one colour each like Phase 1: 1 gold, 2 green, 3 blue */
+.lr .p2-g.g1 th{color:var(--s1)}.lr .p2-g.g1 th span{background:var(--s1)}
+.lr .p2-g.g2 th{color:var(--s2)}.lr .p2-g.g2 th span{background:var(--s2)}
+.lr .p2-g.g3 th{color:var(--s4)}.lr .p2-g.g3 th span{background:var(--s4)}
+.lr .p2-id{width:64px}
+/* each of the three parts folds: click or Enter on its title */
+.lr .p2-g{cursor:pointer}
+.lr .p2-g:hover th,.lr .p2-g:focus th{background:rgba(255,255,255,.03);outline:none}
+.lr .p2-chev{display:inline-block;width:0;height:0;margin-right:12px;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid currentColor;vertical-align:middle;transition:transform .15s}
+.lr .p2-g[aria-expanded="false"] .p2-chev{transform:rotate(-90deg)}
+.lr .p2-tb.shut1 .p2-r1,.lr .p2-tb.shut2 .p2-r2,.lr .p2-tb.shut3 .p2-r3{display:none}
+@media(prefers-reduced-motion:reduce){.lr .p2-chev{transition:none}}

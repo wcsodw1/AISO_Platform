@@ -371,25 +371,31 @@
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + esc(t[0]) + '<small class="zhs">' + esc(t[1]) + "</small></em>"; }
     function tip(t) {
       var h = (t.history || []).map(function (x) { return "<li><b>" + esc(x.at) + "</b> " + esc((ST[x.status] || [x.status])[0]) + ": " + esc(x.en) + '<small class="zhs">' + esc(x.zh) + "</small></li>"; }).join("");
-      return '<div class="p2-tip"><p class="p2-tn">' + esc(t.needs_en) + '<small class="zhs">' + esc(t.needs_zh) + '</small></p><p class="p2-th">History<small class="zhs">每次紀錄</small></p><ul>' + h + "</ul></div>";
+      return '<div class="p2-tip"><p class="p2-th">Pass criterion<small class="zhs">通過標準</small></p><p class="p2-tn">' + esc(t.crit_en) + '<small class="zhs">' + esc(t.crit_zh) + '</small></p><p class="p2-th">Notes<small class="zhs">備註</small></p><p class="p2-tn">' + esc(t.needs_en) + '<small class="zhs">' + esc(t.needs_zh) + '</small></p><p class="p2-th">History<small class="zhs">每次紀錄</small></p><ul>' + h + "</ul></div>";
     }
-    function row(t, extra) {
-      if (!extra && t.result_en) extra = '<span class="p2-res">' + esc(t.result_en) + '<small class="zhs">' + esc(t.result_zh || "") + "</small></span>";
-      return '<tr class="p2-row" tabindex="0"><td class="p2-id">' + esc(t.id) + '</td><td class="p2-t">' + esc(t.en) + '<small class="zhs">' + esc(t.zh) + "</small>" + tip(t) + '</td><td class="p2-c">' + esc(t.crit_en) + '<small class="zhs">' + esc(t.crit_zh) + "</small>" + (extra || "") + "</td><td>" + pill(t.status) + "</td></tr>";
+    function row(t, k) {
+      var res = t.res_en ? '<span class="p2-res ' + esc(t.status) + '">' + esc(t.res_en) + '<small class="zhs">' + esc(t.res_zh || "") + "</small></span>" : '<span class="p2-none">–</span>';
+      return '<tr class="p2-row p2-r' + esc(k) + '" tabindex="0"><td class="p2-id">' + esc(t.id) + '</td><td class="p2-t">' + esc(t.en) + '<small class="zhs">' + esc(t.zh) + '</small><span class="p2-why">' + esc(t.why_en || "") + '<small class="zhs">' + esc(t.why_zh || "") + "</small></span>" + tip(t) + '</td><td class="p2-c">' + res + "</td><td>" + pill(t.status) + "</td></tr>";
     }
     var all = [], body = "";
     P.groups.forEach(function (g) {
       var done = g.tests.filter(function (t) { return t.status === "done"; }).length;
       all = all.concat(g.tests);
-      body += '<tr class="p2-g"><th colspan="4"><span>' + esc(g.key) + "</span>" + esc(g.en) + '<small class="zhs">' + esc(g.zh) + '</small><em>' + done + " / " + g.tests.length + "</em></th></tr>" + g.tests.map(function (t) { return row(t); }).join("");
+      body += '<tr class="p2-g g' + esc(g.key) + '" data-g="' + esc(g.key) + '" tabindex="0" role="button" aria-expanded="true" title="Click to fold 點一下收合"><th colspan="4"><u class="p2-chev"></u><span>' + esc(g.key) + "</span>" + esc(g.en) + '<small class="zhs">' + esc(g.zh) + '</small><em>' + done + " / " + g.tests.length + '</em><i class="p2-gb">' + esc(g.benefit_en || "") + '<small class="zhs">' + esc(g.benefit_zh || "") + "</small></i></th></tr>" + g.tests.map(function (t) { return row(t, g.key); }).join("");
     });
     var n = all.length, d = all.filter(function (t) { return t.status === "done"; }).length, r = all.filter(function (t) { return t.status === "running"; }).length, m = all.filter(function (t) { return t.status === "sim"; }).length;
-    $("lrTab2n").innerHTML = d + " / " + n + (m ? " <small>+" + m + " 模擬 sim</small>" : "");   /* progress inside the Phase 2 tab */
+    $("lrTab2n").innerHTML = d + " / " + n;   /* progress inside the Phase 2 tab */
     $("lrP2").innerHTML =
-      '<div class="lr-box lr-concl p2-top"><p class="lr-big">' + d + " of " + n + " tests done" + (r ? ", " + r + " running" : "") + (m ? ", " + m + " simulated only" : "") + '<small class="zhs">共 ' + n + " 項測試，真測完成 " + d + (r ? "、進行中 " + r : "") + (m ? "、僅模擬 " + m : "") + "</small></p>" +
+      '<div class="lr-box lr-concl p2-top"><p class="lr-big">' + d + " of " + n + " tested on real machines" + '<small class="zhs">共 ' + n + " 項，真機測過 " + d + "</small></p>" +
+      (m ? '<p class="p2-upd">' + m + " more tried on a fake setup only" + '<small class="zhs">另有 ' + m + " 項只用模擬測過</small></p>" : "") +
       '<p class="p2-upd">Updated ' + esc(P.updated) + '<small class="zhs">更新日期</small></p></div>' +
-      '<table class="p2-tb"><thead><tr><th>#</th><th>Test<small class="zhs">測試</small></th><th>Pass criterion<small class="zhs">通過標準（先訂再測）</small></th><th>Status<small class="zhs">狀態</small></th></tr></thead><tbody>' + body + "</tbody></table>" +
-      '<p class="p2-foot">' + esc(P.note_en) + '<small class="zhs">' + esc(P.note_zh) + "</small></p>";
+      '<table class="p2-tb"><thead><tr><th>#</th><th>Test<small class="zhs">測試</small></th><th>Result<small class="zhs">結果</small></th><th>Status<small class="zhs">狀態</small></th></tr></thead><tbody>' + body + "</tbody></table>";
+    var tb = $("lrP2").querySelector ? $("lrP2").querySelector(".p2-tb") : null;
+    function fold(h) { var k = h.getAttribute("data-g"), shut = tb.classList.toggle("shut" + k); h.setAttribute("aria-expanded", shut ? "false" : "true"); }
+    if (tb && tb.addEventListener) {
+      tb.addEventListener("click", function (e) { var h = e.target.closest ? e.target.closest(".p2-g") : null; if (h) fold(h); });
+      tb.addEventListener("keydown", function (e) { if (e.key !== "Enter" && e.key !== " ") return; var h = e.target.closest ? e.target.closest(".p2-g") : null; if (h) { e.preventDefault(); fold(h); } });
+    }
   }
   /* Phase 1 / Phase 2 switch: #phase1 or #phase2 in the address opens that one; Phase 2 (the open work) is the default */
   (function () {
