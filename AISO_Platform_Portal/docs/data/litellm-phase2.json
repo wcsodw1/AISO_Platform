@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "note_en": "Status of every LiteLLM test. Pass criteria are proposed and fixed before each run. To record a run: change the status and add a line to its history.",
   "note_zh": "每項 LiteLLM 測試的狀態。通過標準先訂再測；每次測試後更新狀態並在 history 加一行。",
   "statuses": {
@@ -22,6 +22,10 @@
     "planned": [
       "Planned",
       "規劃中"
+    ],
+    "sim": [
+      "Simulated",
+      "模擬"
     ]
   },
   "phase1": {
@@ -121,21 +125,35 @@
       "tests": [
         {
           "id": "B1",
-          "en": "Same-spec pair (GPU4 + GPU5)",
-          "zh": "同規格兩卡",
+          "en": "Same-spec pair (GPU6 + GPU7)",
+          "zh": "同規格兩卡（GPU6＋GPU7）",
           "crit_en": "Mean aggregate TPS gain at least 1.3x",
           "crit_zh": "平均總吞吐至少 1.3 倍",
-          "status": "setup",
-          "needs_en": "Open the SSH tunnel, set the test key variable (LITELLM_PRO6000_KEY), then press Run on this page. Ask the owner first: shared machine.",
-          "needs_zh": "開 SSH tunnel、設定測試金鑰變數（LITELLM_PRO6000_KEY），再按本頁 Run。共用機器，先問 owner。",
+          "status": "done",
+          "needs_en": "Real machine: PRO6000 GPU1 + GPU7, llama.cpp gemma-4-26B-A4B BF16, 4 slots each, via SSH tunnel from a Mac, 3 repeats, 32 requests per run, 128 tokens. Short replies and one model: treat as a first real measurement, not the final word.",
+          "needs_zh": "真機：PRO6000 GPU1＋GPU7，llama.cpp gemma-4-26B-A4B BF16，每張 4 個 slot，從 Mac 經 SSH tunnel 打，重複 3 次，每次 32 個請求、回 128 token。回覆短、只用一個模型：這是第一次真機量測，不是最終結論。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "setup",
               "en": "Tunnel closed; key variable name does not match the config.",
               "zh": "tunnel 未開；金鑰變數名稱與設定檔不符。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "blocked",
+              "en": "Pair changed from GPU4+GPU5 (off limits) to GPU6+GPU7. Waiting for the Ray Serve owner to free GPU6. No request sent to any GPU.",
+              "zh": "成對從 GPU4＋GPU5（不可使用）改為 GPU6＋GPU7。等 Ray Serve 負責人讓出 GPU6。尚未對任何 GPU 送出請求。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "done",
+              "en": "Real run on GPU1 + GPU7 (GPU4/GPU5 off limits, GPU6 held by another PoC). 4 at once: one GPU 264 tokens/s; client round-robin 268 (p95 3329 ms); LiteLLM least-busy 340 (p95 1607 ms) = 1.29x. 8 at once: one GPU 284; round-robin 520; LiteLLM 525 = 1.85x. No failed requests. Mean 1.57x, passes 1.3x. LiteLLM beat round-robin by 27% at 4 at once but only 1% at 8 (both cards full).",
+              "zh": "GPU1＋GPU7 真機測試（GPU4、GPU5 不可使用，GPU6 被另一個 PoC 占用）。同時 4 個：單卡 264 token/s；客戶端輪流 268（p95 3329 ms）；LiteLLM least-busy 340（p95 1607 ms）＝1.29 倍。同時 8 個：單卡 284；輪流 520；LiteLLM 525＝1.85 倍。無失敗請求。平均 1.57 倍，通過 1.3 倍。同時 4 個時 LiteLLM 比輪流多 27%，同時 8 個只多 1%（兩張卡都滿載）。"
             }
-          ]
+          ],
+          "result_en": "Two cards 1.29x at 4 at once, 1.85x at 8. LiteLLM +27% over client round-robin at 4 at once, +1% at 8.",
+          "result_zh": "兩張卡：同時 4 個為 1.29 倍，8 個為 1.85 倍。LiteLLM 比客戶端輪流：4 個時多 27%，8 個時多 1%。"
         },
         {
           "id": "B2",
@@ -143,7 +161,7 @@
           "zh": "用戶端自行輪流",
           "crit_en": "Report LiteLLM vs no-gateway round-robin",
           "crit_zh": "報告 LiteLLM 與無閘道輪流的差距",
-          "status": "done",
+          "status": "sim",
           "needs_en": "Simulated backends (A 0.2 s, B 0.3 s, each slows 25% per extra request in flight), 16 at once, 3 repeats. The gain comes from load awareness, which an app could build itself; LiteLLM spares every app from doing it. Recheck on real GPUs in B1.",
           "needs_zh": "模擬後端（A 0.2 秒、B 0.3 秒，每多一個在途請求就慢 25%），同時 16 個，重複 3 次。優勢來自「看負載」，應用程式自己也能做；LiteLLM 的價值是讓每個應用不必各做一遍。要在 B1 用真 GPU 再確認。",
           "history": [
@@ -158,6 +176,12 @@
               "status": "done",
               "en": "Simulated backends, 16 at once, 480 requests, 3 repeats. One backend 16.7 req/s (p95 957 ms); client round-robin 20.7 (p95 1206); LiteLLM least-busy 23.3 (p95 849) = +12% throughput and -30% p95 vs round-robin.",
               "zh": "模擬後端，同時 16 個、480 個請求、重複 3 次。單一後端 16.7 req/s（p95 957 ms）；用戶端輪流 20.7（p95 1206）；LiteLLM least-busy 23.3（p95 849），比輪流吞吐 +12%、p95 −30%。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "sim",
+              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in B1.",
+              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 B1。"
             }
           ],
           "result_en": "LiteLLM least-busy: 23.3 req/s, p95 849 ms. Client round-robin: 20.7 req/s, p95 1206 ms. One backend: 16.7 req/s.",
@@ -169,7 +193,7 @@
           "zh": "閘道額外延遲",
           "crit_en": "Added latency measured with a fast fake backend",
           "crit_zh": "用快速假後端量出額外延遲",
-          "status": "done",
+          "status": "sim",
           "needs_en": "Mac only, instant fake backend, 3 repeats. At 8 requests at once the gateway queues (p50 41 ms) because one worker saturates; the PRO6000 gateway is started without --num_workers. Real model replies take seconds, so 5 ms is small; it matters for many short requests.",
           "needs_zh": "僅在 Mac 用「立即回應」的假後端，重複 3 次。同時 8 個請求時閘道會排隊（p50 41 ms），因為單一 worker 飽和；PRO6000 閘道啟動時沒設 --num_workers。真實模型回應要數秒，5 ms 相對很小；請求很短又很多時才看得出來。",
           "history": [
@@ -184,6 +208,12 @@
               "status": "done",
               "en": "Instant fake backend, direct vs through LiteLLM v1.110.0, 3 repeats. 1 at a time: p50 0.11 -> 5.45 ms (+5.3), p95 +6.9. Streaming: first token +5.7 ms, +0.5 ms per chunk. 8 at once: p50 0.57 -> 40.9 ms; gateway tops out near 187 req/s (direct 12,700).",
               "zh": "立即回應的假後端，直連對經 LiteLLM v1.110.0，重複 3 次。一次 1 個：p50 0.11 → 5.45 ms（+5.3）、p95 +6.9。串流：首字 +5.7 ms、每段 +0.5 ms。一次 8 個：p50 0.57 → 40.9 ms；閘道上限約 187 req/s（直連 12,700）。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "sim",
+              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in B1.",
+              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 B1。"
             }
           ],
           "result_en": "Adds about 5 ms per request (p50 +5.3, p95 +6.9), 5.7 ms to the first token and 0.5 ms per streamed chunk. One worker tops out near 190 requests/s.",
@@ -195,17 +225,25 @@
           "zh": "負載曲線",
           "crit_en": "NP 4, 8, 16, 32; 5 repeats; range reported",
           "crit_zh": "NP 4、8、16、32；各 5 次；報範圍",
-          "status": "planned",
-          "needs_en": "Finds where the gateway or the machines saturate.",
-          "needs_zh": "找出閘道或機器的飽和點。",
+          "status": "sim",
+          "needs_en": "Fake backends on a Mac (0.20 s base, +25% per extra request in flight), 3 repeats per level, concurrency 1 to 64. Not a GPU measurement; the real curve needs the real pair (B1).",
+          "needs_zh": "Mac 上的假後端（基礎 0.20 秒，每多一個在途請求慢 25%），每個併發數重複 3 次，併發 1 到 64。不是 GPU 量測；真實曲線要等真機成對（B1）。",
           "history": [
             {
               "at": "2026-11-24",
               "status": "planned",
               "en": "Listed.",
               "zh": "已列入。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "sim",
+              "en": "Simulated, concurrency 1/2/4/8/16/32/64: one backend 4.9/7.8/11.2/14.1/16.5/18.2/19.0 req/s; LiteLLM over two 4.4/8.5/14.5/20.6/27.4/32.2/35.5 req/s. Gain 0.9x at 1, 1.46x at 8, 1.87x at 64; p95 at 64: 3357 vs 1779 ms. One failed request at 16.",
+              "zh": "模擬，併發 1/2/4/8/16/32/64：單一後端 4.9/7.8/11.2/14.1/16.5/18.2/19.0 req/s；LiteLLM 兩台 4.4/8.5/14.5/20.6/27.4/32.2/35.5 req/s。併發 1 為 0.9 倍、8 為 1.46 倍、64 為 1.87 倍；64 時 p95 為 3357 對 1779 ms。併發 16 有 1 個請求失敗。"
             }
-          ]
+          ],
+          "result_en": "Simulated: gain grows with load, 0.9x at 1 request (gateway overhead) to 1.87x at 64.",
+          "result_zh": "模擬：負載越高優勢越大，1 個請求時 0.9 倍（閘道開銷），64 個時 1.87 倍。"
         },
         {
           "id": "B5",
@@ -213,7 +251,7 @@
           "zh": "路由策略",
           "crit_en": "least-busy vs simple-shuffle vs latency-based",
           "crit_zh": "least-busy、simple-shuffle、latency-based 三者比較",
-          "status": "done",
+          "status": "sim",
           "needs_en": "Keep least-busy, which is today's PRO6000 setting. Simulated backends only, same load as B2; recheck on the real GPUs in B1 and B4.",
           "needs_zh": "維持 least-busy，也就是 PRO6000 現行設定。僅模擬後端，負載與 B2 相同；要在 B1、B4 用真 GPU 再確認。",
           "history": [
@@ -228,6 +266,12 @@
               "status": "done",
               "en": "Same simulated load for all three. least-busy 23.3 req/s (p95 849); simple-shuffle 20.9 (p95 1292); latency-based 16.5 (p95 975), about the same as a single backend (16.7).",
               "zh": "三者用同一個模擬負載。least-busy 23.3 req/s（p95 849）；simple-shuffle 20.9（p95 1292）；latency-based 16.5（p95 975），和單一後端（16.7）差不多。"
+            },
+            {
+              "at": "2026-11-25",
+              "status": "sim",
+              "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in B1.",
+              "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 B1。"
             }
           ],
           "result_en": "least-busy wins: 23.3 req/s, p95 849 ms. simple-shuffle: 20.9 req/s, p95 1292 ms (same as round-robin). latency-based: 16.5 req/s, p95 975 ms (no better than one backend).",

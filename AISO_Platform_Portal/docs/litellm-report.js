@@ -383,10 +383,10 @@
       all = all.concat(g.tests);
       body += '<tr class="p2-g"><th colspan="4"><span>' + esc(g.key) + "</span>" + esc(g.en) + '<small class="zhs">' + esc(g.zh) + '</small><em>' + done + " / " + g.tests.length + "</em></th></tr>" + g.tests.map(function (t) { return row(t); }).join("");
     });
-    var n = all.length, d = all.filter(function (t) { return t.status === "done"; }).length, r = all.filter(function (t) { return t.status === "running"; }).length;
-    $("lrTab2n").innerHTML = d + " / " + n;   /* progress inside the Phase 2 tab */
+    var n = all.length, d = all.filter(function (t) { return t.status === "done"; }).length, r = all.filter(function (t) { return t.status === "running"; }).length, m = all.filter(function (t) { return t.status === "sim"; }).length;
+    $("lrTab2n").innerHTML = d + " / " + n + (m ? " <small>+" + m + " 模擬 sim</small>" : "");   /* progress inside the Phase 2 tab */
     $("lrP2").innerHTML =
-      '<div class="lr-box lr-concl p2-top"><p class="lr-big">' + d + " of " + n + " tests done" + (r ? ", " + r + " running" : "") + '<small class="zhs">共 ' + n + " 項測試，已完成 " + d + (r ? "、進行中 " + r : "") + "</small></p>" +
+      '<div class="lr-box lr-concl p2-top"><p class="lr-big">' + d + " of " + n + " tests done" + (r ? ", " + r + " running" : "") + (m ? ", " + m + " simulated only" : "") + '<small class="zhs">共 ' + n + " 項測試，真測完成 " + d + (r ? "、進行中 " + r : "") + (m ? "、僅模擬 " + m : "") + "</small></p>" +
       '<p class="p2-upd">Updated ' + esc(P.updated) + '<small class="zhs">更新日期</small></p></div>' +
       '<table class="p2-tb"><thead><tr><th>#</th><th>Test<small class="zhs">測試</small></th><th>Pass criterion<small class="zhs">通過標準（先訂再測）</small></th><th>Status<small class="zhs">狀態</small></th></tr></thead><tbody>' + body + "</tbody></table>" +
       '<p class="p2-foot">' + esc(P.note_en) + '<small class="zhs">' + esc(P.note_zh) + "</small></p>";

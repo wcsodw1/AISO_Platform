@@ -655,7 +655,7 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .p2-row:hover,.lr .p2-row:focus{background:rgba(122,174,232,.07);outline:none}
 .lr .p2-st{display:inline-block;padding:2px 12px;border:1px solid currentColor;border-radius:999px;font-style:normal;font-size:16px;font-weight:700;white-space:nowrap}
 .lr .p2-st small{display:inline;margin-left:6px;color:inherit;font-weight:500}
-.lr .p2-st.done{color:var(--green)}.lr .p2-st.running{color:var(--blue)}.lr .p2-st.setup{color:var(--gold)}.lr .p2-st.blocked{color:var(--red)}.lr .p2-st.planned{color:var(--muted)}
+.lr .p2-st.done{color:var(--green)}.lr .p2-st.running{color:var(--blue)}.lr .p2-st.setup{color:var(--gold)}.lr .p2-st.blocked{color:var(--red)}.lr .p2-st.planned{color:var(--muted)}.lr .p2-st.sim{color:var(--gold)}
 /* hover Notes: unrolls like a curtain from the top-left of the cell */
 .lr .p2-tip{position:absolute;left:12px;top:calc(100% - 6px);z-index:30;width:min(560px,86vw);padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#171c25;box-shadow:0 18px 40px #000;font-weight:500;font-size:16px;clip-path:inset(0 0 100% 0);opacity:0;pointer-events:none;transition:clip-path .22s ease,opacity .15s ease}
 .lr .p2-row:hover .p2-tip,.lr .p2-row:focus .p2-tip,.lr .p2-row:focus-within .p2-tip{clip-path:inset(0);opacity:1}
@@ -685,7 +685,7 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .lr-ptab small.zhs{margin:0;font-size:20px;font-weight:500;color:inherit;opacity:.8}
 .lr .lr-ptab em{margin-left:10px;padding:1px 12px;border:1px solid currentColor;border-radius:999px;font-style:normal;font-size:16px;font-weight:700;white-space:nowrap}
 .lr .lr-ptab em:empty{display:none}
-.lr .lr-ptab em small.zhs{margin-left:6px;font-size:16px}
+.lr .lr-ptab em small{display:inline;margin-left:6px;color:var(--gold);font-size:inherit;font-weight:500}.lr .lr-ptab em small.zhs{margin-left:6px;font-size:16px}
 .lr .lr-ptab.p1c.on{color:var(--ivory);border-bottom-color:var(--s1);background:rgba(214,178,107,.10)}
 .lr .lr-ptab.p2c.on{color:var(--ivory);border-bottom-color:var(--s4);background:rgba(122,174,232,.10)}
 .lr .lr-ptab.p1c em{color:var(--green)}
