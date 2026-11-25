@@ -1,11 +1,11 @@
 {
  "dataset": "PRO6000 aiDAPTIV 3.05 benchmark (GPT-OSS-20B + the four Q4_K_M models, original precision)",
- "evidence_until": "2026-11-25 13:04:16",
- "updated": "2026-11-25 13:04:16",
+ "evidence_until": "2026-11-25 13:06:03",
+ "updated": "2026-11-25 13:06:03",
  "live": false,
  "note": "Live: written while the test runs. Without = mean of 3 repeats, Cold = Run1, Warm = mean of Run2/Run3.",
  "comparability": {
-  "text": "Own test: aiDAPTIV middleware NXUNA305A1 (vLLM 0.25.1), ONE GPU, original precision (GPT-OSS-20B native), Output 1000, both modes with --disable-gpu-reuse, max-model-len 20000. TPS and TPOT are derived from the asked output length and the benchmark wall time (the client's own token count re-tokenises the text and is unreliable); TPOT for NP above 1 is an approximation. Not comparable with the 70B / 120B vLLM test (3.03, TP4) or the llama.cpp Q4_K_M test. FlashInfer sampler is off in both modes (no CUDA toolkit in the image)."
+  "text": "Gemma-4-26B is partial: with aiDAPTIV the NP10 / 16K Warm runs and NP30 are not measured yet; a few conditions had 1-2 failed requests (counted over the successful ones). Own test: aiDAPTIV middleware NXUNA305A1 (vLLM 0.25.1), ONE GPU, original precision (GPT-OSS-20B native, Gemma-4-26B BF16 with the Triton MoE backend), Output 1000, both modes with --disable-gpu-reuse, max-model-len 20000. TPS and TPOT are derived from the asked output length and the benchmark wall time (the client's own token count re-tokenises the text and is unreliable); TPOT for NP above 1 is an approximation. Not comparable with the 70B / 120B vLLM test (3.03, TP4) or the llama.cpp Q4_K_M test. FlashInfer sampler is off in both modes (no CUDA toolkit in the image)."
  },
  "profile": {
   "machine": "PRO6000 · NVIDIA RTX PRO 6000 Blackwell Server Edition (TPI 8 GPU system)",
@@ -29,18 +29,28 @@
  },
  "progress": {
   "without": {
-   "done": 27,
-   "total": 54
+   "done": 54,
+   "total": 108
   },
   "with": {
-   "done": 27,
-   "total": 54
+   "done": 43,
+   "total": 108
   },
   "by_model": {
    "GPT-OSS-20B": {
     "1024": {
      "without": 27,
      "with": 27
+    },
+    "256": {
+     "without": 0,
+     "with": 0
+    }
+   },
+   "Gemma-4-26B": {
+    "1024": {
+     "without": 27,
+     "with": 16
     },
     "256": {
      "without": 0,
@@ -429,6 +439,356 @@
       10.5608,
       10.5468,
       10.5601
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 1,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 208.483,
+    "cold": 413.47,
+    "warm": 99.525
+   },
+   "tpot_ms": {
+    "without": 7.566,
+    "cold": 7.564,
+    "warm": 7.558
+   },
+   "aggregate_tps": {
+    "without": 128.756,
+    "cold": 125.471,
+    "warm": 130.719
+   },
+   "normalized_tps": {
+    "without": 128.756,
+    "cold": 125.471,
+    "warm": 130.719
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.2197,
+      0.204,
+      0.2018
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 1,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 442.56,
+    "cold": 600.7,
+    "warm": 145.705
+   },
+   "tpot_ms": {
+    "without": 8.045,
+    "cold": 8.037,
+    "warm": 8.037
+   },
+   "aggregate_tps": {
+    "without": 117.925,
+    "cold": 115.875,
+    "warm": 122.324
+   },
+   "normalized_tps": {
+    "without": 117.925,
+    "cold": 115.875,
+    "warm": 122.324
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.4409,
+      0.4498,
+      0.437
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 1,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 984.793,
+    "cold": 1231.57,
+    "warm": 220.79
+   },
+   "tpot_ms": {
+    "without": 8.69,
+    "cold": 8.687,
+    "warm": 8.683
+   },
+   "aggregate_tps": {
+    "without": 103.449,
+    "cold": 100.908,
+    "warm": 112.423
+   },
+   "normalized_tps": {
+    "without": 103.449,
+    "cold": 100.908,
+    "warm": 112.423
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.9835,
+      0.9676,
+      1.0033
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 10,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 869.473,
+    "cold": 1531.26,
+    "warm": 135.89
+   },
+   "tpot_ms": {
+    "without": 16.557,
+    "cold": 16.645,
+    "warm": 16.005
+   },
+   "aggregate_tps": {
+    "without": 574.446,
+    "cold": 550.661,
+    "warm": 620.158
+   },
+   "normalized_tps": {
+    "without": 57.445,
+    "cold": 55.066,
+    "warm": 62.016
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      0.9733,
+      0.8221,
+      0.8131
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 10,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 1819.097,
+    "cold": 2940.64,
+    "warm": 185.475
+   },
+   "tpot_ms": {
+    "without": 16.751,
+    "cold": 18.368,
+    "warm": 15.96
+   },
+   "aggregate_tps": {
+    "without": 485.088,
+    "cold": 422.734,
+    "warm": 557.967
+   },
+   "normalized_tps": {
+    "without": 48.509,
+    "cold": 42.273,
+    "warm": 55.797
+   },
+   "status": "PASS",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 2
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      1.8215,
+      1.8236,
+      1.8123
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 10,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 4208.97,
+    "cold": 5943.3
+   },
+   "tpot_ms": {
+    "without": 21.833,
+    "cold": 21.578
+   },
+   "aggregate_tps": {
+    "without": 384.32,
+    "cold": 363.636
+   },
+   "normalized_tps": {
+    "without": 38.432,
+    "cold": 36.364
+   },
+   "status": "RUNNING",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 1,
+    "warm": 0
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      4.2056,
+      4.1938,
+      4.2275
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 30,
+   "input": 4096,
+   "ttft_ms": {
+    "without": 2032.173
+   },
+   "tpot_ms": {
+    "without": 26.064
+   },
+   "aggregate_tps": {
+    "without": 1033.132
+   },
+   "normalized_tps": {
+    "without": 34.438
+   },
+   "status": "RUNNING",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 0,
+    "warm": 0
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      2.0279,
+      2.0298,
+      2.0388
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 30,
+   "input": 8192,
+   "ttft_ms": {
+    "without": 4762.777
+   },
+   "tpot_ms": {
+    "without": 30.885
+   },
+   "aggregate_tps": {
+    "without": 786.149
+   },
+   "normalized_tps": {
+    "without": 26.205
+   },
+   "status": "RUNNING",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 0,
+    "warm": 0
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      4.7661,
+      4.7655,
+      4.7568
+     ]
+    }
+   }
+  },
+  {
+   "model": "Gemma-4-26B",
+   "output": 1024,
+   "np": 30,
+   "input": 16384,
+   "ttft_ms": {
+    "without": 12905.517
+   },
+   "tpot_ms": {
+    "without": 40.698
+   },
+   "aggregate_tps": {
+    "without": 560.085
+   },
+   "normalized_tps": {
+    "without": 18.67
+   },
+   "status": "RUNNING",
+   "source": "vis_log",
+   "n": {
+    "without": 3,
+    "cold": 0,
+    "warm": 0
+   },
+   "repeats": {
+    "without": {
+     "ttft_s": [
+      12.9066,
+      12.8875,
+      12.9225
      ]
     }
    }
