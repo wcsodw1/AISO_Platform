@@ -23,8 +23,8 @@
   ]
  },
  "headline": {
-  "en": "Worth it with 2 or more GPUs.",
-  "zh": "兩張卡以上就值得。"
+  "en": "Ray Serve lets several GPUs serve more people at once, with almost no slowdown.",
+  "zh": "Ray Serve 讓多張 GPU 一起服務更多人，速度幾乎不變。"
  },
  "phases": {
   "1": {
