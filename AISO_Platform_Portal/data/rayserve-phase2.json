@@ -23,8 +23,8 @@
   ]
  },
  "headline": {
-  "en": "Worth it with 2 or more GPUs: about 1% slower, 16% to 65% more work, scales by itself.",
-  "zh": "兩張卡以上就值得：只慢約 1%，多做 16% 到 65% 的工作，自己增減。"
+  "en": "Worth it with 2 or more GPUs.",
+  "zh": "兩張卡以上就值得。"
  },
  "phases": {
   "1": {
