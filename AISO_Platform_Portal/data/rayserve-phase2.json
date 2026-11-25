@@ -1,0 +1,306 @@
+{
+ "updated": "2026-11-25",
+ "statuses": {
+  "done": [
+   "Done",
+   "完成"
+  ],
+  "running": [
+   "Running",
+   "進行中"
+  ],
+  "setup": [
+   "Setup needed",
+   "待設定"
+  ],
+  "blocked": [
+   "Blocked",
+   "受阻"
+  ],
+  "planned": [
+   "Planned",
+   "規劃中"
+  ]
+ },
+ "headline": {
+  "en": "Worth it with 2 or more GPUs: about 1% slower, 16% to 65% more work, scales by itself.",
+  "zh": "兩張卡以上就值得：只慢約 1%，多做 16% 到 65% 的工作，自己增減。"
+ },
+ "phases": {
+  "1": {
+   "en": "Overhead & scale-out",
+   "zh": "額外延遲・擴展",
+   "meaning_en": "Is Ray Serve worth trying? It must cost little speed and really add capacity.",
+   "meaning_zh": "Ray Serve 值不值得試？代價要小，而且真的能多扛流量。",
+   "steps": [
+    {
+     "n": 1,
+     "en": "Does it slow us down?",
+     "zh": "會不會變慢",
+     "see_en": "Almost free: speed only drops 1.3%, the first word comes 34 ms later.",
+     "see_zh": "幾乎沒有代價：速度只掉 1.3%，第一個字晚 34 毫秒出現。",
+     "tests": [
+      {
+       "id": "P1a",
+       "en": "vLLM direct vs Ray Serve",
+       "zh": "vLLM 直連對 Ray Serve",
+       "crit_en": "TPS loss at most 10%; TTFT / TPOT difference reported",
+       "crit_zh": "總吞吐損失不超過 10%；回報 TTFT、TPOT 差距",
+       "status": "done",
+       "needs_en": "GPT-OSS-20B, NP 2, input 4096, output 128, 3 repeats, GPU 1, vLLM 0.29.0, Ray 2.60.0 (SMOKE_ONLY_NOT_FORMAL). Ray load time was not measured (health check answered before the model finished loading).",
+       "needs_zh": "GPT-OSS-20B、NP 2、輸入 4096、輸出 128、重複 3 次，GPU 1，vLLM 0.29.0、Ray 2.60.0（僅 smoke，非正式）。Ray 載入時間未量到（健康檢查在模型載完前就回應）。",
+       "history": [
+        {
+         "at": "2026-11-24",
+         "status": "setup",
+         "en": "Runner written, never run.",
+         "zh": "runner 已寫好，尚未執行。"
+        },
+        {
+         "at": "2026-11-25",
+         "status": "done",
+         "en": "Direct: 152.2 / 135.5 / 146.9 tok/s. Ray Serve: 150.1 / 134.6 / 144.1 tok/s. Loss 1.3%, passed.",
+         "zh": "直連：152.2 / 135.5 / 146.9 tok/s；Ray Serve：150.1 / 134.6 / 144.1 tok/s。損失 1.3%，通過。"
+        }
+       ],
+       "result_en": "Passed: TPS 142.9 vs 144.8 direct (-1.3%); TTFT +34 ms (169 to 203); TPOT 4.85 vs 4.96 ms",
+       "result_zh": "通過：吞吐 142.9 對直連 144.8（-1.3%）；TTFT 多 34 ms（169→203）；TPOT 4.85 對 4.96 ms"
+      }
+     ],
+     "label_en": "The price",
+     "label_zh": "代價",
+     "mean_en": "Check Ray Serve adds almost no delay.",
+     "mean_zh": "確認 Ray Serve 幾乎不增加延遲。",
+     "big": "-1.3%",
+     "big_en": "speed lost",
+     "big_zh": "速度損失",
+     "sum_en": "Only 1.3% slower.",
+     "sum_zh": "只慢 1.3%。"
+    },
+    {
+     "n": 2,
+     "en": "Does it add capacity?",
+     "zh": "能不能多扛流量",
+     "see_en": "With 16 users at once, 2 replicas finish 16% to 65% more work than 1 GPU: the longer the input, the bigger the gain.",
+     "see_zh": "16 人同時用時，2 個副本比 1 張卡多做 16% 到 65% 的工作：輸入越長，差距越大。",
+     "tests": [
+      {
+       "id": "P1b",
+       "en": "1 vs 2 replicas",
+       "zh": "1 個副本對 2 個副本",
+       "crit_en": "Throughput at least 1.3x",
+       "crit_zh": "吞吐至少 1.3 倍",
+       "status": "done",
+       "needs_en": "16 users at once, 32 requests, output 128, GPT-OSS-20B, GPU 1 + 7, one run per length (smoke, not formal). Direct = 1 GPU; Ray Serve = 2 replicas, 1 GPU each.",
+       "needs_zh": "16 人同時、共 32 個請求、輸出 128，GPT-OSS-20B，GPU 1 + 7，每種長度各跑 1 次（僅 smoke，非正式）。直連 = 1 張卡；Ray Serve = 2 個副本、各 1 張卡。",
+       "result_en": "Passed: average 1.42x (1.16x / 1.44x / 1.65x at 1K / 4K / 8K input)",
+       "result_zh": "通過：平均 1.42 倍（輸入 1K / 4K / 8K 分別 1.16 / 1.44 / 1.65 倍）",
+       "history": [
+        {
+         "at": "2026-11-25",
+         "status": "done",
+         "en": "1 GPU direct vs 2 Ray replicas, 16 users: 1101 / 734 / 428 vs 1275 / 1060 / 707 tok/s at 1K / 4K / 8K.",
+         "zh": "1 張卡直連對 2 個 Ray 副本，16 人：1K / 4K / 8K 分別 1101 / 734 / 428 對 1275 / 1060 / 707 tok/s。"
+        }
+       ]
+      }
+     ],
+     "label_en": "The benefit",
+     "label_zh": "效益",
+     "proof": {
+      "title_en": "Same 16 users, different question length",
+      "title_zh": "同樣 16 人，不同的問題長度",
+      "cols_en": [
+       "Input length",
+       "1 GPU, no Ray",
+       "2 GPUs, Ray Serve",
+       "Gain"
+      ],
+      "cols_zh": [
+       "輸入長度",
+       "1 張卡（不用 Ray）",
+       "2 張卡（Ray Serve）",
+       "提升"
+      ],
+      "unit_en": "tokens per second, higher is better",
+      "unit_zh": "每秒 token 數，越高越好",
+      "rows": [
+       [
+        "1K",
+        "1101",
+        "1275",
+        "+16%"
+       ],
+       [
+        "4K",
+        "734",
+        "1060",
+        "+44%"
+       ],
+       [
+        "8K",
+        "428",
+        "707",
+        "+65%"
+       ]
+      ],
+      "note_en": "At 1K the 2 GPUs are barely busy, so the gain is small and the first word is slightly slower (122 vs 84 ms). From 4K on, one GPU is the bottleneck and the second replica pays off (first word 560 to 310 ms at 4K, 1382 to 820 ms at 8K).",
+      "note_zh": "1K 時兩張卡都沒滿載，提升很小，第一個字還稍慢（122 對 84 毫秒）。從 4K 起單張卡成為瓶頸，第二個副本才顯出價值（4K 第一個字 560→310 毫秒，8K 1382→820 毫秒）。"
+     },
+     "mean_en": "Check a second GPU really takes more users.",
+     "mean_zh": "確認第二張卡真的能多扛人。",
+     "big": "1.42x",
+     "big_en": "more work",
+     "big_zh": "多做的工作",
+     "sum_en": "16% to 65% more work with 2 GPUs.",
+     "sum_zh": "2 張卡多做 16% 到 65%。"
+    },
+    {
+     "n": 3,
+     "en": "Does it scale by itself?",
+     "zh": "會不會自己增減",
+     "see_en": "Replicas go up under load and back down when idle: nobody adds servers by hand.",
+     "see_zh": "負載大時自動增加、閒時縮回：不用人手加機器。",
+     "tests": [
+      {
+       "id": "A1",
+       "en": "Auto scale up and down",
+       "zh": "自動增減副本",
+       "crit_en": "Scales up under load, down when idle, 0 failed requests",
+       "crit_zh": "負載大時增加、閒時縮回，失敗為 0",
+       "status": "done",
+       "needs_en": "16 users, GPU 1 + 7, 1 to 2 replicas, 6 min load then 4 min idle (smoke, not formal). First try failed: a replica added later reused the first replica's compiled kernels on another GPU. Fixed by turning the compile cache off, so a new replica starts slower.",
+       "needs_zh": "16 人、GPU 1 + 7、1 到 2 個副本，負載 6 分鐘後閒置 4 分鐘（僅 smoke，非正式）。第一次失敗：後加的副本重用了第一個副本編好的程式，放到另一張卡上出錯。關掉編譯快取後解決，代價是新副本啟動較慢。",
+       "result_en": "Passed: 2nd replica started 10 s after the load began and was ready after 101 s; back to 1 replica 76 s after the load stopped; 8489 requests, 0 failed",
+       "result_zh": "通過：負載開始 10 秒後啟動第 2 個副本、101 秒後可用；負載停止 76 秒後縮回 1 個；8489 個請求，0 個失敗",
+       "history": [
+        {
+         "at": "2026-11-25",
+         "status": "done",
+         "en": "Run 1 failed (CUDA driver error on the second replica). Run 2 with compile cache off: up in 101 s, down in 76 s, 0 failed.",
+         "zh": "第 1 次失敗（第 2 個副本 CUDA 錯誤）。第 2 次關掉編譯快取：101 秒擴、76 秒縮、0 失敗。"
+        }
+       ]
+      }
+     ],
+     "label_en": "The benefit",
+     "label_zh": "效益",
+     "mean_en": "Check replicas grow and shrink with no one touching it.",
+     "mean_zh": "確認副本不用人手就能增減。",
+     "big": "0 failed",
+     "big_en": "of 8489 requests",
+     "big_zh": "8489 個請求",
+     "sum_en": "Adds and removes replicas by itself.",
+     "sum_zh": "自己增減副本，不用人手。"
+    }
+   ],
+   "verdict_en": "Phase 1 result: worth adopting wherever we have more than one GPU.",
+   "verdict_zh": "第一階段結論：只要有一張以上的 GPU，就值得採用。"
+  },
+  "2": {
+   "en": "Proof & tuning",
+   "zh": "補證據・調優",
+   "meaning_en": "Should it join our stack? Find its limit and see how it sits next to LiteLLM.",
+   "meaning_zh": "要不要放進我們的架構？找出極限，並確認它和 LiteLLM 怎麼搭。",
+   "steps": [
+    {
+     "n": 1,
+     "en": "Where is the limit?",
+     "zh": "極限在哪",
+     "see_en": "The load at which it stops getting faster: how many users one setup can take.",
+     "see_zh": "負載到哪裡就不再變快：一套設定最多能服務多少人。",
+     "tests": [
+      {
+       "id": "B1",
+       "en": "Load curve",
+       "zh": "負載曲線",
+       "crit_en": "NP 4, 8, 16, 32; 5 repeats; range reported",
+       "crit_zh": "NP 4、8、16、32；各 5 次；報範圍",
+       "status": "planned",
+       "needs_en": "Finds where Ray Serve or the GPU saturates.",
+       "needs_zh": "找出 Ray Serve 或 GPU 的飽和點。"
+      }
+     ],
+     "mean_en": "Find how many users one setup can take.",
+     "mean_zh": "找出一套設定最多服務多少人。",
+     "big": "—",
+     "big_en": "not run yet",
+     "big_zh": "尚未執行",
+     "sum_en": "The load where it stops getting faster.",
+     "sum_zh": "找出不再變快的負載。",
+     "label_en": "The benefit",
+     "label_zh": "效益"
+    },
+    {
+     "n": 2,
+     "en": "Better than LiteLLM alone?",
+     "zh": "比只用 LiteLLM 好嗎",
+     "see_en": "What Ray Serve adds on top of LiteLLM routing, on the same load.",
+     "see_zh": "同一負載下，Ray Serve 比單用 LiteLLM 多帶來什麼。",
+     "tests": [
+      {
+       "id": "B2",
+       "en": "Ray Serve vs LiteLLM routing",
+       "zh": "Ray Serve 對 LiteLLM 路由",
+       "crit_en": "Same backends: throughput and p95 TTFT compared",
+       "crit_zh": "同樣後端：比較吞吐與 p95 TTFT",
+       "status": "planned",
+       "needs_en": "Shows what each layer adds on the same load.",
+       "needs_zh": "同一負載下看兩層各自帶來什麼。"
+      }
+     ],
+     "label_en": "The benefit",
+     "label_zh": "效益",
+     "mean_en": "Compare with LiteLLM routing alone.",
+     "mean_zh": "和只用 LiteLLM 路由比較。",
+     "big": "—",
+     "big_en": "not run yet",
+     "big_zh": "尚未執行",
+     "sum_en": "What Ray Serve adds on the same load.",
+     "sum_zh": "同一負載下多帶來什麼。"
+    },
+    {
+     "n": 3,
+     "en": "Does the chain work?",
+     "zh": "整條鏈路接得起來嗎",
+     "see_en": "One request goes through LiteLLM → Ray Serve → vLLM. Then we decide: adopt or not.",
+     "see_zh": "一個請求走完 LiteLLM → Ray Serve → vLLM。接著決定：採用或不採用。",
+     "tests": [
+      {
+       "id": "D1",
+       "en": "LiteLLM → Ray Serve → vLLM",
+       "zh": "LiteLLM → Ray Serve → vLLM",
+       "crit_en": "One request passes the whole chain",
+       "crit_zh": "一個請求走完整條鏈路",
+       "status": "planned",
+       "needs_en": "One model entry in LiteLLM pointing at the Ray Serve endpoint.",
+       "needs_zh": "在 LiteLLM 加一筆指向 Ray Serve 的模型。"
+      }
+     ],
+     "mean_en": "Run one request through the whole chain.",
+     "mean_zh": "讓一個請求走完整條鏈路。",
+     "big": "—",
+     "big_en": "not run yet",
+     "big_zh": "尚未執行",
+     "sum_en": "LiteLLM → Ray Serve → vLLM works.",
+     "sum_zh": "整條鏈路接得起來。",
+     "label_en": "The benefit",
+     "label_zh": "效益"
+    }
+   ]
+  }
+ },
+ "later": {
+  "en": "Later, only if we adopt it",
+  "zh": "確定採用後再做",
+  "items": [
+   "Load curve 負載曲線",
+   "Replica failure 副本故障",
+   "Parameter tuning 參數調優",
+   "Cold start 冷啟動",
+   "Metrics 指標",
+   "Keys and budgets stay in LiteLLM 金鑰預算留在 LiteLLM",
+   "Selectable framework in the platform 平台可選框架"
+  ]
+ }
+}

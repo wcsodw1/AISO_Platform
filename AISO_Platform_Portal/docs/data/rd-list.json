@@ -175,14 +175,15 @@
    "category_en": "Deployment & serving",
    "task": "Ray Serve",
    "priority": "P0",
-   "owner": "Nora",
-   "status": "todo",
+   "owner": "David",
+   "status": "progress",
    "desc": "模型服務部署平台，處理多模型管理、負載平衡及自動擴縮",
    "added": "2026-11-13",
    "done": null,
    "days": 6,
    "start": "2026-11-13",
-   "end": "2026-11-20"
+   "end": "2026-11-20",
+    "href": "rayserve-report.html"
   },
   {
    "category": "部署與服務管理",
