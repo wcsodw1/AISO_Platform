@@ -30,8 +30,8 @@
   "1": {
    "en": "Overhead & scale-out",
    "zh": "額外延遲・擴展",
-   "meaning_en": "Verified: 2 GPUs do up to 65% more work, and auto-scaling frees about 41% of GPU hours (138 a week) for other jobs. The price: only 1.3% slower.",
-   "meaning_zh": "驗證結果：兩張卡最多多做 65% 的工作；自動增減每週省下約 41% 卡小時（138 小時）給別人用。代價：只慢 1.3%。",
+   "meaning_en": "Serve up to 65% more work and free about 41% of GPU hours.",
+   "meaning_zh": "多服務最多 65% 的工作，並省下約 41% 的卡小時。",
    "steps": [
     {
      "n": 1,
