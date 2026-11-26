@@ -173,21 +173,6 @@
   {
    "category": "部署與服務管理",
    "category_en": "Deployment & serving",
-   "task": "Ray Serve",
-   "priority": "P0",
-   "owner": "David",
-   "status": "progress",
-   "desc": "模型服務部署平台，處理多模型管理、負載平衡及自動擴縮",
-   "added": "2026-11-13",
-   "done": null,
-   "days": 6,
-   "start": "2026-11-13",
-   "end": "2026-11-20",
-    "href": "rayserve-report.html"
-  },
-  {
-   "category": "部署與服務管理",
-   "category_en": "Deployment & serving",
    "task": "LiteLLM",
    "priority": "P0",
    "owner": "Howard",
@@ -395,14 +380,24 @@
    "owner": "David"
   },
   {
-    "task": "LiteLLM Gateway",
-    "zh": "閘道：一個入口接多台機器",
-    "href": "litellm-report.html",
-    "status": "done",
-    "added": "2026-11-17",
-    "done": "2026-11-17",
-    "source": "LiteLLM gateway test, 2026-11-17 (two machines)",
-    "owner": "David"
+   "task": "LiteLLM Gateway",
+   "zh": "閘道：一個入口接多台機器",
+   "href": "litellm-report.html",
+   "status": "done",
+   "added": "2026-11-17",
+   "done": "2026-11-17",
+   "source": "LiteLLM gateway test, 2026-11-17 (two machines)",
+   "owner": "David"
+  },
+  {
+   "task": "Ray Serve",
+   "zh": "服務層：隨使用人數自動增減 GPU",
+   "href": "rayserve-report.html",
+   "status": "done",
+   "added": "2026-11-13",
+   "done": "2026-11-26",
+   "source": "Ray Serve test on PRO6000, 2026-11-26 (GPU 1 + 6)",
+   "owner": "David"
   }
  ],
  "weeks_from": "2026-11-09"
