@@ -17,6 +17,8 @@ Repo: `wcsodw1/AISO_Platform`. Site: https://wcsodw1.github.io/AISO_Platform/
 
 - **PF_UI** — UI rules: minimum type sizes (headings ≥16pt/21.33px, body ≥12pt/16px), page scan, agreed page patterns. See `.claude/skills/PF_UI/SKILL.md`.
 
+- **PF_Research** — the fixed layout of every Research page (Architecture Without/With diagram, two-term headline, 2 phases × 3 steps, plain words). Read before any research page. See `.claude/skills/PF_Research/SKILL.md`.
+
 - **PF_Sync** — every time David raises a task, first re-check what Cowork/Codex/other sessions changed, then continue their work; ask if unclear. See `.claude/skills/PF_Sync/SKILL.md`.
 
 ## Standing instruction: listing skills
