@@ -20,6 +20,10 @@
   "planned": [
    "Planned",
    "規劃中"
+  ],
+  "partial": [
+   "More to test",
+   "待補測"
   ]
  },
  "headline": {
@@ -59,6 +63,16 @@
          "zh": "1 張卡直連對 2 個 Ray 副本，16 人：1K / 4K / 8K 分別 1101 / 734 / 428 對 1275 / 1060 / 707 tok/s。"
         }
        ]
+      },
+      {
+       "id": "P1c",
+       "en": "2 GPUs used separately by hand vs Ray Serve",
+       "zh": "兩張卡各自手動使用對 Ray Serve",
+       "crit_en": "Same 16 people: speed and first-word time compared",
+       "crit_zh": "同樣 16 人：比較速度與第一個字的時間",
+       "status": "planned",
+       "needs_en": "What we will do: run one copy of the model on each of the 2 GPUs and split the 16 people between them by hand, then run the same people through Ray Serve. This shows what Ray Serve adds on top of simply having 2 GPUs.",
+       "needs_zh": "預計做法：兩張卡各跑一份模型，由人手把 16 個人分給兩張卡；再讓同樣的人經過 Ray Serve。看 Ray Serve 在「單純有兩張卡」之上多帶來什麼。"
       }
      ],
      "label_en": "The benefit",

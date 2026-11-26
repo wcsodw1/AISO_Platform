@@ -31,7 +31,7 @@
           return '<tr class="p2-row" tabindex="0"><td class="p2-id">' + esc(t.id) + '</td><td class="p2-t">' + bi(t.en, t.zh) + tip + '</td><td class="p2-c">' + bi(t.crit_en, t.crit_zh) +
             (t.result_en ? '<span class="p2-res">' + bi(t.result_en, t.result_zh) + "</span>" : "") + "</td><td>" + pill(t.status) + "</td></tr>";
         }).join("");
-        var st = s.tests.every(function (t) { return t.status === "done"; }) ? "done" : "planned";
+        var nd = s.tests.filter(function (t) { return t.status === "done"; }).length, st = nd === s.tests.length ? "done" : (nd ? "partial" : "planned");
         return '<section class="rs-step s' + s.n + '"><h2><i>' + s.n + "</i><span>" + bi(s.en, s.zh) + "</span></h2>" +
           '<p class="rs-m"><b>Meaning<small class="zhs">意義</small></b>' + bi(s.mean_en, s.mean_zh) + "</p>" +
           '<p class="rs-big' + (s.tone ? " t-" + s.tone : "") + '">' + esc(s.big) + "<span>" + bi(s.big_en, s.big_zh) + "</span></p>" +
