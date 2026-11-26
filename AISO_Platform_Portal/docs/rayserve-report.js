@@ -135,7 +135,7 @@
           '<p class="rs-sum' + (s.tip_en ? " has-tip" : "") + '" tabindex="0"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + (s.tip_en ? '<span class="rs-tip">' + bi(s.tip_en, s.tip_zh) + "</span>" : "") + "</p>" + pill(st) +
           kpi(s.kpi) + matrix(s.matrix) + (s.supp_en ? '<p class="rs-supp"><b>Supplement<small class="zhs">補充</small></b> ' + bi(s.supp_en.replace(/^Supplement: /, ""), s.supp_zh.replace(/^補充：/, "")) + "</p>" : "") + (s.proof_open ? proof(s.proof) : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
       }).join("");
-      $("rsPh" + k).innerHTML = (k === "2" ? '<div class="rs-board" id="rsBoard"></div>' : "") + '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
+      $("rsPh" + k).innerHTML = (k === "2" && !ph.hidden ? '<div class="rs-board" id="rsBoard"></div>' : "") + '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
       Array.prototype.forEach.call($("rsPh" + k).querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
       $("lrTab" + k + "n").innerHTML = done + " / " + n;
     });
@@ -175,7 +175,10 @@
   tabs.forEach(function (t) { t[1].onclick = function () { show(t[0]); }; });
   var h = ""; try { h = location.hash; } catch (e) { }
   show(/phase2/i.test(h) ? "2" : "1");
-  fetch("data/rayserve-phase2.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(render).catch(function () {
+  fetch("data/rayserve-phase2.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (P) {
+    if (P.phases["2"].hidden) { P.phases["2"].steps = []; try { document.querySelector("main.lr").classList.add("rs-p2off"); } catch (e) { } show("1"); }      /* phase 2 is off for now: no tab, no panel, no GPU board polling (data kept in the JSON) */
+    render(P);
+  }).catch(function () {
     $("rsPh1").innerHTML = '<p class="lr-resnote">The plan is not available.<small class="zhs">計畫暫時無法顯示</small></p>';
   });
 })();
