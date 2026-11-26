@@ -376,8 +376,8 @@
      "en": "A very long question",
      "zh": "超長的問題",
      "crit_en": "A long question goes to a machine that can take it",
-     "crit_zh": "長問題交給撐得住的機器",
-     "status": "planned",
+     "crit_zh": "長問題會送到能處理它的機器",
+     "status": "done",
      "needs_en": "Fallback between the long and balanced groups.",
      "needs_zh": "在 long 與 balanced 兩組之間設 fallback。",
      "history": [
@@ -386,12 +386,20 @@
        "status": "planned",
        "en": "Listed.",
        "zh": "已列入。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real LiteLLM on a Mac with two fake models: one takes short questions only, one takes long ones. With the fallback set, a 5000-word question moved to the big model and worked. Without it, every long question failed.",
+       "zh": "真的 LiteLLM 加兩個假模型（Mac）：一個只收短問題，一個收長問題。設了改送後，5000 字的問題自動改送大模型並成功；沒設時，長問題全部失敗。"
       }
      ],
      "why_en": "Does it go to a machine that can take it?",
      "why_zh": "會交給撐得住的機器嗎？",
-     "note_en": "Not tested yet.",
-     "note_zh": "還沒測。"
+     "note_en": "Real LiteLLM on a Mac with two fake models: one takes short questions only, one takes long ones. With the fallback set, a 5000-word question moved to the big model and worked. Without it, every long question failed.",
+     "note_zh": "真的 LiteLLM 加兩個假模型（Mac）：一個只收短問題，一個收長問題。設了改送後，5000 字的問題自動改送大模型並成功；沒設時，長問題全部失敗。",
+     "res_en": "Long question: 10 of 10 answered by the big model; without the setting 0 of 10",
+     "res_zh": "長問題：10 個全由大模型回答；沒設定時 0 個"
     }
    ],
    "mean_en": "When a machine breaks, no request fails and users do not notice.",
@@ -478,7 +486,7 @@
      "zh": "看見用量",
      "crit_en": "Usage per team can be seen",
      "crit_zh": "每個團隊的用量看得到",
-     "status": "planned",
+     "status": "done",
      "needs_en": "/metrics into the existing Prometheus and Grafana on PRO6000; Langfuse or OpenTelemetry for traces.",
      "needs_zh": "/metrics 接 PRO6000 現有的 Prometheus 與 Grafana；追蹤用 Langfuse 或 OpenTelemetry。",
      "history": [
@@ -487,12 +495,20 @@
        "status": "planned",
        "en": "Listed.",
        "zh": "已列入。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real LiteLLM with a Postgres database on a Mac, fake model with a set price. Three team keys sent 10, 4 and 1 requests; the spend read back per key was exactly right. The /metrics page needs a login (401), so only the per-key spend is shown here.",
+       "zh": "真的 LiteLLM 加 Postgres 資料庫（Mac），假模型設定單價。三個團隊的鑰匙分別送 10、4、1 個請求；讀回每把鑰匙的花費完全正確。/metrics 頁面要登入（401），所以這裡只驗了每把鑰匙的花費。"
       }
      ],
      "why_en": "Can we see who used how much?",
      "why_zh": "看得到誰用了多少嗎？",
-     "note_en": "Not tested yet.",
-     "note_zh": "還沒測。"
+     "note_en": "Real LiteLLM with a Postgres database on a Mac, fake model with a set price. Three team keys sent 10, 4 and 1 requests; the spend read back per key was exactly right. The /metrics page needs a login (401), so only the per-key spend is shown here.",
+     "note_zh": "真的 LiteLLM 加 Postgres 資料庫（Mac），假模型設定單價。三個團隊的鑰匙分別送 10、4、1 個請求；讀回每把鑰匙的花費完全正確。/metrics 頁面要登入（401），所以這裡只驗了每把鑰匙的花費。",
+     "res_en": "Cost per team matches exactly (10, 4 and 1 requests)",
+     "res_zh": "各團隊的用量與費用完全對得上（10、4、1 個請求）"
     },
     {
      "id": "3d",
