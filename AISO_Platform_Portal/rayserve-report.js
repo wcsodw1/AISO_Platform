@@ -24,6 +24,28 @@
       m.rows.map(function (r) { return "<tr><td>" + bi(r[0], r[1]) + "</td>" + r.slice(2).map(function (v) { return '<td class="rs-gain">' + esc(v) + "</td>"; }).join("") + "</tr>"; }).join("") +
       '</tbody></table><ul class="rs-calc">' + m.notes.map(function (n) { return "<li>" + bi(n[0], n[1]) + "</li>"; }).join("") + "</ul></div>";
   }
+  /* English first; on mouse-over of a block the Chinese REPLACES the English: wrap the English that sits before each Chinese gloss in span.en */
+  function wrapEn() {
+    try {
+      var root = document.querySelector("main.lr");
+      if (!root) return;
+      Array.prototype.forEach.call(root.querySelectorAll("small.zhs,.zh-i"), function (z) {
+        var run = [], n = z.previousSibling;
+        while (n) {
+          if (n.nodeType === 3) { run.unshift(n); }
+          else if (n.nodeType === 1) {
+            if (n.classList.contains("en") || n.querySelector("small.zhs,.zh-i") || /^(P|UL|OL|DIV|TABLE|H1|H2|H3|SVG|SECTION)$/i.test(n.tagName)) break;
+            run.unshift(n);
+          } else break;
+          n = n.previousSibling;
+        }
+        if (!run.length || !run.some(function (x) { return (x.textContent || "").trim(); })) return;
+        var s = document.createElement("span"); s.className = "en";
+        z.parentNode.insertBefore(s, run[0]);
+        run.forEach(function (x) { s.appendChild(x); });
+      });
+    } catch (e) { }
+  }
   function render(P) {
     var ST = P.statuses;
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + bi(t[0], t[1]) + "</em>"; }
@@ -42,7 +64,7 @@
         return '<section class="rs-step s' + s.n + '"><h2><i>' + s.n + "</i><span>" + bi(s.en, s.zh) + "</span></h2>" +
           '<p class="rs-m"><b>Meaning<small class="zhs">意義</small></b>' + bi(s.mean_en, s.mean_zh) + "</p>" +
           '<p class="rs-big' + (s.tone ? " t-" + s.tone : "") + '">' + esc(s.big) + "<span>" + bi(s.big_en, s.big_zh) + "</span></p>" +
-          '<p class="rs-sum' + (s.tip_en ? " has-tip" : "") + '" tabindex="0"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + (s.tip_en ? '<span class="rs-tip"><b>' + bi(s.tip_title_en || "Measured test", s.tip_title_zh || "實測依據") + "</b>" + bi(s.tip_en, s.tip_zh) + "</span>" : "") + "</p>" + pill(st) +
+          '<p class="rs-sum' + (s.tip_en ? " has-tip" : "") + '" tabindex="0"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + (s.tip_en ? '<span class="rs-tip">' + bi(s.tip_en, s.tip_zh) + "</span>" : "") + "</p>" + pill(st) +
           kpi(s.kpi) + matrix(s.matrix) + (s.supp_en ? '<p class="rs-supp"><b>Supplement<small class="zhs">補充</small></b> ' + bi(s.supp_en.replace(/^Supplement: /, ""), s.supp_zh.replace(/^補充：/, "")) + "</p>" : "") + (s.proof_open ? proof(s.proof) : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
       }).join("");
       $("rsPh" + k).innerHTML = '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
@@ -50,6 +72,7 @@
       $("lrTab" + k + "n").innerHTML = done + " / " + n;
     });
     $("rsLater").innerHTML = "<summary>" + bi(P.later.en, P.later.zh) + " · " + P.later.items.length + "</summary><ul>" + P.later.items.map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + "</ul>";
+    wrapEn();
   }
   /* ---------- architecture picture: same machine, without and with Ray Serve (same look as the LiteLLM page) ---------- */
   (function () {
@@ -74,6 +97,7 @@
       '<div class="lr-side lr-yes"><h3>With<small class="zhs">有 Ray Serve</small></h3>' + svg(svgYes, "Ray Serve adds or removes the second copy by itself") +
       '<p class="lr-pt">Ray Serve adds the 2nd copy when <b>many</b> people use it and removes it when <b>few</b> do<small class="zhs">人多時自動加開第 2 份，人少時自動收掉，把 GPU 還給其他工作</small></p></div></div>';
   })();
+  wrapEn();
   var tabs = [["1", $("lrTab1"), $("rsPh1")], ["2", $("lrTab2"), $("rsPh2")]];
   function show(k) {
     tabs.forEach(function (t) { var on = t[0] === k; t[1].classList.toggle("on", on); t[1].setAttribute("aria-selected", on ? "true" : "false"); t[2].classList.toggle("lr-off", !on); });
