@@ -1,0 +1,22 @@
+{
+  "updated": "2026-11-26",
+  "note_en": "Who uses which GPU comes from the weekly report; In use / Free is read live from the machine.",
+  "note_zh": "誰用哪張卡來自週報；使用中／空卡則是從機器即時讀取。",
+  "machines": [
+    {
+      "id": "pro6000",
+      "name": "RTX PRO 6000",
+      "zh": "RTX PRO 6000 資源使用情形",
+      "live": true,
+      "rows": [
+        {"gpus": [0], "service": "OCR model, gemma 4-26b, embedding, reranker", "service_zh": "OCR 模型、gemma 4-26b、embedding、reranker", "tag": "OrientAI", "unit": "OrientAI test group", "unit_zh": "OrientAI 測試群"},
+        {"gpus": [1], "service": "Test LiteLLM", "service_zh": "測試 LiteLLM", "tag": "coding model test", "tag_zh": "coding 模型測試", "unit": "AISO business unit", "unit_zh": "AISO 事業部"},
+        {"gpus": [2, 3], "service": "laguna-S-2.1", "service_zh": "laguna-S-2.1", "tag": "coding model test", "tag_zh": "coding 模型測試", "unit": "Dev-machine test team", "unit_zh": "開發機測試團隊"},
+        {"gpus": [4], "service": "gemma 4-26b", "service_zh": "gemma 4-26b", "tag": "OrientAI", "unit": "OrientAI test group", "unit_zh": "OrientAI 測試群"},
+        {"gpus": [5], "service": "gemma 4-26b", "service_zh": "gemma 4-26b", "tag": "OrientAI", "unit": "OrientAI test group", "unit_zh": "OrientAI 測試群"},
+        {"gpus": [6], "service": "", "service_zh": "", "tag": "coding model test", "tag_zh": "coding 模型測試", "unit": "AISO business unit", "unit_zh": "AISO 事業部"},
+        {"gpus": [7], "service": "Inkling 2 mini", "service_zh": "Inkling 2 mini", "tag": "coding model test", "tag_zh": "coding 模型測試", "unit": "Dev-machine test team", "unit_zh": "開發機測試團隊"}
+      ]
+    }
+  ]
+}

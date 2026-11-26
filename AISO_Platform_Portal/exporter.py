@@ -202,6 +202,7 @@ def export_catalog(base: Path, data_root: Path):
     shutil.copy2(base / "data" / "benchmark-registry.json", temporary / "data" / "benchmark-registry.json")
     shutil.copy2(base / "data" / "rd-list.json", temporary / "data" / "rd-list.json")
     shutil.copy2(base / "data" / "rayserve-phase2.json", temporary / "data" / "rayserve-phase2.json")
+    shutil.copy2(base / "data" / "gpu-usage.json", temporary / "data" / "gpu-usage.json")
     for extra in ("run-snapshot.json", "pro6000-preflight.json", "litellm-phase2.json"):      # view-only status of the running test; the preflight record shown under the PRO6000 result
         if (base / "data" / extra).exists():
             shutil.copy2(base / "data" / extra, temporary / "data" / extra)
