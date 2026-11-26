@@ -304,42 +304,73 @@
      "label_zh": "效益",
      "mean_en": "Check a new GPU starts by itself, with nobody watching.",
      "mean_zh": "確認新增一張卡不用人盯，會自己開起來。",
-     "big": "101 s",
-     "big_en": "until the new GPU answers",
-     "big_zh": "新增的卡開始回答",
-     "sum_en": "Ready in 101 s; by hand it waits for the next check.",
-     "sum_zh": "101 秒就緒；人手要等下一次檢查。",
+     "big": "+9.5 h",
+     "big_en": "GPU hours a week kept working (vs a 30-min switch by hand)",
+     "big_zh": "每週多出的可用卡小時（對比人手 30 分鐘切換）",
+     "sum_en": "4.5 to 19.5 GPU hours a week no longer lost to slow switching.",
+     "sum_zh": "每週少浪費 4.5 到 19.5 卡小時在慢切換上。",
      "tone": "good",
-     "tip_en": "From the autoscale run: 16 people started asking, Ray Serve began adding a GPU after 10 s and the new GPU answered after 101 s. By hand: if someone checks every 30 minutes, a new GPU waits 15 minutes on average.",
-     "tip_zh": "來自自動增減實測：16 人開始發問，Ray Serve 10 秒後開始加卡，新卡 101 秒後開始回答。人手：若每 30 分鐘檢查一次，新增一張卡平均等 15 分鐘。",
-     "kpi": {
-      "title_en": "Switching time",
-      "title_zh": "切換時間",
-      "items": [
-       [
-        "By hand: if someone checks every 30 min, a new GPU waits 15 min on average, up to 30.",
-        "人手：若每 30 分鐘檢查一次，新增一張卡平均等 15 分鐘，最久 30 分鐘。",
-        null,
-        null
-       ],
-       [
-        "Ray Serve (measured): starts adding a GPU in 10 s, it answers after 101 s, and it is given back 76 s after things go quiet.",
-        "Ray Serve（實測）：10 秒開始加卡，101 秒後可回答，閒下來 76 秒後自動還卡。",
-        null,
-        null
-       ],
-       [
-        "Reference: AWS reports 30-50% lower cost from auto scaling, so our -41% is in the same range.",
-        "參考：AWS 報告自動增減可降 30–50% 成本，我們的 -41% 落在同一範圍。",
-        "https://aws.amazon.com/blogs/database/amazon-dynamodb-auto-scaling-performance-and-cost-optimization-at-any-scale/",
-        "AWS"
-       ]
-      ]
-     },
+     "tip_en": "Each switch by hand takes 15, 30 or 60 minutes. Ray Serve was measured: 101 s to add a GPU, 76 s to give it back. A weekday has 2 busy periods, so 4 switches; a week has 5 weekdays.",
+     "tip_zh": "人手每次切換要 15、30 或 60 分鐘。Ray Serve 實測：加卡 101 秒、還卡 76 秒。平日有 2 段忙碌，共 4 次切換；一週 5 個平日。",
      "supp_en": "Supplement: going through Ray Serve is 1.3% slower than vLLM direct (142.9 vs 144.8 tokens/s, 3 repeats).",
      "supp_zh": "補充：經過 Ray Serve 比直接用 vLLM 慢 1.3%（每秒 142.9 對 144.8 token，重複 3 輪）。",
      "tip_title_en": "Scenario",
-     "tip_title_zh": "模擬情境"
+     "tip_title_zh": "模擬情境",
+     "matrix": {
+      "title_en": "Switching by hand vs Ray Serve",
+      "title_zh": "人手切換對 Ray Serve",
+      "unit_en": "GPU hours kept working instead of idle, gained by Ray Serve",
+      "unit_zh": "Ray Serve 多出來、沒有閒置的卡小時",
+      "cols_en": [
+       "Scenario",
+       "1 weekday",
+       "1 week",
+       "1 month"
+      ],
+      "cols_zh": [
+       "情境",
+       "一個平日",
+       "一週",
+       "一個月"
+      ],
+      "rows": [
+       [
+        "By hand, 15 min per switch",
+        "人手，每次切換 15 分鐘",
+        "+0.9 h",
+        "+4.5 h",
+        "+19.3 h"
+       ],
+       [
+        "By hand, 30 min per switch",
+        "人手，每次切換 30 分鐘",
+        "+1.9 h",
+        "+9.5 h",
+        "+40.8 h"
+       ],
+       [
+        "By hand, 60 min per switch",
+        "人手，每次切換 60 分鐘",
+        "+3.9 h",
+        "+19.5 h",
+        "+83.6 h"
+       ]
+      ],
+      "notes": [
+       [
+        "Method: each busy period needs 2 switches (add a GPU, give it back); a weekday has 2 busy periods, so 4 switches.",
+        "作法：每段忙碌要切換 2 次（加卡、還卡）；平日有 2 段忙碌，共 4 次切換。"
+       ],
+       [
+        "Calculation: each switch wastes its delay; Ray Serve measured 101 s to add and 76 s to give back (0.5 h a week).",
+        "計算：每次切換浪費的就是延遲時間；Ray Serve 實測加卡 101 秒、還卡 76 秒（一週 0.5 小時）。"
+       ],
+       [
+        "Benefit: compared with switching by hand, Ray Serve gains 4.5 to 19.5 GPU hours a week, 19 to 84 a month.",
+        "效益：相較人手切換，Ray Serve 每週多出 4.5 到 19.5 卡小時，一個月 19 到 84。"
+       ]
+      ]
+     }
     }
    ]
   },
