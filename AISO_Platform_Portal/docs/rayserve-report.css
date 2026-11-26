@@ -60,3 +60,4 @@
 .rs-data .p2-row>.p2-t{grid-column:2;grid-row:1}
 .rs-data .p2-row>td:last-child{grid-column:3;grid-row:1}
 .rs-data .p2-row>.p2-c{grid-column:2/4;grid-row:2}
+.rs-step>.rs-proof{grid-column:1/-1}
