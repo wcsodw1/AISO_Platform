@@ -109,7 +109,8 @@
      "big_en": "more work",
      "big_zh": "多做的工作",
      "sum_en": "16% to 65% more work with 2 GPUs.",
-     "sum_zh": "2 張卡多做 16% 到 65%。"
+     "sum_zh": "2 張卡多做 16% 到 65%。",
+     "tone": "good"
     },
     {
      "n": 2,
@@ -214,7 +215,8 @@
         "檢查：共送出 8489 個請求，沒有失敗。"
        ]
       ]
-     }
+     },
+     "tone": "good"
     },
     {
      "n": 3,
@@ -258,7 +260,8 @@
      "big_en": "speed lost",
      "big_zh": "速度損失",
      "sum_en": "Only 1.3% slower.",
-     "sum_zh": "只慢 1.3%。"
+     "sum_zh": "只慢 1.3%。",
+     "tone": "bad"
     }
    ]
   },
@@ -294,7 +297,8 @@
      "sum_en": "The load where it stops getting faster.",
      "sum_zh": "找出不再變快的負載。",
      "label_en": "The benefit",
-     "label_zh": "效益"
+     "label_zh": "效益",
+     "tone": ""
     },
     {
      "n": 2,
@@ -322,7 +326,8 @@
      "big_en": "not run yet",
      "big_zh": "尚未執行",
      "sum_en": "What Ray Serve adds on the same load.",
-     "sum_zh": "同一負載下多帶來什麼。"
+     "sum_zh": "同一負載下多帶來什麼。",
+     "tone": ""
     },
     {
      "n": 3,
@@ -350,7 +355,8 @@
      "sum_en": "LiteLLM → Ray Serve → vLLM works.",
      "sum_zh": "整條鏈路接得起來。",
      "label_en": "The benefit",
-     "label_zh": "效益"
+     "label_zh": "效益",
+     "tone": ""
     }
    ]
   }
