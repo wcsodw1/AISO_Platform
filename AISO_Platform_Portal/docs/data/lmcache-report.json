@@ -133,7 +133,8 @@
    "report": {
     "href": "gptoss-v2.html",
     "en": "Full report: No cache v.s aiDAPTIV v.s LMCache",
-    "zh": "完整報告：沒快取 v.s aiDAPTIV v.s LMCache 三者比較"
+    "zh": "完整報告：沒快取 v.s aiDAPTIV v.s LMCache 三者比較",
+    "fold": "verified_reuse"
    }
   },
   {
