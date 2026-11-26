@@ -234,7 +234,31 @@
      },
      "tone": "good",
      "tip_en": "Scenario (assumed, not measured): on weekdays 09-12 and 14-17 people are busy and 2 GPUs run; at every other hour 1 GPU runs. Over a week that is 198 GPU-hours instead of 336 when 2 GPUs are always on, so 138 are saved (-41%).",
-     "tip_zh": "情境（假設，非實測）：平日 09-12、14-17 人多，開 2 張卡；其他時間開 1 張。一週共 198 卡小時，固定開 2 張是 336，省 138（-41%）。"
+     "tip_zh": "情境（假設，非實測）：平日 09-12、14-17 人多，開 2 張卡；其他時間開 1 張。一週共 198 卡小時，固定開 2 張是 336，省 138（-41%）。",
+     "kpi": {
+      "title_en": "Switching time",
+      "title_zh": "切換時間",
+      "items": [
+       [
+        "By hand (assumed): someone checks every 30 min, so a new GPU waits 15 min on average, up to 30.",
+        "人手（假設）：每 30 分鐘有人檢查一次，新增一張卡平均等 15 分鐘，最久 30 分鐘。",
+        null,
+        null
+       ],
+       [
+        "Ray Serve (measured): starts adding a GPU in 10 s, it answers after 101 s, and it is given back 76 s after things go quiet.",
+        "Ray Serve（實測）：10 秒開始加卡，101 秒後可回答，閒下來 76 秒後自動還卡。",
+        null,
+        null
+       ],
+       [
+        "Reference: AWS reports 30-50% lower cost from auto scaling, so our -41% is in the same range.",
+        "參考：AWS 報告自動增減可降 30–50% 成本，我們的 -41% 落在同一範圍。",
+        "https://aws.amazon.com/blogs/database/amazon-dynamodb-auto-scaling-performance-and-cost-optimization-at-any-scale/",
+        "AWS"
+       ]
+      ]
+     }
     },
     {
      "n": 3,

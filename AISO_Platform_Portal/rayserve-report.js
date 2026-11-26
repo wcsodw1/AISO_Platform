@@ -13,6 +13,10 @@
       p.rows.map(function (r) { return "<tr><td>" + esc(r[0]) + '</td><td><span class="rs-bar a" style="width:' + Math.round(+r[1] / mx * 100) + '%">' + esc(r[1]) + '</span></td><td><span class="rs-bar b" style="width:' + Math.round(+r[2] / mx * 100) + '%">' + esc(r[2]) + '</span></td><td class="rs-gain">' + esc(r[3]) + "</td></tr>"; }).join("") +
       '</tbody></table>' + (p.notes ? '<ul class="rs-calc">' + p.notes.map(function (n) { return "<li>" + bi(n[0], n[1]) + "</li>"; }).join("") + "</ul>" : '<p class="rs-pn">' + bi(p.note_en, p.note_zh) + "</p>") + "</div>";
   }
+  function kpi(k) {
+    if (!k) return "";
+    return '<div class="rs-proof"><h3>' + bi(k.title_en, k.title_zh) + '</h3><ul class="rs-calc">' + k.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + (i[2] ? ' <a class="rs-src" href="' + esc(i[2]) + '" target="_blank" rel="noopener">' + esc(i[3] || "source") + " ↗</a>" : "") + "</li>"; }).join("") + "</ul></div>";
+  }
   function render(P) {
     var ST = P.statuses;
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + bi(t[0], t[1]) + "</em>"; }
@@ -32,7 +36,7 @@
           '<p class="rs-m"><b>Meaning<small class="zhs">意義</small></b>' + bi(s.mean_en, s.mean_zh) + "</p>" +
           '<p class="rs-big' + (s.tone ? " t-" + s.tone : "") + '">' + esc(s.big) + "<span>" + bi(s.big_en, s.big_zh) + "</span></p>" +
           '<p class="rs-sum' + (s.tip_en ? " has-tip" : "") + '" tabindex="0"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + (s.tip_en ? '<span class="rs-tip"><b>Where the number comes from<small class="zhs">數字從哪來</small></b>' + bi(s.tip_en, s.tip_zh) + "</span>" : "") + "</p>" + pill(st) +
-          (s.proof_open ? proof(s.proof) : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
+          (s.proof_open ? proof(s.proof) : "") + kpi(s.kpi) + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
       }).join("");
       $("rsPh" + k).innerHTML = '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
       Array.prototype.forEach.call($("rsPh" + k).querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
