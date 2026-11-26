@@ -61,3 +61,4 @@
 .rs-data .p2-row>td:last-child{grid-column:3;grid-row:1}
 .rs-data .p2-row>.p2-c{grid-column:2/4;grid-row:2}
 .rs-step>.rs-proof{grid-column:1/-1}
+.rs-story{margin:8px 0 0;padding-left:26px;font-size:1.1rem;color:var(--ivory,#f3efe5)}.rs-story li{padding:4px 0}.rs-data h3{margin:8px 0 0;font-size:1.3rem;color:var(--ivory,#f3efe5)}

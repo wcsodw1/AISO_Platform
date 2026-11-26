@@ -232,6 +232,32 @@
       ],
       "note_en": "Our assumption, not measured: 2 GPUs needed 6 h on weekdays (09-12, 14-17), otherwise 1. Measured: it reacts in about 100 s.",
       "note_zh": "我們的假設，非實測：平日 6 小時需 2 張卡，其餘 1 張。實測：約 100 秒內會跟上。"
+     },
+     "story": {
+      "title_en": "What we tested",
+      "title_zh": "我們測了什麼",
+      "items": [
+       [
+        "Start: GPT-OSS-20B on Ray Serve with 1 GPU, allowed to grow to 2.",
+        "開始：GPT-OSS-20B 跑在 Ray Serve，1 張卡，最多可增加到 2 張。"
+       ],
+       [
+        "Busy: 16 simulated users keep asking for 6 minutes.",
+        "忙：16 個模擬使用者連續發問 6 分鐘。"
+       ],
+       [
+        "Grow: after 10 s Ray Serve starts a 2nd GPU copy; it answers requests after 101 s.",
+        "擴：10 秒後開始加第 2 張卡，101 秒後可以回答。"
+       ],
+       [
+        "Quiet: users stop for 4 minutes; after 76 s the 2nd GPU is given back.",
+        "閒：使用者停 4 分鐘，76 秒後自動把第 2 張卡還出來。"
+       ],
+       [
+        "Check: 8489 requests were sent, none failed.",
+        "檢查：共送出 8489 個請求，沒有失敗。"
+       ]
+      ]
      }
     }
    ],
