@@ -66,3 +66,4 @@
 .rs-big.t-good{color:var(--green,#70d3a2)}.rs-big.t-bad{color:var(--red,#ed786f)}.rs-gain{color:var(--green,#70d3a2)!important}
 .rs-upd{margin:22px 0 0;text-align:right;font-size:1rem;color:rgba(243,239,229,.55)}
 .lr .v2-hero .v2-sub .zh-i{font-size:18px;font-weight:400}
+.rs-calc{margin:10px 0 0;padding-left:22px;font-size:1rem;color:rgba(243,239,229,.85)}.rs-calc li{padding:3px 0}

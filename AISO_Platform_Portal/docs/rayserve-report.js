@@ -11,7 +11,7 @@
     return '<div class="rs-proof"><h3>' + bi(p.title_en, p.title_zh) + '</h3><p class="rs-unit">' + bi(p.unit_en, p.unit_zh) + "</p><table><thead><tr>" +
       p.cols_en.map(function (c, i) { return "<th>" + bi(c, p.cols_zh[i]) + "</th>"; }).join("") + "</tr></thead><tbody>" +
       p.rows.map(function (r) { return "<tr><td>" + esc(r[0]) + '</td><td><span class="rs-bar a" style="width:' + Math.round(+r[1] / mx * 100) + '%">' + esc(r[1]) + '</span></td><td><span class="rs-bar b" style="width:' + Math.round(+r[2] / mx * 100) + '%">' + esc(r[2]) + '</span></td><td class="rs-gain">' + esc(r[3]) + "</td></tr>"; }).join("") +
-      '</tbody></table><p class="rs-pn">' + bi(p.note_en, p.note_zh) + "</p></div>";
+      '</tbody></table>' + (p.notes ? '<ul class="rs-calc">' + p.notes.map(function (n) { return "<li>" + bi(n[0], n[1]) + "</li>"; }).join("") + "</ul>" : '<p class="rs-pn">' + bi(p.note_en, p.note_zh) + "</p>") + "</div>";
   }
   function render(P) {
     var ST = P.statuses;
