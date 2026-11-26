@@ -150,20 +150,20 @@
    "tone": "bad",
    "label_en": "Where it stopped",
    "label_zh": "卡在哪",
-   "sum_en": "CacheBlend fails on GPT-OSS-20B's KV layout (HTTP 500). Retry on a separate GPU 11/28.",
-   "sum_zh": "CacheBlend 在 GPT-OSS-20B 的 KV 排列上失敗（HTTP 500）。11/28 在獨立 GPU 重試。",
+   "sum_en": "CacheBlend crashes in LMCache's GPU copy code: it expects a 5D KV tensor but gets a 4D one. Fix: an LMCache build that knows this layout; retry 11/28 on a free GPU.",
+   "sum_zh": "CacheBlend 在 LMCache 的 GPU 複製程式當掉：它預期 5 維 KV Tensor，實際是 4 維。解法：換成認得這種排列的 LMCache 版本；11/28 在空的 GPU 重試。",
    "data": [
     [
-     "Error: layerwise code reads a 5th dimension, but the KV tensor is 4D (10089,16,8,256) → IndexError",
-     "錯誤：Layerwise 程式讀第 5 維，但 KV 是 4D (10089,16,8,256) → IndexError"
+     "Cause found in the 10/27 probe log (LMCache 0.5.6, vLLM 0.31.0, layerwise + blending ON): the CUDA kernel single_layer_kv_transfer reads size(4), the layer's KV tensor has 4 dims",
+     "原因已在 10/27 探針 log 找到（LMCache 0.5.6、vLLM 0.31.0、Layerwise + Blending 開）：CUDA kernel single_layer_kv_transfer 讀 size(4)，但該層 KV Tensor 只有 4 維"
     ],
     [
-     "Do not just change size(4) to size(3): wrong KV mapping can give wrong answers silently",
-     "不能直接把 size(4) 改成 size(3)：KV 對應錯誤可能無聲地產生錯誤輸出"
+     "Not model-specific: the same crash happened on Qwen3-0.6B with FlashAttention, so it is the LMCache build vs this vLLM, not GPT-OSS",
+     "與模型無關：Qwen3-0.6B + FlashAttention 也同樣當掉，所以是 LMCache 版本與這版 vLLM 不合，不是 GPT-OSS 的問題"
     ],
     [
-     "Next: recover traceback and versions, check layout, run on a separate GPU, never touch the GPU 4 service",
-     "下一步：找回 traceback 與版本、核對 layout、在獨立 GPU 執行，不動 GPU 4 的服務"
+     "Next: test the newer LMCache build that has explicit KV formats (image tpi-lmcache-blend:format-diag) on a free GPU; never patch size(4) by hand",
+     "下一步：在空的 GPU 測有明確 KV format 的新版 LMCache（image tpi-lmcache-blend:format-diag）；不要手動改 size(4)"
     ]
    ]
   }
