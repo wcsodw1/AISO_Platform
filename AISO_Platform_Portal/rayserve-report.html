@@ -16,8 +16,8 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=60">
   <link rel="stylesheet" href="tesla.css?v=49">
-  <link rel="stylesheet" href="litellm-report.css?v=6">
-  <link rel="stylesheet" href="rayserve-report.css?v=6">
+  <link rel="stylesheet" href="litellm-report.css?v=7">
+  <link rel="stylesheet" href="rayserve-report.css?v=7">
 </head>
 <body>
   <header class="site-header">
@@ -33,6 +33,8 @@
       <p class="v2-sub">Replicas and Autoscaling on vLLM<span class="zh-i">vLLM 之上的多副本・自動擴縮</span></p>
     </section>
     <div class="lr-box lr-concl rs-head" id="rsHead"></div>
+    <p class="lr-stp s1"><i>1</i><span>Architecture<small class="zhs">架構</small></span></p>
+    <div class="lr-box" id="rsArch"></div>
     <div class="lr-ptabs" role="tablist" aria-label="Phase">
       <button type="button" class="lr-ptab p1c" role="tab" data-ph="1" id="lrTab1" aria-controls="rsPh1">Phase 1<small class="zhs">第一階段</small><em id="lrTab1n"></em><span class="lr-pdesc">Overhead &amp; scale-out<small class="zhs">額外延遲・擴展</small></span></button>
       <button type="button" class="lr-ptab p2c" role="tab" data-ph="2" id="lrTab2" aria-controls="rsPh2">Phase 2<small class="zhs">第二階段</small><em id="lrTab2n"></em><span class="lr-pdesc">Proof &amp; tuning<small class="zhs">補證據・調優</small></span></button>
@@ -41,7 +43,7 @@
     <section class="report-section lr-ph2" id="rsPh2" role="tabpanel" aria-labelledby="lrTab2"></section>
     <details class="rs-later" id="rsLater"></details>
   </main>
-    <script src="rayserve-report.js?v=6"></script>
+    <script src="rayserve-report.js?v=7"></script>
   <script src="research-menu.js?v=7" defer></script>
   <script src="ui-min-type.js?v=2" defer></script>
 <script src="update-check.js?v=2" defer></script>
