@@ -21,7 +21,9 @@ Reference pages: `litellm-report.html` (original) and `rayserve-report.html` (+ 
 - **The big number must be the benefit**, not a pass flag. "0 failed" is not a benefit; "-41% GPU hours per week" is. A drop in speed is a price, not a benefit (label it "The price").
 - **Show the benefit in the reader's units** (GPU-hours per day/week/month, users served, seconds). If it needs an assumed usage pattern, show it as a table (day / week / month) and label it "Our assumption, not measured"; keep the measured part separate.
 - **Number colours = good / bad, same idea as the benchmark pages** (David 2026-11-26): green (`var(--green)`) for a benefit, red (`var(--red)`) for a cost or downside. Set `tone: "good"|"bad"` on each step in the JSON (class `rs-big t-good` / `t-bad`). Whenever a research item has both pros and cons, colour every big number this way and put benefits before costs (a cost like "-1.3% speed" is red and goes last).
+- **A scenario or calculation = exactly THREE lines, never more** (David 2026-11-26: attention drifts after three): line 1 method (and what is assumed), line 2 the calculation, line 3 the benefit. Put it in the JSON as `proof.notes` (3 items).
 - Data folded: "What we tested" in 5 plain lines (start, load, result up, result down, check). Never only a test code with criteria.
+- **English first; the Chinese appears on mouse-over** of its block (David 2026-11-26: less crowded). Done in the page CSS (`small.zhs` / `.zh-i` hidden under `@media (hover:hover)`, shown on `:hover` of the block; phones show both). This replaces "Chinese always beside it" on research pages.
 - English large, Chinese small beside it; type >= 16 px; flat square frames; no decorative chips.
 
 ## Data and registration
