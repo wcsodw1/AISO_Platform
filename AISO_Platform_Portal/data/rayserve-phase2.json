@@ -35,50 +35,6 @@
    "steps": [
     {
      "n": 1,
-     "en": "Does it slow us down?",
-     "zh": "會不會變慢",
-     "see_en": "Almost free: speed only drops 1.3%, the first word comes 34 ms later.",
-     "see_zh": "幾乎沒有代價：速度只掉 1.3%，第一個字晚 34 毫秒出現。",
-     "tests": [
-      {
-       "id": "P1a",
-       "en": "vLLM direct vs Ray Serve",
-       "zh": "vLLM 直連對 Ray Serve",
-       "crit_en": "TPS loss at most 10%; TTFT / TPOT difference reported",
-       "crit_zh": "總吞吐損失不超過 10%；回報 TTFT、TPOT 差距",
-       "status": "done",
-       "needs_en": "GPT-OSS-20B, NP 2, input 4096, output 128, 3 repeats, GPU 1, vLLM 0.29.0, Ray 2.60.0 (SMOKE_ONLY_NOT_FORMAL). Ray load time was not measured (health check answered before the model finished loading).",
-       "needs_zh": "GPT-OSS-20B、NP 2、輸入 4096、輸出 128、重複 3 次，GPU 1，vLLM 0.29.0、Ray 2.60.0（僅 smoke，非正式）。Ray 載入時間未量到（健康檢查在模型載完前就回應）。",
-       "history": [
-        {
-         "at": "2026-11-24",
-         "status": "setup",
-         "en": "Runner written, never run.",
-         "zh": "runner 已寫好，尚未執行。"
-        },
-        {
-         "at": "2026-11-25",
-         "status": "done",
-         "en": "Direct: 152.2 / 135.5 / 146.9 tok/s. Ray Serve: 150.1 / 134.6 / 144.1 tok/s. Loss 1.3%, passed.",
-         "zh": "直連：152.2 / 135.5 / 146.9 tok/s；Ray Serve：150.1 / 134.6 / 144.1 tok/s。損失 1.3%，通過。"
-        }
-       ],
-       "result_en": "Passed: TPS 142.9 vs 144.8 direct (-1.3%); TTFT +34 ms (169 to 203); TPOT 4.85 vs 4.96 ms",
-       "result_zh": "通過：吞吐 142.9 對直連 144.8（-1.3%）；TTFT 多 34 ms（169→203）；TPOT 4.85 對 4.96 ms"
-      }
-     ],
-     "label_en": "The price",
-     "label_zh": "代價",
-     "mean_en": "Check Ray Serve adds almost no delay.",
-     "mean_zh": "確認 Ray Serve 幾乎不增加延遲。",
-     "big": "-1.3%",
-     "big_en": "speed lost",
-     "big_zh": "速度損失",
-     "sum_en": "Only 1.3% slower.",
-     "sum_zh": "只慢 1.3%。"
-    },
-    {
-     "n": 2,
      "en": "Does it add capacity?",
      "zh": "能不能多扛流量",
      "see_en": "With 16 users at once, 2 replicas finish 16% to 65% more work than 1 GPU: the longer the input, the bigger the gain.",
@@ -156,7 +112,7 @@
      "sum_zh": "2 張卡多做 16% 到 65%。"
     },
     {
-     "n": 3,
+     "n": 2,
      "en": "Does it scale by itself?",
      "zh": "會不會自己增減",
      "see_en": "Replicas go up under load and back down when idle: nobody adds servers by hand.",
@@ -259,6 +215,50 @@
        ]
       ]
      }
+    },
+    {
+     "n": 3,
+     "en": "Does it slow us down?",
+     "zh": "會不會變慢",
+     "see_en": "Almost free: speed only drops 1.3%, the first word comes 34 ms later.",
+     "see_zh": "幾乎沒有代價：速度只掉 1.3%，第一個字晚 34 毫秒出現。",
+     "tests": [
+      {
+       "id": "P1a",
+       "en": "vLLM direct vs Ray Serve",
+       "zh": "vLLM 直連對 Ray Serve",
+       "crit_en": "TPS loss at most 10%; TTFT / TPOT difference reported",
+       "crit_zh": "總吞吐損失不超過 10%；回報 TTFT、TPOT 差距",
+       "status": "done",
+       "needs_en": "GPT-OSS-20B, NP 2, input 4096, output 128, 3 repeats, GPU 1, vLLM 0.29.0, Ray 2.60.0 (SMOKE_ONLY_NOT_FORMAL). Ray load time was not measured (health check answered before the model finished loading).",
+       "needs_zh": "GPT-OSS-20B、NP 2、輸入 4096、輸出 128、重複 3 次，GPU 1，vLLM 0.29.0、Ray 2.60.0（僅 smoke，非正式）。Ray 載入時間未量到（健康檢查在模型載完前就回應）。",
+       "history": [
+        {
+         "at": "2026-11-24",
+         "status": "setup",
+         "en": "Runner written, never run.",
+         "zh": "runner 已寫好，尚未執行。"
+        },
+        {
+         "at": "2026-11-25",
+         "status": "done",
+         "en": "Direct: 152.2 / 135.5 / 146.9 tok/s. Ray Serve: 150.1 / 134.6 / 144.1 tok/s. Loss 1.3%, passed.",
+         "zh": "直連：152.2 / 135.5 / 146.9 tok/s；Ray Serve：150.1 / 134.6 / 144.1 tok/s。損失 1.3%，通過。"
+        }
+       ],
+       "result_en": "Passed: TPS 142.9 vs 144.8 direct (-1.3%); TTFT +34 ms (169 to 203); TPOT 4.85 vs 4.96 ms",
+       "result_zh": "通過：吞吐 142.9 對直連 144.8（-1.3%）；TTFT 多 34 ms（169→203）；TPOT 4.85 對 4.96 ms"
+      }
+     ],
+     "label_en": "The price",
+     "label_zh": "代價",
+     "mean_en": "Check Ray Serve adds almost no delay.",
+     "mean_zh": "確認 Ray Serve 幾乎不增加延遲。",
+     "big": "-1.3%",
+     "big_en": "speed lost",
+     "big_zh": "速度損失",
+     "sum_en": "Only 1.3% slower.",
+     "sum_zh": "只慢 1.3%。"
     }
    ]
   },
