@@ -67,3 +67,9 @@
 .rs-upd{margin:22px 0 0;text-align:right;font-size:1rem;color:rgba(243,239,229,.55)}
 .lr .v2-hero .v2-sub .zh-i{font-size:18px;font-weight:400}
 .rs-calc{margin:10px 0 0;padding-left:22px;font-size:1rem;color:rgba(243,239,229,.85)}.rs-calc li{padding:3px 0}
+/* English first; the Chinese gloss appears while the pointer is over its block (phones without hover show both) */
+@media (hover:hover){
+main.lr small.zhs,main.lr .zh-i{display:none!important}
+main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-upd,.rs-proof,.rs-data):hover small.zhs,
+main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-upd,.rs-proof,.rs-data):hover .zh-i{display:inline!important}
+}
