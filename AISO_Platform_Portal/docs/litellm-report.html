@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="benchmark.css?v=family-31">
   <link rel="stylesheet" href="gptoss-v2.css?v=60">
   <link rel="stylesheet" href="tesla.css?v=58m">
-  <link rel="stylesheet" href="litellm-report.css?v=69">
+  <link rel="stylesheet" href="litellm-report.css?v=70">
 </head>
 <body>
   <header class="site-header">
@@ -32,6 +32,10 @@
       <p class="v2-sub">One Entry, Many Machines<span class="zh-i">一個入口・多台機器</span></p>
     </section>
 
+    <div class="lr-box lr-concl rs-head" id="lrHead"></div>
+    <p class="lr-stp s1"><i>1</i><span>LiteLLM<small class="zhs">架構</small></span></p>
+    <div class="lr-box" id="lrFlow"></div>
+
     <div class="lr-ptabs" role="tablist" aria-label="Phase">
       <button type="button" class="lr-ptab p1c" role="tab" data-ph="1" id="lrTab1" aria-controls="lrMain">Phase 1<small class="zhs">第一階段</small><em>Done<small class="zhs">完成</small></em><span class="lr-pdesc">Spread-load test<small class="zhs">分流實測</small></span></button>
       <button type="button" class="lr-ptab p2c" role="tab" data-ph="2" id="lrTab2" aria-controls="lrPhase2">Phase 2<small class="zhs">第二階段</small><em id="lrTab2n"></em><span class="lr-pdesc">Proof &amp; tuning<small class="zhs">補證據・調優</small></span></button>
@@ -42,9 +46,6 @@
     </section>
 
     <section class="report-section" id="lrMain" role="tabpanel" aria-labelledby="lrTab1">
-      <p class="lr-stp s1"><i>1</i><span>LiteLLM<small class="zhs">架構</small></span></p>
-      <div class="lr-box" id="lrFlow"></div>
-
       <p class="lr-stp s2"><i>2</i><span>Run the test<small class="zhs">執行測試</small></span></p>
       <div class="lr-run" id="lrRun"></div>
       <div class="lr-term" id="lrTerm" hidden><div class="lr-term-h">Terminal<small class="zhs">終端機・測試紀錄</small><span class="lr-term-clock" id="lrTermClock"></span><span class="lr-term-n" id="lrTermN">1 lines</span><button type="button" id="lrTermCopy">Copy<small class="zhs">複製</small></button><button type="button" id="lrTermBig">Expand <small class="zhs">展開全部</small></button><button type="button" id="lrTermFold" aria-expanded="true">Fold <small class="zhs">收合</small></button></div><div class="lr-term-b" id="lrTermBody" role="log" aria-live="polite"><div class="hd">$ press "Run smoke test" to see the log here</div></div></div>
@@ -66,7 +67,7 @@
     </section>
   </main>
   <script src="run-gate.js"></script>
-  <script src="litellm-report.js?v=70"></script>
+  <script src="litellm-report.js?v=71"></script>
   <script src="research-menu.js?v=7" defer></script>
   <script src="ui-min-type.js?v=2" defer></script>
 <script src="update-check.js?v=2" defer></script>
