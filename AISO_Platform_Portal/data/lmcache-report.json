@@ -150,20 +150,24 @@
    "tone": "bad",
    "label_en": "Where it stopped",
    "label_zh": "卡在哪",
-   "sum_en": "CacheBlend crashes in LMCache's GPU copy code: it expects a 5D KV tensor but gets a 4D one. Fix: an LMCache build that knows this layout; retry 11/28 on a free GPU.",
-   "sum_zh": "CacheBlend 在 LMCache 的 GPU 複製程式當掉：它預期 5 維 KV Tensor，實際是 4 維。解法：換成認得這種排列的 LMCache 版本；11/28 在空的 GPU 重試。",
+   "sum_en": "CacheBlend crashes in LMCache's GPU copy code: vLLM hands it a 4D KV tensor, the blend copy kernel only handles 5D. Needs a code fix or a newer LMCache; not a model problem.",
+   "sum_zh": "CacheBlend 在 LMCache 的 GPU 複製程式當掉：vLLM 給的是 4 維 KV Tensor，Blend 的複製 kernel 只處理 5 維。需要改程式或換新版 LMCache；與模型無關。",
    "data": [
     [
-     "Cause found in the 10/27 probe log (LMCache 0.5.6, vLLM 0.31.0, layerwise + blending ON): the CUDA kernel single_layer_kv_transfer reads size(4), the layer's KV tensor has 4 dims",
-     "原因已在 10/27 探針 log 找到（LMCache 0.5.6、vLLM 0.31.0、Layerwise + Blending 開）：CUDA kernel single_layer_kv_transfer 讀 size(4)，但該層 KV Tensor 只有 4 維"
+     "Cause (10/27 probe log, LMCache 0.5.6, vLLM 0.31.0): layerwise copy kernel single_layer_kv_transfer reads size(4); FlashAttention gives a 4D fused K/V layer tensor (detected as NL_X_NB_BS_NH_CS)",
+     "原因（10/27 探針 log）：Layerwise 複製 kernel single_layer_kv_transfer 讀 size(4)；FlashAttention 給的是 4 維、K/V 合併的 Tensor（偵測為 NL_X_NB_BS_NH_CS）"
     ],
     [
-     "Not model-specific: the same crash happened on Qwen3-0.6B with FlashAttention, so it is the LMCache build vs this vLLM, not GPT-OSS",
-     "與模型無關：Qwen3-0.6B + FlashAttention 也同樣當掉，所以是 LMCache 版本與這版 vLLM 不合，不是 GPT-OSS 的問題"
+     "Prefix reuse works because the normal connector handles that layout; only the blend (layerwise buffer) path does not. Same crash on Qwen3-0.6B",
+     "Prefix 重用正常，因為一般 connector 看得懂這種排列；只有 Blend（layerwise buffer）路徑看不懂。Qwen3-0.6B 同樣當掉"
     ],
     [
-     "Next: test the newer LMCache build that has explicit KV formats (image tpi-lmcache-blend:format-diag) on a free GPU; never patch size(4) by hand",
-     "下一步：在空的 GPU 測有明確 KV format 的新版 LMCache（image tpi-lmcache-blend:format-diag）；不要手動改 size(4)"
+     "11/26 on GPU 7: FlashInfer backend is rejected by CacheBlend (only FlashAttention or the sparse backends are supported)",
+     "11/26 在 GPU 7 實測：CacheBlend 不接受 FlashInfer（只支援 FlashAttention 或 sparse 路徑）"
+    ],
+    [
+     "All local images (format-diag, 4d5d-diag, experimental) are LMCache 0.5.6, so no local image already fixes it. Next: patch the kernel for the 4D layout, or try a newer LMCache; never edit size(4) by hand",
+     "本機所有 image（format-diag、4d5d-diag、experimental）都是 LMCache 0.5.6，沒有現成修好的版本。下一步：為 4 維排列修改 kernel，或試較新的 LMCache；不要手動改 size(4)"
     ]
    ]
   }
