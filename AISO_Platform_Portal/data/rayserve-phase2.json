@@ -34,8 +34,8 @@
   "1": {
    "en": "Overhead & scale-out",
    "zh": "額外延遲・擴展",
-   "meaning_en": "Serve up to 65% more work and free about 41% of GPU hours.",
-   "meaning_zh": "多撐最多 65% 的使用量，並省下約 41% 的 GPU 使用時數。",
+   "meaning_en": "Serve up to 67% more work and free about 41% of GPU hours.",
+   "meaning_zh": "多撐最多 67% 的使用量，並省下約 41% 的 GPU 使用時數。",
    "steps": [
     {
      "n": 1,
@@ -70,65 +70,82 @@
        "zh": "兩張 GPU 手動分配 vs Ray Serve",
        "crit_en": "Same 16 people: speed and first-word time compared",
        "crit_zh": "同樣 16 人：比較速度與第一個字的時間",
-       "status": "planned",
-       "needs_en": "What we will do: run one copy of the model on each of the 2 GPUs and split the 16 people between them by hand, then run the same people through Ray Serve. This shows what Ray Serve adds on top of simply having 2 GPUs.",
-       "needs_zh": "預計做法：兩張 GPU 各跑一份模型，由人工把 16 個人分給兩張；再讓同樣的人經過 Ray Serve。看 Ray Serve 在「單純有兩張 GPU」之上多帶來什麼。"
+       "status": "done",
+       "needs_en": "What we did: 16 people ask at once. Run 1: one GPU. Run 2: two GPUs, each with its own copy of the model and 8 people each, started by hand. Run 3: two GPUs through Ray Serve. Each GPU limited to 55% memory; 2 runs per length.",
+       "needs_zh": "做法：16 人同時發問。第 1 組：一張 GPU。第 2 組：兩張 GPU 各跑一份模型，人工各分 8 人。第 3 組：兩張 GPU 經過 Ray Serve。每張 GPU 只用 55% 記憶體；每種長度跑 2 次。",
+       "result_en": "Passed: 1 GPU 1184 / 730 / 432, split by hand 1321 / 982 / 721, Ray Serve 1348 / 1062 / 722 tokens/s at 1K / 4K / 8K",
+       "result_zh": "通過：1K / 4K / 8K 分別為 1 張 GPU 1184 / 730 / 432、人工分配 1321 / 982 / 721、Ray Serve 1348 / 1062 / 722 token/s"
       }
      ],
      "label_en": "The benefit",
      "label_zh": "效益",
-     "proof": {
-      "title_en": "Same 16 users, longer questions",
-      "title_zh": "同樣 16 人，問題愈來愈長",
-      "cols_en": [
-       "Input",
-       "1 GPU",
-       "2 GPUs + Ray Serve",
-       "Gain"
-      ],
-      "cols_zh": [
-       "輸入",
-       "1 張 GPU",
-       "2 張 GPU",
-       "提升"
-      ],
-      "unit_en": "Speed (tokens/s), higher is better",
-      "unit_zh": "速度（每秒 token 數），越高越好",
-      "rows": [
-       [
-        "1K",
-        "1101",
-        "1275",
-        "+16%"
-       ],
-       [
-        "4K",
-        "734",
-        "1060",
-        "+44%"
-       ],
-       [
-        "8K",
-        "428",
-        "707",
-        "+65%"
-       ]
-      ],
-      "note_en": "The longer the question, the more one GPU struggles, and the second one helps.",
-      "note_zh": "問題越長，一張 GPU 越吃力，第二張的幫助越大。"
-     },
      "mean_en": "Check a second GPU really takes more users.",
      "mean_zh": "確認多加一張 GPU，真的能同時服務更多人。",
      "big": "1.42x",
      "big_en": "more work",
      "big_zh": "處理量提升",
-     "sum_en": "16% to 65% more work with 2 GPUs.",
-     "sum_zh": "兩張 GPU 比一張多處理 16% 到 65%。",
+     "sum_en": "2 GPUs do 14% to 67% more than 1; Ray Serve matches splitting by hand.",
+     "sum_zh": "2 張 GPU 比 1 張多處理 14% 到 67%；Ray Serve 與人工分配相當。",
      "tone": "good",
-     "tip_en": "Compared: 1 GPU alone vs 2 GPUs shared by Ray Serve, 16 people asking at once. The extra work comes from the 2nd GPU; Ray Serve shares the questions between the two automatically. Not yet compared with 2 GPUs used separately by hand: that is a next test.",
-     "tip_zh": "比較：一張 GPU 單獨回答，對兩張 GPU 由 Ray Serve 分工，16 人同時發問。多出來的處理量來自多一張 GPU；Ray Serve 負責把問題自動分給兩張。還沒和「兩張 GPU 各自手動分配」比較，那是下一個測試。",
+     "tip_en": "Same machine, each GPU limited to 55% memory because GPU 6 is shared. 1 GPU alone, 2 GPUs with the 16 people split by hand, and 2 GPUs with Ray Serve; 2 runs per length. At 1K the first word is slower with Ray Serve (112 vs 74 ms).",
+     "tip_zh": "同一台機器，因為 GPU 6 與他人共用，每張 GPU 只用 55% 記憶體。1 張 GPU 單獨、2 張 GPU 由人工把 16 人分開、2 張 GPU 用 Ray Serve；每種長度跑 2 次。1K 時 Ray Serve 第一個字比較慢（112 對 74 毫秒）。",
      "tip_title_en": "Scenario",
-     "tip_title_zh": "模擬情境"
+     "tip_title_zh": "模擬情境",
+     "matrix": {
+      "title_en": "Same 16 people, three setups",
+      "title_zh": "同樣 16 人，三種做法",
+      "unit_en": "Speed in tokens per second, higher is better (2 runs each, same memory setting)",
+      "unit_zh": "速度（每秒 token 數），越高越好（各跑 2 次，記憶體設定相同）",
+      "cols_en": [
+       "Input",
+       "1 GPU",
+       "2 GPUs, split by hand",
+       "2 GPUs, Ray Serve"
+      ],
+      "cols_zh": [
+       "輸入",
+       "1 張 GPU",
+       "2 張 GPU，人工分配",
+       "2 張 GPU，Ray Serve"
+      ],
+      "rows": [
+       [
+        "1K",
+        "1K",
+        "1184",
+        "1321 (+12%)",
+        "1348 (+14%)"
+       ],
+       [
+        "4K",
+        "4K",
+        "730",
+        "982 (+34%)",
+        "1062 (+45%)"
+       ],
+       [
+        "8K",
+        "8K",
+        "432",
+        "721 (+67%)",
+        "722 (+67%)"
+       ]
+      ],
+      "notes": [
+       [
+        "Method: 16 people ask at once on 1 GPU, on 2 GPUs split by hand, and on 2 GPUs with Ray Serve.",
+        "作法：16 人同時發問，分別用 1 張 GPU、2 張 GPU 人工分配、2 張 GPU 加 Ray Serve。"
+       ],
+       [
+        "Result: 2 GPUs are 12% to 67% faster than 1; Ray Serve is about the same as splitting by hand (0% to +8%).",
+        "結果：2 張 GPU 比 1 張快 12% 到 67%；Ray Serve 和人工分配差不多（0% 到 +8%）。"
+       ],
+       [
+        "Meaning: the extra speed comes from the 2nd GPU; what Ray Serve adds is that nobody has to split the people by hand.",
+        "意義：多出來的速度來自第 2 張 GPU；Ray Serve 的價值是不必有人去分配使用者。"
+       ]
+      ]
+     }
     },
     {
      "n": 2,
