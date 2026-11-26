@@ -63,3 +63,4 @@
 .rs-step>.rs-proof{grid-column:1/-1}
 .rs-story{margin:8px 0 0;padding-left:26px;font-size:1.1rem;color:var(--ivory,#f3efe5)}.rs-story li{padding:4px 0}.rs-data h3{margin:8px 0 0;font-size:1.3rem;color:var(--ivory,#f3efe5)}
 #rsPh2,.lr-ptabs[hidden]{display:none!important}
+.rs-big.t-good{color:var(--green,#70d3a2)}.rs-big.t-bad{color:var(--red,#ed786f)}.rs-gain{color:var(--green,#70d3a2)!important}
