@@ -111,8 +111,8 @@
      "sum_en": "16% to 65% more work with 2 GPUs.",
      "sum_zh": "2 張卡多做 16% 到 65%。",
      "tone": "good",
-     "tip_en": "From the 1 GPU vs 2 GPUs test: 16 users at once, average of 1K, 4K and 8K inputs (1.16x, 1.44x, 1.65x). One run per length, smoke test.",
-     "tip_zh": "來自 1 張卡對 2 張卡的測試：16 人同時用，輸入 1K、4K、8K 平均（1.16、1.44、1.65 倍）。每種長度各跑 1 次，僅 smoke 測試。"
+     "tip_en": "Compared: 1 GPU alone vs 2 GPUs shared by Ray Serve, 16 people asking at once. The extra work comes from the 2nd GPU; Ray Serve shares the questions between the two automatically. Not yet compared with 2 GPUs used separately by hand: that is a next test.",
+     "tip_zh": "比較對象：1 張卡單獨回答，對 2 張卡由 Ray Serve 分工，16 人同時發問。多做的工作來自多一張卡；Ray Serve 負責把問題自動分給兩張卡。還沒和「兩張卡各自手動使用」比，那是下一個測試。"
     },
     {
      "n": 2,
