@@ -191,36 +191,16 @@
       "note_zh": "省下的卡小時會累積：一個月約 591 小時，等於一張卡空出 25 天；一年約 7,200 小時。我們的假設，非實測：平日 6 小時需 2 張卡，其餘 1 張。實測：約 100 秒內會跟上。",
       "notes": [
        [
-        "Always 2 GPUs: 2 GPUs x 24 h = 48 GPU-hours a day.",
-        "固定 2 張：2 張卡 x 24 小時 = 每天 48 卡小時。"
+        "Method (assumed, not measured): weekdays 09-12 and 14-17 are busy and use 2 GPUs; every other hour uses 1.",
+        "作法（假設，非實測）：平日 09-12、14-17 忙，用 2 張卡；其他時間 1 張。"
        ],
        [
-        "Auto-scale, weekday: 6 busy hours x 2 GPUs + 18 quiet hours x 1 GPU = 30.",
-        "自動增減，平日：忙 6 小時 x 2 張 + 閒 18 小時 x 1 張 = 30。"
+        "Calculation: one week = 5 x (6 x 2 + 18 x 1) + 2 x 24 = 198 GPU-hours, against 2 x 24 x 7 = 336 when always on.",
+        "計算：一週 = 5 x (6 x 2 + 18 x 1) + 2 x 24 = 198 卡小時，固定開著是 2 x 24 x 7 = 336。"
        ],
        [
-        "Auto-scale, weekend: 24 h x 1 GPU = 24.",
-        "自動增減，假日：24 小時 x 1 張 = 24。"
-       ],
-       [
-        "Week: 5 weekdays x 30 + 2 weekend days x 24 = 198 (fixed: 336).",
-        "一週：5 個平日 x 30 + 2 個假日 x 24 = 198（固定：336）。"
-       ],
-       [
-        "Month: 30 days, same pattern = 849 (fixed: 1440), so 591 GPU-hours saved.",
-        "一個月：30 天、同樣用法 = 849（固定：1440），省下 591 卡小時。"
-       ],
-       [
-        "591 GPU-hours = one GPU free for 25 days; about 7,200 a year.",
-        "591 卡小時 = 一張卡空出 25 天；一年約 7,200。"
-       ],
-       [
-        "Our assumption, not measured: busy = weekdays 09-12 and 14-17.",
-        "我們的假設，非實測：忙 = 平日 09-12、14-17。"
-       ],
-       [
-        "Measured: Ray Serve reacts in about 100 s.",
-        "實測：Ray Serve 約 100 秒內會跟上。"
+        "Benefit: 138 GPU-hours saved a week (-41%); in a month 591, one GPU free for 25 days.",
+        "效益：每週省 138 卡小時（-41%）；一個月 591，一張卡空出 25 天。"
        ]
       ]
      },
