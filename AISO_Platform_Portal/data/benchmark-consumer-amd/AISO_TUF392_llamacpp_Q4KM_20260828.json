@@ -1,0 +1,461 @@
+{
+ "dataset": "AISO_TUF392_llamacpp_Q4KM_20260828",
+ "machine": "tuf392",
+ "machine_label": "TUF AI MAX 392",
+ "evidence_until": "2026-08-28",
+ "runs": [
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "np": 1,
+   "input": 1024,
+   "output": 300,
+   "context": 4096,
+   "ttft_s": 3.1645666329999997,
+   "tpot_ms": 21.2143,
+   "aggregate_tps": 31.553564,
+   "normalized_tps": 31.553564,
+   "decode_only_tps": 47.13801539527582,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     3.1692728999999997,
+     3.1557121,
+     3.1687149
+    ],
+    "tpot_ms": [
+     21.247801,
+     21.204387,
+     21.190711
+    ],
+    "aggregate_tps": [
+     31.504777,
+     31.592836,
+     31.563207
+    ]
+   }
+  },
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "np": 1,
+   "input": 2048,
+   "output": 300,
+   "context": 4096,
+   "ttft_s": 5.087161333,
+   "tpot_ms": 21.60662,
+   "aggregate_tps": 25.979558,
+   "normalized_tps": 25.979558,
+   "decode_only_tps": 46.28211168614064,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     5.0774203,
+     5.0911721,
+     5.0928916
+    ],
+    "tpot_ms": [
+     21.555111,
+     21.601753,
+     21.662996
+    ],
+    "aggregate_tps": [
+     26.036246,
+     25.973809,
+     25.928842
+    ]
+   }
+  },
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "np": 1,
+   "input": 4096,
+   "output": 300,
+   "context": 6144,
+   "ttft_s": 8.076678533,
+   "tpot_ms": 22.164609,
+   "aggregate_tps": 20.402755,
+   "normalized_tps": 20.402755,
+   "decode_only_tps": 45.11697003091731,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     8.0592387,
+     8.0733782,
+     8.0974187
+    ],
+    "tpot_ms": [
+     22.187805,
+     22.118083,
+     22.18794
+    ],
+    "aggregate_tps": [
+     20.417341,
+     20.426665,
+     20.364369
+    ]
+   }
+  },
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "np": 1,
+   "input": 8192,
+   "output": 300,
+   "context": 10240,
+   "ttft_s": 17.657960533,
+   "tpot_ms": 23.266489,
+   "aggregate_tps": 12.187868,
+   "normalized_tps": 12.187868,
+   "decode_only_tps": 42.980270895191794,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     17.5570906,
+     17.6885333,
+     17.728257699999997
+    ],
+    "tpot_ms": [
+     23.391602,
+     23.217516,
+     23.190348
+    ],
+    "aggregate_tps": [
+     12.219372,
+     12.179986,
+     12.164379
+    ]
+   }
+  },
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "np": 1,
+   "input": 16384,
+   "output": 300,
+   "context": 18432,
+   "ttft_s": 54.4745445,
+   "tpot_ms": 25.765617,
+   "aggregate_tps": 4.824822,
+   "normalized_tps": 4.824822,
+   "decode_only_tps": 38.81141289960183,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     54.2362823,
+     54.5333581,
+     54.6539931
+    ],
+    "tpot_ms": [
+     25.701289,
+     25.712582,
+     25.88298
+    ],
+    "aggregate_tps": [
+     4.844886,
+     4.821491,
+     4.808231
+    ]
+   }
+  },
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "np": 1,
+   "input": 32768,
+   "output": 300,
+   "context": 34816,
+   "ttft_s": 202.914765267,
+   "tpot_ms": 31.231335,
+   "aggregate_tps": 1.413408,
+   "normalized_tps": 1.413408,
+   "decode_only_tps": 32.019124382611245,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     192.6904827,
+     204.5166758,
+     211.5371373
+    ],
+    "tpot_ms": [
+     30.68344,
+     31.348642,
+     31.661923
+    ],
+    "aggregate_tps": [
+     1.486143,
+     1.402591,
+     1.357441
+    ]
+   }
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "np": 1,
+   "input": 1024,
+   "output": 300,
+   "context": 4096,
+   "ttft_s": 0.8328523999999999,
+   "tpot_ms": 12.501142,
+   "aggregate_tps": 65.635546,
+   "normalized_tps": 65.635546,
+   "decode_only_tps": 79.99269186767097,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     0.8421263,
+     0.8346693000000001,
+     0.8217616000000001
+    ],
+    "tpot_ms": [
+     12.591829,
+     12.600144,
+     12.311454
+    ],
+    "aggregate_tps": [
+     65.117121,
+     65.187455,
+     66.623933
+    ]
+   }
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "np": 1,
+   "input": 2048,
+   "output": 300,
+   "context": 4096,
+   "ttft_s": 1.4854353329999999,
+   "tpot_ms": 12.327534,
+   "aggregate_tps": 58.01173,
+   "normalized_tps": 58.01173,
+   "decode_only_tps": 81.1192246559612,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     1.5210451,
+     1.4770069000000001,
+     1.458254
+    ],
+    "tpot_ms": [
+     12.517174,
+     12.312489,
+     12.152938
+    ],
+    "aggregate_tps": [
+     56.994345,
+     58.157105,
+     58.916149
+    ]
+   }
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "np": 1,
+   "input": 4096,
+   "output": 300,
+   "context": 6144,
+   "ttft_s": 2.8171352,
+   "tpot_ms": 12.221843,
+   "aggregate_tps": 46.357346,
+   "normalized_tps": 46.357346,
+   "decode_only_tps": 81.82072049199127,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     2.8159416999999998,
+     2.8359212,
+     2.7995427
+    ],
+    "tpot_ms": [
+     12.154946,
+     12.240492,
+     12.270091
+    ],
+    "aggregate_tps": [
+     46.509677,
+     46.183487,
+     46.380039
+    ]
+   }
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "np": 1,
+   "input": 8192,
+   "output": 300,
+   "context": 10240,
+   "ttft_s": 5.841464033,
+   "tpot_ms": 13.352223,
+   "aggregate_tps": 30.507093,
+   "normalized_tps": 30.507093,
+   "decode_only_tps": 74.89389594526693,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     5.831504600000001,
+     5.8284346,
+     5.8644529
+    ],
+    "tpot_ms": [
+     13.052071,
+     13.434838,
+     13.569761
+    ],
+    "aggregate_tps": [
+     30.819573,
+     30.470925,
+     30.236414
+    ]
+   }
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "np": 1,
+   "input": 16384,
+   "output": 300,
+   "context": 18432,
+   "ttft_s": 13.559434867,
+   "tpot_ms": 14.467332,
+   "aggregate_tps": 16.773676,
+   "normalized_tps": 16.773676,
+   "decode_only_tps": 69.12124502292475,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     13.548405500000001,
+     13.568681,
+     13.5612181
+    ],
+    "tpot_ms": [
+     14.455265,
+     14.480146,
+     14.466586
+    ],
+    "aggregate_tps": [
+     16.787415,
+     16.76142,
+     16.772213
+    ]
+   }
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "np": 1,
+   "input": 32768,
+   "output": 300,
+   "context": 34816,
+   "ttft_s": 35.5586241,
+   "tpot_ms": 16.243203,
+   "aggregate_tps": 7.422924,
+   "normalized_tps": 7.422924,
+   "decode_only_tps": 61.56421242780749,
+   "trials": 3,
+   "repeats": {
+    "ttft_s": [
+     35.4603605,
+     35.4948324,
+     35.7206794
+    ],
+    "tpot_ms": [
+     16.269266,
+     16.321591,
+     16.138752
+    ],
+    "aggregate_tps": [
+     7.439577,
+     7.430343,
+     7.398973
+    ]
+   }
+  }
+ ],
+ "models": [
+  {
+   "model": "gemma26",
+   "model_name": "Gemma 4 26B A4B",
+   "repository": "unsloth/gemma-4-26B-A4B-it-GGUF",
+   "file": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
+   "quant": "Q4_K_M",
+   "quant_variant": "Unsloth Dynamic (UD)",
+   "size_bytes": 16947541728,
+   "size_gib": 15.784,
+   "size_gb": 16.95,
+   "sha256": "F2C28B3DC4776931AC6F879E11F203DEC637EA0F14267A86EC8F6165F63F293F",
+   "sha256_matches_results": true
+  },
+  {
+   "model": "gptoss20",
+   "model_name": "GPT-OSS 20B",
+   "repository": "unsloth/gpt-oss-20b-GGUF",
+   "file": "gpt-oss-20b-Q4_K_M.gguf",
+   "quant": "Q4_K_M",
+   "quant_variant": null,
+   "size_bytes": 11624759488,
+   "size_gib": 10.826,
+   "size_gb": 11.62,
+   "sha256": "C27536640E410032865DC68781D80A08B98F8DB5E93575919AF8CCC0568AEB4F",
+   "sha256_matches_results": true
+  }
+ ],
+ "profile": {
+  "framework": "llama.cpp",
+  "backend": "Vulkan",
+  "build": "version: 0.2.0-dev (build 10615, commit f280b2698)",
+  "os": "Microsoft Windows 11 家用版",
+  "threads": 24,
+  "gpu_layers": 999,
+  "batch": 2048,
+  "ubatch": 512,
+  "repeats": 3,
+  "output_tokens": 300,
+  "parallel_slots": 1,
+  "context_policy": "1024=4096, 2048=4096, 4096=6144, 8192=10240, 16384=18432, 32768=34816",
+  "weights": "Q4_K_M",
+  "kv_cache": "f16 (llama.cpp default, not set)",
+  "prompt_cache": "disabled",
+  "seed": 1234,
+  "power_plan": "電源配置 GUID: 27fa6203-3987-4dcc-918d-748559d549ec  (Performance)",
+  "amd_driver": "32.0.22032.3003",
+  "vulkan_device": "Vulkan0: AMD Radeon(TM) 8060S Graphics (28491 MiB, 27067 MiB free)",
+  "captured_at": "2026-08-28 09:41:39 +08:00",
+  "computer": "ASUS TUF Gaming A14 FA401EA",
+  "cpu": "AMD RYZEN AI MAX+ 392 w/ Radeon 8060S",
+  "os_visible_ram_gib": 7.65
+ },
+ "comparability": {
+  "level": "not_comparable",
+  "text": "Windows laptop, batch 2048, Output 300, NP1 only, other models than the AISO1 / B60 / B70 stress test. Not comparable with those pages; ROG 395 vs TUF 392 is like for like except threads and power plan (see profile)."
+ },
+ "consistency_notes": [],
+ "not_run": [
+  "NP2 and above",
+  "Gemma 4 31B, Laguna XS 2.1, Nemotron 3.5",
+  "vLLM, SGLang"
+ ],
+ "source": {
+  "git_ref": "HEAD",
+  "folder": "AISO-Platform-UI/Consumer/AMD/ASUS-TUF-GAMING-AI-MAX392/",
+  "summary": {
+   "path": "ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result/Public/benchmark_summary.csv",
+   "sha256": "ef3c6085f0f01c2a8689719f7c65fa93729701c4365c5ac54e95bfb13c54443a"
+  },
+  "trials": {
+   "path": "ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result/benchmark_trials.csv",
+   "sha256": "e15a1fdb4cb1feb2d695e720454ef4134fd98c3cf6fe4c1aa447e7337d6884c3"
+  },
+  "environment": "ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result/environment.json",
+  "model_hashes": {
+   "path": "ASUS-TUF-GAMING-AI-MAX392/Benchmark_Result/OneNP/20260828_094137/model_hashes.csv",
+   "sha256": "f05acca3ea7f497c43a89270d6209793344d7cf87ebb0fa49b44acffe597ec52"
+  },
+  "note": "Means from benchmark_summary.csv; the 3 trials per case come from benchmark_trials.csv."
+ }
+}
