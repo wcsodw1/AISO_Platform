@@ -63,11 +63,26 @@
         '<p class="rs-big t-' + s.tone + '">' + esc(s.big) + "<span>" + bi(s.big_en, s.big_zh) + "</span></p>" +
         '<p class="rs-sum"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + "</p>" +
         '<em class="p2-st ' + esc(s.status) + '">' + bi(t[0], t[1]) + "</em>" + mx +
-        (s.report ? '<a class="lm-rep" href="' + esc(s.report.href) + '">' + bi(s.report.en, s.report.zh) + ' <span aria-hidden="true">→</span></a>' : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden><ul class="rs-calc">' + s.data.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ul></div></section>";
+        (s.report ? '<div class="lm-fold"><a class="lm-rep" href="' + esc(s.report.href) + '">' + bi(s.report.en, s.report.zh) + ' <span aria-hidden="true">→</span></a>' + (s.report.fold ? '<div class="lm-fold-b" id="lmFold' + s.n + '"></div>' : "") + "</div>" : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden><ul class="rs-calc">' + s.data.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ul></div></section>";
       $("lrTab" + s.n + "n").innerHTML = bi(t[0], t[1]);
     });
     Array.prototype.forEach.call(document.querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
     wrapEn();
   }).catch(function () { $("lmPh1").innerHTML = '<p class="lr-resnote">The page data is not available.<small class="zhs">頁面資料暫時無法顯示</small></p>'; });
+
+  /* hover Full report: unrolls the 8-scenario table (No cache / aiDAPTIV / LMCache) from the verified run */
+  fetch("data/benchmark-v2/AISO_BenchmarkV2_Verified_Reuse.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (V) {
+    var el = $("lmFold2"); if (!el) return;
+    var M = [["ttft_ms", "First word", "首字延遲 ms", true], ["tpot_ms", "Time per word", "字間隔 ms", true], ["output_tps", "Words per second", "每秒輸出 tok/s", false]], keys = [], by = {};
+    V.reuse_summary.forEach(function (r) { var k = r.input_tokens + "/" + r.concurrency; if (!by[k]) { by[k] = {}; keys.push(k); } by[k][r.metric] = r; });
+    var f = function (v) { return v >= 100 ? v.toFixed(0) : v.toFixed(1); };
+    var head = '<tr><th rowspan="2">' + bi("Input · users", "輸入・人數") + "</th>" + M.map(function (m) { return '<th colspan="3">' + bi(m[1], m[2]) + "</th>"; }).join("") + "</tr><tr>" + M.map(function () { return "<th>" + bi("No cache", "沒快取") + "</th><th>aiDAPTIV</th><th>LMCache</th>"; }).join("") + "</tr>";
+    var rows = keys.map(function (k) {
+      var p = k.split("/"), r = by[k];
+      return "<tr><td>" + esc(Number(p[0]).toLocaleString("en-US")) + " · " + esc(p[1]) + "</td>" + M.map(function (m) { var x = r[m[0]]; return "<td>" + f(x.baseline) + '</td><td class="' + (x.aidaptiv_gain_pct > 0 ? "g" : "b") + '">' + f(x.aidaptiv) + '</td><td class="' + (x.lmcache_gain_pct > 0 ? "g" : "b") + '">' + f(x.lmcache) + "</td>"; }).join("") + "</tr>";
+    }).join("");
+    el.innerHTML = '<table class="lm-ft"><thead>' + head + "</thead><tbody>" + rows + '</tbody></table><p class="lm-fn">' + bi("Warm (repeat) runs, mean of 3; green = better than no cache. Click the button for the full report page.", "Warm（重複）三次平均；綠色 = 比沒快取好。點按鈕進完整報告頁。") + "</p>";
+    wrapEn();
+  }).catch(function () { });
   wrapEn();
 })();
