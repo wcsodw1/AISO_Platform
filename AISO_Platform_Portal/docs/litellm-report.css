@@ -747,3 +747,7 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 
 .lr .rs-step h2 .rs-cnt{margin-left:auto;font-size:1.25rem;color:var(--c);font-weight:700}
 .lr .rs-data .p2-id{display:none}
+.lr .rs-step h2 .rs-cnt.ok{color:#7fd1a0}
+.lr .rs-stuck{grid-column:1/-1;list-style:none;margin:6px 0 0;padding:0;font-size:1rem;color:var(--ivory,#f3efe5)}
+.lr .rs-stuck li{margin:4px 0}.lr .rs-stuck .rs-sh{color:#e0a04a;font-weight:700}
+.lr .rs-stuck .rs-why{display:block;color:#b9b4a6}

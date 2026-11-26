@@ -384,8 +384,12 @@
       all = all.concat(g.tests);
       var st = nd === g.tests.length ? "done" : (nd ? "partial" : "planned");
       var rows = g.tests.map(function (t) { return row(t, g.key); }).join("");
+      var stuck = g.tests.filter(function (t) { return t.status !== "done"; }).map(function (t) {
+        return '<li><b>' + esc(t.id) + "</b> " + bi(t.en, t.zh) + ' <span class="rs-why">' + bi(t.needs_en || t.note_en || "", t.needs_zh || t.note_zh || "") + "</span></li>";
+      }).join("");
+      stuck = stuck ? '<ul class="rs-stuck"><li class="rs-sh">Not done yet<small class="zhs">還沒完成，卡在</small></li>' + stuck + "</ul>" : "";
       var fake = g.tests.filter(function (t) { return t.status === "sim"; }).length;
-      steps += '<section class="rs-step s' + esc(g.key) + '"><h2><i>' + esc(g.key) + "</i><span>" + bi(g.en, g.zh) + '</span><b class="rs-cnt">' + nd + " / " + g.tests.length + '<small class="zhs">項已測</small></b></h2>' +
+      steps += '<section class="rs-step s' + esc(g.key) + '"><h2><i>' + esc(g.key) + "</i><span>" + bi(g.en, g.zh) + '</span><b class="rs-cnt' + (nd === g.tests.length ? ' ok' : '') + '">' + (nd === g.tests.length ? 'Done<small class="zhs">完成</small>' : nd + ' / ' + g.tests.length + '<small class="zhs">項已測</small>') + '</b></h2>' + stuck +
         '<p class="rs-m"><b>Meaning<small class="zhs">意義</small></b>' + bi(g.mean_en, g.mean_zh) + "</p>" +
         '<p class="rs-big t-' + esc(g.tone || "good") + '">' + esc(g.big) + "<span>" + bi(g.big_en, g.big_zh) + "</span></p>" +
         '<p class="rs-sum"><b>' + bi(g.label_en, g.label_zh) + "</b>" + bi(g.sum_en, g.sum_zh) + "</p>" + pill(st) +
@@ -394,12 +398,12 @@
         (fake ? '<p class="p2-upd">' + fake + " of these were tried on a fake setup only" + '<small class="zhs">其中 ' + fake + " 項只用模擬測過</small></p>" : "") + "</div></section>";
     });
     var n = all.length, d = all.filter(function (t) { return t.status === "done"; }).length;
-    $("lrTab2n").innerHTML = d + " / " + n;   /* progress inside the Phase 2 tab */
+    $("lrTab2n").innerHTML = d === n ? "Done" : P.groups.map(function (g) { return g.tests.filter(function (x) { return x.status === "done"; }).length + "/" + g.tests.length; }).join(" · ");   /* progress inside the Phase 2 tab */
     if ($("lrHead")) $("lrHead").innerHTML = '<p class="lr-big">' + bi(P.headline.en, P.headline.zh) + "</p>";
     $("lrP2").innerHTML =
       '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(P.meaning.en, P.meaning.zh) + "</span></div>" +
       '<div class="rs-steps">' + steps + "</div>" +
-      '<p class="p2-upd rs-upd">Updated ' + esc(P.updated) + '<small class="zhs">更新日期</small> · ' + d + " of " + n + " tests run on real machines" + '<small class="zhs">共 ' + n + " 項，真機測過 " + d + "</small></p>";
+      '<p class="p2-upd rs-upd">Updated ' + esc(P.updated) + '<small class="zhs">更新日期</small></p>';
     Array.prototype.forEach.call($("lrP2").querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var x = b.nextElementSibling; x.hidden = !x.hidden; }; });
   }
   /* Phase 1 / Phase 2 switch: #phase1 or #phase2 in the address opens that one; Phase 2 (the open work) is the default */
