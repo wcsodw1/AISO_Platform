@@ -17,6 +17,13 @@
     if (!k) return "";
     return '<div class="rs-proof"><h3>' + bi(k.title_en, k.title_zh) + '</h3><ul class="rs-calc">' + k.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + (i[2] ? ' <a class="rs-src" href="' + esc(i[2]) + '" target="_blank" rel="noopener">' + esc(i[3] || "source") + " ↗</a>" : "") + "</li>"; }).join("") + "</ul></div>";
   }
+  function matrix(m) {
+    if (!m) return "";
+    return '<div class="rs-proof rs-mx"><h3>' + bi(m.title_en, m.title_zh) + '</h3><p class="rs-unit">' + bi(m.unit_en, m.unit_zh) + "</p><table><thead><tr>" +
+      m.cols_en.map(function (c, i) { return "<th>" + bi(c, m.cols_zh[i]) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      m.rows.map(function (r) { return "<tr><td>" + bi(r[0], r[1]) + "</td>" + r.slice(2).map(function (v) { return '<td class="rs-gain">' + esc(v) + "</td>"; }).join("") + "</tr>"; }).join("") +
+      '</tbody></table><ul class="rs-calc">' + m.notes.map(function (n) { return "<li>" + bi(n[0], n[1]) + "</li>"; }).join("") + "</ul></div>";
+  }
   function render(P) {
     var ST = P.statuses;
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + bi(t[0], t[1]) + "</em>"; }
@@ -36,7 +43,7 @@
           '<p class="rs-m"><b>Meaning<small class="zhs">意義</small></b>' + bi(s.mean_en, s.mean_zh) + "</p>" +
           '<p class="rs-big' + (s.tone ? " t-" + s.tone : "") + '">' + esc(s.big) + "<span>" + bi(s.big_en, s.big_zh) + "</span></p>" +
           '<p class="rs-sum' + (s.tip_en ? " has-tip" : "") + '" tabindex="0"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + (s.tip_en ? '<span class="rs-tip"><b>' + bi(s.tip_title_en || "Measured test", s.tip_title_zh || "實測依據") + "</b>" + bi(s.tip_en, s.tip_zh) + "</span>" : "") + "</p>" + pill(st) +
-          kpi(s.kpi) + (s.supp_en ? '<p class="rs-supp"><b>Supplement<small class="zhs">補充</small></b> ' + bi(s.supp_en.replace(/^Supplement: /, ""), s.supp_zh.replace(/^補充：/, "")) + "</p>" : "") + (s.proof_open ? proof(s.proof) : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
+          kpi(s.kpi) + matrix(s.matrix) + (s.supp_en ? '<p class="rs-supp"><b>Supplement<small class="zhs">補充</small></b> ' + bi(s.supp_en.replace(/^Supplement: /, ""), s.supp_zh.replace(/^補充：/, "")) + "</p>" : "") + (s.proof_open ? proof(s.proof) : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
       }).join("");
       $("rsPh" + k).innerHTML = '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
       Array.prototype.forEach.call($("rsPh" + k).querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });

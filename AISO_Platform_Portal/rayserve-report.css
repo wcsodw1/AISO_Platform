@@ -80,3 +80,4 @@ main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-u
 main.lr .rs-step:hover .rs-tip small.zhs{display:block!important;margin-top:6px}
 .rs-supp{grid-column:1/-1;margin:4px 0 0;font-size:1rem;color:rgba(243,239,229,.8)}.rs-supp b{color:var(--gold,#c8b875);margin-right:6px}
 main.lr .rs-step:hover .rs-tip b small.zhs{display:inline!important;margin:0 0 0 8px}
+.rs-step>.rs-mx{grid-column:1/-1}.rs-mx td.rs-gain{font-size:1.3rem}
