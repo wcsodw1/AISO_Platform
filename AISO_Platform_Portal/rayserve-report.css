@@ -78,3 +78,4 @@ main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-u
 .lr .p2-st.partial{color:var(--gold,#c8b875)}
 .rs-tip{width:max-content;max-width:min(560px,90vw);white-space:normal;overflow-wrap:anywhere}.rs-tip small.zhs{margin-left:0!important;white-space:normal}
 main.lr .rs-step:hover .rs-tip small.zhs{display:block!important;margin-top:6px}
+.rs-supp{grid-column:1/-1;margin:4px 0 0;font-size:1rem;color:rgba(243,239,229,.8)}.rs-supp b{color:var(--gold,#c8b875);margin-right:6px}
