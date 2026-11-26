@@ -377,6 +377,7 @@
       var res = t.res_en ? '<span class="p2-res ' + esc(t.status) + '">' + esc(t.res_en) + '<small class="zhs">' + esc(t.res_zh || "") + "</small></span>" : '<span class="p2-none">–</span>';
       return '<tr class="p2-row p2-r' + esc(k) + '" tabindex="0"><td class="p2-id">' + esc(t.id) + '</td><td class="p2-t">' + esc(t.en) + '<small class="zhs">' + esc(t.zh) + '</small><span class="p2-why">' + esc(t.why_en || "") + '<small class="zhs">' + esc(t.why_zh || "") + "</small></span>" + tip(t) + '</td><td class="p2-c">' + res + "</td><td>" + pill(t.status) + "</td></tr>";
     }
+    function first(x) { var m = /^.*?[.。]( |$)/.exec(x); return m ? m[0].trim() : x; }
     function bi(en, zh) { return esc(en) + '<small class="zhs">' + esc(zh) + "</small>"; }
     var all = [], steps = "";
     P.groups.forEach(function (g) {
@@ -385,7 +386,7 @@
       var st = nd === g.tests.length ? "done" : (nd ? "partial" : "planned");
       var rows = g.tests.map(function (t) { return row(t, g.key); }).join("");
       var stuck = g.tests.filter(function (t) { return t.status !== "done"; }).map(function (t) {
-        return '<li><b>' + esc(t.id) + "</b> " + bi(t.en, t.zh) + ' <span class="rs-why">' + bi(t.needs_en || t.note_en || "", t.needs_zh || t.note_zh || "") + "</span></li>";
+        return '<li><b>' + esc(t.id) + "</b> " + bi(t.en, t.zh) + ' <span class="rs-why">' + bi(first(t.note_en || t.needs_en || ""), first(t.note_zh || t.needs_zh || "")) + "</span></li>";
       }).join("");
       stuck = stuck ? '<ul class="rs-stuck"><li class="rs-sh">Not done yet<small class="zhs">還沒完成，卡在</small></li>' + stuck + "</ul>" : "";
       var fake = g.tests.filter(function (t) { return t.status === "sim"; }).length;
