@@ -157,13 +157,13 @@
        "Period",
        "Always 2 GPUs",
        "Auto-scale",
-       "Saved"
+       "Saved (hours, %)"
       ],
       "cols_zh": [
        "期間",
        "固定 2 張",
        "自動增減",
-       "省下"
+       "省下（小時、%）"
       ],
       "unit_en": "GPU-hours, lower is better. Checked every 30 minutes.",
       "unit_zh": "卡小時，越低越好。每 30 分鐘檢查一次。",
@@ -172,23 +172,23 @@
         "1 weekday 平日",
         "48",
         "30",
-        "-38%"
+        "-18 h (-38%)"
        ],
        [
         "1 week 一週",
         "336",
         "198",
-        "-41%"
+        "-138 h (-41%)"
        ],
        [
         "1 month 一個月",
         "1440",
         "849",
-        "-41%"
+        "-591 h (-41%)"
        ]
       ],
-      "note_en": "Our assumption, not measured: 2 GPUs needed 6 h on weekdays (09-12, 14-17), otherwise 1. Measured: it reacts in about 100 s.",
-      "note_zh": "我們的假設，非實測：平日 6 小時需 2 張卡，其餘 1 張。實測：約 100 秒內會跟上。"
+      "note_en": "Savings add up: about 591 GPU-hours a month, a whole GPU free for 25 days, about 7,200 a year. Our assumption, not measured: 2 GPUs needed 6 h on weekdays (09-12, 14-17), otherwise 1. Measured: it reacts in about 100 s.",
+      "note_zh": "省下的卡小時會累積：一個月約 591 小時，等於一張卡空出 25 天；一年約 7,200 小時。我們的假設，非實測：平日 6 小時需 2 張卡，其餘 1 張。實測：約 100 秒內會跟上。"
      },
      "story": {
       "title_en": "What we tested",
