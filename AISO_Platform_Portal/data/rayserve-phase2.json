@@ -110,7 +110,9 @@
      "big_zh": "多做的工作",
      "sum_en": "16% to 65% more work with 2 GPUs.",
      "sum_zh": "2 張卡多做 16% 到 65%。",
-     "tone": "good"
+     "tone": "good",
+     "tip_en": "From the 1 GPU vs 2 GPUs test: 16 users at once, average of 1K, 4K and 8K inputs (1.16x, 1.44x, 1.65x). One run per length, smoke test.",
+     "tip_zh": "來自 1 張卡對 2 張卡的測試：16 人同時用，輸入 1K、4K、8K 平均（1.16、1.44、1.65 倍）。每種長度各跑 1 次，僅 smoke 測試。"
     },
     {
      "n": 2,
@@ -230,7 +232,9 @@
        ]
       ]
      },
-     "tone": "good"
+     "tone": "good",
+     "tip_en": "Scenario (assumed, not measured): on weekdays 09-12 and 14-17 people are busy and 2 GPUs run; at every other hour 1 GPU runs. Over a week that is 198 GPU-hours instead of 336 when 2 GPUs are always on, so 138 are saved (-41%).",
+     "tip_zh": "情境（假設，非實測）：平日 09-12、14-17 人多，開 2 張卡；其他時間開 1 張。一週共 198 卡小時，固定開 2 張是 336，省 138（-41%）。"
     },
     {
      "n": 3,
@@ -275,7 +279,9 @@
      "big_zh": "速度損失",
      "sum_en": "Only 1.3% slower.",
      "sum_zh": "只慢 1.3%。",
-     "tone": "bad"
+     "tone": "bad",
+     "tip_en": "From the direct vLLM vs Ray Serve test: 142.9 vs 144.8 tokens per second, 3 repeats, 1 GPU.",
+     "tip_zh": "來自 vLLM 直連對 Ray Serve 的測試：每秒 142.9 對 144.8 token，重複 3 次，1 張卡。"
     }
    ]
   },
