@@ -327,14 +327,14 @@
      "label_zh": "效益",
      "mean_en": "Check a new GPU starts by itself, with nobody watching.",
      "mean_zh": "確認需要加開 GPU 時，系統會自己處理，不必有人盯著。",
-     "big": "+9.5 h",
-     "big_en": "GPU hours a week kept working (vs a 30-min switch by hand)",
-     "big_zh": "每週多出的可用 GPU 小時（對比人工 30 分鐘切換）",
-     "sum_en": "4.5 to 19.5 GPU hours a week no longer lost to slow switching.",
-     "sum_zh": "每週少浪費 4.5 到 19.5 GPU 小時（人工切換所需耗時）。",
+     "big": "+19.5 h",
+     "big_en": "GPU hours a week kept working (vs a 1-hour switch by hand)",
+     "big_zh": "每週多出的可用 GPU 小時（對比人工 1 小時切換）",
+     "sum_en": "4.5 to 59.5 GPU hours a week no longer lost to slow switching.",
+     "sum_zh": "每週少浪費 4.5 到 59.5 GPU 小時（人工切換所需耗時）。",
      "tone": "good",
-     "tip_en": "Each switch by hand takes 15, 30 or 60 minutes. Ray Serve was measured: 106 s to add a GPU, 76 s to give it back. A weekday has 2 busy periods, so 4 switches; a week has 5 weekdays.",
-     "tip_zh": "人工每次切換要 15、30 或 60 分鐘。Ray Serve 實測：加開 GPU 106 秒、歸還 76 秒。平日有 2 段忙碌，共 4 次切換；一週 5 個平日。",
+     "tip_en": "Each switch by hand takes 15 minutes, 1 hour or 3 hours. Ray Serve was measured: 106 s to add a GPU, 76 s to give it back. A weekday has 2 busy periods, so 4 switches; a week has 5 weekdays.",
+     "tip_zh": "人工每次切換要 15 分鐘、1 小時或 3 小時。Ray Serve 實測：加開 GPU 106 秒、歸還 76 秒。平日有 2 段忙碌，共 4 次切換；一週 5 個平日。",
      "supp_en": "Supplement: going through Ray Serve is 1.3% slower than vLLM direct (142.9 vs 144.8 tokens/s, 3 repeats).",
      "supp_zh": "補充：經過 Ray Serve 比直接用 vLLM 慢 1.3%（每秒 142.9 對 144.8 token，重複 3 輪）。",
      "tip_title_en": "Scenario",
@@ -365,18 +365,18 @@
         "+19.3 h"
        ],
        [
-        "By hand, 30 min per switch",
-        "人工切換，每次 30 分鐘",
-        "+1.9 h",
-        "+9.5 h",
-        "+40.7 h"
-       ],
-       [
-        "By hand, 60 min per switch",
-        "人工切換，每次 60 分鐘",
+        "By hand, 1 hour per switch",
+        "人工切換，每次 1 小時",
         "+3.9 h",
         "+19.5 h",
         "+83.5 h"
+       ],
+       [
+        "By hand, 3 hours per switch",
+        "人工切換，每次 3 小時",
+        "+11.9 h",
+        "+59.5 h",
+        "+255.0 h"
        ]
       ],
       "notes": [
@@ -389,8 +389,8 @@
         "計算：每次切換浪費的就是等待時間；Ray Serve 實測加開 106 秒、歸還 76 秒（一週合計約 0.5 小時）。"
        ],
        [
-        "Benefit: compared with switching by hand, Ray Serve gains 4.5 to 19.5 GPU hours a week, 19 to 84 a month.",
-        "效益：相較人工切換，Ray Serve 每週多出 4.5 到 19.5 GPU 小時，一個月 19 到 84。"
+        "Benefit: compared with switching by hand, Ray Serve gains 4.5 to 59.5 GPU hours a week, 19 to 255 a month.",
+        "效益：相較人工切換，Ray Serve 每週多出 4.5 到 59.5 GPU 小時，一個月 19 到 255。"
        ]
       ]
      }
