@@ -162,9 +162,9 @@
     var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 560 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
     $("rsArch").innerHTML = '<div class="lr-vs">' +
       '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 Ray Serve</small></h3>' + svg(svgNo, "Each GPU runs one fixed copy of the model") +
-      '<p class="lr-pt">Every GPU runs one <b>fixed</b> copy, always on; adding or removing a copy is done <b>by hand</b><small class="zhs">每張 GPU 固定跑一份模型、一直開著；要增減得靠人工處理</small></p></div>' +
+      '<p class="lr-pt">Each GPU runs one <b>fixed</b> copy of the model and stays on all the time; adding or removing a copy has to be <b>done by hand</b>.<small class="zhs">每張 GPU 固定跑一份模型、一直開著；要增減得靠人工處理</small></p></div>' +
       '<div class="lr-side lr-yes"><h3>With<small class="zhs">有 Ray Serve</small></h3>' + svg(svgYes, "Ray Serve adds or removes the second copy by itself") +
-      '<p class="lr-pt">Ray Serve adds the 2nd copy when <b>many</b> people use it and removes it when <b>few</b> do<small class="zhs">人多時自動加開第 2 份，人少時自動收掉，把 GPU 還給其他工作</small></p></div></div>';
+      '<p class="lr-pt">Ray Serve adds a second copy when <b>many</b> people are using the service, and removes it when only <b>a few</b> are.<small class="zhs">人多時自動加開第 2 份，人少時自動收掉，把 GPU 還給其他工作</small></p></div></div>';
   })();
   wrapEn();
   var tabs = [["1", $("lrTab1"), $("rsPh1")], ["2", $("lrTab2"), $("rsPh2")]];
