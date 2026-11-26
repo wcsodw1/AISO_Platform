@@ -99,13 +99,13 @@
       "cols_en": [
        "Input",
        "1 GPU",
-       "2 GPUs, split by hand",
+       "2 GPUs, split by hand (switching time not counted)",
        "2 GPUs, Ray Serve"
       ],
       "cols_zh": [
        "輸入",
        "1 張 GPU",
-       "2 張 GPU，人工分配",
+       "2 張 GPU，人工分配（不考慮人工切換時間）",
        "2 張 GPU，Ray Serve"
       ],
       "rows": [
@@ -161,10 +161,10 @@
        "crit_en": "Count the GPUs held every 5 s, then scale to a day, week and month",
        "crit_zh": "每 5 秒記錄佔用幾張 GPU，再換算成一天、一週、一個月",
        "status": "done",
-       "needs_en": "What we did: during the 10-minute run (6 min busy, 4 min quiet) we counted the GPUs in use every 5 s: 1 GPU while quiet (191 s), 2 while busy (363 s), and the 2nd GPU stayed 70 s after the busy time ended. Then we multiplied those rates by the scenario hours.",
-       "needs_zh": "做法：10 分鐘實測（忙 6 分鐘、閒 4 分鐘）每 5 秒記錄用了幾張 GPU：閒時 1 張（191 秒）、忙時 2 張（363 秒），忙完後第 2 張還多留 70 秒。再把這些比率乘上情境的時數。",
-       "result_en": "Held 1052 GPU-seconds, against 1248 when 2 GPUs are always on (-16% in this sample; more when quiet lasts longer)",
-       "result_zh": "共佔用 1052 GPU 秒，固定開 2 張是 1248（這個樣本 -16%；閒的時間越長省越多）"
+       "needs_en": "What we did: during the 10-minute run (6 min busy, 4 min quiet) we counted the GPUs in use every 5 s: 1 GPU while quiet (191 s), 2 while busy (362 s), and the 2nd GPU stayed 71 s after the busy time ended. Then we multiplied those rates by the scenario hours.",
+       "needs_zh": "做法：10 分鐘實測（忙 6 分鐘、閒 4 分鐘）每 5 秒記錄用了幾張 GPU：閒時 1 張（191 秒）、忙時 2 張（362 秒），忙完後第 2 張還多留 71 秒。再把這些比率乘上情境的時數。",
+       "result_en": "Held 1047 GPU-seconds, against 1248 when 2 GPUs are always on (-16% in this sample; more when quiet lasts longer)",
+       "result_zh": "共佔用 1047 GPU 秒，固定開 2 張是 1248（這個樣本 -16%；閒的時間越長省越多）"
       }
      ],
      "label_en": "The benefit",
@@ -218,8 +218,8 @@
       "note_zh": "省下的GPU 小時會累積：一個月約 591 小時，等於一張 GPU空出 25 天；一年約 7,200 小時。我們的假設，非實測：平日 6 小時需 2 張 GPU，其餘 1 張。實測：約 100 秒內會跟上。",
       "notes": [
        [
-        "Sample (measured, 10 min): quiet holds 1 GPU, busy holds 2, and the 2nd stays 70 s after busy ends.",
-        "樣本（實測 10 分鐘）：閒時佔用 1 張 GPU、忙時 2 張，忙完後第 2 張還會多留 70 秒。"
+        "Sample (measured, 10 min): quiet holds 1 GPU, busy holds 2, and the 2nd stays 71 s after busy ends.",
+        "樣本（實測 10 分鐘）：閒時佔用 1 張 GPU、忙時 2 張，忙完後第 2 張還會多留 71 秒。"
        ],
        [
         "Multiplier: if weekdays have 6 busy hours (09-12, 14-17), a week is 5 x (18 x 1 + 6 x 2) + 2 x 24 = 198 GPU-hours, against 336 always on 2 GPUs.",
@@ -244,22 +244,22 @@
         "忙：16 個模擬使用者連續發問 6 分鐘。"
        ],
        [
-        "Grow: after 10 s Ray Serve starts a 2nd GPU copy; it answers requests after 101 s.",
-        "擴：10 秒後開始加第 2 張 GPU，101 秒後可以回答。"
+        "Grow: after 15 s Ray Serve starts a 2nd GPU copy; it answers requests after 106 s.",
+        "擴：15 秒後開始加第 2 張 GPU，106 秒後可以回答。"
        ],
        [
         "Quiet: users stop for 4 minutes; after 76 s the 2nd GPU is given back.",
         "閒：使用者停 4 分鐘，76 秒後自動把第 2 張 GPU還出來。"
        ],
        [
-        "Check: 8489 requests were sent, none failed.",
-        "檢查：共送出 8489 個請求，沒有失敗。"
+        "Check: 8385 requests were sent, none failed.",
+        "檢查：共送出 8385 個請求，沒有失敗。"
        ]
       ]
      },
      "tone": "good",
-     "tip_en": "From the measured 10-minute run (GPUs counted every 5 s: 1 when quiet, 2 when busy, 70 s extra after busy), multiplied by the scenario of 6 busy hours on weekdays: 198 GPU-hours a week instead of 336, so 138 saved (-41%).",
-     "tip_zh": "依據 10 分鐘實測（每 5 秒記錄：閒時 1 張、忙時 2 張、忙完多留 70 秒），套用「平日忙 6 小時」的情境：一週 198 GPU 小時，固定開 2 張則是 336，省下 138（-41%）。",
+     "tip_en": "From the measured 10-minute run (GPUs counted every 5 s: 1 when quiet, 2 when busy, 71 s extra after busy), multiplied by the scenario of 6 busy hours on weekdays: 198 GPU-hours a week instead of 336, so 138 saved (-41%).",
+     "tip_zh": "依據 10 分鐘實測（每 5 秒記錄：閒時 1 張、忙時 2 張、忙完多留 71 秒），套用「平日忙 6 小時」的情境：一週 198 GPU 小時，固定開 2 張則是 336，省下 138（-41%）。",
      "tip_title_en": "Scenario",
      "tip_title_zh": "模擬情境"
     },
@@ -279,14 +279,20 @@
        "status": "done",
        "needs_en": "What we did: 16 people keep asking for 6 minutes, then stop for 4 minutes. We watch whether Ray Serve adds a 2nd GPU when it is busy and gives it back when it is quiet. Quick test, one run.",
        "needs_zh": "做法：16 個人連續發問 6 分鐘，再停 4 分鐘。看 Ray Serve 忙的時候會不會加第 2 張 GPU、閒下來會不會還回去。快速測試，跑 1 次。",
-       "result_en": "Passed: 2nd replica started 10 s after the load began and was ready after 101 s; back to 1 replica 76 s after the load stopped; 8489 requests, 0 failed",
-       "result_zh": "通過：負載開始 10 秒後啟動第 2 個副本、101 秒後可用；負載停止 76 秒後縮回 1 個；8489 個請求，0 個失敗",
+       "result_en": "Passed (re-run on GPU 1 + 6): 2nd replica started 15 s after the load began and was ready after 106 s; back to 1 replica 76 s after the load stopped; 8385 requests, 0 failed",
+       "result_zh": "通過（GPU 1 + 6 重跑）：負載開始 15 秒後啟動第 2 個副本、106 秒後可用；負載停止 76 秒後縮回 1 個；8385 個請求，0 個失敗",
        "history": [
         {
          "at": "2026-11-25",
          "status": "done",
          "en": "Run 1 failed (CUDA driver error on the second replica). Run 2 with compile cache off: up in 101 s, down in 76 s, 0 failed.",
          "zh": "第 1 次失敗（第 2 個副本 CUDA 錯誤）。第 2 次關掉編譯快取：101 秒擴、76 秒縮、0 失敗。"
+        },
+        {
+         "at": "2026-11-26",
+         "status": "done",
+         "en": "Re-run on GPU 1 + 6 (55% memory each): up in 106 s, down in 76 s, 8385 requests, 0 failed.",
+         "zh": "在 GPU 1 + 6 重跑（各用 55% 記憶體）：106 秒擴、76 秒縮、8385 個請求、0 失敗。"
         }
        ]
       },
@@ -327,8 +333,8 @@
      "sum_en": "4.5 to 19.5 GPU hours a week no longer lost to slow switching.",
      "sum_zh": "每週少浪費 4.5 到 19.5 GPU 小時（人工切換所需耗時）。",
      "tone": "good",
-     "tip_en": "Each switch by hand takes 15, 30 or 60 minutes. Ray Serve was measured: 101 s to add a GPU, 76 s to give it back. A weekday has 2 busy periods, so 4 switches; a week has 5 weekdays.",
-     "tip_zh": "人工每次切換要 15、30 或 60 分鐘。Ray Serve 實測：加開 GPU 101 秒、歸還 76 秒。平日有 2 段忙碌，共 4 次切換；一週 5 個平日。",
+     "tip_en": "Each switch by hand takes 15, 30 or 60 minutes. Ray Serve was measured: 106 s to add a GPU, 76 s to give it back. A weekday has 2 busy periods, so 4 switches; a week has 5 weekdays.",
+     "tip_zh": "人工每次切換要 15、30 或 60 分鐘。Ray Serve 實測：加開 GPU 106 秒、歸還 76 秒。平日有 2 段忙碌，共 4 次切換；一週 5 個平日。",
      "supp_en": "Supplement: going through Ray Serve is 1.3% slower than vLLM direct (142.9 vs 144.8 tokens/s, 3 repeats).",
      "supp_zh": "補充：經過 Ray Serve 比直接用 vLLM 慢 1.3%（每秒 142.9 對 144.8 token，重複 3 輪）。",
      "tip_title_en": "Scenario",
@@ -363,14 +369,14 @@
         "人工切換，每次 30 分鐘",
         "+1.9 h",
         "+9.5 h",
-        "+40.8 h"
+        "+40.7 h"
        ],
        [
         "By hand, 60 min per switch",
         "人工切換，每次 60 分鐘",
         "+3.9 h",
         "+19.5 h",
-        "+83.6 h"
+        "+83.5 h"
        ]
       ],
       "notes": [
@@ -379,8 +385,8 @@
         "作法：每段忙碌時段要切換 2 次（加開、歸還）；平日有 2 段忙碌，共 4 次切換。"
        ],
        [
-        "Calculation: each switch wastes its delay; Ray Serve measured 101 s to add and 76 s to give back (0.5 h a week).",
-        "計算：每次切換浪費的就是等待時間；Ray Serve 實測加開 101 秒、歸還 76 秒（一週合計約 0.5 小時）。"
+        "Calculation: each switch wastes its delay; Ray Serve measured 106 s to add and 76 s to give back (0.5 h a week).",
+        "計算：每次切換浪費的就是等待時間；Ray Serve 實測加開 106 秒、歸還 76 秒（一週合計約 0.5 小時）。"
        ],
        [
         "Benefit: compared with switching by hand, Ray Serve gains 4.5 to 19.5 GPU hours a week, 19 to 84 a month.",
