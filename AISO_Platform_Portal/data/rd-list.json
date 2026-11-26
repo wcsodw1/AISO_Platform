@@ -11,7 +11,7 @@
    "owner": "David",
    "status": "progress",
    "desc": "Part 1 Smoke、Part 2 GPT-OSS-20B 96/96 已完成；Part 3 CacheBlend 卡在 Layerwise KV Layout，11/28 等 GPU 重試",
-   "href": "lmcache.html",
+   "href": "lmcache-report.html",
    "added": "2026-10-29",
    "done": null
   },

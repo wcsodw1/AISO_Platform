@@ -1,0 +1,160 @@
+{
+ "updated": "2026-11-26",
+ "headline": {
+  "en": "Reuse, not recompute · Faster first answer",
+  "zh": "重用而不重算・更快出第一個字",
+  "items": [
+   [
+    "Proved: when the same prompt comes again, the saved KV cache is loaded instead of computed again.",
+    "已證實：同一段提示再來時，直接讀回存好的 KV 快取，不用重算。"
+   ],
+   [
+    "Value: on GPT-OSS-20B the first word arrives 72% sooner and 64% more words per second.",
+    "價值：GPT-OSS-20B 上第一個字快 72%，每秒多輸出 64%。"
+   ],
+   [
+    "Next: reuse even when the documents come in a different order (CacheBlend) — blocked, retry 11/28.",
+    "下一步：文件順序不同也能重用（CacheBlend）——目前卡關，11/28 重試。"
+   ]
+  ]
+ },
+ "statuses": {
+  "done": [
+   "Done",
+   "完成"
+  ],
+  "blocked": [
+   "Blocked",
+   "卡關"
+  ]
+ },
+ "parts": [
+  {
+   "n": 1,
+   "en": "Does the cache work?",
+   "zh": "快取有沒有用",
+   "status": "done",
+   "mean_en": "Prove on a small model that a repeated prompt is loaded, not recomputed.",
+   "mean_zh": "先用小模型證明：重複的提示是讀回來，不是重算。",
+   "big": "-29%",
+   "big_en": "first-word wait, CPU cache, 10 users",
+   "big_zh": "CPU 快取、10 人同時，第一個字等待時間",
+   "tone": "good",
+   "label_en": "The price",
+   "label_zh": "代價",
+   "sum_en": "SSD cache was slower than no cache here (+101% wait at 10 users) on this small model.",
+   "sum_zh": "這個小模型上，SSD 快取反而比不用慢（10 人時等待 +101%）。",
+   "data": [
+    [
+     "Qwen3-0.6B, RTX PRO6000 GPU 4, 10/28",
+     "Qwen3-0.6B，RTX PRO6000 GPU 4，10/28"
+    ],
+    [
+     "Input about 2.5K / 5K tokens, 1 / 5 / 10 users, 3 repeats",
+     "輸入約 2.5K / 5K tokens，1 / 5 / 10 人，各 3 次"
+    ],
+    [
+     "Warm, 5K input, 10 users: first word 219.9 → 155.6 ms (CPU), 219.9 → 441.0 ms (SSD)",
+     "Warm、5K 輸入、10 人：第一個字 219.9 → 155.6 ms（CPU）、219.9 → 441.0 ms（SSD）"
+    ]
+   ]
+  },
+  {
+   "n": 2,
+   "en": "How much does it gain?",
+   "zh": "實際效益多少",
+   "status": "done",
+   "mean_en": "The formal test on a real model: LMCache and aiDAPTIV against no cache.",
+   "mean_zh": "正式測試：真實模型上，LMCache 與 aiDAPTIV 對照沒有快取。",
+   "big": "-72%",
+   "big_en": "first-word wait vs no cache",
+   "big_zh": "第一個字等待時間（相對沒快取）",
+   "tone": "good",
+   "label_en": "The benefit",
+   "label_zh": "效益",
+   "sum_en": "Also +64% words per second and -26% time per word. Runtimes differ, so not all of it is the cache.",
+   "sum_zh": "每秒多輸出 64%、每個字快 26%。兩者執行環境不同，不能全算在快取上。",
+   "matrix": {
+    "cols_en": [
+     "",
+     "aiDAPTIV vs no cache",
+     "LMCache vs no cache",
+     "LMCache vs aiDAPTIV"
+    ],
+    "cols_zh": [
+     "",
+     "aiDAPTIV 對沒快取",
+     "LMCache 對沒快取",
+     "LMCache 對 aiDAPTIV"
+    ],
+    "rows": [
+     [
+      "First word",
+      "首字延遲",
+      "+70.7%",
+      "+72.3%",
+      "+5.7%"
+     ],
+     [
+      "Time per word",
+      "字間隔",
+      "+4.6%",
+      "+26.0%",
+      "+22.5%"
+     ],
+     [
+      "Words per second",
+      "每秒輸出",
+      "+29.2%",
+      "+64.1%",
+      "+26.6%"
+     ]
+    ]
+   },
+   "data": [
+    [
+     "GPT-OSS-20B, 96 of 96 batches done, 10/29",
+     "GPT-OSS-20B，96 批全數完成，10/29"
+    ],
+    [
+     "Input 3,950 / 7,950 / 15,950 tokens, 1 / 2 / 5 users, 200 tokens out",
+     "輸入 3,950 / 7,950 / 15,950，1 / 2 / 5 人，輸出 200 tokens"
+    ],
+    [
+     "Average of 8 scenarios, Warm (repeat) runs; green = better",
+     "8 個情境平均，Warm（重複）；綠色 = 變好"
+    ]
+   ]
+  },
+  {
+   "n": 3,
+   "en": "Does a different order work?",
+   "zh": "文件順序不同也能用嗎",
+   "status": "blocked",
+   "mean_en": "RAG sends the same documents in a new order; CacheBlend aims to reuse them anyway.",
+   "mean_zh": "RAG 常把同樣的文件換順序送來；CacheBlend 目標是這樣也能重用。",
+   "big": "Blocked",
+   "big_en": "no result yet",
+   "big_zh": "尚無結果",
+   "tone": "bad",
+   "label_en": "Where it stopped",
+   "label_zh": "卡在哪",
+   "sum_en": "CacheBlend fails on GPT-OSS-20B's KV layout (HTTP 500). Retry on a separate GPU 11/28.",
+   "sum_zh": "CacheBlend 在 GPT-OSS-20B 的 KV 排列上失敗（HTTP 500）。11/28 在獨立 GPU 重試。",
+   "data": [
+    [
+     "Error: layerwise code reads a 5th dimension, but the KV tensor is 4D (10089,16,8,256) → IndexError",
+     "錯誤：Layerwise 程式讀第 5 維，但 KV 是 4D (10089,16,8,256) → IndexError"
+    ],
+    [
+     "Do not just change size(4) to size(3): wrong KV mapping can give wrong answers silently",
+     "不能直接把 size(4) 改成 size(3)：KV 對應錯誤可能無聲地產生錯誤輸出"
+    ],
+    [
+     "Next: recover traceback and versions, check layout, run on a separate GPU, never touch the GPU 4 service",
+     "下一步：找回 traceback 與版本、核對 layout、在獨立 GPU 執行，不動 GPU 4 的服務"
+    ]
+   ]
+  }
+ ]
+}
