@@ -325,7 +325,7 @@
      "big_en": "GPU hours a week kept working (vs a 30-min switch by hand)",
      "big_zh": "每週多出的可用 GPU 小時（對比人工 30 分鐘切換）",
      "sum_en": "4.5 to 19.5 GPU hours a week no longer lost to slow switching.",
-     "sum_zh": "每週少浪費 4.5 到 19.5 GPU 小時（人工切換太慢所致）。",
+     "sum_zh": "每週少浪費 4.5 到 19.5 GPU 小時（人工切換所需耗時）。",
      "tone": "good",
      "tip_en": "Each switch by hand takes 15, 30 or 60 minutes. Ray Serve was measured: 101 s to add a GPU, 76 s to give it back. A weekday has 2 busy periods, so 4 switches; a week has 5 weekdays.",
      "tip_zh": "人工每次切換要 15、30 或 60 分鐘。Ray Serve 實測：加開 GPU 101 秒、歸還 76 秒。平日有 2 段忙碌，共 4 次切換；一週 5 個平日。",
