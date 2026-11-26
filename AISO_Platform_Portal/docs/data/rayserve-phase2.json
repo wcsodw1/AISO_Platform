@@ -47,8 +47,8 @@
        "crit_en": "Throughput at least 1.3x",
        "crit_zh": "吞吐至少 1.3 倍",
        "status": "done",
-       "needs_en": "16 users at once, 32 requests, output 128, GPT-OSS-20B, GPU 1 + 7, one run per length (smoke, not formal). Direct = 1 GPU; Ray Serve = 2 replicas, 1 GPU each.",
-       "needs_zh": "16 人同時、共 32 個請求、輸出 128，GPT-OSS-20B，GPU 1 + 7，每種長度各跑 1 次（僅 smoke，非正式）。直連 = 1 張卡；Ray Serve = 2 個副本、各 1 張卡。",
+       "needs_en": "What we did: 16 people ask at the same time (32 questions in total). First 1 GPU answers, then 2 GPUs with Ray Serve. We count how much text each produces per second, with short, medium and long questions (1K, 4K, 8K). Quick test, one run each.",
+       "needs_zh": "做法：16 個人同時發問（共 32 題）。先用 1 張卡回答，再用 2 張卡加 Ray Serve。數每秒產生多少文字，問題分短、中、長（1K、4K、8K）。快速測試，各跑 1 次。",
        "result_en": "Passed: average 1.42x (1.16x / 1.44x / 1.65x at 1K / 4K / 8K input)",
        "result_zh": "通過：平均 1.42 倍（輸入 1K / 4K / 8K 分別 1.16 / 1.44 / 1.65 倍）",
        "history": [
@@ -128,8 +128,8 @@
        "crit_en": "Scales up under load, down when idle, 0 failed requests",
        "crit_zh": "負載大時增加、閒時縮回，失敗為 0",
        "status": "done",
-       "needs_en": "16 users, GPU 1 + 7, 1 to 2 replicas, 6 min load then 4 min idle (smoke, not formal). First try failed: a replica added later reused the first replica's compiled kernels on another GPU. Fixed by turning the compile cache off, so a new replica starts slower.",
-       "needs_zh": "16 人、GPU 1 + 7、1 到 2 個副本，負載 6 分鐘後閒置 4 分鐘（僅 smoke，非正式）。第一次失敗：後加的副本重用了第一個副本編好的程式，放到另一張卡上出錯。關掉編譯快取後解決，代價是新副本啟動較慢。",
+       "needs_en": "What we did: 16 people keep asking for 6 minutes, then stop for 4 minutes. We watch whether Ray Serve adds a 2nd GPU when it is busy and gives it back when it is quiet. Quick test, one run.",
+       "needs_zh": "做法：16 個人連續發問 6 分鐘，再停 4 分鐘。看 Ray Serve 忙的時候會不會加第 2 張卡、閒下來會不會還回去。快速測試，跑 1 次。",
        "result_en": "Passed: 2nd replica started 10 s after the load began and was ready after 101 s; back to 1 replica 76 s after the load stopped; 8489 requests, 0 failed",
        "result_zh": "通過：負載開始 10 秒後啟動第 2 個副本、101 秒後可用；負載停止 76 秒後縮回 1 個；8489 個請求，0 個失敗",
        "history": [
@@ -250,8 +250,8 @@
        "crit_en": "TPS loss at most 10%; TTFT / TPOT difference reported",
        "crit_zh": "總吞吐損失不超過 10%；回報 TTFT、TPOT 差距",
        "status": "done",
-       "needs_en": "GPT-OSS-20B, NP 2, input 4096, output 128, 3 repeats, GPU 1, vLLM 0.29.0, Ray 2.60.0 (SMOKE_ONLY_NOT_FORMAL). Ray load time was not measured (health check answered before the model finished loading).",
-       "needs_zh": "GPT-OSS-20B、NP 2、輸入 4096、輸出 128、重複 3 次，GPU 1，vLLM 0.29.0、Ray 2.60.0（僅 smoke，非正式）。Ray 載入時間未量到（健康檢查在模型載完前就回應）。",
+       "needs_en": "What we did: asked the same model the same questions twice, once straight to vLLM and once through Ray Serve, 3 times each, on 1 GPU. Then we compared the speed. Quick test, not a formal one.",
+       "needs_zh": "做法：同一個模型、同樣的問題，問兩次：一次直接問 vLLM，一次經過 Ray Serve，各 3 輪，用 1 張卡。比較速度。這是快速測試，不是正式測試。",
        "history": [
         {
          "at": "2026-11-24",
