@@ -17,8 +17,7 @@ window.MachinePicker = (function () {
       { id: "rog395", n: "ROG AI MAX 395", t: "c" }, { id: "tuf392", n: "TUF AI MAX 392", t: "c" }, { id: "asrock", n: "ASRock", t: "m" }, { id: "mi350x", n: "Instinct MI350X", t: "s" }] },
     { k: "intel", name: "INTEL", stack: "SYCL · XPU", models: [
       { id: "b70", compare: true, n: "Arc Pro B70", t: "m", online: false, note: "Shutting down 即將關閉", spec: "2 × Arc Pro B70 · 32 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b70.html" },
-      { id: "b60", compare: true, n: "Arc Pro B60", t: "m", online: false, note: "Returned 已歸還", spec: "Arc Pro B60 · 24 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b60.html" },
-      { id: "b390", n: "Arc B390", t: "c" }] }];
+      { id: "b60", compare: true, n: "Arc Pro B60", t: "m", online: false, note: "Returned 已歸還", spec: "Arc Pro B60 · 24 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b60.html" } ] }];
   // machines that take part in the cross-machine comparison — read from the list above, so a new machine with compare:true extends this line by itself
   const SHORT = { aiso1: "AISO1", b70: "B70", b60: "B60" };
   const compareNames = () => V.flatMap(v => v.models).filter(x => x.compare).map(x => SHORT[x.id] || x.n).join(" · ");
