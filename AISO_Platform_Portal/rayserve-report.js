@@ -16,7 +16,8 @@
   function render(P) {
     var ST = P.statuses;
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + bi(t[0], t[1]) + "</em>"; }
-    $("rsHead").innerHTML = '<p class="lr-big">' + bi(P.headline.en, P.headline.zh) + '</p><p class="p2-upd">Updated ' + esc(P.updated) + '<small class="zhs">更新日期</small></p>';
+    $("rsHead").innerHTML = '<p class="lr-big">' + bi(P.headline.en, P.headline.zh) + '</p>';
+    $("rsUpd").innerHTML = "Updated " + esc(P.updated) + '<small class="zhs">更新日期</small>';
     ["1", "2"].forEach(function (k) {
       var ph = P.phases[k], done = 0, n = 0;
       var steps = ph.steps.map(function (s) {
