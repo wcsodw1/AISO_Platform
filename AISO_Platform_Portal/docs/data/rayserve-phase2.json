@@ -23,8 +23,8 @@
   ]
  },
  "headline": {
-  "en": "Deploys an AI model as an inference service that scales across machines: more capacity when many people use it, less compute used when few do.",
-  "zh": "將 AI 模型部署成可跨機器擴充的推論服務：人多時自動增加處理請求的能力，人少時就省下運算資源。"
+  "en": "An inference service that scales across machines: auto-scales request handling and uses fewer resources when few people use it.",
+  "zh": "將 AI 模型部署成可跨機器擴充的推論服務：自動增減處理請求的能力，人少時減少資源消耗。"
  },
  "phases": {
   "1": {
