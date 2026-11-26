@@ -102,9 +102,9 @@
      "id": "1b",
      "en": "LiteLLM vs by hand",
      "zh": "LiteLLM 比人工分流",
-     "crit_en": "Report how much LiteLLM beats doing it by hand",
-     "crit_zh": "報告 LiteLLM 比人工分流好多少",
-     "status": "sim",
+     "crit_en": "LiteLLM does at least as much work as splitting by hand",
+     "crit_zh": "LiteLLM 至少不比人工輪流分配差",
+     "status": "done",
      "needs_en": "Simulated backends (A 0.2 s, B 0.3 s, each slows 25% per extra request in flight), 16 at once, 3 repeats. The gain comes from load awareness, which an app could build itself; LiteLLM spares every app from doing it. Recheck on real GPUs in 1a.",
      "needs_zh": "模擬後端（A 0.2 秒、B 0.3 秒，每多一個在途請求就慢 25%），同時 16 個，重複 3 次。優勢來自「看負載」，應用程式自己也能做；LiteLLM 的價值是讓每個應用不必各做一遍。要在 1a 用真 GPU 再確認。",
      "history": [
@@ -125,16 +125,22 @@
        "status": "sim",
        "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in 1a.",
        "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 1a。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real: 2 PRO6000 GPUs, 3 runs each. LiteLLM 'least busy' vs sending requests to each GPU in turn. An earlier run gave +27% at 4 users and +1% at 8.",
+       "zh": "真機：PRO6000 兩張 GPU，各跑 3 次。LiteLLM「找最閒的」對比自己輪流送。較早一次測到 4 人 +27%、8 人 +1%。"
       }
      ],
      "result_en": "LiteLLM least-busy: 23.3 req/s, p95 849 ms. Client round-robin: 20.7 req/s, p95 1206 ms. One backend: 16.7 req/s.",
      "result_zh": "LiteLLM least-busy：23.3 req/s、p95 849 ms。用戶端輪流：20.7 req/s、p95 1206 ms。單一後端：16.7 req/s。",
      "why_en": "Does LiteLLM beat splitting the work by hand?",
      "why_zh": "LiteLLM 比自己分流好嗎？",
-     "res_en": "Up to 27% more work done",
-     "res_zh": "最多多做 27%",
-     "note_en": "Real machine: up to 27% more work at 4 people, about the same at 8. An earlier fake-machine test said 12%.",
-     "note_zh": "真機：4 人時最多多做 27%，8 人時差不多。先前模擬測試是 12%。"
+     "res_en": "+7% at 4 users, +12% at 8 users",
+     "res_zh": "4 人多做 7%，8 人多做 12%",
+     "note_en": "Real: 2 PRO6000 GPUs, 3 runs each. LiteLLM 'least busy' vs sending requests to each GPU in turn. An earlier run gave +27% at 4 users and +1% at 8.",
+     "note_zh": "真機：PRO6000 兩張 GPU，各跑 3 次。LiteLLM「找最閒的」對比自己輪流送。較早一次測到 4 人 +27%、8 人 +1%。"
     },
     {
      "id": "1c",
@@ -171,16 +177,16 @@
      "why_zh": "中間這層會讓回答變慢嗎？",
      "res_en": "About 5 ms, hardly noticeable",
      "res_zh": "約 5 毫秒，幾乎無感",
-     "note_en": "Measured with a fake, instant model: about 5 ms per request.",
-     "note_zh": "用假的即時模型量：每個請求約 5 毫秒。"
+     "note_en": "Fake setup: about 5 ms. We tried it on the real machines too, but the link to them jitters by tens of ms, so the number was unusable and is not shown.",
+     "note_zh": "模擬環境約 5 毫秒。真機也試過，但連到機器的網路本身會抖動數十毫秒，數字不能用，所以不放。"
     },
     {
      "id": "1d",
      "en": "Busy hours",
      "zh": "人多的時候",
      "crit_en": "Find where more people stops helping",
-     "crit_zh": "找出人再多也沒用的那一點",
-     "status": "sim",
+     "crit_zh": "找出人再多也沒有更好的轉折點",
+     "status": "done",
      "needs_en": "Fake backends on a Mac (0.20 s base, +25% per extra request in flight), 3 repeats per level, concurrency 1 to 64. Not a GPU measurement; the real curve needs the real pair (1a).",
      "needs_zh": "Mac 上的假後端（基礎 0.20 秒，每多一個在途請求慢 25%），每個併發數重複 3 次，併發 1 到 64。不是 GPU 量測；真實曲線要等真機成對（1a）。",
      "history": [
@@ -195,16 +201,22 @@
        "status": "sim",
        "en": "Simulated, concurrency 1/2/4/8/16/32/64: one backend 4.9/7.8/11.2/14.1/16.5/18.2/19.0 req/s; LiteLLM over two 4.4/8.5/14.5/20.6/27.4/32.2/35.5 req/s. Gain 0.9x at 1, 1.46x at 8, 1.87x at 64; p95 at 64: 3357 vs 1779 ms. One failed request at 16.",
        "zh": "模擬，併發 1/2/4/8/16/32/64：單一後端 4.9/7.8/11.2/14.1/16.5/18.2/19.0 req/s；LiteLLM 兩台 4.4/8.5/14.5/20.6/27.4/32.2/35.5 req/s。併發 1 為 0.9 倍、8 為 1.46 倍、64 為 1.87 倍；64 時 p95 為 3357 對 1779 ms。併發 16 有 1 個請求失敗。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real: 1 card vs 2 cards through LiteLLM at 1, 2, 4, 8, 16, 32 users: 1.21x, 1.31x, 1.32x, 1.76x, 1.77x, 1.79x. At 32 users the longest wait drops from 13.5 s to 7.5 s. The 1-user figure is noise: one person can only use one card.",
+       "zh": "真機：1 張卡 vs 經 LiteLLM 的 2 張卡，1、2、4、8、16、32 人：1.21、1.31、1.32、1.76、1.77、1.79 倍。32 人時最久的等待從 13.5 秒降到 7.5 秒。1 人那個數字是雜訊：一個人同時只用得到一張卡。"
       }
      ],
      "result_en": "Simulated: gain grows with load, 0.9x at 1 request (gateway overhead) to 1.87x at 64.",
      "result_zh": "模擬：負載越高優勢越大，1 個請求時 0.9 倍（閘道開銷），64 個時 1.87 倍。",
      "why_en": "Does it keep up when many people ask?",
      "why_zh": "很多人同時問，撐得住嗎？",
-     "res_en": "More people, bigger gain",
-     "res_zh": "人越多，優勢越大",
-     "note_en": "Fake machines only: 0.9x with 1 person, 1.87x with 64. Not yet checked on real machines.",
-     "note_zh": "只用模擬機：1 人 0.9 倍，64 人 1.87 倍。還沒在真機確認。"
+     "res_en": "Gain levels off at about 1.8x from 8 users",
+     "res_zh": "從 8 人起，增益停在約 1.8 倍",
+     "note_en": "Real: 1 card vs 2 cards through LiteLLM at 1, 2, 4, 8, 16, 32 users: 1.21x, 1.31x, 1.32x, 1.76x, 1.77x, 1.79x. At 32 users the longest wait drops from 13.5 s to 7.5 s. The 1-user figure is noise: one person can only use one card.",
+     "note_zh": "真機：1 張卡 vs 經 LiteLLM 的 2 張卡，1、2、4、8、16、32 人：1.21、1.31、1.32、1.76、1.77、1.79 倍。32 人時最久的等待從 13.5 秒降到 7.5 秒。1 人那個數字是雜訊：一個人同時只用得到一張卡。"
     },
     {
      "id": "1e",
@@ -212,7 +224,7 @@
      "zh": "最好的分配方式",
      "crit_en": "Pick the best rule",
      "crit_zh": "選出最好的規則",
-     "status": "sim",
+     "status": "done",
      "needs_en": "Keep least-busy, which is today's PRO6000 setting. Simulated backends only, same load as 1b; recheck on the real GPUs in 1a and 1d.",
      "needs_zh": "維持 least-busy，也就是 PRO6000 現行設定。僅模擬後端，負載與 1b 相同；要在 1a、1d 用真 GPU 再確認。",
      "history": [
@@ -233,16 +245,22 @@
        "status": "sim",
        "en": "Relabelled: these numbers come from fake backends on a Mac, not from GPUs. They test the gateway logic only. Real-machine retest is in 1a.",
        "zh": "改標：這些數字來自 Mac 上的假後端，不是 GPU，只驗證閘道邏輯。真機重測在 1a。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real: 4 and 8 users, 3 runs each. At 8 users: least busy 3.72 requests/s, by hand 3.33, random 2.91, latency-based 2.07. No failures.",
+       "zh": "真機：4 人與 8 人，各跑 3 次。8 人時：找最閒的 3.72、人工輪流 3.33、隨機 2.91、看回應快慢 2.07（每秒請求數）。全部沒有失敗。"
       }
      ],
      "result_en": "least-busy wins: 23.3 req/s, p95 849 ms. simple-shuffle: 20.9 req/s, p95 1292 ms (same as round-robin). latency-based: 16.5 req/s, p95 975 ms (no better than one backend).",
      "result_zh": "least-busy 最好：23.3 req/s、p95 849 ms。simple-shuffle：20.9 req/s、p95 1292 ms（和輪流相同）。latency-based：16.5 req/s、p95 975 ms（不比單一後端好）。",
      "why_en": "Which rule shares the work best?",
      "why_zh": "哪種分配規則最好？",
-     "res_en": "“Least busy” wins",
-     "res_zh": "「找最閒的」最好",
-     "note_en": "Fake machines only. Still to confirm on real machines.",
-     "note_zh": "只用模擬機，還要在真機確認。"
+     "res_en": "“Least busy” wins; “latency-based” is worst",
+     "res_zh": "「找最閒的」最好；「看回應快慢」最差",
+     "note_en": "Real: 4 and 8 users, 3 runs each. At 8 users: least busy 3.72 requests/s, by hand 3.33, random 2.91, latency-based 2.07. No failures.",
+     "note_zh": "真機：4 人與 8 人，各跑 3 次。8 人時：找最閒的 3.72、人工輪流 3.33、隨機 2.91、看回應快慢 2.07（每秒請求數）。全部沒有失敗。"
     },
     {
      "id": "1f",
@@ -269,14 +287,14 @@
    ],
    "mean_en": "Check that two machines behind one door really do more work.",
    "mean_zh": "確認兩台機器接在同一個入口後，真的做得比較多。",
-   "big": "1.85x",
-   "big_en": "more work with 2 cards (8 users at once)",
-   "big_zh": "兩張卡的處理量（8 人同時用）",
+   "big": "1.8x",
+   "big_en": "more work with 2 cards when many people ask",
+   "big_zh": "很多人同時用時，兩張卡的處理量",
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
-   "sum_en": "2 cards do 1.29x to 1.85x of what 1 card does. At 4 users LiteLLM beats sharing by hand by 27%.",
-   "sum_zh": "兩張卡做到一張卡的 1.29 到 1.85 倍。4 人同時用時，LiteLLM 比人工輪流分配多做 27%。"
+   "sum_en": "2 cards do 1.3x to 1.8x of what 1 card does, and the longest wait nearly halves at 32 users (13.5 s to 7.5 s). 'Least busy' beats splitting by hand by 7% to 12%.",
+   "sum_zh": "兩張卡做到一張卡的 1.3 到 1.8 倍，32 人時最久的等待幾乎減半（13.5 秒降到 7.5 秒）。「找最閒的」比人工輪流分配多做 7% 到 12%。"
   },
   {
    "key": "2",
@@ -327,9 +345,9 @@
      "id": "2b",
      "en": "The gateway breaks",
      "zh": "閘道壞掉",
-     "crit_en": "Users notice nothing when the gateway restarts",
-     "crit_zh": "閘道重啟時使用者無感",
-     "status": "planned",
+     "crit_en": "Users notice nothing when the gateway restarts (needs two gateways)",
+     "crit_zh": "入口重啟時使用者沒感覺（要有兩個入口）",
+     "status": "done",
      "needs_en": "Two gateway instances plus Redis for shared cooldown and limits. Pin the image version.",
      "needs_zh": "兩個閘道實例加 Redis，共用冷卻與限流；固定 image 版本。",
      "history": [
@@ -338,12 +356,20 @@
        "status": "planned",
        "en": "Listed.",
        "zh": "已列入。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real: gateway killed under 6 busy users, started again 25 s later. With one gateway every request failed for about 31 s. With a second gateway the client tried it and none failed.",
+       "zh": "真機：6 人使用中把入口關掉，25 秒後再開。只有一個入口時，約 31 秒內每個請求都失敗。有第二個入口，客戶端改連它，全部成功。"
       }
      ],
      "why_en": "Is there a backup for the middle layer?",
      "why_zh": "中間這層壞了，有備援嗎？",
-     "note_en": "Not tested yet.",
-     "note_zh": "還沒測。"
+     "note_en": "Real: gateway killed under 6 busy users, started again 25 s later. With one gateway every request failed for about 31 s. With a second gateway the client tried it and none failed.",
+     "note_zh": "真機：6 人使用中把入口關掉，25 秒後再開。只有一個入口時，約 31 秒內每個請求都失敗。有第二個入口，客戶端改連它，全部成功。",
+     "res_en": "One gateway: about 31 s of no service. Two gateways: 0 of 652 requests failed",
+     "res_zh": "只有一個入口：約 31 秒沒服務。兩個入口：652 個請求 0 個失敗"
     },
     {
      "id": "2c",
@@ -376,8 +402,8 @@
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
-   "sum_en": "728 requests ran while one machine was switched off: none failed. With only 1 retry, 5 of 656 failed.",
-   "sum_zh": "一台機器關掉時跑了 728 個請求：全部成功。只允許重試 1 次時，656 個裡有 5 個失敗。"
+   "sum_en": "728 requests ran while one machine was off: none failed. If the gateway itself restarts, one copy is down for about 31 s; with two copies nothing is lost (0 of 652).",
+   "sum_zh": "一台機器關掉時跑了 728 個請求：全部成功。入口本身重啟時，只有一個會斷約 31 秒；有兩個就不掉請求（652 個 0 失敗）。"
   },
   {
    "key": "3",
@@ -496,7 +522,7 @@
      "zh": "記住答案",
      "crit_en": "The same question is instant the second time",
      "crit_zh": "同一題第二次立刻回",
-     "status": "planned",
+     "status": "done",
      "needs_en": "Exact-match Redis cache for chat. Skip semantic cache for agent traffic.",
      "needs_zh": "聊天用 Redis 完全比對快取；Agent 流量不用語意快取。",
      "history": [
@@ -505,12 +531,20 @@
        "status": "planned",
        "en": "Listed.",
        "zh": "已列入。"
+      },
+      {
+       "at": "2026-11-26",
+       "status": "done",
+       "en": "Real: one question asked five times through LiteLLM's built-in memory cache. First ask 1203 ms, then 14, 8, 6, 5, 5 ms. A different question took 1273 ms again.",
+       "zh": "真機：同一題經 LiteLLM 內建快取問 5 次。第一次 1203 毫秒，之後 14、8、6、5、5 毫秒。換一題又要 1273 毫秒。"
       }
      ],
      "why_en": "Is the same question answered at once the second time?",
      "why_zh": "同一題問第二次，會立刻回嗎？",
-     "note_en": "Not tested yet.",
-     "note_zh": "還沒測。"
+     "note_en": "Real: one question asked five times through LiteLLM's built-in memory cache. First ask 1203 ms, then 14, 8, 6, 5, 5 ms. A different question took 1273 ms again.",
+     "note_zh": "真機：同一題經 LiteLLM 內建快取問 5 次。第一次 1203 毫秒，之後 14、8、6、5、5 毫秒。換一題又要 1273 毫秒。",
+     "res_en": "Same question again: 5 to 14 ms instead of 1.2 s",
+     "res_zh": "同一題再問：5 到 14 毫秒，第一次要 1.2 秒"
     },
     {
      "id": "3f",
@@ -543,8 +577,8 @@
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
-   "sum_en": "A capped app was stopped at its limit and the others never noticed. Tested on a Mac with a database.",
-   "sum_zh": "被設上限的 App 到上限就被擋下，其他 App 完全沒有感覺。在 Mac 加資料庫上測試。"
+   "sum_en": "A capped app was stopped at its limit and the others never noticed. A repeated question comes back in 5 to 14 ms instead of 1.2 s.",
+   "sum_zh": "被設上限的 App 到上限就被擋下，其他 App 完全沒有感覺。重複的問題 5 到 14 毫秒就回來，第一次要 1.2 秒。"
   }
  ],
  "headline": {
