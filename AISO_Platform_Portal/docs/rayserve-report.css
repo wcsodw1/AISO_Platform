@@ -98,3 +98,4 @@ main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-u
 .rs-alert button{margin-left:auto;background:#111;color:#f3efe5;border:0;padding:6px 14px;font-size:1rem;cursor:pointer}
 .rs-bn{margin:0;font-size:1rem;color:rgba(243,239,229,.6)}
 @media (max-width:900px){.rs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+main.lr.rs-p2off .lr-ptabs,main.lr.rs-p2off #rsPh2{display:none!important}
