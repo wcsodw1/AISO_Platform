@@ -136,24 +136,16 @@
      "see_zh": "負載大時自動增加、閒時縮回：不用人手加機器。",
      "tests": [
       {
-       "id": "A1",
-       "en": "Auto scale up and down",
-       "zh": "自動增減副本",
-       "crit_en": "Scales up under load, down when idle, 0 failed requests",
-       "crit_zh": "負載大時增加、閒時縮回，失敗為 0",
+       "id": "A2",
+       "en": "GPU-hours from the measured 10-minute run",
+       "zh": "用 10 分鐘實測換算卡小時",
+       "crit_en": "Count the GPUs held every 5 s, then scale to a day, week and month",
+       "crit_zh": "每 5 秒記錄佔用幾張卡，再換算成一天、一週、一個月",
        "status": "done",
-       "needs_en": "What we did: 16 people keep asking for 6 minutes, then stop for 4 minutes. We watch whether Ray Serve adds a 2nd GPU when it is busy and gives it back when it is quiet. Quick test, one run.",
-       "needs_zh": "做法：16 個人連續發問 6 分鐘，再停 4 分鐘。看 Ray Serve 忙的時候會不會加第 2 張卡、閒下來會不會還回去。快速測試，跑 1 次。",
-       "result_en": "Passed: 2nd replica started 10 s after the load began and was ready after 101 s; back to 1 replica 76 s after the load stopped; 8489 requests, 0 failed",
-       "result_zh": "通過：負載開始 10 秒後啟動第 2 個副本、101 秒後可用；負載停止 76 秒後縮回 1 個；8489 個請求，0 個失敗",
-       "history": [
-        {
-         "at": "2026-11-25",
-         "status": "done",
-         "en": "Run 1 failed (CUDA driver error on the second replica). Run 2 with compile cache off: up in 101 s, down in 76 s, 0 failed.",
-         "zh": "第 1 次失敗（第 2 個副本 CUDA 錯誤）。第 2 次關掉編譯快取：101 秒擴、76 秒縮、0 失敗。"
-        }
-       ]
+       "needs_en": "What we did: during the 10-minute run (6 min busy, 4 min quiet) we counted the GPUs in use every 5 s: 1 GPU while quiet (191 s), 2 while busy (363 s), and the 2nd GPU stayed 70 s after the busy time ended. Then we multiplied those rates by the scenario hours.",
+       "needs_zh": "做法：10 分鐘實測（忙 6 分鐘、閒 4 分鐘）每 5 秒記錄用了幾張卡：閒時 1 張（191 秒）、忙時 2 張（363 秒），忙完後第 2 張還多留 70 秒。再把這些比率乘上情境的時數。",
+       "result_en": "Held 1052 GPU-seconds, against 1248 when 2 GPUs are always on (-16% in this sample; more when quiet lasts longer)",
+       "result_zh": "共佔用 1052 卡秒，固定開 2 張是 1248（這個樣本 -16%；閒的時間越長省越多）"
       }
      ],
      "label_en": "The benefit",
@@ -207,15 +199,15 @@
       "note_zh": "省下的卡小時會累積：一個月約 591 小時，等於一張卡空出 25 天；一年約 7,200 小時。我們的假設，非實測：平日 6 小時需 2 張卡，其餘 1 張。實測：約 100 秒內會跟上。",
       "notes": [
        [
-        "Method (assumed, not measured): weekdays 09-12 and 14-17 are busy and use 2 GPUs; every other hour uses 1.",
-        "作法（假設，非實測）：平日 09-12、14-17 忙，用 2 張卡；其他時間 1 張。"
+        "Sample (measured, 10 min): quiet holds 1 GPU, busy holds 2, and the 2nd stays 70 s after busy ends.",
+        "樣本（實測 10 分鐘）：閒時佔 1 張卡、忙時 2 張，忙完後第 2 張多留 70 秒。"
        ],
        [
-        "Calculation: one week = 5 x (6 x 2 + 18 x 1) + 2 x 24 = 198 GPU-hours, against 2 x 24 x 7 = 336 when always on.",
-        "計算：一週 = 5 x (6 x 2 + 18 x 1) + 2 x 24 = 198 卡小時，固定開著是 2 x 24 x 7 = 336。"
+        "Multiplier: if weekdays have 6 busy hours (09-12, 14-17), a week is 5 x (18 x 1 + 6 x 2) + 2 x 24 = 198 GPU-hours, against 336 always on 2 GPUs.",
+        "乘上情境：若平日忙 6 小時（09-12、14-17），一週 = 5 x (18 x 1 + 6 x 2) + 2 x 24 = 198 卡小時，固定開 2 張是 336。"
        ],
        [
-        "Benefit: 138 GPU-hours saved a week (-41%); in a month 591, one GPU free for 25 days.",
+        "Benefit: 138 GPU-hours saved a week (-41%); 591 a month, one GPU free for 25 days.",
         "效益：每週省 138 卡小時（-41%）；一個月 591，一張卡空出 25 天。"
        ]
       ]
@@ -247,40 +239,36 @@
       ]
      },
      "tone": "good",
-     "tip_en": "Scenario (assumed, not measured): on weekdays 09-12 and 14-17 people are busy and 2 GPUs run; at every other hour 1 GPU runs. Over a week that is 198 GPU-hours instead of 336 when 2 GPUs are always on, so 138 are saved (-41%).",
-     "tip_zh": "情境（假設，非實測）：平日 09-12、14-17 人多，開 2 張卡；其他時間開 1 張。一週共 198 卡小時，固定開 2 張是 336，省 138（-41%）。",
-     "kpi": {
-      "title_en": "Switching time",
-      "title_zh": "切換時間",
-      "items": [
-       [
-        "By hand (assumed): someone checks every 30 min, so a new GPU waits 15 min on average, up to 30.",
-        "人手（假設）：每 30 分鐘有人檢查一次，新增一張卡平均等 15 分鐘，最久 30 分鐘。",
-        null,
-        null
-       ],
-       [
-        "Ray Serve (measured): starts adding a GPU in 10 s, it answers after 101 s, and it is given back 76 s after things go quiet.",
-        "Ray Serve（實測）：10 秒開始加卡，101 秒後可回答，閒下來 76 秒後自動還卡。",
-        null,
-        null
-       ],
-       [
-        "Reference: AWS reports 30-50% lower cost from auto scaling, so our -41% is in the same range.",
-        "參考：AWS 報告自動增減可降 30–50% 成本，我們的 -41% 落在同一範圍。",
-        "https://aws.amazon.com/blogs/database/amazon-dynamodb-auto-scaling-performance-and-cost-optimization-at-any-scale/",
-        "AWS"
-       ]
-      ]
-     }
+     "tip_en": "From the measured 10-minute run (GPUs counted every 5 s: 1 when quiet, 2 when busy, 70 s extra after busy), multiplied by the scenario of 6 busy hours on weekdays: 198 GPU-hours a week instead of 336, so 138 saved (-41%).",
+     "tip_zh": "來自 10 分鐘實測（每 5 秒記錄：閒 1 張、忙 2 張、忙完多留 70 秒），乘上平日忙 6 小時的情境：一週 198 卡小時，固定開 2 張是 336，省 138（-41%）。"
     },
     {
      "n": 3,
-     "en": "Does it slow us down?",
-     "zh": "會不會變慢",
+     "en": "How fast does it switch?",
+     "zh": "切換要多久",
      "see_en": "Almost free: speed only drops 1.3%, the first word comes 34 ms later.",
      "see_zh": "幾乎沒有代價：速度只掉 1.3%，第一個字晚 34 毫秒出現。",
      "tests": [
+      {
+       "id": "A1",
+       "en": "Auto scale up and down",
+       "zh": "自動增減副本",
+       "crit_en": "Scales up under load, down when idle, 0 failed requests",
+       "crit_zh": "負載大時增加、閒時縮回，失敗為 0",
+       "status": "done",
+       "needs_en": "What we did: 16 people keep asking for 6 minutes, then stop for 4 minutes. We watch whether Ray Serve adds a 2nd GPU when it is busy and gives it back when it is quiet. Quick test, one run.",
+       "needs_zh": "做法：16 個人連續發問 6 分鐘，再停 4 分鐘。看 Ray Serve 忙的時候會不會加第 2 張卡、閒下來會不會還回去。快速測試，跑 1 次。",
+       "result_en": "Passed: 2nd replica started 10 s after the load began and was ready after 101 s; back to 1 replica 76 s after the load stopped; 8489 requests, 0 failed",
+       "result_zh": "通過：負載開始 10 秒後啟動第 2 個副本、101 秒後可用；負載停止 76 秒後縮回 1 個；8489 個請求，0 個失敗",
+       "history": [
+        {
+         "at": "2026-11-25",
+         "status": "done",
+         "en": "Run 1 failed (CUDA driver error on the second replica). Run 2 with compile cache off: up in 101 s, down in 76 s, 0 failed.",
+         "zh": "第 1 次失敗（第 2 個副本 CUDA 錯誤）。第 2 次關掉編譯快取：101 秒擴、76 秒縮、0 失敗。"
+        }
+       ]
+      },
       {
        "id": "P1a",
        "en": "vLLM direct vs Ray Serve",
@@ -308,18 +296,44 @@
        "result_zh": "通過：吞吐 142.9 對直連 144.8（-1.3%）；TTFT 多 34 ms（169→203）；TPOT 4.85 對 4.96 ms"
       }
      ],
-     "label_en": "The price",
-     "label_zh": "代價",
-     "mean_en": "Check Ray Serve adds almost no delay.",
-     "mean_zh": "確認 Ray Serve 幾乎不增加延遲。",
-     "big": "-1.3%",
-     "big_en": "speed lost",
-     "big_zh": "速度損失",
-     "sum_en": "Only 1.3% slower.",
-     "sum_zh": "只慢 1.3%。",
-     "tone": "bad",
-     "tip_en": "From the direct vLLM vs Ray Serve test: 142.9 vs 144.8 tokens per second, 3 repeats, 1 GPU.",
-     "tip_zh": "來自 vLLM 直連對 Ray Serve 的測試：每秒 142.9 對 144.8 token，重複 3 次，1 張卡。"
+     "label_en": "The benefit",
+     "label_zh": "效益",
+     "mean_en": "Check a new GPU starts by itself, with nobody watching.",
+     "mean_zh": "確認新增一張卡不用人盯，會自己開起來。",
+     "big": "101 s",
+     "big_en": "until the new GPU answers",
+     "big_zh": "新增的卡開始回答",
+     "sum_en": "Ready in 101 s; by hand it waits for the next check.",
+     "sum_zh": "101 秒就緒；人手要等下一次檢查。",
+     "tone": "good",
+     "tip_en": "From the autoscale run: 16 people started asking, Ray Serve began adding a GPU after 10 s and the new GPU answered after 101 s. By hand: if someone checks every 30 minutes, a new GPU waits 15 minutes on average.",
+     "tip_zh": "來自自動增減實測：16 人開始發問，Ray Serve 10 秒後開始加卡，新卡 101 秒後開始回答。人手：若每 30 分鐘檢查一次，新增一張卡平均等 15 分鐘。",
+     "kpi": {
+      "title_en": "Switching time",
+      "title_zh": "切換時間",
+      "items": [
+       [
+        "By hand: if someone checks every 30 min, a new GPU waits 15 min on average, up to 30.",
+        "人手：若每 30 分鐘檢查一次，新增一張卡平均等 15 分鐘，最久 30 分鐘。",
+        null,
+        null
+       ],
+       [
+        "Ray Serve (measured): starts adding a GPU in 10 s, it answers after 101 s, and it is given back 76 s after things go quiet.",
+        "Ray Serve（實測）：10 秒開始加卡，101 秒後可回答，閒下來 76 秒後自動還卡。",
+        null,
+        null
+       ],
+       [
+        "Reference: AWS reports 30-50% lower cost from auto scaling, so our -41% is in the same range.",
+        "參考：AWS 報告自動增減可降 30–50% 成本，我們的 -41% 落在同一範圍。",
+        "https://aws.amazon.com/blogs/database/amazon-dynamodb-auto-scaling-performance-and-cost-optimization-at-any-scale/",
+        "AWS"
+       ]
+      ]
+     },
+     "supp_en": "Supplement: going through Ray Serve is 1.3% slower than vLLM direct (142.9 vs 144.8 tokens/s, 3 repeats).",
+     "supp_zh": "補充：經過 Ray Serve 比直接用 vLLM 慢 1.3%（每秒 142.9 對 144.8 token，重複 3 輪）。"
     }
    ]
   },
