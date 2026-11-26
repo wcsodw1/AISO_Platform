@@ -1,0 +1,21 @@
+/* right-side drawer "Matching machines" (Input token tab). All text >= 16px; one accent colour (orange = the number that counts). */
+.itm-grp[hidden],.itm-pan[hidden]{display:none}
+.itm-go.on{border-color:var(--gold,#c8b875)!important;background:rgba(200,184,117,.16)!important}.itm-ar{color:#c8b875}
+.itm-pan{position:fixed;top:0;right:0;bottom:0;z-index:61;width:min(540px,94vw);overflow:auto;padding:26px 28px 40px;background:#14161b;border-left:1px solid rgba(244,239,228,.18);color:#f3efe5;transform:translateX(100%);transition:transform .25s ease;font-size:16px}
+.itm-pan.on{transform:none}
+.itm-pan header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.itm-pan h2{margin:0;font-size:24px;color:#f3efe5}.itm-pan small.zhs{margin-left:8px;font-size:16px;font-weight:400;color:#98a0ad}
+.itm-x{border:0;background:none;color:#98a0ad;font-size:30px;line-height:1;cursor:pointer}.itm-x:hover{color:#c8b875}
+.itm-sub{margin:10px 0 0;color:#c8b875;font-size:17px;cursor:help}.itm-min{margin-left:12px;color:#98a0ad}
+.itm-cat{margin:18px 0 0;padding-top:16px;border-top:1px solid rgba(244,239,228,.14);font-size:19px}.itm-cat span{margin-left:12px;color:#98a0ad;font-size:17px}
+.itm-u{padding:18px 0;border-bottom:1px solid rgba(244,239,228,.14)}.itm-u h3{margin:0 0 8px;font-size:22px;color:#f3efe5}
+.itm-pend{margin:0;color:#98a0ad;font-size:18px;cursor:help}
+.itm-mach{margin:0 0 10px;font-size:19px}.itm-mach span{margin-left:10px;color:#98a0ad;font-size:16px}
+.itm-m{display:grid;grid-template-columns:1fr repeat(3,84px);align-items:center;gap:6px;padding:8px 0}
+.itm-mn{font-size:17px;color:#f3efe5}
+.itm-c{display:flex;flex-direction:column;align-items:center;padding:6px 0;border:1px solid transparent}.itm-c b{font-size:22px;font-weight:700;color:#98a0ad}.itm-c i{font-style:normal;font-size:16px;color:#98a0ad}
+.itm-main{border-color:rgba(224,160,64,.7)}.itm-main.itm-g b,.itm-main.itm-b b{color:#e0a040}
+.itm-g b{color:#f3efe5}.itm-b b{color:#d8c9a0}
+.itm-note{color:#98a0ad;font-size:18px;margin-top:24px}
+@media(max-width:600px){.itm-m{grid-template-columns:1fr repeat(3,64px)}.itm-pan{padding:22px 16px 40px}}
+.itm-c em{font-style:normal;font-size:16px;color:#98a0ad}
