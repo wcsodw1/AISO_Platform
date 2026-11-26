@@ -31,7 +31,7 @@
     $("rsUpd").innerHTML = "Updated " + esc(P.updated) + '<small class="zhs">更新日期</small>';
     ["1", "2"].forEach(function (k) {
       var ph = P.phases[k], done = 0, n = 0;
-      var steps = ph.steps.map(function (s) {
+      var steps = ph.steps.filter(function (s) { return !s.hidden; }).map(function (s) {
         var rows = s.tests.map(function (t) {
           n++; if (t.status === "done") done++;
           var tip = '<div class="p2-tip"><p class="p2-tn">' + bi(t.needs_en, t.needs_zh) + "</p></div>";
@@ -66,7 +66,7 @@
     var svgYes = apps() + gate() + line(238, 165, 256, 165, "#d6b26b") +
       rect(256, 125, 96, 80, "rgba(122,167,255,.14)", "#7aa7ff", 2) + txt(304, 160, "Ray Serve", { c: "#9fc0ff", s: 16, w: 800 }) + txt(304, 182, "auto 1 to 2", { c: "#9fc0ff", s: 14, w: 500 }) +
       line(352, 165, 392, 149, "#7aa7ff") + line(352, 165, 392, 215, "#7aa7ff", true) + machine("added when busy") +
-      badge(262, 127, 3, "#7aa7ff") + badge(536, 92, 1, "#c8b875") + badge(410, 190, 2, "#5fd0c4");
+      badge(536, 92, 1, "#c8b875") + badge(410, 190, 2, "#5fd0c4");
     var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 560 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
     $("rsArch").innerHTML = '<div class="lr-vs">' +
       '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 Ray Serve</small></h3>' + svg(svgNo, "Each GPU runs one fixed copy of the model") +

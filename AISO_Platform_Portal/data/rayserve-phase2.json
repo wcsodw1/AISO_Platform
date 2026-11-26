@@ -244,7 +244,9 @@
      "tip_en": "From the measured 10-minute run (GPUs counted every 5 s: 1 when quiet, 2 when busy, 70 s extra after busy), multiplied by the scenario of 6 busy hours on weekdays: 198 GPU-hours a week instead of 336, so 138 saved (-41%).",
      "tip_zh": "來自 10 分鐘實測（每 5 秒記錄：閒 1 張、忙 2 張、忙完多留 70 秒），乘上平日忙 6 小時的情境：一週 198 卡小時，固定開 2 張是 336，省 138（-41%）。",
      "tip_title_en": "Scenario",
-     "tip_title_zh": "模擬情境"
+     "tip_title_zh": "模擬情境",
+     "supp_en": "Supplement: going through Ray Serve is 1.3% slower than vLLM direct (142.9 vs 144.8 tokens/s, 3 repeats).",
+     "supp_zh": "補充：經過 Ray Serve 比直接用 vLLM 慢 1.3%（每秒 142.9 對 144.8 token，重複 3 輪）。"
     },
     {
      "n": 3,
@@ -370,7 +372,8 @@
         "效益：相較人手切換，Ray Serve 每週多出 4.5 到 19.5 卡小時，一個月 19 到 84。"
        ]
       ]
-     }
+     },
+     "hidden": true
     }
    ]
   },
