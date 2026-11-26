@@ -23,8 +23,8 @@
   ]
  },
  "headline": {
-  "en": "Ray Serve lets several GPUs serve more people at once, with almost no slowdown.",
-  "zh": "Ray Serve 讓多張 GPU 一起服務更多人，速度幾乎不變。"
+  "en": "Deploys an AI model as an inference service that scales across machines: more capacity when many people use it, less compute used when few do.",
+  "zh": "將 AI 模型部署成可跨機器擴充的推論服務：人多時自動增加處理請求的能力，人少時就省下運算資源。"
  },
  "phases": {
   "1": {
