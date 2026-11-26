@@ -46,6 +46,73 @@
       });
     } catch (e) { }
   }
+  /* ---------- Phase 2: GPU board (local platform only). Read-only: /api/gpu/status answers which GPUs of the machine are in use and which are free;
+     when a GPU that was in use becomes free, an alert pops up (banner, beep, browser notification, tab title). The online page cannot reach the machine and says so. ---------- */
+  var board = { prev: null, timer: null, ctx: null, alerts: [] };
+  function gb(m) { return (m / 1024).toFixed(1); }
+  function beep() {
+    try {
+      if (!board.ctx) return;
+      for (var i = 0; i < 3; i++) {
+        var o = board.ctx.createOscillator(), g = board.ctx.createGain(), t = board.ctx.currentTime + i * 0.35;
+        o.frequency.value = 880; o.connect(g); g.connect(board.ctx.destination);
+        g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        o.start(t); o.stop(t + 0.3);
+      }
+    } catch (e) { }
+  }
+  function alertFree(list) {
+    list.forEach(function (n) { board.alerts.push(n); });
+    beep();
+    try { if (window.Notification && Notification.permission === "granted") new Notification("GPU " + list.join(", ") + " is free / 空卡"); } catch (e) { }
+    try { document.title = "● GPU " + list.join(",") + " free — " + (document.title.replace(/^● [^—]*— /, "")); } catch (e) { }
+    drawAlerts();
+  }
+  function drawAlerts() {
+    var el = $("rsBalert"); if (!el) return;
+    el.innerHTML = board.alerts.map(function (n, i) { return '<div class="rs-alert" role="alert"><b>GPU ' + n + "</b> " + bi("is now free", "已經空出來") + '<button type="button" data-i="' + i + '">' + bi("Dismiss", "知道了") + "</button></div>"; }).join("");
+    Array.prototype.forEach.call(el.querySelectorAll("button"), function (b) { b.onclick = function () { board.alerts.splice(+b.getAttribute("data-i"), 1); if (!board.alerts.length) { try { document.title = document.title.replace(/^● [^—]*— /, ""); } catch (e) { } } drawAlerts(); }; });
+    wrapEn();
+  }
+  function drawBoard(d) {
+    var g = $("rsBgrid"), st = $("rsBst"); if (!g) return;
+    g.innerHTML = d.gpus.map(function (x) {
+      var pc = Math.round(x.used_mib / x.total_mib * 100);
+      return '<div class="rs-gpu ' + (x.free ? "free" : "busy") + '"><b>GPU ' + x.index + "</b><em>" + (x.free ? bi("Free", "空卡") : bi("In use", "使用中")) + '</em><span class="rs-gbar"><i style="width:' + pc + '%"></i></span><span class="rs-gnum">' + gb(x.used_mib) + " / " + gb(x.total_mib) + " GB · " + x.util + "%</span></div>";
+    }).join("");
+    st.innerHTML = bi(d.free_count + " free of " + d.gpus.length, "空卡 " + d.free_count + " / " + d.gpus.length) + " · " + esc(d.checked_at.slice(11));
+    wrapEn();
+  }
+  function pollBoard() {
+    fetch("/api/gpu/status?machine=pro6000", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) {
+      if (!d.ok) { $("rsBst").innerHTML = bi("No answer from the machine", "機器暫時沒有回應"); wrapEn(); return; }
+      var now = {}, freed = [];
+      d.gpus.forEach(function (x) { now[x.index] = x.free; if (board.prev && board.prev[x.index] === false && x.free) freed.push(x.index); });
+      board.prev = now;
+      drawBoard(d);
+      if (freed.length) alertFree(freed);
+    }).catch(function () {
+      clearInterval(board.timer);
+      $("rsBgrid").innerHTML = "";
+      $("rsBst").innerHTML = bi("Live board works on the local platform only", "即時儀表板只能在本機平台使用");
+      $("rsBal").style.display = "none";
+      wrapEn();
+    });
+  }
+  function initBoard() {
+    var el = $("rsBoard"); if (!el) return;
+    el.innerHTML = '<div class="rs-bh"><h3>' + bi("GPU board", "GPU 儀表板") + '</h3><span class="rs-bst" id="rsBst"></span><button type="button" class="rs-tg" id="rsBal">' + bi("Turn on alerts", "開啟提醒") + '</button></div><div class="rs-alerts" id="rsBalert"></div><div class="rs-grid" id="rsBgrid"></div><p class="rs-bn">' + bi("An alert pops up when a GPU in use becomes free.", "使用中的 GPU 一旦空出來，會自動跳出提醒。") + "</p>";
+    $("rsBal").onclick = function () {
+      try { board.ctx = board.ctx || new (window.AudioContext || window.webkitAudioContext)(); board.ctx.resume(); } catch (e) { }
+      try { if (window.Notification && Notification.permission === "default") Notification.requestPermission(); } catch (e) { }
+      $("rsBal").innerHTML = bi("Alerts on", "提醒已開"); beep(); wrapEn();
+    };
+    clearInterval(board.timer);
+    board.prev = null;
+    pollBoard();
+    board.timer = setInterval(pollBoard, 5000);
+    wrapEn();
+  }
   function render(P) {
     var ST = P.statuses;
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + bi(t[0], t[1]) + "</em>"; }
@@ -68,11 +135,12 @@
           '<p class="rs-sum' + (s.tip_en ? " has-tip" : "") + '" tabindex="0"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + (s.tip_en ? '<span class="rs-tip">' + bi(s.tip_en, s.tip_zh) + "</span>" : "") + "</p>" + pill(st) +
           kpi(s.kpi) + matrix(s.matrix) + (s.supp_en ? '<p class="rs-supp"><b>Supplement<small class="zhs">補充</small></b> ' + bi(s.supp_en.replace(/^Supplement: /, ""), s.supp_zh.replace(/^補充：/, "")) + "</p>" : "") + (s.proof_open ? proof(s.proof) : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden>' + (s.story ? '<h3>' + bi(s.story.title_en, s.story.title_zh) + '</h3><ol class="rs-story">' + s.story.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : '<table class="p2-tb"><tbody>' + rows + "</tbody></table>") + (s.proof_open ? "" : proof(s.proof)) + "</div></section>";
       }).join("");
-      $("rsPh" + k).innerHTML = '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
+      $("rsPh" + k).innerHTML = (k === "2" ? '<div class="rs-board" id="rsBoard"></div>' : "") + '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(ph.meaning_en, ph.meaning_zh) + '</span>' + (ph.verdict_en && done === n ? '<span class="rs-verdict">' + bi(ph.verdict_en, ph.verdict_zh) + "</span>" : "") + '</div><div class="rs-steps">' + steps + "</div>";
       Array.prototype.forEach.call($("rsPh" + k).querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
       $("lrTab" + k + "n").innerHTML = done + " / " + n;
     });
     $("rsLater").innerHTML = "<summary>" + bi(P.later.en, P.later.zh) + " · " + P.later.items.length + "</summary><ul>" + P.later.items.map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + "</ul>";
+    initBoard();
     wrapEn();
   }
   /* ---------- architecture picture: same machine, without and with Ray Serve (same look as the LiteLLM page) ---------- */
@@ -106,7 +174,7 @@
   }
   tabs.forEach(function (t) { t[1].onclick = function () { show(t[0]); }; });
   var h = ""; try { h = location.hash; } catch (e) { }
-  show("1");  /* phase 2 is not shown for now */
+  show(/phase2/i.test(h) ? "2" : "1");
   fetch("data/rayserve-phase2.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(render).catch(function () {
     $("rsPh1").innerHTML = '<p class="lr-resnote">The plan is not available.<small class="zhs">計畫暫時無法顯示</small></p>';
   });
