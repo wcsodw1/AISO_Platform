@@ -63,7 +63,7 @@
         '<p class="rs-big t-' + s.tone + '">' + esc(s.big) + "<span>" + bi(s.big_en, s.big_zh) + "</span></p>" +
         '<p class="rs-sum"><b>' + bi(s.label_en, s.label_zh) + "</b>" + bi(s.sum_en, s.sum_zh) + "</p>" +
         '<em class="p2-st ' + esc(s.status) + '">' + bi(t[0], t[1]) + "</em>" + mx +
-        '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden><ul class="rs-calc">' + s.data.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ul></div></section>";
+        (s.report ? '<a class="lm-rep" href="' + esc(s.report.href) + '">' + bi(s.report.en, s.report.zh) + ' <span aria-hidden="true">→</span></a>' : "") + '<button type="button" class="rs-tg">Data<small class="zhs">數據</small></button><div class="rs-data" hidden><ul class="rs-calc">' + s.data.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ul></div></section>";
       $("lrTab" + s.n + "n").innerHTML = bi(t[0], t[1]);
     });
     Array.prototype.forEach.call(document.querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
