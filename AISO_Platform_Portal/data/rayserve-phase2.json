@@ -27,26 +27,8 @@
   ]
  },
  "headline": {
-  "en": "Ray Serve lets GPUs scale automatically with the number of users:",
-  "zh": "Ray Serve 讓 GPU 隨使用人數自動增減：",
-  "items": [
-   [
-    "Throughput up 42% on average",
-    "處理量平均多 42%"
-   ],
-   [
-    "41% fewer GPU hours a week",
-    "每週省 41% GPU 小時"
-   ],
-   [
-    "No manual switching: about 19.5 more usable GPU hours a week",
-    "免人工切換每週多出約 19.5 GPU 小時"
-   ]
-  ],
-  "price": [
-   "Price: only 1.3% slower",
-   "代價只慢 1.3%"
-  ]
+  "en": "Auto-scaling request handling · Lower resource consumption",
+  "zh": "自動增減處理請求・減少資源消耗"
  },
  "phases": {
   "1": {
