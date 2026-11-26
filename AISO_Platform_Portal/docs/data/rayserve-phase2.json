@@ -127,8 +127,8 @@
      "tone": "good",
      "tip_en": "Compared: 1 GPU alone vs 2 GPUs shared by Ray Serve, 16 people asking at once. The extra work comes from the 2nd GPU; Ray Serve shares the questions between the two automatically. Not yet compared with 2 GPUs used separately by hand: that is a next test.",
      "tip_zh": "比較對象：1 張卡單獨回答，對 2 張卡由 Ray Serve 分工，16 人同時發問。多做的工作來自多一張卡；Ray Serve 負責把問題自動分給兩張卡。還沒和「兩張卡各自手動使用」比，那是下一個測試。",
-     "tip_title_en": "Measured test",
-     "tip_title_zh": "實測依據"
+     "tip_title_en": "Scenario",
+     "tip_title_zh": "模擬情境"
     },
     {
      "n": 2,
@@ -338,8 +338,8 @@
      },
      "supp_en": "Supplement: going through Ray Serve is 1.3% slower than vLLM direct (142.9 vs 144.8 tokens/s, 3 repeats).",
      "supp_zh": "補充：經過 Ray Serve 比直接用 vLLM 慢 1.3%（每秒 142.9 對 144.8 token，重複 3 輪）。",
-     "tip_title_en": "Measured test",
-     "tip_title_zh": "實測依據"
+     "tip_title_en": "Scenario",
+     "tip_title_zh": "模擬情境"
     }
    ]
   },
