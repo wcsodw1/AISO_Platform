@@ -744,3 +744,6 @@ main.lr{--ivory:#f3ead9;--muted:#ab9f8b;--line:#3d3328;--gold:#d6b26b;--s1:#d6b2
 .lr .rs-upd{margin:22px 0 0;text-align:right;color:rgba(243,239,229,.55)}
 .lr .lr-p2 .p2-tb .p2-r1,.lr .lr-p2 .p2-tb .p2-r2,.lr .lr-p2 .p2-tb .p2-r3{display:table-row}
 @media (max-width:900px){.lr .rs-step{grid-template-columns:minmax(0,1fr)}.lr .rs-big{grid-column:1;grid-row:auto}}
+
+.lr .rs-step h2 .rs-cnt{margin-left:auto;font-size:1.25rem;color:var(--c);font-weight:700}
+.lr .rs-data .p2-id{display:none}

@@ -385,7 +385,7 @@
       var st = nd === g.tests.length ? "done" : (nd ? "partial" : "planned");
       var rows = g.tests.map(function (t) { return row(t, g.key); }).join("");
       var fake = g.tests.filter(function (t) { return t.status === "sim"; }).length;
-      steps += '<section class="rs-step s' + esc(g.key) + '"><h2><i>' + esc(g.key) + "</i><span>" + bi(g.en, g.zh) + "</span></h2>" +
+      steps += '<section class="rs-step s' + esc(g.key) + '"><h2><i>' + esc(g.key) + "</i><span>" + bi(g.en, g.zh) + '</span><b class="rs-cnt">' + nd + " / " + g.tests.length + '<small class="zhs">項已測</small></b></h2>' +
         '<p class="rs-m"><b>Meaning<small class="zhs">意義</small></b>' + bi(g.mean_en, g.mean_zh) + "</p>" +
         '<p class="rs-big t-' + esc(g.tone || "good") + '">' + esc(g.big) + "<span>" + bi(g.big_en, g.big_zh) + "</span></p>" +
         '<p class="rs-sum"><b>' + bi(g.label_en, g.label_zh) + "</b>" + bi(g.sum_en, g.sum_zh) + "</p>" + pill(st) +
