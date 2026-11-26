@@ -23,8 +23,8 @@
   ]
  },
  "headline": {
-  "en": "Ray Serve lets several GPUs serve more people at once, with almost no slowdown.",
-  "zh": "Ray Serve 讓多張 GPU 一起服務更多人，速度幾乎不變。"
+  "en": "An inference service that scales across machines: auto-scales request handling and uses fewer resources when few people use it.",
+  "zh": "將 AI 模型部署成可跨機器擴充的推論服務：自動增減處理請求的能力，人少時減少資源消耗。"
  },
  "phases": {
   "1": {
@@ -185,13 +185,80 @@
      ],
      "label_en": "The benefit",
      "label_zh": "效益",
-     "mean_en": "Check replicas grow and shrink with no one touching it.",
-     "mean_zh": "確認副本不用人手就能增減。",
-     "big": "0 failed",
-     "big_en": "of 8489 requests",
-     "big_zh": "8489 個請求",
-     "sum_en": "Adds and removes replicas by itself.",
-     "sum_zh": "自己增減副本，不用人手。"
+     "mean_en": "Check the number of GPUs in use follows the number of users, so idle GPUs are given back.",
+     "mean_zh": "確認用幾張卡跟著有多少人用走，沒人用就把卡還出來。",
+     "big": "-41%",
+     "big_en": "GPU hours per week vs always keeping 2 on (assumed pattern)",
+     "big_zh": "每週卡小時，對比固定開 2 張（假設用量）",
+     "sum_en": "About 138 GPU-hours a week freed for other jobs.",
+     "sum_zh": "每週省下約 138 張卡小時給別人用。",
+     "proof_open": true,
+     "proof": {
+      "title_en": "If people use it like an office day",
+      "title_zh": "如果像上班日一樣使用",
+      "cols_en": [
+       "Period",
+       "Always 2 GPUs",
+       "Auto-scale",
+       "Saved"
+      ],
+      "cols_zh": [
+       "期間",
+       "固定 2 張",
+       "自動增減",
+       "省下"
+      ],
+      "unit_en": "GPU-hours, lower is better. Checked every 30 minutes.",
+      "unit_zh": "卡小時，越低越好。每 30 分鐘檢查一次。",
+      "rows": [
+       [
+        "1 weekday 平日",
+        "48",
+        "30",
+        "-38%"
+       ],
+       [
+        "1 week 一週",
+        "336",
+        "198",
+        "-41%"
+       ],
+       [
+        "1 month 一個月",
+        "1440",
+        "849",
+        "-41%"
+       ]
+      ],
+      "note_en": "Our assumption, not measured: 2 GPUs needed 6 h on weekdays (09-12, 14-17), otherwise 1. Measured: it reacts in about 100 s.",
+      "note_zh": "我們的假設，非實測：平日 6 小時需 2 張卡，其餘 1 張。實測：約 100 秒內會跟上。"
+     },
+     "story": {
+      "title_en": "What we tested",
+      "title_zh": "我們測了什麼",
+      "items": [
+       [
+        "Start: GPT-OSS-20B on Ray Serve with 1 GPU, allowed to grow to 2.",
+        "開始：GPT-OSS-20B 跑在 Ray Serve，1 張卡，最多可增加到 2 張。"
+       ],
+       [
+        "Busy: 16 simulated users keep asking for 6 minutes.",
+        "忙：16 個模擬使用者連續發問 6 分鐘。"
+       ],
+       [
+        "Grow: after 10 s Ray Serve starts a 2nd GPU copy; it answers requests after 101 s.",
+        "擴：10 秒後開始加第 2 張卡，101 秒後可以回答。"
+       ],
+       [
+        "Quiet: users stop for 4 minutes; after 76 s the 2nd GPU is given back.",
+        "閒：使用者停 4 分鐘，76 秒後自動把第 2 張卡還出來。"
+       ],
+       [
+        "Check: 8489 requests were sent, none failed.",
+        "檢查：共送出 8489 個請求，沒有失敗。"
+       ]
+      ]
+     }
     }
    ],
    "verdict_en": "Phase 1 result: worth adopting wherever we have more than one GPU.",
