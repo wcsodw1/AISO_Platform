@@ -49,10 +49,12 @@
     var gate = function () { return AY.map(function (y) { return line(158, y + 22, 168, 165, "#a89c88"); }).join("") + rect(168, 133, 70, 64, "rgba(214,178,107,.14)", "#d6b26b", 2) + txt(203, 171, "LiteLLM", { c: "#d6b26b", s: 16, w: 800 }); };
     var chip = function (y, a, b, dash) { return rect(404, y, 136, 54, "rgba(255,255,255,.07)", "rgba(255,255,255,.28)", 1, dash) + txt(472, y + 24, a, { s: 17 }) + txt(472, y + 44, b, { s: 15, w: 500, c: "#cfc7b4" }); };
     var machine = function (second) { return rect(392, 78, 160, 174, "rgba(157,184,140,.12)", "#9db88c") + txt(406, 106, "PRO6000", { a: "start", s: 20 }) + chip(122, "GPU 1", "model copy 1", false) + chip(188, "GPU 7", second, second !== "model copy 2"); };
+    var badge = function (x, y, n, c) { return '<circle cx="' + x + '" cy="' + y + '" r="15" fill="' + c + '"/>' + txt(x, y + 6, String(n), { c: "#111", s: 18, w: 800 }); };
     var svgNo = apps() + gate() + line(238, 165, 392, 149, "#d98a66") + line(238, 165, 392, 215, "#d98a66") + machine("model copy 2");
     var svgYes = apps() + gate() + line(238, 165, 256, 165, "#d6b26b") +
       rect(256, 125, 96, 80, "rgba(122,167,255,.14)", "#7aa7ff", 2) + txt(304, 160, "Ray Serve", { c: "#9fc0ff", s: 16, w: 800 }) + txt(304, 182, "auto 1 to 2", { c: "#9fc0ff", s: 14, w: 500 }) +
-      line(352, 165, 392, 149, "#7aa7ff") + line(352, 165, 392, 215, "#7aa7ff", true) + machine("added when busy");
+      line(352, 165, 392, 149, "#7aa7ff") + line(352, 165, 392, 215, "#7aa7ff", true) + machine("added when busy") +
+      badge(262, 127, 1, "#c8b875") + badge(536, 92, 2, "#5fd0c4") + badge(410, 190, 3, "#7aa7ff");
     var svg = function (inner, label) { return '<svg class="lr-svg" viewBox="0 0 560 330" role="img" aria-label="' + label + '">' + inner + "</svg>"; };
     $("rsArch").innerHTML = '<div class="lr-vs">' +
       '<div class="lr-side lr-no"><h3>Without<small class="zhs">沒有 Ray Serve</small></h3>' + svg(svgNo, "Each GPU runs one fixed copy of the model") +
@@ -67,7 +69,7 @@
   }
   tabs.forEach(function (t) { t[1].onclick = function () { show(t[0]); }; });
   var h = ""; try { h = location.hash; } catch (e) { }
-  show(/phase2/i.test(h) ? "2" : "1");
+  show("1");  /* phase 2 is not shown for now */
   fetch("data/rayserve-phase2.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(render).catch(function () {
     $("rsPh1").innerHTML = '<p class="lr-resnote">The plan is not available.<small class="zhs">計畫暫時無法顯示</small></p>';
   });
