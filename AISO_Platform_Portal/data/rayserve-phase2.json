@@ -233,8 +233,8 @@
       ]
      },
      "tone": "good",
-     "tip_en": "From the scenario below: 336 GPU-hours a week always on 2 GPUs minus 198 with auto-scaling = 138 saved (-41%). Assumed office-day usage, not measured.",
-     "tip_zh": "來自下方情境：固定開 2 張一週 336 卡小時，減自動增減的 198，省 138（-41%）。用量為假設的上班日，非實測。"
+     "tip_en": "Scenario (assumed, not measured): on weekdays 09-12 and 14-17 people are busy and 2 GPUs run; at every other hour 1 GPU runs. Over a week that is 198 GPU-hours instead of 336 when 2 GPUs are always on, so 138 are saved (-41%).",
+     "tip_zh": "情境（假設，非實測）：平日 09-12、14-17 人多，開 2 張卡；其他時間開 1 張。一週共 198 卡小時，固定開 2 張是 336，省 138（-41%）。"
     },
     {
      "n": 3,
