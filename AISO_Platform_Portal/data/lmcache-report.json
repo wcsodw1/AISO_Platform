@@ -57,7 +57,12 @@
      "Warm, 5K input, 10 users: first word 219.9 → 155.6 ms (CPU), 219.9 → 441.0 ms (SSD)",
      "Warm、5K 輸入、10 人：第一個字 219.9 → 155.6 ms（CPU）、219.9 → 441.0 ms（SSD）"
     ]
-   ]
+   ],
+   "report": {
+    "href": "lmcache.html",
+    "en": "Full report: Smoke test charts",
+    "zh": "完整報告：冒煙測試圖表"
+   }
   },
   {
    "n": 2,
@@ -124,7 +129,12 @@
      "Average of 8 scenarios, Warm (repeat) runs; green = better",
      "8 個情境平均，Warm（重複）；綠色 = 變好"
     ]
-   ]
+   ],
+   "report": {
+    "href": "gptoss-v2.html",
+    "en": "Full report: No cache v.s aiDAPTIV v.s LMCache",
+    "zh": "完整報告：沒快取 v.s aiDAPTIV v.s LMCache 三者比較"
+   }
   },
   {
    "n": 3,
