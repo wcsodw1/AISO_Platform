@@ -160,12 +160,12 @@
         $("rsPh2").innerHTML = ph.hidden ? "" : '<div class="rs-board" id="rsBoard"></div>';
         $("rsPh3").innerHTML = body;
         Array.prototype.forEach.call($("rsPh3").querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
-        $("lrTab2n").innerHTML = ""; $("lrTab3n").innerHTML = done + " / " + n;
+        $("lrTab2n").innerHTML = ""; $("lrTab3n").innerHTML = done === n ? bi("Done", "完成") : done + " / " + n;
         return;
       }
       $("rsPh" + k).innerHTML = body;
       Array.prototype.forEach.call($("rsPh" + k).querySelectorAll(".rs-tg"), function (b) { b.onclick = function () { var d = b.nextElementSibling; d.hidden = !d.hidden; }; });
-      $("lrTab" + k + "n").innerHTML = done + " / " + n;
+      $("lrTab" + k + "n").innerHTML = done === n ? bi("Done", "完成") : done + " / " + n;
     });
     $("rsLater").innerHTML = "<summary>" + bi(P.later.en, P.later.zh) + " · " + P.later.items.length + "</summary><ul>" + P.later.items.map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + "</ul>";
     initBoard();
