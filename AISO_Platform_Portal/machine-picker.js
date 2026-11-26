@@ -14,7 +14,9 @@ window.MachinePicker = (function () {
       { id: "h200", n: "H200", t: "s" }, { id: "b300", n: "B300", t: "s" }] },
     { k: "amd", name: "AMD", stack: "Vulkan · ROCm", models: [
       { id: "aiso1", compare: true, n: "AISO1 · AI MAX+ 395", t: "m", online: true, spec: "Ryzen AI Max+ 395 · Radeon iGPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-aiso1.html", run: "benchmark.html#/pick/amd/aiso1-amd" },
-      { id: "rog395", n: "ROG AI MAX 395", t: "c" }, { id: "tuf392", n: "TUF AI MAX 392", t: "c" }, { id: "asrock", n: "ASRock", t: "m" }, { id: "mi350x", n: "Instinct MI350X", t: "s" }] },
+      { id: "rog395", n: "ROG AI MAX 395", t: "c", online: false, note: "Imported results 歷史資料", spec: "ASUS ROG Flow Z13 · Ryzen AI Max+ 395 · Radeon 8060S", fw: "llama.cpp", result: "stress-test-amd-consumer.html#rog395" },
+      { id: "tuf392", n: "TUF AI MAX 392", t: "c", online: false, note: "Imported results 歷史資料", spec: "ASUS TUF Gaming A14 · Ryzen AI Max+ 392 · Radeon 8060S", fw: "llama.cpp", result: "stress-test-amd-consumer.html#tuf392" },
+      { id: "asrock", n: "ASRock", t: "m" }] },
     { k: "intel", name: "INTEL", stack: "SYCL · XPU", models: [
       { id: "b70", compare: true, n: "Arc Pro B70", t: "m", online: false, note: "Shutting down 即將關閉", spec: "2 × Arc Pro B70 · 32 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b70.html" },
       { id: "b60", compare: true, n: "Arc Pro B60", t: "m", online: false, note: "Returned 已歸還", spec: "Arc Pro B60 · 24 GB / GPU", fw: "llama.cpp · vLLM · SGLang", result: "stress-test-b60.html" } ] }];
