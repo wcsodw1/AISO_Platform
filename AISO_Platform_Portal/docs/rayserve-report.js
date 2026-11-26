@@ -49,7 +49,8 @@
   function render(P) {
     var ST = P.statuses;
     function pill(s) { var t = ST[s] || [s, ""]; return '<em class="p2-st ' + esc(s) + '">' + bi(t[0], t[1]) + "</em>"; }
-    $("rsHead").innerHTML = '<p class="lr-big">' + bi(P.headline.en, P.headline.zh) + '</p>';
+    var H = P.headline;
+    $("rsHead").innerHTML = '<p class="lr-big">' + bi(H.en, H.zh) + "</p>" + (H.items ? '<ol class="rs-hl">' + H.items.map(function (i) { return "<li>" + bi(i[0], i[1]) + "</li>"; }).join("") + "</ol>" : "") + (H.price ? '<p class="rs-price">' + bi(H.price[0], H.price[1]) + "</p>" : "");
     $("rsUpd").innerHTML = "Updated " + esc(P.updated) + '<small class="zhs">更新日期</small>';
     ["1", "2"].forEach(function (k) {
       var ph = P.phases[k], done = 0, n = 0;

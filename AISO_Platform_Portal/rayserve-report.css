@@ -85,3 +85,4 @@ main.lr .rs-step:hover .rs-tip b small.zhs{display:inline!important;margin:0 0 0
 main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-upd,.rs-proof,.rs-data):hover .en{display:none!important}
 main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-upd,.rs-proof,.rs-data):hover small.zhs,main.lr :is(.v2-hero,.rs-head,.lr-stp,.lr-side,.rs-step,.rs-mean,.rs-later,.rs-upd,.rs-proof,.rs-data):hover .zh-i{display:inline!important;font-size:inherit!important;color:inherit!important;margin:0!important;font-weight:inherit!important;white-space:normal!important}
 }
+.rs-hl{margin:8px 0 6px;padding-left:28px;font-size:1.3rem;font-weight:700;color:var(--ivory,#f3efe5)}.rs-hl li{padding:3px 0}.rs-price{margin:4px 0 0;font-size:1.1rem;color:var(--red,#ed786f)}
