@@ -30,8 +30,8 @@
   "1": {
    "en": "Overhead & scale-out",
    "zh": "額外延遲・擴展",
-   "meaning_en": "Is Ray Serve worth trying? It must cost little speed and really add capacity.",
-   "meaning_zh": "Ray Serve 值不值得試？代價要小，而且真的能多扛流量。",
+   "meaning_en": "Verified: Ray Serve costs about 1% speed, a second GPU takes more users, and it scales by itself.",
+   "meaning_zh": "驗證結果：Ray Serve 只慢約 1%，第二張卡能多扛人，而且自動增減。",
    "steps": [
     {
      "n": 1,
@@ -260,9 +260,7 @@
       ]
      }
     }
-   ],
-   "verdict_en": "Phase 1 result: worth adopting wherever we have more than one GPU.",
-   "verdict_zh": "第一階段結論：只要有一張以上的 GPU，就值得採用。"
+   ]
   },
   "2": {
    "en": "Proof & tuning",
