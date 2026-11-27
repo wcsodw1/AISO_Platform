@@ -149,33 +149,37 @@
    "mean_en": "RAG sends the same documents in a new order; CacheBlend aims to reuse them anyway.",
    "mean_zh": "RAG 常把同樣的文件換順序送來；CacheBlend 目標是這樣也能重用。",
    "big": "Partly",
-   "big_en": "crash fixed · answers still wrong",
-   "big_zh": "不再當機・答案仍不對",
+   "big_en": "answers fixed · no speedup yet",
+   "big_zh": "答案已修正・還沒變快",
    "tone": "bad",
    "label_en": "Where it stands",
    "label_zh": "目前狀態",
-   "sum_en": "CacheBlend no longer crashes, and a reordered document set now hits the cache (965 of 965 tokens). But the answers it gives are still wrong, so it is not usable yet.",
-   "sum_zh": "CacheBlend 不再當機，換順序的文件也能命中快取（965 / 965 token）。但答出來的內容還是錯的，目前還不能用。",
+   "sum_en": "CacheBlend now runs and gives right answers on Qwen3-0.6B, and reordered documents hit the cache. But it is not faster yet: on Llama-3.1-8B reordered documents did not hit, and a repeat was no faster than recomputing. GPT-OSS-20B cannot run it.",
+   "sum_zh": "CacheBlend 現在能跑，Qwen3-0.6B 的答案正確，換順序的文件也能命中快取。但還沒有變快：Llama-3.1-8B 換順序沒命中，重送也沒比重算快。GPT-OSS-20B 跑不了。",
    "data": [
     [
-     "Fixed the crash: patched the 4D KV copy in LMCache's layerwise connector (upstream issue #6021 is still open)",
+     "Crash fixed: patched the 4D KV copy in LMCache's layerwise connector (upstream issue #6021 is still open)",
      "已修好當機：補上 LMCache layerwise connector 的 4D KV 複製（上游 issue #6021 尚未修）"
     ],
     [
-     "Found why reordering never hit: the default separator ' # # ' never matches on Qwen (the trailing space merges into the next word), so the whole prompt was one segment. A separator such as ' ###' + newline matches",
-     "找到換順序都沒命中的原因：預設分隔字串 ' # # ' 在 Qwen 上永遠對不到（尾端空白被併進下一個字），整份提示變成一段。改用 ' ###' 加換行就對得到"
+     "Reordering never hit because the default separator ' # # ' never matches on Qwen; ' ###' + newline matches. With upstream fixes #5584 and #5595, reordered documents hit 965 of 965 tokens",
+     "換順序沒命中，是因為預設分隔字串 ' # # ' 在 Qwen 上永遠對不到；改用 ' ###' 加換行就對得到。套用上游 #5584、#5595 後，換順序的文件命中 965 / 965 token"
     ],
     [
-     "With upstream fixes #5584 and #5595 applied: reordered documents hit 965 of 965 tokens",
-     "套用上游修正 #5584、#5595 後：換順序的文件命中 965 / 965 token"
+     "Wrong answers came from LMCache 0.5.6 skipping the cache load under vLLM 0.31 (it saw an empty value and returned early). Removing that early return gives correct answers on Qwen3-0.6B, for the same prompt and a reordered one",
+     "答案會錯，是因為 LMCache 0.5.6 在 vLLM 0.31 下跳過了快取載入（看到空值就提前返回）。拿掉這個提前返回後，Qwen3-0.6B 同一份提示和換順序的答案都正確"
     ],
     [
-     "Still wrong: answers are garbled even on an exact repeat, and the same at 15% and 100% recompute, so the fault is in how the loaded KV is used, not in the recompute ratio",
-     "仍然不對：連同一份提示重送，答案也亂掉；重算比例 15% 或 100% 結果一樣，所以問題在載入的 KV 怎麼被使用，不在重算比例"
+     "Speed: Qwen3-0.6B recompute 0.13 s vs cache 0.18 s; Llama-3.1-8B repeat 0.51 s vs 0.49 s. No gain at these sizes, and Llama reordering did not hit (separator tokenizes differently)",
+     "速度：Qwen3-0.6B 重算 0.13 秒、用快取 0.18 秒；Llama-3.1-8B 重送 0.51 秒、重算 0.49 秒。這個大小沒有加速，Llama 換順序也沒命中（分隔字串切法不同）"
     ],
     [
-     "All tests ran on PRO6000 GPU 7 with Qwen3-0.6B; GPU 4 and 5 were not touched",
-     "所有測試都在 PRO6000 的 GPU 7、用 Qwen3-0.6B 跑；沒有動 GPU 4、5"
+     "GPT-OSS-20B cannot run CacheBlend here: its sliding-window layers make vLLM pick FlashInfer, which CacheBlend rejects",
+     "GPT-OSS-20B 在這裡跑不了 CacheBlend：它的滑動視窗層讓 vLLM 選用 FlashInfer，而 CacheBlend 不接受"
+    ],
+    [
+     "All tests ran on PRO6000 GPU 7; GPU 4 and 5 were not touched",
+     "所有測試都在 PRO6000 的 GPU 7 跑，沒有動 GPU 4、5"
     ]
    ]
   }
