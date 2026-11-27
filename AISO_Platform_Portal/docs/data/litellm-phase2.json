@@ -64,8 +64,8 @@
      "id": "1a",
      "en": "Two cards vs one",
      "zh": "兩張卡比一張",
-     "crit_en": "At least 1.3x more work done",
-     "crit_zh": "至少多做 1.3 倍的工作",
+     "crit_en": "At least 30% more work done",
+     "crit_zh": "至少多做 30%",
      "status": "done",
      "needs_en": "Real machine: PRO6000 GPU1 + GPU7, llama.cpp gemma-4-26B-A4B BF16, 4 slots each, via SSH tunnel from a Mac, 3 repeats, 32 requests per run, 128 tokens. Short replies and one model: treat as a first real measurement, not the final word.",
      "needs_zh": "真機：PRO6000 GPU1＋GPU7，llama.cpp gemma-4-26B-A4B BF16，每張 4 個 slot，從 Mac 經 SSH tunnel 打，重複 3 次，每次 32 個請求、回 128 token。回覆短、只用一個模型：這是第一次真機量測，不是最終結論。",
@@ -93,8 +93,8 @@
      "result_zh": "兩張卡：同時 4 個為 1.29 倍，8 個為 1.85 倍。LiteLLM 比客戶端輪流：4 個時多 27%，8 個時多 1%。",
      "why_en": "How much faster with two cards?",
      "why_zh": "兩張卡會快多少？",
-     "res_en": "Up to 1.85x faster",
-     "res_zh": "最多快 1.85 倍",
+     "res_en": "Up to 85% more work done",
+     "res_zh": "最多多做 85%",
      "note_en": "Real machine: PRO6000 GPU1 + GPU7, same model. 4 people at once: 1.29x. 8 at once: 1.85x. A first measurement with short answers.",
      "note_zh": "真機：PRO6000 GPU1＋GPU7，同一個模型。4 人同時 1.29 倍，8 人同時 1.85 倍。第一次量測，回答很短。"
     },
@@ -213,8 +213,8 @@
      "result_zh": "模擬：負載越高優勢越大，1 個請求時 0.9 倍（閘道開銷），64 個時 1.87 倍。",
      "why_en": "Does it keep up when many people ask?",
      "why_zh": "很多人同時問，撐得住嗎？",
-     "res_en": "Gain levels off at about 1.8x from 8 users",
-     "res_zh": "從 8 人起，增益停在約 1.8 倍",
+     "res_en": "The gain levels off at about 80% from 8 users",
+     "res_zh": "從 8 人起，增益停在約 80%",
      "note_en": "Real: 1 card vs 2 cards through LiteLLM at 1, 2, 4, 8, 16, 32 users: 1.21x, 1.31x, 1.32x, 1.76x, 1.77x, 1.79x. At 32 users the longest wait drops from 13.5 s to 7.5 s. The 1-user figure is noise: one person can only use one card.",
      "note_zh": "真機：1 張卡 vs 經 LiteLLM 的 2 張卡，1、2、4、8、16、32 人：1.21、1.31、1.32、1.76、1.77、1.79 倍。32 人時最久的等待從 13.5 秒降到 7.5 秒。1 人那個數字是雜訊：一個人同時只用得到一張卡。"
     },
@@ -285,16 +285,16 @@
      "note_zh": "需要第三台機器，在等 HPE GPU。"
     }
    ],
-   "mean_en": "Two machines behind LiteLLM do up to 1.8x the work of one.",
-   "mean_zh": "兩台機器接在 LiteLLM 後面，最多做到一台的 1.8 倍。",
-   "big": "1.8x",
+   "mean_en": "Two machines behind LiteLLM do up to 80% more work than one.",
+   "mean_zh": "兩台機器接在 LiteLLM 後面，最多比一台多做 80%。",
+   "big": "+80%",
    "big_en": "more work",
    "big_zh": "處理量",
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
-   "sum_en": "With 32 people at once, the longest wait drops from 13.5 s to 7.5 s.",
-   "sum_zh": "32 人同時用時，最久的等待從 13.5 秒降到 7.5 秒。"
+   "sum_en": "With 32 people at once, the longest wait drops by 44%.",
+   "sum_zh": "32 人同時用時，最久的等待少 44%。"
   },
   {
    "key": "2",
@@ -336,8 +336,8 @@
      "result_zh": "真機：重試 3 次，728 個 0 失敗；重試 1 次，656 個失敗 5 個",
      "why_en": "Do users notice?",
      "why_zh": "使用者會發現嗎？",
-     "res_en": "No: 0 of 728 requests failed",
-     "res_zh": "不會：728 個請求 0 失敗",
+     "res_en": "No: 0% of 728 requests failed",
+     "res_zh": "不會：728 個請求 0% 失敗",
      "note_en": "Real machine. With 3 retries nothing failed; with 1 retry 5 of 656 failed. Raise retries from 1 to 3.",
      "note_zh": "真機。重試 3 次沒有失敗；重試 1 次 656 個失敗 5 個。建議重試次數從 1 調到 3。"
     },
@@ -368,8 +368,8 @@
      "why_zh": "中間這層壞了，有備援嗎？",
      "note_en": "Real: gateway killed under 6 busy users, started again 25 s later. With one gateway every request failed for about 31 s. With a second gateway the client tried it and none failed.",
      "note_zh": "真機：6 人使用中把入口關掉，25 秒後再開。只有一個入口時，約 31 秒內每個請求都失敗。有第二個入口，客戶端改連它，全部成功。",
-     "res_en": "One gateway: about 31 s of no service. Two gateways: 0 of 652 requests failed",
-     "res_zh": "只有一個入口：約 31 秒沒服務。兩個入口：652 個請求 0 個失敗"
+     "res_en": "One gateway: about half a minute of no service. Two gateways: 0% of 652 requests failed",
+     "res_zh": "只有一個入口：約半分鐘沒服務。兩個入口：652 個請求 0% 失敗"
     },
     {
      "id": "2c",
@@ -398,20 +398,20 @@
      "why_zh": "會交給撐得住的機器嗎？",
      "note_en": "Real LiteLLM on a Mac with two fake models: one takes short questions only, one takes long ones. With the fallback set, a 5000-word question moved to the big model and worked. Without it, every long question failed.",
      "note_zh": "真的 LiteLLM 加兩個假模型（Mac）：一個只收短問題，一個收長問題。設了改送後，5000 字的問題自動改送大模型並成功；沒設時，長問題全部失敗。",
-     "res_en": "Long question: 10 of 10 answered by the big model; without the setting 0 of 10",
-     "res_zh": "長問題：10 個全由大模型回答；沒設定時 0 個"
+     "res_en": "Long question: 100% answered by the big model; 0% without the setting",
+     "res_zh": "長問題：100% 由大模型回答；沒設定時 0%"
     }
    ],
    "mean_en": "When a machine breaks, no request fails and users do not notice.",
-   "mean_zh": "一台機器壞掉，0 個請求失敗，使用者不會發現。",
-   "big": "0",
-   "big_en": "requests failed",
-   "big_zh": "個請求失敗",
+   "mean_zh": "一台機器壞掉，沒有請求失敗，使用者不會發現。",
+   "big": "0%",
+   "big_en": "of requests failed",
+   "big_zh": "的請求失敗",
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
-   "sum_en": "728 requests ran while one machine was switched off.",
-   "sum_zh": "一台機器關掉的期間跑了 728 個請求。"
+   "sum_en": "728 requests ran while one machine was switched off, and none failed.",
+   "sum_zh": "一台機器關掉的期間跑了 728 個請求，全部成功。"
   },
   {
    "key": "3",
@@ -507,8 +507,8 @@
      "why_zh": "看得到誰用了多少嗎？",
      "note_en": "Real LiteLLM with a Postgres database on a Mac, fake model with a set price. Three team keys sent 10, 4 and 1 requests; the spend read back per key was exactly right. The /metrics page needs a login (401), so only the per-key spend is shown here.",
      "note_zh": "真的 LiteLLM 加 Postgres 資料庫（Mac），假模型設定單價。三個團隊的鑰匙分別送 10、4、1 個請求；讀回每把鑰匙的花費完全正確。/metrics 頁面要登入（401），所以這裡只驗了每把鑰匙的花費。",
-     "res_en": "Cost per team matches exactly (10, 4 and 1 requests)",
-     "res_zh": "各團隊的用量與費用完全對得上（10、4、1 個請求）"
+     "res_en": "Cost per team matches 100%",
+     "res_zh": "各團隊的用量與費用 100% 對得上"
     },
     {
      "id": "3d",
@@ -559,8 +559,8 @@
      "why_zh": "同一題問第二次，會立刻回嗎？",
      "note_en": "Real: one question asked five times through LiteLLM's built-in memory cache. First ask 1203 ms, then 14, 8, 6, 5, 5 ms. A different question took 1273 ms again.",
      "note_zh": "真機：同一題經 LiteLLM 內建快取問 5 次。第一次 1203 毫秒，之後 14、8、6、5、5 毫秒。換一題又要 1273 毫秒。",
-     "res_en": "Same question again: 5 to 14 ms instead of 1.2 s",
-     "res_zh": "同一題再問：5 到 14 毫秒，第一次要 1.2 秒"
+     "res_en": "Same question again: 99% faster",
+     "res_zh": "同一題再問：快 99%"
     },
     {
      "id": "3f",
@@ -585,11 +585,11 @@
      "note_zh": "還沒測。"
     }
    ],
-   "mean_en": "Each team has its own key and limit; a repeated question comes back instantly.",
-   "mean_zh": "每個團隊有自己的鑰匙和上限，重複的問題馬上回答。",
-   "big": "0.01 s",
-   "big_en": "for a repeated question (was 1.2 s)",
-   "big_zh": "重複的問題（原本 1.2 秒）",
+   "mean_en": "Each team has its own key and limit; a repeated question comes back 99% faster.",
+   "mean_zh": "每個團隊有自己的鑰匙和上限，重複的問題快 99% 回答。",
+   "big": "99%",
+   "big_en": "faster for a repeated question",
+   "big_zh": "重複的問題更快",
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
