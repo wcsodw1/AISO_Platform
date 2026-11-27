@@ -64,8 +64,8 @@
      "id": "1a",
      "en": "Two cards vs one",
      "zh": "兩張卡比一張",
-     "crit_en": "At least 30% more work done",
-     "crit_zh": "至少多做 30%",
+     "crit_en": "At least 30% more questions answered",
+     "crit_zh": "至少多回答 30% 的問題",
      "status": "done",
      "needs_en": "Real machine: PRO6000 GPU1 + GPU7, llama.cpp gemma-4-26B-A4B BF16, 4 slots each, via SSH tunnel from a Mac, 3 repeats, 32 requests per run, 128 tokens. Short replies and one model: treat as a first real measurement, not the final word.",
      "needs_zh": "真機：PRO6000 GPU1＋GPU7，llama.cpp gemma-4-26B-A4B BF16，每張 4 個 slot，從 Mac 經 SSH tunnel 打，重複 3 次，每次 32 個請求、回 128 token。回覆短、只用一個模型：這是第一次真機量測，不是最終結論。",
@@ -93,8 +93,8 @@
      "result_zh": "兩張卡：同時 4 個為 1.29 倍，8 個為 1.85 倍。LiteLLM 比客戶端輪流：4 個時多 27%，8 個時多 1%。",
      "why_en": "How much faster with two cards?",
      "why_zh": "兩張卡會快多少？",
-     "res_en": "Up to 85% more work done",
-     "res_zh": "最多多做 85%",
+     "res_en": "Up to 85% more questions answered in the same time",
+     "res_zh": "同樣時間內最多多回答 85% 的問題",
      "note_en": "Real machine: PRO6000 GPU1 + GPU7, same model. 4 people at once: 1.29x. 8 at once: 1.85x. A first measurement with short answers.",
      "note_zh": "真機：PRO6000 GPU1＋GPU7，同一個模型。4 人同時 1.29 倍，8 人同時 1.85 倍。第一次量測，回答很短。"
     },
@@ -137,8 +137,8 @@
      "result_zh": "LiteLLM least-busy：23.3 req/s、p95 849 ms。用戶端輪流：20.7 req/s、p95 1206 ms。單一後端：16.7 req/s。",
      "why_en": "Does LiteLLM beat splitting the work by hand?",
      "why_zh": "LiteLLM 比自己分流好嗎？",
-     "res_en": "+7% at 4 users, +12% at 8 users",
-     "res_zh": "4 人多做 7%，8 人多做 12%",
+     "res_en": "+7% more questions at 4 users, +12% at 8 users",
+     "res_zh": "4 人多回答 7% 的問題，8 人多回答 12%",
      "note_en": "Real: 2 PRO6000 GPUs, 3 runs each. LiteLLM 'least busy' vs sending requests to each GPU in turn. An earlier run gave +27% at 4 users and +1% at 8.",
      "note_zh": "真機：PRO6000 兩張 GPU，各跑 3 次。LiteLLM「找最閒的」對比自己輪流送。較早一次測到 4 人 +27%、8 人 +1%。"
     },
@@ -213,8 +213,8 @@
      "result_zh": "模擬：負載越高優勢越大，1 個請求時 0.9 倍（閘道開銷），64 個時 1.87 倍。",
      "why_en": "Does it keep up when many people ask?",
      "why_zh": "很多人同時問，撐得住嗎？",
-     "res_en": "The gain levels off at about 80% from 8 users",
-     "res_zh": "從 8 人起，增益停在約 80%",
+     "res_en": "Extra questions answered levels off at about 80% from 8 users",
+     "res_zh": "從 8 人起，多回答的比例停在約 80%",
      "note_en": "Real: 1 card vs 2 cards through LiteLLM at 1, 2, 4, 8, 16, 32 users: 1.21x, 1.31x, 1.32x, 1.76x, 1.77x, 1.79x. At 32 users the longest wait drops from 13.5 s to 7.5 s. The 1-user figure is noise: one person can only use one card.",
      "note_zh": "真機：1 張卡 vs 經 LiteLLM 的 2 張卡，1、2、4、8、16、32 人：1.21、1.31、1.32、1.76、1.77、1.79 倍。32 人時最久的等待從 13.5 秒降到 7.5 秒。1 人那個數字是雜訊：一個人同時只用得到一張卡。"
     },
@@ -285,16 +285,16 @@
      "note_zh": "需要第三台機器，在等 HPE GPU。"
     }
    ],
-   "mean_en": "Two machines behind LiteLLM do up to 80% more work than one.",
-   "mean_zh": "兩台機器接在 LiteLLM 後面，最多比一台多做 80%。",
+   "mean_en": "Two machines behind LiteLLM answer up to 80% more questions in the same time than one machine.",
+   "mean_zh": "兩台機器接在 LiteLLM 後面，同樣時間內最多比一台多回答 80% 的問題。",
    "big": "+80%",
-   "big_en": "more work",
-   "big_zh": "處理量",
+   "big_en": "more questions answered in the same time",
+   "big_zh": "同樣時間內多回答的問題",
    "tone": "good",
    "label_en": "The benefit",
    "label_zh": "效益",
-   "sum_en": "With 32 people at once, the longest wait drops by 44%.",
-   "sum_zh": "32 人同時用時，最久的等待少 44%。"
+   "sum_en": "With 32 people asking at once, the longest wait for an answer is 44% shorter.",
+   "sum_zh": "32 人同時發問時，最久的等待時間少 44%。"
   },
   {
    "key": "2",
