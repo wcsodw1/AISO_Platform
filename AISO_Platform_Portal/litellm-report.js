@@ -280,7 +280,7 @@
   }
 
   /* connection lights: one per thing the test needs; a red light says why */
-  var WHY = { "no connection": ["No connection", "無法連線"], "gateway unreachable": ["Gateway unreachable", "閘道無法連線"], "not set": ["Not configured", "尚未設定"], "refused by the gateway": ["Key rejected", "金鑰遭拒"] };
+  var WHY = { "no connection": ["No connection", "無法連線"], "gateway unreachable": ["Gateway unreachable", "閘道無法連線"], "not set": ["Not configured", "尚未設定"], "refused by the gateway": ["Key rejected", "金鑰遭拒"], "all full": ["All GPUs are full", "目前全 GPU 卡已滿"], "need 2 free": ["Need 2 free", "需要 2 張空卡"] };
   function why(d) { if (WHY[d]) return WHY[d][0] + '<small class="zhs">' + WHY[d][1] + "</small>"; if (/benchmark/i.test(d)) return 'Benchmark in progress<small class="zhs">測試進行中</small>'; return esc(d); }
   function lightsHtml() {
     return lights.map(function (l) { return '<span class="lr-light ' + (l.ok ? "ok" : "bad") + '"><i aria-hidden="true"></i><span class="lr-ln2">' + esc(l.name) + "</span>" + (l.ok ? "" : '<em>' + why(l.detail) + "</em>") + "</span>"; }).join("");
@@ -313,6 +313,17 @@
       lights = d.checks; var b = lights.filter(function (c) { return c.name === M.b; })[0]; healthB = b ? b.ok : null;
       var el = $("lrLights"); if (el) el.innerHTML = lightsHtml();
       paintFuncs();
+      freeCards();
+    }).catch(function () {});
+  }
+  /* Free cards: the platform looks up by itself which GPUs of the machine are free right now (read-only, local platform only) and shows them as one light. Two are needed for the test. */
+  function freeCards() {
+    fetch("/api/gpu/status?machine=pro6000", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (g) {
+      if (!g || !g.ok || !g.gpus) return;
+      var free = g.gpus.filter(function (x) { return x.free; }).map(function (x) { return x.index; });
+      lights = lights.filter(function (l) { return l.name.indexOf("Free GPUs") !== 0 && l.name !== "GPUs"; });
+      lights.unshift(free.length ? { name: "Free GPUs " + free.join(", "), ok: free.length >= 2, detail: "need 2 free" } : { name: "GPUs", ok: false, detail: "all full" });
+      var el = $("lrLights"); if (el) el.innerHTML = lightsHtml();
     }).catch(function () {});
   }
   function checkStatus() {
