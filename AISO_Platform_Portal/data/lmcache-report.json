@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26",
+ "updated": "2026-11-27",
  "headline": {
   "en": "Reuse, not recompute · Faster first answer",
   "zh": "重用而不重算・更快出第一個字",
@@ -26,6 +26,10 @@
   "blocked": [
    "Blocked",
    "卡關"
+  ],
+  "partial": [
+   "Partial",
+   "部分完成"
   ]
  },
  "parts": [
@@ -141,33 +145,37 @@
    "n": 3,
    "en": "Does a different order work?",
    "zh": "文件順序不同也能用嗎",
-   "status": "blocked",
+   "status": "partial",
    "mean_en": "RAG sends the same documents in a new order; CacheBlend aims to reuse them anyway.",
    "mean_zh": "RAG 常把同樣的文件換順序送來；CacheBlend 目標是這樣也能重用。",
-   "big": "Blocked",
-   "big_en": "no result yet",
-   "big_zh": "尚無結果",
+   "big": "Partly",
+   "big_en": "crash fixed · answers still wrong",
+   "big_zh": "不再當機・答案仍不對",
    "tone": "bad",
-   "label_en": "Where it stopped",
-   "label_zh": "卡在哪",
-   "sum_en": "CacheBlend crashes in LMCache's GPU copy code: vLLM hands it a 4D KV tensor, the blend copy kernel only handles 5D. Needs a code fix or a newer LMCache; not a model problem.",
-   "sum_zh": "CacheBlend 在 LMCache 的 GPU 複製程式當掉：vLLM 給的是 4 維 KV Tensor，Blend 的複製 kernel 只處理 5 維。需要改程式或換新版 LMCache；與模型無關。",
+   "label_en": "Where it stands",
+   "label_zh": "目前狀態",
+   "sum_en": "CacheBlend no longer crashes, and a reordered document set now hits the cache (965 of 965 tokens). But the answers it gives are still wrong, so it is not usable yet.",
+   "sum_zh": "CacheBlend 不再當機，換順序的文件也能命中快取（965 / 965 token）。但答出來的內容還是錯的，目前還不能用。",
    "data": [
     [
-     "Cause (10/27 probe log, LMCache 0.5.6, vLLM 0.31.0): layerwise copy kernel single_layer_kv_transfer reads size(4); FlashAttention gives a 4D fused K/V layer tensor (detected as NL_X_NB_BS_NH_CS)",
-     "原因（10/27 探針 log）：Layerwise 複製 kernel single_layer_kv_transfer 讀 size(4)；FlashAttention 給的是 4 維、K/V 合併的 Tensor（偵測為 NL_X_NB_BS_NH_CS）"
+     "Fixed the crash: patched the 4D KV copy in LMCache's layerwise connector (upstream issue #6021 is still open)",
+     "已修好當機：補上 LMCache layerwise connector 的 4D KV 複製（上游 issue #6021 尚未修）"
     ],
     [
-     "Prefix reuse works because the normal connector handles that layout; only the blend (layerwise buffer) path does not. Same crash on Qwen3-0.6B",
-     "Prefix 重用正常，因為一般 connector 看得懂這種排列；只有 Blend（layerwise buffer）路徑看不懂。Qwen3-0.6B 同樣當掉"
+     "Found why reordering never hit: the default separator ' # # ' never matches on Qwen (the trailing space merges into the next word), so the whole prompt was one segment. A separator such as ' ###' + newline matches",
+     "找到換順序都沒命中的原因：預設分隔字串 ' # # ' 在 Qwen 上永遠對不到（尾端空白被併進下一個字），整份提示變成一段。改用 ' ###' 加換行就對得到"
     ],
     [
-     "11/26 on GPU 7: FlashInfer backend is rejected by CacheBlend (only FlashAttention or the sparse backends are supported)",
-     "11/26 在 GPU 7 實測：CacheBlend 不接受 FlashInfer（只支援 FlashAttention 或 sparse 路徑）"
+     "With upstream fixes #5584 and #5595 applied: reordered documents hit 965 of 965 tokens",
+     "套用上游修正 #5584、#5595 後：換順序的文件命中 965 / 965 token"
     ],
     [
-     "All local images (format-diag, 4d5d-diag, experimental) are LMCache 0.5.6, so no local image already fixes it. Next: patch the kernel for the 4D layout, or try a newer LMCache; never edit size(4) by hand",
-     "本機所有 image（format-diag、4d5d-diag、experimental）都是 LMCache 0.5.6，沒有現成修好的版本。下一步：為 4 維排列修改 kernel，或試較新的 LMCache；不要手動改 size(4)"
+     "Still wrong: answers are garbled even on an exact repeat, and the same at 15% and 100% recompute, so the fault is in how the loaded KV is used, not in the recompute ratio",
+     "仍然不對：連同一份提示重送，答案也亂掉；重算比例 15% 或 100% 結果一樣，所以問題在載入的 KV 怎麼被使用，不在重算比例"
+    ],
+    [
+     "All tests ran on PRO6000 GPU 7 with Qwen3-0.6B; GPU 4 and 5 were not touched",
+     "所有測試都在 PRO6000 的 GPU 7、用 Qwen3-0.6B 跑；沒有動 GPU 4、5"
     ]
    ]
   }
