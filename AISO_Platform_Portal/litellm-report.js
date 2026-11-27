@@ -410,7 +410,7 @@
         (fake ? '<p class="p2-upd">' + fake + " of these were tried on a fake setup only" + '<small class="zhs">其中 ' + fake + " 項只用模擬測過</small></p>" : "") + "</div></section>";
     });
     var n = all.length, d = all.filter(function (t) { return t.status === "done"; }).length;
-    $("lrTab2n").innerHTML = d === n ? "Done" : d + " / " + n;   /* progress inside the Phase 2 tab */
+    $("lrTab2n").innerHTML = d === n ? "100%" : Math.round(d * 100 / n) + "%";   /* progress inside the Phase 2 tab */
     if ($("lrHead")) $("lrHead").innerHTML = '<p class="lr-big">' + bi(P.headline.en, P.headline.zh) + "</p>";
     $("lrP2").innerHTML =
       '<div class="rs-mean"><b>Meaning<small class="zhs">意義</small></b><span>' + bi(P.meaning.en, P.meaning.zh) + "</span></div>" +
